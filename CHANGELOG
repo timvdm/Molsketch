@@ -1,0 +1,64 @@
+Helium alpha 2
+-----------------------------------------------------------------------------
+Features:
+- the implicit hydrogens are now drawn on the right side of the parent atom
+  (thanks to Tim Vandermeersch)
+- the reusabled classes are now in a seperate (static) library
+
+Bug fixes:
+- fixed & improved library code (thanks to Tim Vandermeersch)
+- move regression fixed
+- save implicit hydrogens
+- 
+
+
+
+Helium alpha 1
+-----------------------------------------------------------------------------
+Features:
+- added option to add/remove single implicit hydrogens
+- added 2D rotating
+- rudimentary support for 3D rotation
+- improved periodic table
+- improved settings dialog
+- save position of dock widgets
+- remember last accessed path
+- support for i18n
+- added a panel to the toolbox to directly change the draw options
+- support for changing the font of the atom symbols
+- support for changing the bond width
+- added an autosave feature
+- there is now an initial version of a KPart of the molsKetch drawing
+  widget available
+
+Bug fixes:
+- fixed crash when trying to remove nonexisting custom molecule
+- file extension are now added on saving
+- fixed bug on loading/saving CML files
+
+
+Deuterium
+-----------------------------------------------------------------------------
+Features:
+- added support for OpenBabel under Windows
+- switched to cmake as build system
+- you can now use left click to delete items in th document
+- loaded/imported files are now splitted in seperate molecules
+- made hinting less intrusive
+- made charge changes undoable
+- made scrolling on the document zoom to the cursor position (thanks to
+  Vladimir Zima for the suggestion)
+- made the element selector look like a periodic table (thanks to Carsten
+  Niehaus for the suggestion)
+- updated the element data
+- added bug report menu entry
+- updated some of the shortcuts
+- clean up of the code and added apidox (thanks to Carsten Niehaus)
+
+Bug fixes:
+- fixed some crashes on closing/opening a new document
+- lots of other fixes
+
+Hydrogen
+-----------------------------------------------------------------------------
+- initial release

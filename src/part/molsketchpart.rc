@@ -1,0 +1,17 @@
+<!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
+<kpartgui name="MolsKetchPart" version="Helium">
+	<MenuBar>
+<!--		<Menu name="file"><Text>&amp;File</Text>
+			<Action name="file_import"/>
+			<Action name="file_export"/>
+		</Menu>-->
+		<Menu name="edit"><Text>&amp;Edit</Text>
+			<Seperator/>
+			<Action name="edit_addmode"/>
+			<Action name="edit_delmode"/>
+			<Action name="edit_movemode"/>
+			<Action name="edit_rotmode"/>
+		</Menu>
+	</MenuBar>
+	<StatusBar/>
+</kpartgui>

@@ -1,0 +1,35 @@
+<RCC>
+    <qresource prefix="/" >
+        <file>images/application-exit.png</file>
+        <file>images/configure.png</file>
+        <file>images/configure.svg</file>
+        <file>images/document-export.png</file>
+        <file>images/document-import.png</file>
+        <file>images/document-new.png</file>
+        <file>images/document-open.png</file>
+        <file>images/document-open.svg</file>
+        <file>images/document-print.png</file>
+        <file>images/document-save-as.png</file>
+        <file>images/document-save.png</file>
+        <file>images/draw-eraser.png</file>
+        <file>images/draw-freehand.png</file>
+        <file>images/draw-freehand.svg</file>
+        <file>images/edit-copy.png</file>
+        <file>images/edit-cut.png</file>
+        <file>images/edit-paste.png</file>
+        <file>images/edit-redo.png</file>
+        <file>images/edit-select-all.png</file>
+        <file>images/edit-undo.png</file>
+        <file>images/help-about.png</file>
+        <file>images/help-contents.png</file>
+        <file>images/help-contextual.png</file>
+        <file>images/molsketch.png</file>
+        <file>images/molsketch.svg</file>
+        <file>images/transform-move.png</file>
+        <file>images/transform-rotate.png</file>
+        <file>images/zoom-fit-best.png</file>
+        <file>images/zoom-in.png</file>
+        <file>images/zoom-original.png</file>
+        <file>images/zoom-out.png</file>
+    </qresource>
+</RCC>

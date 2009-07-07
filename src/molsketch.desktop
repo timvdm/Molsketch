@@ -1,0 +1,20 @@
+[Desktop Entry]
+Version=1.0
+Encoding=UTF-8
+Type=Application
+Name=molsKetch
+TryExec=molsketch
+Exec=molsketch
+Icon=molsketch.png
+DocPath=molsketch/index.html
+MimeType=chemical/x-cml
+Terminal=false
+Categories=Qt;Education;Science;
+GenericName=2D molecular structures editor
+Comment=2D molecular structures editor
+GenericName[cs]=Kreslení molekul
+Comment[cs]=2D editor molekulárních struktur
+GenericName[sk]=Kreslenie molekul
+Comment[sk]=2D editor molekulárnych štruktúr
+GenericName[nl]=Molecuulstructuur bewerker
+Comment[nl]=Programma om molecuulstructuren mee te tekenen

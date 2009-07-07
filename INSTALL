@@ -1,0 +1,12 @@
+Short instructions for building the source with CMake:
+- Unpack the source and change to the source dir
+- mkdir build
+- cd build
+- cmake ..
+- make
+
+If you want to install the binary:
+- make install
+
+If you want to make a package:
+- make package
