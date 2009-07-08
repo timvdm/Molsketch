@@ -26,9 +26,15 @@
 #include <openbabel/obconversion.h>
 
 #include "fileio.h"
+
+#include "atom.h"
+#include "bond.h"
 #include "molecule.h"
 #include "element.h"
 #include "molscene.h"
+
+namespace Molsketch
+{
 
 QString svgLine(QLineF l, bool dashed = false, QString stroke = "#000000", qreal width = 1)
 {
@@ -54,8 +60,8 @@ QString svgPolygon(QLineF l, bool dashed = false)
   QTextStream out(&polygon);
 
   // Get the needed positions
-  QLineF lup = MsKBond::shiftVector(l,3);
-  QLineF ldown = MsKBond::shiftVector(l,-3);
+  QLineF lup = MSKBond::shiftVector(l,3);
+  QLineF ldown = MSKBond::shiftVector(l,-3);
 
   // Code the SVG polygon
   out << "<polygon points=\"" <<  l.x1() << "," << l.y1() << " " << lup.x2() << "," << lup.y2() << " " << ldown.x2() << "," << ldown.y2() << "\" ";
@@ -103,7 +109,7 @@ QString svgDefs()
   return defs;
 }
 /*
-bool molsKetch::saveToSVG( const QString & fileName, MolScene * scene )
+bool Molsketch::saveToSVG( const QString & fileName, MolScene * scene )
 {
   QSvgGenerator svgGen;
   svgGen.setFileName( fileName );
@@ -120,7 +126,7 @@ bool molsKetch::saveToSVG( const QString & fileName, MolScene * scene )
   
 }*/
 
-bool molsKetch::saveToSVG( const QString & fileName, MolScene * scene )
+bool saveToSVG( const QString & fileName, MolScene * scene )
 {
   // Trying to open a file with filename
   QFile file(fileName);
@@ -143,54 +149,54 @@ bool molsKetch::saveToSVG( const QString & fileName, MolScene * scene )
         {
           Molecule* mol = (Molecule*)(scene->items().at(i));
 
-          foreach (MsKBond* bond, mol->bonds())
+          foreach (MSKBond* bond, mol->bonds())
             {
               // Get the bond and its attributes
-//               MsKBond* bond = mol->bond(j);
-              QPointF p1 = bond->firstMsKAtom()->scenePos();
-              QPointF p2 = bond->lastMsKAtom()->scenePos();
+//               MSKBond* bond = mol->bond(j);
+              QPointF p1 = bond->beginAtom()->scenePos();
+              QPointF p2 = bond->endAtom()->scenePos();
               QLineF line = QLineF(p1,p2);
 
               // Check the type and order
               switch (bond->bondType())
                 {
-                case MsKBond::Up:
+                case MSKBond::Up:
                   out << svgPolygon(line);
                   break;
-                case MsKBond::UpR:
+                case MSKBond::UpR:
                   out << svgPolygon(line);
                   break;
-                case MsKBond::Down:
+                case MSKBond::Down:
                   out << svgPolygon(line,true);
                   break;
-                case MsKBond::DownR:
+                case MSKBond::DownR:
                   out << svgPolygon(line,true);
                   break;
-                case MsKBond::Dot:
+                case MSKBond::Dot:
                   out << svgLine(line,true);
                   break;
                 default:
                   switch (bond->bondOrder())
                     {
-                    case MsKBond::Single:
+                    case MSKBond::Single:
                       out << svgLine(line);
                       break;
-                    case MsKBond::Double:
-                      out << svgLine(MsKBond::shiftVector(line,2));
-                      out << svgLine(MsKBond::shiftVector(line,-2));
+                    case MSKBond::Double:
+                      out << svgLine(MSKBond::shiftVector(line,2));
+                      out << svgLine(MSKBond::shiftVector(line,-2));
                       break;
-                    case MsKBond::Triple:
-                      out << svgLine(MsKBond::shiftVector(line,3));
-                      out << svgLine(MsKBond::shiftVector(line,-3));
+                    case MSKBond::Triple:
+                      out << svgLine(MSKBond::shiftVector(line,3));
+                      out << svgLine(MSKBond::shiftVector(line,-3));
                       out << svgLine(line);
                       break;
                     }
                 }
             }
 
-          foreach (MsKAtom* atom, mol->atoms())
+          foreach (MSKAtom* atom, mol->atoms())
             {
-//               MsKAtom* atom = mol->atom(j);
+//               MSKAtom* atom = mol->atom(j);
 
               // Check if atom is visible and draw
               if (atom->isDrawn())
@@ -205,7 +211,7 @@ bool molsKetch::saveToSVG( const QString & fileName, MolScene * scene )
                   out << "<tspan text-anchor=\"middle\">" << atom->element();
                   if (atom->numberOfImplicitHydrogens()>0) out << "H";
                   if (atom->numberOfImplicitHydrogens()>1) out << "<tspan dy=\"4\" font-size=\"8\" >" << atom->numberOfImplicitHydrogens() << "</tspan>"; // baseline-shift=\"sub\"
-                  out << "<tspan font-size=\"8\" dy=\"-10\" >" << atom->chargeID() << "</tspan>";
+                  out << "<tspan font-size=\"8\" dy=\"-10\" >" << atom->chargeString() << "</tspan>";
                   out << "</tspan>"; //baseline-shift=\"super\"
                   out << "</text>" << endl;
                 }
@@ -222,7 +228,7 @@ bool molsKetch::saveToSVG( const QString & fileName, MolScene * scene )
 }
 
 
-bool molsKetch::saveFile(const QString &fileName, QGraphicsScene* scene)
+bool saveFile(const QString &fileName, QGraphicsScene* scene)
 {
 //     QMessageBox::warning(this,tr(PROGRAM_NAME),tr("Saving is only partially implemented. You may lose data if you overwrite an existing file."),QMessageBox::Ok,QMessageBox::Ok);
   using namespace OpenBabel;
@@ -232,7 +238,7 @@ bool molsKetch::saveFile(const QString &fileName, QGraphicsScene* scene)
     {
       // Create the output molecule
       OBMol* obmol = new OBMol;
-      QHash<MsKAtom*,OpenBabel::OBAtom*> hash;
+      QHash<MSKAtom*,OpenBabel::OBAtom*> hash;
 
       // Add all molecules on the scene
       foreach(QGraphicsItem* item, scene->items())
@@ -244,24 +250,24 @@ bool molsKetch::saveFile(const QString &fileName, QGraphicsScene* scene)
             hash.clear();
 
             obmol->BeginModify();
-//                 obmol->ReserveMsKAtoms(mol->countMsKAtoms());
-            foreach (MsKAtom* atom, mol->atoms())
+//                 obmol->ReserveMSKAtoms(mol->countMSKAtoms());
+            foreach (MSKAtom* atom, mol->atoms())
               {
                 OpenBabel::OBAtom* obatom = obmol->NewAtom();
-//                 MsKAtom* atom = mol->atom(j);
+//                 MSKAtom* atom = mol->atom(j);
                 obatom->SetVector(atom->scenePos().x()/40,atom->scenePos().y()/40,0);
                 std::string element = atom->element().toStdString();
 //                 obatom->SetType(element);
-                obatom->SetAtomicNum(molsKetch::symbol2number(atom->element()));
+                obatom->SetAtomicNum(Molsketch::symbol2number(atom->element()));
 //                 obmol->AddAtom(*obatom);
                 hash.insert(atom,obatom);
 //                 cerr << hash.count() << "\n";
               }
-            foreach (MsKBond* bond, mol->bonds())
+            foreach (MSKBond* bond, mol->bonds())
               {
-//                 MsKBond* bond = mol->bonds[j];
-                MsKAtom* a1 = bond->firstMsKAtom();
-                MsKAtom* a2 = bond->lastMsKAtom();
+//                 MSKBond* bond = mol->bonds[j];
+                MSKAtom* a1 = bond->beginAtom();
+                MSKAtom* a2 = bond->endAtom();
 
                 OBAtom* oba1 = hash.value(a1);
                 OBAtom* oba2 = hash.value(a2);
@@ -278,16 +284,16 @@ bool molsKetch::saveFile(const QString &fileName, QGraphicsScene* scene)
                 // Setting bondtype
                 switch (bond->bondType())
                   {
-                  case MsKBond::Up:
+                  case MSKBond::Up:
                     obbond->SetWedge();
-                  case MsKBond::UpR:
+                  case MSKBond::UpR:
                     obbond->SetBegin(oba2);
                     obbond->SetEnd(oba1);
                     obbond->SetWedge();
                     break;
-                  case MsKBond::Down:
+                  case MSKBond::Down:
                     obbond->SetHash();
-                  case MsKBond::DownR:
+                  case MSKBond::DownR:
                     obbond->SetBegin(oba2);
                     obbond->SetEnd(oba1);
                     obbond->SetHash();
@@ -328,7 +334,7 @@ bool molsKetch::saveFile(const QString &fileName, QGraphicsScene* scene)
   return true;
 }
 
-bool molsKetch::saveFile3D(const QString &fileName, QGraphicsScene* scene)
+bool saveFile3D(const QString &fileName, QGraphicsScene* scene)
 {
 //     QMessageBox::warning(this,tr(PROGRAM_NAME),tr("Saving is only partially implemented. You may lose data if you overwrite an existing file."),QMessageBox::Ok,QMessageBox::Ok);
   using namespace OpenBabel;
@@ -338,7 +344,7 @@ bool molsKetch::saveFile3D(const QString &fileName, QGraphicsScene* scene)
     {
       // Create the output molecule
       OBMol* obmol = new OBMol;
-      QHash<MsKAtom*,OpenBabel::OBAtom*> hash;
+      QHash<MSKAtom*,OpenBabel::OBAtom*> hash;
 
       // Add all molecules on the scene
       foreach(QGraphicsItem* item, scene->items())
@@ -350,24 +356,24 @@ bool molsKetch::saveFile3D(const QString &fileName, QGraphicsScene* scene)
             hash.clear();
 
             obmol->BeginModify();
-//                 obmol->ReserveMsKAtoms(mol->countMsKAtoms());
-            foreach (MsKAtom* atom, mol->atoms())
+//                 obmol->ReserveMSKAtoms(mol->countMSKAtoms());
+            foreach (MSKAtom* atom, mol->atoms())
               {
                 OpenBabel::OBAtom* obatom = obmol->NewAtom();
-//                 MsKAtom* atom = mol->atom(j);
+//                 MSKAtom* atom = mol->atom(j);
                 obatom->SetVector(atom->scenePos().x(),-atom->scenePos().y(),0);
                 std::string element = atom->element().toStdString();
 //                 obatom->SetType(element);
-                obatom->SetAtomicNum(molsKetch::symbol2number(atom->element()));
+                obatom->SetAtomicNum(Molsketch::symbol2number(atom->element()));
 //                 obmol->AddAtom(*obatom);
                 hash.insert(atom,obatom);
 //                 cerr << hash.count() << "\n";
               }
-            foreach (MsKBond* bond, mol->bonds())
+            foreach (MSKBond* bond, mol->bonds())
               {
-//                 MsKBond* bond = mol->bonds[j];
-                MsKAtom* a1 = bond->firstMsKAtom();
-                MsKAtom* a2 = bond->lastMsKAtom();
+//                 MSKBond* bond = mol->bonds[j];
+                MSKAtom* a1 = bond->beginAtom();
+                MSKAtom* a2 = bond->endAtom();
 
                 OBAtom* oba1 = hash.value(a1);
                 OBAtom* oba2 = hash.value(a2);
@@ -384,16 +390,16 @@ bool molsKetch::saveFile3D(const QString &fileName, QGraphicsScene* scene)
                 // Setting bondtype
                 switch (bond->bondType())
                   {
-                  case MsKBond::Up:
+                  case MSKBond::Up:
                     obbond->SetWedge();
-                  case MsKBond::UpR:
+                  case MSKBond::UpR:
                     obbond->SetBegin(oba2);
                     obbond->SetEnd(oba1);
                     obbond->SetWedge();
                     break;
-                  case MsKBond::Down:
+                  case MSKBond::Down:
                     obbond->SetHash();
-                  case MsKBond::DownR:
+                  case MSKBond::DownR:
                     obbond->SetBegin(oba2);
                     obbond->SetEnd(oba1);
                     obbond->SetHash();
@@ -434,7 +440,7 @@ bool molsKetch::saveFile3D(const QString &fileName, QGraphicsScene* scene)
   return true;
 }
 
-Molecule* molsKetch::loadFile(const QString &fileName)
+Molecule* loadFile(const QString &fileName)
 {
   // Creating and setting conversion classes
   using namespace OpenBabel;
@@ -465,8 +471,8 @@ Molecule* molsKetch::loadFile(const QString &fileName)
         {
           OpenBabel::OBAtom *obatom = obmol.GetAtom(i);
           //  			scene->addRect(QRectF(atom->GetX(),atom->GetY(),5,5));
-//           MsKAtom* atom =
-	 mol->addMsKAtom(molsKetch::number2symbol(obatom->GetAtomicNum()),QPointF(obatom->x()*40,obatom->y()*40), false);
+//           MSKAtom* atom =
+	 mol->addMSKAtom(Molsketch::number2symbol(obatom->GetAtomicNum()),QPointF(obatom->x()*40,obatom->y()*40), false);
 
         }
 
@@ -481,16 +487,16 @@ Molecule* molsKetch::loadFile(const QString &fileName)
           OBAtom *a2 = obbond->GetEndAtom();
 
           // Creating their internal counterparts
-          MsKAtom* atomA = mol->atomAt(QPointF(a1->x()*40,a1->y()*40));
-          MsKAtom* atomB = mol->atomAt(QPointF(a2->x()*40,a2->y()*40));
-          MsKBond* bond  = mol->addBond(atomA,atomB,obbond->GetBondOrder());
+          MSKAtom* atomA = mol->atomAt(QPointF(a1->x()*40,a1->y()*40));
+          MSKAtom* atomB = mol->atomAt(QPointF(a2->x()*40,a2->y()*40));
+          MSKBond* bond  = mol->addBond(atomA,atomB,obbond->GetBondOrder());
 
           // Set special bond types
-          if (obbond->IsWedge()) bond->setType( MsKBond::Up );
-          if (obbond->IsHash()) bond->setType( MsKBond::Down );
-//             if (obbond->IsUp()) bond->setType( MsKBond::Up );
-//             if (obbond->IsDown()) bond->setType( MsKBond::Down );
-          // if (obbond->IsHash()) bond->setType( MsKBond::Dot );
+          if (obbond->IsWedge()) bond->setType( MSKBond::Up );
+          if (obbond->IsHash()) bond->setType( MSKBond::Down );
+//             if (obbond->IsUp()) bond->setType( MSKBond::Up );
+//             if (obbond->IsDown()) bond->setType( MSKBond::Down );
+          // if (obbond->IsHash()) bond->setType( MSKBond::Dot );
 
           // Normalizing
 //             factor = scene->getBondLength()/obbond->GetLength();
@@ -498,7 +504,7 @@ Molecule* molsKetch::loadFile(const QString &fileName)
 
       // // Normalizing molecule
       // mol->scale(factor,factor);
-      // mol->setMsKAtomSize(LABEL_SIZE/factor);
+      // mol->setMSKAtomSize(LABEL_SIZE/factor);
 
       return mol;
     }
@@ -509,7 +515,7 @@ Molecule* molsKetch::loadFile(const QString &fileName)
 
 }
 
-Molecule* molsKetch::loadFile3D(const QString &fileName)
+Molecule* loadFile3D(const QString &fileName)
 {
   // Creating and setting conversion classes
   using namespace OpenBabel;
@@ -540,8 +546,8 @@ Molecule* molsKetch::loadFile3D(const QString &fileName)
         {
           OpenBabel::OBAtom *obatom = obmol.GetAtom(i);
           //  			scene->addRect(QRectF(atom->GetX(),atom->GetY(),5,5));
-//           MsKAtom* atom =
-	 mol->addMsKAtom(molsKetch::number2symbol(obatom->GetAtomicNum()),QPointF(obatom->x(),-obatom->y()), false);
+//           MSKAtom* atom =
+	 mol->addMSKAtom(Molsketch::number2symbol(obatom->GetAtomicNum()),QPointF(obatom->x(),-obatom->y()), false);
 
         }
 
@@ -556,16 +562,16 @@ Molecule* molsKetch::loadFile3D(const QString &fileName)
           OBAtom *a2 = obbond->GetEndAtom();
 
           // Creating their internal counterparts
-          MsKAtom* atomA = mol->atomAt(QPointF(a1->x(),-a1->y()));
-          MsKAtom* atomB = mol->atomAt(QPointF(a2->x(),-a2->y()));
-          MsKBond* bond  = mol->addBond(atomA,atomB,obbond->GetBondOrder());
+          MSKAtom* atomA = mol->atomAt(QPointF(a1->x(),-a1->y()));
+          MSKAtom* atomB = mol->atomAt(QPointF(a2->x(),-a2->y()));
+          MSKBond* bond  = mol->addBond(atomA,atomB,obbond->GetBondOrder());
 
           // Set special bond types
-          if (obbond->IsWedge()) bond->setType( MsKBond::Up );
-          if (obbond->IsHash()) bond->setType( MsKBond::Down );
-//             if (obbond->IsUp()) bond->setType( MsKBond::Up );
-//             if (obbond->IsDown()) bond->setType( MsKBond::Down );
-          // if (obbond->IsHash()) bond->setType( MsKBond::Dot );
+          if (obbond->IsWedge()) bond->setType( MSKBond::Up );
+          if (obbond->IsHash()) bond->setType( MSKBond::Down );
+//             if (obbond->IsUp()) bond->setType( MSKBond::Up );
+//             if (obbond->IsDown()) bond->setType( MSKBond::Down );
+          // if (obbond->IsHash()) bond->setType( MSKBond::Dot );
 
           // Normalizing
 //             factor = scene->getBondLength()/obbond->GetLength();
@@ -573,7 +579,7 @@ Molecule* molsKetch::loadFile3D(const QString &fileName)
 
       // // Normalizing molecule
       // mol->scale(factor,factor);
-      // mol->setMsKAtomSize(LABEL_SIZE/factor);
+      // mol->setMSKAtomSize(LABEL_SIZE/factor);
 
       return mol;
     }
@@ -594,13 +600,13 @@ Molecule* molsKetch::loadFile3D(const QString &fileName)
 //     for (int i = 0; i < formula.length();i++)
 //     {
 //         if (formula.at( i ).isLetter())
-//             mol->addMsKAtom( QString(formula.at( i )), QPoint(0,0) );
+//             mol->addMSKAtom( QString(formula.at( i )), QPoint(0,0) );
 //     }
 //
 //     return mol;
 // }
 
-bool molsKetch::exportFile(const QString &fileName, MolScene * scene)
+bool exportFile(const QString &fileName, MolScene * scene)
 {
   // Clear selection
   QList<QGraphicsItem*> selList(scene->selectedItems());
@@ -615,7 +621,7 @@ bool molsKetch::exportFile(const QString &fileName, MolScene * scene)
 }
 
 
-bool molsKetch::printFile(QPrinter &printer, MolScene * scene)
+bool printFile(QPrinter &printer, MolScene * scene)
 {
   // Creating the painter
   QPainter painter(&printer);
@@ -632,4 +638,6 @@ bool molsKetch::printFile(QPrinter &printer, MolScene * scene)
   foreach(QGraphicsItem* item, selList) item->setSelected(true);
   
   return true;
+}
+
 }

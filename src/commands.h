@@ -34,18 +34,20 @@
 #include <QUndoCommand>
 #include <QPointF>
 
-class MsKAtom;
-class Molecule;
-class MsKBond;
-class MolScene;
 class QGraphicsItem;
 class QGraphicsScene;
 class QTransform;
 
-namespace Commands
-{
+namespace Molsketch {
 
-// MsKAtom command
+  class MSKAtom;
+class Molecule;
+class MSKBond;
+class MolScene;
+
+namespace Commands {
+
+// MSKAtom command
 
 /**
  * Command to add an atom
@@ -62,7 +64,7 @@ class AddAtom : public QUndoCommand
      * @param molecule pointer to the molecule for the new atom
      * @param text a description of the command
      */
-    AddAtom(MsKAtom* newAtom, Molecule* molecule, const QString & text = "");
+    AddAtom(MSKAtom* newAtom, Molecule* molecule, const QString & text = "");
     /**
      * Destructor 
      *
@@ -76,8 +78,8 @@ class AddAtom : public QUndoCommand
   private:
     /** Undo state of the command. */
     bool m_undone;
-    /** MsKAtom of this command. */
-    MsKAtom* m_atom;
+    /** MSKAtom of this command. */
+    MSKAtom* m_atom;
     /** Molecule of this command. */
     Molecule* m_molecule;
   };
@@ -94,11 +96,11 @@ class ChangeElement : public QUndoCommand
     /** 
      * Creates a new ChangeElement command.
      *
-     * @param changeMsKAtom the atom which element symbol should be changed
+     * @param changeMSKAtom the atom which element symbol should be changed
      * @param newElementSymbol the new element symbol
      * @param text a description of the command
      */
-    ChangeElement(MsKAtom* changeMsKAtom, const QString & newElementSymbol, const QString & text = "");
+    ChangeElement(MSKAtom* changeMSKAtom, const QString & newElementSymbol, const QString & text = "");
     /** Undo this command. */
     virtual void undo();
     /** Redo this command. */
@@ -110,8 +112,8 @@ class ChangeElement : public QUndoCommand
     QString m_oldName;
     /** New element symbol of the atom. */
     QString m_newName;
-    /** MsKAtom of this command. */
-   MsKAtom* m_atom;
+    /** MSKAtom of this command. */
+   MSKAtom* m_atom;
   };
   
 /**
@@ -128,7 +130,7 @@ class DecCharge : public QUndoCommand
      * @param atom the atom to decrease the charge of
      * @param text a description of the command
      */
-    DecCharge(MsKAtom* atom, const QString & text = "");
+    DecCharge(MSKAtom* atom, const QString & text = "");
     /** Undo this command. */
     virtual void undo();
     /** Redo this command. */
@@ -136,8 +138,8 @@ class DecCharge : public QUndoCommand
   private:
     /** Undo state of the command. */
     bool m_undone;
-    /** MsKAtom of this command. */
-    MsKAtom* m_atom;
+    /** MSKAtom of this command. */
+    MSKAtom* m_atom;
   };
   
  /**
@@ -154,7 +156,7 @@ class IncCharge : public QUndoCommand
      * @param atom the atom to increase the charge of
      * @param text a description of the command
      */
-    IncCharge(MsKAtom* atom, const QString & text = "");
+    IncCharge(MSKAtom* atom, const QString & text = "");
     /** Undo this command. */
     virtual void undo();
     /** Redo this command. */
@@ -162,8 +164,8 @@ class IncCharge : public QUndoCommand
   private:
     /** Undo state of the command. */
     bool m_undone;
-    /** MsKAtom of this command. */
-    MsKAtom* m_atom;
+    /** MSKAtom of this command. */
+    MSKAtom* m_atom;
   };
   
 /**
@@ -180,7 +182,7 @@ class AddImplicitHydrogen : public QUndoCommand
      * @param atom the atom to decrease the charge of
      * @param text a description of the command
      */
-    AddImplicitHydrogen(MsKAtom* atom, const QString & text = "");
+    AddImplicitHydrogen(MSKAtom* atom, const QString & text = "");
     /** Undo this command. */
     virtual void undo();
     /** Redo this command. */
@@ -188,8 +190,8 @@ class AddImplicitHydrogen : public QUndoCommand
   private:
     /** Undo state of the command. */
     bool m_undone;
-    /** MsKAtom of this command. */
-    MsKAtom* m_atom;
+    /** MSKAtom of this command. */
+    MSKAtom* m_atom;
   };
   
  /**
@@ -206,7 +208,7 @@ class RemoveImplicitHydrogen : public QUndoCommand
      * @param atom the atom to increase the charge of
      * @param text a description of the command
      */
-    RemoveImplicitHydrogen(MsKAtom* atom, const QString & text = "");
+    RemoveImplicitHydrogen(MSKAtom* atom, const QString & text = "");
     /** Undo this command. */
     virtual void undo();
     /** Redo this command. */
@@ -214,8 +216,8 @@ class RemoveImplicitHydrogen : public QUndoCommand
   private:
     /** Undo state of the command. */
     bool m_undone;
-    /** MsKAtom of this command. */
-    MsKAtom* m_atom;
+    /** MSKAtom of this command. */
+    MSKAtom* m_atom;
   };
 
 /**
@@ -232,7 +234,7 @@ class DelAtom : public QUndoCommand
      * @param delAtom the atom to be removed
      * @param text a description of the command
      */
-    DelAtom(MsKAtom* delAtom, const QString & text = "");
+    DelAtom(MSKAtom* delAtom, const QString & text = "");
     /**
      * Destructor
      *
@@ -246,15 +248,15 @@ class DelAtom : public QUndoCommand
   private:
     /** Undo state of the command. */
     bool m_undone;
-    /** MsKAtom of this command. */
-    MsKAtom* m_atom;
+    /** MSKAtom of this command. */
+    MSKAtom* m_atom;
     /** Molecule of this command. */
     Molecule* m_molecule;
     /** The list of bonds that were connected to m_atom. */
-    QList<MsKBond*> m_bondList;
+    QList<MSKBond*> m_bondList;
   };
 
-// MsKBond commands
+// MSKBond commands
 
 /**
  * Command to add a bond
@@ -271,7 +273,7 @@ class AddBond : public QUndoCommand
      * @param text a description of the command
      */
     
-    AddBond(MsKBond* newBond, const QString & text = "");
+    AddBond(MSKBond* newBond, const QString & text = "");
     /**
      * Destructor
      *
@@ -286,7 +288,7 @@ class AddBond : public QUndoCommand
     /** Undo state of the command. */
     bool m_undone;
     /** The bond of this command. */
-    MsKBond* m_bond;
+    MSKBond* m_bond;
     /** Molecule of this command. */
     Molecule* m_mol;
   };
@@ -306,7 +308,7 @@ class DelBond : public  QUndoCommand
      * @param delBond the bond that should be removed
      * @param text a description of the command
      */
-    DelBond(MsKBond* delBond, const QString & text = "");
+    DelBond(MSKBond* delBond, const QString & text = "");
     /**
      * Destructor
      *
@@ -321,7 +323,7 @@ class DelBond : public  QUndoCommand
     /** Undo state of the command. */
     bool m_undone;
     /** The bond of this command. */
-    MsKBond* m_bond;
+    MSKBond* m_bond;
     /** Molecule of this command. */
     Molecule* m_mol;
   };
@@ -341,7 +343,7 @@ class IncType : public  QUndoCommand
      * @param incBond bond of which the type should be changed
      * @param text a description of the command
      */
-    IncType(MsKBond* incBond, const QString & text = "");
+    IncType(MSKBond* incBond, const QString & text = "");
     /** Undo this command. */
     virtual void undo();
     /** Redo this command. */
@@ -350,7 +352,7 @@ class IncType : public  QUndoCommand
     /** Undo state of the command. */
     bool m_undone;
     /** The bond of this command. */
-    MsKBond* m_bond;
+    MSKBond* m_bond;
   };
 
 
@@ -368,7 +370,7 @@ class IncOrder : public  QUndoCommand
      * @param incBond bond to increase the order of 
      * @param text a description of the command
      */
-    IncOrder(MsKBond* incBond, const QString & text = "");
+    IncOrder(MSKBond* incBond, const QString & text = "");
     /** Undo this command. */
     virtual void undo();
     /** Redo this command. */
@@ -377,7 +379,7 @@ class IncOrder : public  QUndoCommand
     /** Undo state of the command. */
     bool m_undone;
     /** The bond of this command. */
-    MsKBond* m_bond;
+    MSKBond* m_bond;
   };
 
 
@@ -598,6 +600,8 @@ class RotateItem : public QUndoCommand
 
   };
 
-}
+} // namespace Commands
+
+} // namespace Molsketch
 
 #endif

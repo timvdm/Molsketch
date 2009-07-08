@@ -30,6 +30,7 @@
 
 #include <QtGui/QGraphicsView>
 
+namespace Molsketch {
 
 /**
  * The view of the molecule scene. This is a subclass of QGraphicsView with
@@ -55,4 +56,5 @@ class MolView : public QGraphicsView
     void scaleView(qreal scaleFactor);
   };
 
+} // namespace
 #endif

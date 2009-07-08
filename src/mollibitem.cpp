@@ -21,8 +21,11 @@
 #include <QtGui>
 
 #include "molecule.h"
+#include "molscene.h"
 #include "mollibitem.h"
 #include "fileio.h"
+
+namespace Molsketch {
 
 MolLibItem::MolLibItem( Molecule* molecule, const QString & name )
 {
@@ -41,11 +44,11 @@ MolLibItem::MolLibItem( Molecule* molecule, const QString & name )
   renderScene.addItem(m_molecule);
   renderScene.setChargeVisible(false);
   renderScene.setAtomSymbolFont(QFont("Helvetica", 40));
-  renderScene.setBondWidth(5);
+  //renderScene.setBondWidth(5);
   // set the sceneRect to the items bouding rectangle
   renderScene.setSceneRect(renderScene.itemsBoundingRect());
 
-  // use a pixmap because we'll be using Qt::white in MsKAtom::paint(...)
+  // use a pixmap because we'll be using Qt::white in MSKAtom::paint(...)
   QPixmap pixmap(int(renderScene.width()), int(renderScene.height()));
   /*  TODO Perhaps the icons should all be the same size... */
   pixmap.fill();
@@ -73,7 +76,7 @@ MolLibItem::MolLibItem( Molecule* molecule, const QString & name )
   if (!m_fileName.exists())
     {
       m_fileName.setFile(QDir::homePath() + "/.molsketch/library/custom/" + name + ".mol");
-      molsKetch::saveFile(m_fileName.filePath(),&renderScene);
+      Molsketch::saveFile(m_fileName.filePath(),&renderScene);
     }
 
   setText(m_fileName.baseName());
@@ -86,9 +89,9 @@ MolLibItem::MolLibItem( Molecule* molecule, const QString & name )
 MolLibItem::~ MolLibItem( )
 {
   // Delete all bonds and atoms and finally the molecule
-  foreach(MsKBond* bond, m_molecule->bonds()) delete bond;
-  foreach(MsKAtom* atom, m_molecule->atoms()) delete atom;
-  delete m_molecule;
+  foreach(MSKBond* bond, m_molecule->bonds()) delete bond;
+  foreach(MSKAtom* atom, m_molecule->atoms()) delete atom;
+  //delete m_molecule;
 }
 
 Molecule* MolLibItem::getMolecule( )
@@ -97,14 +100,17 @@ Molecule* MolLibItem::getMolecule( )
   return new Molecule(m_molecule);
 }
 
+/*
 void MolLibItem::setMolecule( Molecule* mol )
 {
   // Delete the old molecule
-  foreach(MsKBond* bond, m_molecule->bonds()) delete bond;
-  foreach(MsKAtom* atom, m_molecule->atoms()) delete atom;
-  delete m_molecule;
+  foreach(MSKBond* bond, m_molecule->bonds()) delete bond;
+  foreach(MSKAtom* atom, m_molecule->atoms()) delete atom;
+  //delete m_molecule;
 
   // Set a copy of mol as the new molecule
   m_molecule = new Molecule(mol);
 }
+*/
 
+} // namespace

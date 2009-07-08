@@ -23,143 +23,156 @@
 #include <math.h>
 
 #include "bond.h"
+
+#include "atom.h"
 #include "element.h"
+#include "molscene.h"
 
 // Constructor
 
-MsKBond::MsKBond(MsKAtom* atomA, MsKAtom* atomB, int order, int type, QGraphicsItem* parent,QGraphicsScene* scene) : QGraphicsItem(parent,scene)
-{
-  Q_CHECK_PTR(atomA);
-  Q_CHECK_PTR(atomB);
+namespace Molsketch {
 
-  m_bondType = type;
-  m_bondOrder = order;
-  m_firstAtom = atomA;
-  m_lastAtom = atomB;
-  /*
-    // Increasing the valency of the atoms
-    m_firstAtom->setValency(m_firstAtom->valency() + m_bondOrder);
-    m_lastAtom->setValency(m_lastAtom->valency() + m_bondOrder);*/
-
-  setPos(m_firstAtom->scenePos());
-//   setFlag(QGraphicsItem::ItemIsSelectable);
-//   setAcceptedMouseButtons(Qt::LeftButton);
-}
-
-void MsKBond::redoValency()
-{
-  // Check if the atoms still exist
-  if (!m_firstAtom || !m_lastAtom) return;
-  Q_CHECK_PTR(m_firstAtom);
-  Q_CHECK_PTR(m_lastAtom);
-
-  // Registering the atoms as connected
-  m_firstAtom->addConnectedAtom(m_lastAtom);
-  m_lastAtom->addConnectedAtom(m_firstAtom);
-
-  // Set the new number of bonds of the atoms
-  m_firstAtom->setNumberOfBonds(m_firstAtom->numberOfBonds() + bondOrder());
-  m_lastAtom->setNumberOfBonds(m_lastAtom->numberOfBonds() + bondOrder());
-
-/*  // Setting the new valency of the atoms
-  int e1 = molsKetch::valencyOfElement(molsKetch::symbol2number(m_firstAtom->element()));
-  int e2 = molsKetch::valencyOfElement(molsKetch::symbol2number(m_lastAtom->element()));
-  if (e1 < 0 && e2 < 0 )
-    {
-      m_firstAtom->setValency(m_firstAtom->valency() - m_bondOrder);
-      m_lastAtom->setValency(m_lastAtom->valency() - m_bondOrder);
-      return;
-    }
-
-  if (e1 > 0 && e2 > 0 )
-    {
-      m_firstAtom->setValency(m_firstAtom->valency() + m_bondOrder);
-      m_lastAtom->setValency(m_lastAtom->valency() + m_bondOrder);
-      return;
-    }
-
-  if ( e1 > e2 )
-    {
-      m_firstAtom->setValency(m_firstAtom->valency() + m_bondOrder);
-      m_lastAtom->setValency(m_lastAtom->valency() - m_bondOrder);
-      return;
-    }
-  if ( e1 < e2 )
-    {
-      m_firstAtom->setValency(m_firstAtom->valency() - m_bondOrder);
-      m_lastAtom->setValency(m_lastAtom->valency() + m_bondOrder);
-      return;
-    }
-
-  m_firstAtom->setValency(m_firstAtom->valency() - m_bondOrder);
-  m_lastAtom->setValency(m_lastAtom->valency() - m_bondOrder);*/
-}
-
-void MsKBond::undoValency()
-{
-  // Check if the atoms still exist
-  if (!m_firstAtom || !m_lastAtom) return;
-  Q_CHECK_PTR(m_firstAtom);
-  Q_CHECK_PTR(m_lastAtom);
-
-  // Registering the atoms as disconnected
-  m_firstAtom->removeConnectedAtom(m_lastAtom);
-  m_lastAtom->removeConnectedAtom(m_firstAtom);
-
-  // Set the new number of bonds of the atoms
-  m_firstAtom->setNumberOfBonds(m_firstAtom->numberOfBonds() - bondOrder());
-  m_lastAtom->setNumberOfBonds(m_lastAtom->numberOfBonds() - bondOrder());
-
-/*  // Setting the new valency of the atoms
-  int e1 = -molsKetch::valencyOfElement(molsKetch::symbol2number(m_firstAtom->element()));
-  int e2 = -molsKetch::valencyOfElement(molsKetch::symbol2number(m_lastAtom->element()));
-  if (e1 < 0 && e2 < 0 )
-    {
-      m_firstAtom->setValency(m_firstAtom->valency() - m_bondOrder);
-      m_lastAtom->setValency(m_lastAtom->valency() - m_bondOrder);
-      return;
-    }
-
-  if (e1 > 0 && e2 > 0 )
-    {
-      m_firstAtom->setValency(m_firstAtom->valency() + m_bondOrder);
-      m_lastAtom->setValency(m_lastAtom->valency() + m_bondOrder);
-      return;
-    }
-
-  if ( e1 > e2 )
-    {
-      m_firstAtom->setValency(m_firstAtom->valency() + m_bondOrder);
-      m_lastAtom->setValency(m_lastAtom->valency() - m_bondOrder);
-      return;
-    }
-  if ( e1 < e2 )
-    {
-      m_firstAtom->setValency(m_firstAtom->valency() - m_bondOrder);
-      m_lastAtom->setValency(m_lastAtom->valency() + m_bondOrder);
-      return;
-    }
-
-  m_firstAtom->setValency(m_firstAtom->valency() - m_bondOrder);
-  m_lastAtom->setValency(m_lastAtom->valency() - m_bondOrder);*/
-}
-
-// Inherited methods
-
-QRectF MsKBond::boundingRect() const
+  MSKBond::MSKBond(MSKAtom* atomA, MSKAtom* atomB, int order, int type, QGraphicsItem* parent,QGraphicsScene* scene) : QGraphicsItem(parent,scene)
   {
-    Q_CHECK_PTR(m_firstAtom);
-    Q_CHECK_PTR(m_lastAtom);
+    Q_CHECK_PTR(atomA);
+    Q_CHECK_PTR(atomB);
 
-    qreal w = m_lastAtom->x()-m_firstAtom->x();
-    qreal h = m_lastAtom->y()-m_firstAtom->y();
+    m_bondType = type;
+    m_bondOrder = order;
+    m_beginAtom = atomA;
+    m_endAtom = atomB;
 
-    // 	qreal x = qMax(m_firstAtom->pos().x(),m_lastAtom->pos().x());
-    // 	qreal y = qMax(m_firstAtom->pos().y(),m_firstAtom->pos().y());
-    return QRectF(mapFromParent(m_firstAtom->pos()) - QPointF(5,5),QSizeF(w+10,h+10));
+    atomA->addNeighbor(atomB);
+    atomB->addNeighbor(atomA);
+  
+    setPos(m_beginAtom->scenePos());
+
+  //   setFlag(QGraphicsItem::ItemIsSelectable);
+  //   setAcceptedMouseButtons(Qt::LeftButton);
+  }
+  
+  MSKBond::~MSKBond()
+  {
+    //m_beginAtom->removeNeighbor(m_endAtom);
+    //m_endAtom->removeNeighbor(m_beginAtom);
   }
 
-void MsKBond::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
+/*
+void MSKBond::redoValency()
+{
+  // Check if the atoms still exist
+  if (!m_beginAtom || !m_endAtom) return;
+  Q_CHECK_PTR(m_beginAtom);
+  Q_CHECK_PTR(m_endAtom);
+
+  // Registering the atoms as connected
+  m_beginAtom->addNeighbor(m_endAtom);
+  m_endAtom->addNeighbor(m_beginAtom);
+
+  // Set the new number of bonds of the atoms
+  m_beginAtom->setNumberOfBonds(m_beginAtom->numBonds() + bondOrder());
+  m_endAtom->setNumberOfBonds(m_endAtom->numBonds() + bondOrder());
+
+  // Setting the new valency of the atoms
+  int e1 = molsKetch::valencyOfElement(molsKetch::symbol2number(m_beginAtom->element()));
+  int e2 = molsKetch::valencyOfElement(molsKetch::symbol2number(m_endAtom->element()));
+  if (e1 < 0 && e2 < 0 )
+    {
+      m_beginAtom->setValency(m_beginAtom->valency() - m_bondOrder);
+      m_endAtom->setValency(m_endAtom->valency() - m_bondOrder);
+      return;
+    }
+
+  if (e1 > 0 && e2 > 0 )
+    {
+      m_beginAtom->setValency(m_beginAtom->valency() + m_bondOrder);
+      m_endAtom->setValency(m_endAtom->valency() + m_bondOrder);
+      return;
+    }
+
+  if ( e1 > e2 )
+    {
+      m_beginAtom->setValency(m_beginAtom->valency() + m_bondOrder);
+      m_endAtom->setValency(m_endAtom->valency() - m_bondOrder);
+      return;
+    }
+  if ( e1 < e2 )
+    {
+      m_beginAtom->setValency(m_beginAtom->valency() - m_bondOrder);
+      m_endAtom->setValency(m_endAtom->valency() + m_bondOrder);
+      return;
+    }
+
+  m_beginAtom->setValency(m_beginAtom->valency() - m_bondOrder);
+  m_endAtom->setValency(m_endAtom->valency() - m_bondOrder);*/
+/*
+}
+
+void MSKBond::undoValency()
+{
+  // Check if the atoms still exist
+  if (!m_beginAtom || !m_endAtom) return;
+  Q_CHECK_PTR(m_beginAtom);
+  Q_CHECK_PTR(m_endAtom);
+
+  // Registering the atoms as disconnected
+  m_beginAtom->removeNeighbor(m_endAtom);
+  m_endAtom->removeNeighbor(m_beginAtom);
+
+  // Set the new number of bonds of the atoms
+  m_beginAtom->setNumberOfBonds(m_beginAtom->numBonds() - bondOrder());
+  m_endAtom->setNumberOfBonds(m_endAtom->numBonds() - bondOrder());
+*/
+
+/*  // Setting the new valency of the atoms
+  int e1 = -molsKetch::valencyOfElement(molsKetch::symbol2number(m_beginAtom->element()));
+  int e2 = -molsKetch::valencyOfElement(molsKetch::symbol2number(m_endAtom->element()));
+  if (e1 < 0 && e2 < 0 )
+    {
+      m_beginAtom->setValency(m_beginAtom->valency() - m_bondOrder);
+      m_endAtom->setValency(m_endAtom->valency() - m_bondOrder);
+      return;
+    }
+
+  if (e1 > 0 && e2 > 0 )
+    {
+      m_beginAtom->setValency(m_beginAtom->valency() + m_bondOrder);
+      m_endAtom->setValency(m_endAtom->valency() + m_bondOrder);
+      return;
+    }
+
+  if ( e1 > e2 )
+    {
+      m_beginAtom->setValency(m_beginAtom->valency() + m_bondOrder);
+      m_endAtom->setValency(m_endAtom->valency() - m_bondOrder);
+      return;
+    }
+  if ( e1 < e2 )
+    {
+      m_beginAtom->setValency(m_beginAtom->valency() - m_bondOrder);
+      m_endAtom->setValency(m_endAtom->valency() + m_bondOrder);
+      return;
+    }
+
+  m_beginAtom->setValency(m_beginAtom->valency() - m_bondOrder);
+  m_endAtom->setValency(m_endAtom->valency() - m_bondOrder);*/
+//}
+// Inherited methods
+
+  QRectF MSKBond::boundingRect() const
+  {
+    Q_CHECK_PTR(m_beginAtom);
+    Q_CHECK_PTR(m_endAtom);
+
+    qreal w = m_endAtom->x() - m_beginAtom->x();
+    qreal h = m_endAtom->y() - m_beginAtom->y();
+
+    // 	qreal x = qMax(m_beginAtom->pos().x(),m_endAtom->pos().x());
+    // 	qreal y = qMax(m_beginAtom->pos().y(),m_beginAtom->pos().y());
+    return QRectF(mapFromParent(m_beginAtom->pos()) - QPointF(5,5), QSizeF(w+10,h+10));
+  }
+
+void MSKBond::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
 {
   // Check the scene
   MolScene* molScene = dynamic_cast<MolScene*>(scene());
@@ -168,17 +181,17 @@ void MsKBond::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, Q
   // 	painter->drawRect(boundingRect());
   QPointF points[4] =
     {
-      mapFromParent(m_firstAtom->pos()),
-      shiftVector(QLineF(mapFromParent(m_firstAtom->pos()),mapFromParent(m_lastAtom->pos())),3).p2(),
-      shiftVector(QLineF(mapFromParent(m_firstAtom->pos()),mapFromParent(m_lastAtom->pos())),-3).p2(),
-      mapFromParent(m_firstAtom->pos())
+      mapFromParent(m_beginAtom->pos()),
+      shiftVector(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())),3).p2(),
+      shiftVector(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())),-3).p2(),
+      mapFromParent(m_beginAtom->pos())
     };
   QPointF points2[4] =
     {
-      mapFromParent(m_lastAtom->pos()),
-      shiftVector(QLineF(mapFromParent(m_firstAtom->pos()),mapFromParent(m_lastAtom->pos())),3).p1(),
-      shiftVector(QLineF(mapFromParent(m_firstAtom->pos()),mapFromParent(m_lastAtom->pos())),-3).p1(),
-      mapFromParent(m_lastAtom->pos())
+      mapFromParent(m_endAtom->pos()),
+      shiftVector(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())),3).p1(),
+      shiftVector(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())),-3).p1(),
+      mapFromParent(m_endAtom->pos())
     };
 
   // Set painter defaults
@@ -192,7 +205,7 @@ void MsKBond::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, Q
   dash << 2 << 5;
 
   // Create a gradient for down
-  QRadialGradient radialGrad(mapFromScene(m_firstAtom->scenePos()), 5);
+  QRadialGradient radialGrad(mapFromScene(m_beginAtom->scenePos()), 5);
   radialGrad.setColorAt(0, Qt::white);
   radialGrad.setColorAt(0.3,Qt::white);
   radialGrad.setColorAt(0.5,Qt::black);
@@ -202,26 +215,26 @@ void MsKBond::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, Q
 
   switch ( m_bondType )
     {
-    case MsKBond::Down:
+    case MSKBond::Down:
       painter->setPen( Qt::NoPen );
       painter->setBrush( radialGrad );
       painter->drawConvexPolygon( points2, 4);
       break;
-    case MsKBond::DownR:
+    case MSKBond::DownR:
       painter->setPen( Qt::NoPen );
       painter->setBrush( radialGrad );
       painter->drawConvexPolygon( points, 4);
       break;
-    case MsKBond::Dot:
+    case MSKBond::Dot:
       pen.setDashPattern(dash);
       painter->setPen(pen);
-      painter->drawLine(QLineF(mapFromParent(m_firstAtom->pos()),mapFromParent(m_lastAtom->pos())));
+      painter->drawLine(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())));
       break;
-    case MsKBond::Up:
+    case MSKBond::Up:
       painter->setBrush( QBrush(Qt::black) );
       painter->drawConvexPolygon( points, 4);
       break;
-    case MsKBond::UpR:
+    case MSKBond::UpR:
       painter->setBrush( QBrush(Qt::black) );
       painter->drawConvexPolygon( points2, 4);
       break;
@@ -229,45 +242,45 @@ void MsKBond::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, Q
     default:
       switch ( m_bondOrder )
         {
-        case MsKBond::Single:
-          painter->drawLine(QLineF(mapFromParent(m_firstAtom->pos()),mapFromParent(m_lastAtom->pos())));
+        case MSKBond::Single:
+          painter->drawLine(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())));
           break;
-        case MsKBond::Double:
+        case MSKBond::Double:
           {
 //             qDebug("In bond %x", this);
             qreal direction1 = 0;
-//             qDebug("Connected atoms of %x", m_firstAtom);
-//             foreach(MsKAtom * atom, m_firstAtom->connectedAtoms())
+//             qDebug("Connected atoms of %x", m_beginAtom);
+//             foreach(MSKAtom * atom, m_beginAtom->connectedAtoms())
 //               qDebug("%x", atom);
-            foreach(MsKAtom * atom, m_firstAtom->connectedAtoms())
-              if (atom && atom != m_lastAtom)
+            foreach(MSKAtom * atom, m_beginAtom->neighbors())
+              if (atom && atom != m_endAtom)
                 direction1 += (atom->pos().x()*pos().x() + atom->pos().y()*pos().y())/(sqrt(pow(atom->pos().x(),2) + pow(atom->pos().y(), 2))*sqrt(pow(pos().x(),2) + pow(pos().y(),2)));
             qreal direction2 = 0;
-/*            qDebug("Connected atoms of %x", m_lastAtom);
-            foreach(MsKAtom * atom, m_lastAtom->connectedAtoms())
+/*            qDebug("Connected atoms of %x", m_endAtom);
+            foreach(MSKAtom * atom, m_endAtom->connectedAtoms())
               qDebug("%x", atom);*/
-            foreach(MsKAtom * atom, m_lastAtom->connectedAtoms())
-              if (atom && atom != m_firstAtom)
+            foreach(MSKAtom * atom, m_endAtom->neighbors())
+              if (atom && atom != m_beginAtom)
                 direction2 += (atom->pos().x()*pos().x() + atom->pos().y()*pos().y())/(sqrt(pow(atom->pos().x(),2) + pow(pos().x(),2))*sqrt(pow(atom->pos().y(),2) + pow(pos().y(),2)));
             if ((direction1 + direction2) > 0) {
-              painter->drawLine(shiftVector(QLineF(mapFromParent(m_firstAtom->pos()),mapFromParent(m_lastAtom->pos())),0));
-              painter->drawLine(shiftVector(QLineF(mapFromParent(m_firstAtom->pos()),mapFromParent(m_lastAtom->pos())),-4));
+              painter->drawLine(shiftVector(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())),0));
+              painter->drawLine(shiftVector(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())),-4));
             } else if ((direction1 + direction2) < 0) {
-              painter->drawLine(shiftVector(QLineF(mapFromParent(m_firstAtom->pos()),mapFromParent(m_lastAtom->pos())),4));
-              painter->drawLine(shiftVector(QLineF(mapFromParent(m_firstAtom->pos()),mapFromParent(m_lastAtom->pos())),0));
+              painter->drawLine(shiftVector(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())),4));
+              painter->drawLine(shiftVector(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())),0));
             } else {
-              painter->drawLine(shiftVector(QLineF(mapFromParent(m_firstAtom->pos()),mapFromParent(m_lastAtom->pos())),2));
-              painter->drawLine(shiftVector(QLineF(mapFromParent(m_firstAtom->pos()),mapFromParent(m_lastAtom->pos())),-2));
+              painter->drawLine(shiftVector(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())),2));
+              painter->drawLine(shiftVector(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())),-2));
             }
           }
           break;
-        case MsKBond::Triple:
-          painter->drawLine(shiftVector(QLineF(mapFromParent(m_firstAtom->pos()),mapFromParent(m_lastAtom->pos())),3));
-          painter->drawLine(shiftVector(QLineF(mapFromParent(m_firstAtom->pos()),mapFromParent(m_lastAtom->pos())),-3));
-          painter->drawLine(QLineF(mapFromParent(m_firstAtom->pos()),mapFromParent(m_lastAtom->pos())));
+        case MSKBond::Triple:
+          painter->drawLine(shiftVector(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())),3));
+          painter->drawLine(shiftVector(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())),-3));
+          painter->drawLine(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())));
           break;
         default:
-          painter->drawLine(QLineF(mapFromParent(m_firstAtom->pos()),mapFromParent(m_lastAtom->pos())));
+          painter->drawLine(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())));
         }
     }
 
@@ -275,21 +288,21 @@ void MsKBond::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, Q
   painter->restore();
 }
 
-QVariant MsKBond::itemChange(GraphicsItemChange change, const QVariant &value)
+QVariant MSKBond::itemChange(GraphicsItemChange change, const QVariant &value)
 {
   if (change == ItemPositionChange && parentItem()) parentItem()->update();
   return QGraphicsItem::itemChange(change, value);
 }
 
-QPainterPath MsKBond::shape() const
+QPainterPath MSKBond::shape() const
   {
     QPolygonF polygon;
-    polygon << shiftVector(QLineF(mapFromParent(m_firstAtom->pos()),mapFromParent(m_lastAtom->pos())),10).p1()
-    << shiftVector(QLineF(mapFromParent(m_firstAtom->pos()),mapFromParent(m_lastAtom->pos())),10).p2()
-    << shiftVector(QLineF(mapFromParent(m_firstAtom->pos()),mapFromParent(m_lastAtom->pos())),-10).p2() << shiftVector(QLineF(mapFromParent(m_firstAtom->pos()),mapFromParent(m_lastAtom->pos())),-10).p1();
+    polygon << shiftVector(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())),10).p1()
+    << shiftVector(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())),10).p2()
+    << shiftVector(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())),-10).p2() << shiftVector(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())),-10).p1();
 
-    QPainterPath path(mapFromParent(m_firstAtom->pos()));
-//     path.quadTo(QPointF(),m_lastAtom->pos());
+    QPainterPath path(mapFromParent(m_beginAtom->pos()));
+//     path.quadTo(QPointF(),m_endAtom->pos());
     path.addPolygon( polygon );
     path.closeSubpath();
 
@@ -298,19 +311,19 @@ QPainterPath MsKBond::shape() const
 
 // Manipulation methods
 
-void MsKBond::setOrder(int order)
+void MSKBond::setOrder(int order)
 {
   //pre: order>0
   //post: m_bondOrder=order
 
   Q_ASSERT( order > 0 );
-  undoValency();
+  //undoValency();
   m_bondOrder = order;
-  redoValency();
+  //redoValency();
   update();
 }
 
-void MsKBond::incOrder()
+void MSKBond::incOrder()
 {
   //pre: true
   //post: m_bondOrder = oldBondOrder % 3 + 1
@@ -320,7 +333,7 @@ void MsKBond::incOrder()
 
 }
 
-void MsKBond::decOrder()
+void MSKBond::decOrder()
 {
   //pre: true
   //post: m_bondOrder = (oldBondOrder + 1) % 3 + 1
@@ -330,7 +343,7 @@ void MsKBond::decOrder()
 
 }
 
-void MsKBond::setType(int t)
+void MSKBond::setType(int t)
 {
   //pre: 0 <= t < 6
   //post: bondType = t
@@ -340,14 +353,14 @@ void MsKBond::setType(int t)
   update();
 }
 
-void MsKBond::incType()
+void MSKBond::incType()
 {
   //pre: true
   //post: bondType = bondType % 6 + 1
   setType((m_bondType + 1) % 6);
 }
 
-void MsKBond::decType()
+void MSKBond::decType()
 {
   //pre: true
   //post: bondType = (bondType + 5) % 6
@@ -357,39 +370,39 @@ void MsKBond::decType()
 
 // Query methods
 
-int MsKBond::bondOrder() const
+  int MSKBond::bondOrder() const
   {
     return m_bondOrder;
   }
 
-int MsKBond::bondType() const
+  int MSKBond::bondType() const
   {
     return m_bondType;
   }
 
-MsKAtom* MsKBond::firstMsKAtom() const
+  MSKAtom* MSKBond::beginAtom() const
   {
-    return m_firstAtom;
+    return m_beginAtom;
   }
 
-MsKAtom* MsKBond::lastMsKAtom() const
+  MSKAtom* MSKBond::endAtom() const
   {
-    return m_lastAtom;
+    return m_endAtom;
   }
 
-bool MsKBond::hasMsKAtom(MsKAtom* atom) const
+  bool MSKBond::hasMSKAtom(const MSKAtom* atom) const
   {
-    return m_firstAtom == atom || m_lastAtom == atom;
+    return m_beginAtom == atom || m_endAtom == atom;
   }
   
-Molecule* MsKBond::molecule() const
+Molecule* MSKBond::molecule() const
   {
     return dynamic_cast<Molecule*>(this->parentItem());
   }
 
 // Auxilary methods
 
-QLineF MsKBond::shiftVector(const QLineF &vector, qreal shift) // Shifts a vector on the perpendicular axis
+QLineF MSKBond::shiftVector(const QLineF &vector, qreal shift) // Shifts a vector on the perpendicular axis
 {
   //pre: true
   //ret: shifted vector
@@ -403,3 +416,5 @@ QLineF MsKBond::shiftVector(const QLineF &vector, qreal shift) // Shifts a vecto
   // Returning the new vector
   return QLineF(rx1,ry1,rx2,ry2);
 }
+
+} // namespace

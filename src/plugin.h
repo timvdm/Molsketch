@@ -1,0 +1,162 @@
+/**********************************************************************
+  Plugin - Molsketch Plugin Interface Base Class
+
+  Copyright (C) 2008,2009 Tim Vandermeersch
+  Copyright (C) 2008 Donald Ephraim Curtis
+
+  This file is part of the Molsketch molecular editor project.
+  For more information, see <http://avogadro.openmolecules.net/>
+
+  Molsketch is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  Molsketch is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+  02110-1301, USA.
+ **********************************************************************/
+
+#ifndef MSK_PLUGIN_H
+#define MSK_PLUGIN_H
+
+#include <QObject>
+#include <QSettings> // do not remove!!
+
+namespace Molsketch {
+
+  /**
+   * @class Plugin plugin.h 
+   * @brief Interface for plugins
+   * @author Tim Vandermeersch
+   *
+   * This is a template class for plugins like tools, engines,
+   * extensions, colors, ...
+   */
+
+  //class PluginPrivate;
+  class Plugin : public QObject
+  {
+    Q_OBJECT
+
+    public:
+      enum Type
+      {
+        ToolType,
+        ExtensionType,
+        ColorType,
+        OtherType,
+        TypeCount // this needs to be last always
+      };
+
+    public:
+      /**
+       * Constructor
+       */
+      Plugin(QObject *parent = NULL);
+
+      /**
+       * Destructor
+       */
+      virtual ~Plugin();
+
+      /**
+       * @return The type of the plugin.
+       */
+      virtual Plugin::Type type() const = 0;
+
+      /**
+       * @return The unique, untranslated identifier for the plugin.
+       */
+      virtual QString identifier() const = 0;
+
+      /**
+       * @return The translated name of the plugin.
+       */
+      virtual QString name() const = 0;
+
+      /**
+       * @return A description of the plugin.
+       */
+      virtual QString description() const;
+
+      /**
+       * @return The license applied to the plugin.
+       * @note This defaults to GPL2+, and must be a license compatible with a
+       * GPL2 only library, as all plugins link to Molsketch and OpenBabel.
+       */
+      virtual QString license() const;
+
+      /**
+       * @return a QWidget containing the engine settings or 0
+       * if no settings widget is available.
+       */
+      virtual QWidget *settingsWidget();
+
+      /**
+       * Write the plugin settings so that they can be saved between sessions.
+       */
+      virtual void writeSettings(QSettings &settings) const;
+
+      /**
+       * Read in the settings that have been saved for the plugin instance.
+       */
+      virtual void readSettings(QSettings &settings);
+
+    protected:
+      //PluginPrivate *const d;
+  };
+
+  /**
+   * @class PluginFactory plugin.h <avogadro/plugin.h>
+   * @brief Generates new instances of the Plugin class for which it is defined.
+   *
+   * Generates new instances of the Plugin class for which it is defined.
+   */
+  class PluginFactory
+  {
+    public:
+      /**
+       * Destructor.
+       */
+      virtual ~PluginFactory() {}
+
+      /**
+       * @return pointer to a new instance of an Engine subclass object.
+       */
+      virtual Plugin *createInstance(QObject *parent=0) = 0;
+
+      /**
+       * @return The type of the plugin.
+       */
+      virtual Plugin::Type type() const = 0;
+
+      /**
+       * @return The untranslated identifier of the plugin.
+       */
+      virtual QString identifier() const = 0;
+
+      /**
+       * @return The translated name of the plugin.
+       */
+      virtual QString name() const = 0;
+
+      /**
+       * @return A description of the plugin.
+       */
+      virtual QString description() const = 0;
+  };
+
+} // end namespace Molsketch
+
+Q_DECLARE_METATYPE(Molsketch::Plugin*)
+Q_DECLARE_INTERFACE(Molsketch::PluginFactory,
+                    "net.sourceforge.avogadro.pluginfactory/1.3")
+
+#endif

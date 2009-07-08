@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2007-2008 by Harm van Eersel                            *
- *   devsciurus@xs4all.nl                                                  *
+ *   Copyright (C) 2007-2008 by Harm van Eersel <devsciurus@xs4all.nl>     *
+ *   Copyright (C) 2009 by Tim Vandermeersch                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,188 +18,178 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-/** @file
- * This file is part of molsKetch and defines the class MsKAtom.
- *
- * @author Harm van Eersel <devsciurus@xs4all.nl>
- * @since Hydrogen
- */
-
-
-#ifndef ATOM_H
-#define ATOM_H
+#ifndef MSK_ATOM_H
+#define MSK_ATOM_H
 
 #include <QGraphicsItem>
 #include <QList>
 
-class Molecule;
+namespace Molsketch {
 
-/**
- * Represents an atom
- *
- * @author Harm van Eersel
- */
-class MsKAtom : public QGraphicsItem
-{
-public:
-  // Constructor
+  class Molecule;
+
   /**
-   * Creates a new atom.
-   *
-   * @param position the position of the new atom
-   * @param element the element symbol of the new atom
-   * @param invisible makes the atom invisible if @c true
+   * Atom class
    */
-  MsKAtom(const QPointF & position, const QString & element, 
-      bool implicitHydrogens, QGraphicsItem* parent = 0, QGraphicsScene* scene = 0);
+  class MSKAtom : public QGraphicsItem
+  {
+    public:
+      /**
+       * Creates a new atom.
+       *
+       * @param position the position of the new atom
+       * @param element the element symbol of the new atom
+       * @param invisible makes the atom invisible if @c true
+       */
+      MSKAtom(const QPointF & position, const QString & element, 
+          bool implicitHydrogens, QGraphicsItem* parent = 0, QGraphicsScene* scene = 0);
 
-  // Inherited drawing methods
-  /** Returns the bounding rectangle of the atom. Needed for Qt painting. */
-  virtual QRectF boundingRect() const;
-  /** Paint method to draw the atom onto a QPainter. Needed for Qt painting.*/
-  void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget);
+      //@name Inherited drawing methods
+      //@{
+      /** 
+       * Returns the bounding rectangle of the atom. Needed for Qt painting. 
+       */
+      virtual QRectF boundingRect() const;
+      /** 
+       * Paint method to draw the atom onto a QPainter. Needed for Qt painting.
+       */
+      void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget);
+      //@}
 
-  // Query methods
-  /** Returns whether the atom is drawn. */
-  bool isDrawn() const;
-  /** Returns whether the atom is hidden. */
-  bool isHidden() const;
-  /** Returns whether the atom uses implicit hydrogens */
-  bool implicitHydrogens() const;
+      // Query methods
+      /** Returns whether the atom is drawn. */
+      bool isDrawn() const;
+      /** Returns whether the atom is hidden. */
+      bool isHidden() const;
 
 
-  /** Returns the element symbol of the atom, including the implicit hydrogens. */
-  QString element() const;
-  /** Returns the weight of the atom. */
-  qreal weight() const;
-  /** Returns the valency of the atom. */
-  int valency() const;
-  /**
-   * Returns the number of bonds to this atom.
-   *
-   * Double bonds count twice, triple thrice, etc.
-   */
-  int numberOfBonds() const;
-  /**
-   * Returns the charge of the atom.
-   *
-   * The charge is calculated on basis of the */
-  int charge() const;
-  /** Returns the oxidation state of the atom. */
-  int oxidationState() const;
-  /**
-   * Returns the number of hydrogen needed to make the atom neutral. 
-   *
-   * This is calculated on basis of the valency of the atom, the current
-   * number of bonds and any additional charge applied to the atom.
-   */
-//   int hydrogenNeeded() const;
-  /** Returns the number of implicit hydrogens currently associated with the atom. */
-  int numberOfImplicitHydrogens() const;
-  /** Returns the string to identify the atom charge. */
-  QString chargeID() const;
+      //@name Chemistry methods
+      //@{
+      /**
+       * Get the molecule of the atom or NULL if there is none. 
+       */
+      virtual Molecule* molecule() const;
+      /** 
+       * Get the element symbol of the atom, including the implicit hydrogens. 
+       */
+      QString element() const;
+      /** 
+       * Set the element symbol of the current atom to @p element (e.g. "C", "N").
+       */
+      void setElement(const QString & element);
+      /** 
+       * Get the weight of the atom and it's implicit hydrogens. 
+       */
+      qreal weight() const;
+      /** 
+       * Get the valency of the atom (i.e. the number of explicit bonds). 
+       */
+      int valency() const;
+      /**
+       * Returns the charge of the atom.
+       *
+       * FC = # valency electrons - 0.5 * # shared electrons - # unpaired electrons + user specified contribution
+       */
+      int charge() const;
+      /**
+       * Set the user specified contribution to the atom charge.
+       *
+       * FC = # valency electrons - 0.5 * # shared electrons - # unpaired electrons + user specified contribution
+       */
+      void setCharge(int charge);
+      /** 
+       * Returns the string for the superscript charge (e.g. "3-", "2-", "-", "", "+", "2+", ...).
+       */
+      QString chargeString() const;
 
-  /** Returns the molecule of the atom or NULL if none. */
-  virtual Molecule* molecule() const;
 
-  // Manupilation methods
-  /** Sets the element symbol of the current atom to @p element. */
-  void setElement(const QString & element);
-  /** Sets the oxidation state of the current atom to @p state. */
-  void setOxidationState(int state);
-  /**
-   * Sets the valency of the current atom to @p valency. 
-   *
-   * This function sets the valency of the atom.
-   * It is used to calculate the charge of the atom and the number
-   * of implicit hydrogens associated with this atom.
-   */
-  void setValency(int valency);
-  /**
-   * Sets the number of bonds of the current atom to @p number.
-   *
-   * This sets the number of bonds to the atom. Changing this will
-   * change the number of free valency electrons and consequently
-   * the number of implicit hydrogens.
-   */
-  void setNumberOfBonds(int number);
-  /** Adds an external bond to the bondlist of the atom */
-  void addConnectedAtom(MsKAtom * atom);
-  /** Removes an external bond from the bondlist of the atom */
-  void removeConnectedAtom(MsKAtom * atom);
-  /** Returns the list of connected atom */
-  QList<MsKAtom*> connectedAtoms();
-  /**
-   * Sets the number of implicit hydrogens of the current atom to @p number.
-   *
-   * Changing the number of implicit hydrogens will also effect the number
-   * of free valency electrons and hence the charge of the atom.
-   */
-  void setNumberOfImplicitHydrogens(int number);
-  /** Sets whether implicit hydrogens should be used */
-  void setImplicitHydrogens(bool enabled);
 
-  // Methods needed for qt typecasting
-  /** Defines the type of the class. Needed for Qt typecasting.*/
-  enum { Type = UserType + 8 };
-  /** Returns the type of the class. Needed fro Qt typecasting. */
-  virtual int type() const {return MsKAtom::Type;};
 
-protected:
-  // Event handlers
-  /** Event handler to show hidden atoms when the mouse hovers over them. */
-  void hoverEnterEvent(QGraphicsSceneHoverEvent* event);
-  /** Event handler to hide hidden atoms again after a mouse hovering event. */
-  void hoverLeaveEvent(QGraphicsSceneHoverEvent* event);
-  /** Event handler to handle atom clicks. */
-  void mousePressEvent(QGraphicsSceneMouseEvent* event);
-  /** Event handler to handle element changes. */
-  QVariant itemChange(GraphicsItemChange change, const QVariant & value);
+      /**
+       * Get the number of bonds to this atom.
+       */
+      int numBonds() const;
+      /**
+       * Get the sum of the bond orders of all bonds to this atom.
+       */
+      int bondOrderSum() const;
+      /** 
+       * Returns whether the atom uses implicit hydrogens 
+       */
+      bool hasImplicitHydrogens() const;
+      /** 
+       * Returns the number of implicit hydrogens currently associated with the atom. 
+       */
+      int numberOfImplicitHydrogens() const;
+      // Manupilation methods
 
-private:
-  // Internal representation
-  /** Represents the atom's element symbol. */
-  QString m_elementSymbol;
-  /** Stores whether the atom is hidden. */
-  bool m_hidden;
-  /** Stores whether the atom is drawn. */
-  bool m_drawn;
-  /** Stores the weigth of the atom. */
-  qreal m_weight;
-  /** Stores the charge of the atom. */
-  int m_charge;
-  /** Stores the valency of the atom. */
-  int m_valency;
-  /** Stores the oxidation state of the atom */
-  int m_oxidationState;
-  /**
-   * Stores the number of bonds to this atom
-   *
-   * This number is used to calculate the charge
-   * of the atom. Double bonds count twice, triple thrice, etc.
-   */
-  int m_numberOfBonds;
-  /**
-   * Stores the list of atoms connected to this atom by a bond
-   *
-   * Used to determine the position of the implicit H's. The implicit hydrogens
-   * are not included.
-   */
-  QList<MsKAtom*> * m_connectedAtoms;
-  /**
-   * Stores the number of implicit hydrogens
-   *
-   * The number of implicit hydrogens that currently is
-   * associated with this atom is used to calculate
-   * the charge of the atom and to determine the index
-   * of the Hn appended to the atom symbol is this
-   * options is enabled.
-   */
-  int m_numberOfImplicitHydrogens;
-  /** Stores whether implicit hydrogens should be used */
-  bool m_implicitHydrogens;
-  /** Stores the shape of the atom */
-  QRectF m_shape;
-};
+
+      /** Adds an external bond to the bondlist of the atom */
+      void addNeighbor(MSKAtom * atom);
+      /** Removes an external bond from the bondlist of the atom */
+      void removeNeighbor(MSKAtom * atom);
+      /** Returns the list of connected atom */
+      const QList<MSKAtom*>& neighbors() const;
+      /**
+       * Sets the number of implicit hydrogens of the current atom to @p number.
+       *
+       * Changing the number of implicit hydrogens will also effect the number
+       * of free valency electrons and hence the charge of the atom.
+       */
+      void setNumberOfImplicitHydrogens(int number);
+      /** Sets whether implicit hydrogens should be used */
+      void enableImplicitHydrogens(bool enabled);
+
+      // Methods needed for qt typecasting
+      /** Defines the type of the class. Needed for Qt typecasting.*/
+      enum { Type = UserType + 8 };
+      /** Returns the type of the class. Needed fro Qt typecasting. */
+      virtual int type() const {return MSKAtom::Type;};
+
+    protected:
+      // Event handlers
+      /** Event handler to show hidden atoms when the mouse hovers over them. */
+      void hoverEnterEvent(QGraphicsSceneHoverEvent* event);
+      /** Event handler to hide hidden atoms again after a mouse hovering event. */
+      void hoverLeaveEvent(QGraphicsSceneHoverEvent* event);
+      /** Event handler to handle atom clicks. */
+      void mousePressEvent(QGraphicsSceneMouseEvent* event);
+      /** Event handler to handle element changes. */
+      QVariant itemChange(GraphicsItemChange change, const QVariant & value);
+
+    private:
+      // Internal representation
+      /** Represents the atom's element symbol. */
+      QString m_elementSymbol;
+      /** Stores whether the atom is hidden. */
+      bool m_hidden;
+      /** Stores whether the atom is drawn. */
+      bool m_drawn;
+      /** Stores the charge of the atom. */
+      int m_userCharge;
+      /**
+       * Stores the list of atoms connected to this atom by a bond
+       *
+       * Used to determine the position of the implicit H's. The implicit hydrogens
+       * are not included.
+       */
+      QList<MSKAtom*> m_neighbors;
+      /**
+       * Stores the number of implicit hydrogens
+       *
+       * The number of implicit hydrogens that currently is
+       * associated with this atom is used to calculate
+       * the charge of the atom and to determine the index
+       * of the Hn appended to the atom symbol is this
+       * options is enabled.
+       */
+      int m_userImplicitHydrogens;
+      /** Stores whether implicit hydrogens should be used */
+      bool m_implicitHydrogens;
+      /** Stores the shape of the atom */
+      QRectF m_shape;
+  };
+
+} // namespace
 
 #endif

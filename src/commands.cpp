@@ -26,11 +26,16 @@
 #include "bond.h"
 #include "molecule.h"
 
-using namespace Commands;
+#include "molscene.h"
+
+using Molsketch::MSKAtom;
+using Molsketch::MSKBond;
+using Molsketch::Molecule;
+using namespace Molsketch::Commands;
 
 // AddAtom
 
-AddAtom::AddAtom(MsKAtom * newAtom, Molecule * newMol, const QString & text) : QUndoCommand(text), m_atom(newAtom), m_molecule(newMol)
+AddAtom::AddAtom(MSKAtom * newAtom, Molecule * newMol, const QString & text) : QUndoCommand(text), m_atom(newAtom), m_molecule(newMol)
 {}
 
 AddAtom::~AddAtom()
@@ -46,13 +51,13 @@ void AddAtom::undo()
 
 void AddAtom::redo()
 {
-  m_molecule->addMsKAtom(m_atom);
+  m_molecule->addMSKAtom(m_atom);
   m_atom->setFlag(QGraphicsItem::ItemIsSelectable, m_molecule->scene()->editMode()==MolScene::MoveMode);
   m_undone = false;
 }
 
 // Change element
-ChangeElement::ChangeElement(MsKAtom* changeMsKAtom, const QString &newEl, const QString & text) : QUndoCommand(text), m_oldName(changeMsKAtom->element()), m_newName(newEl), m_atom(changeMsKAtom)
+ChangeElement::ChangeElement(MSKAtom* changeMSKAtom, const QString &newEl, const QString & text) : QUndoCommand(text), m_oldName(changeMSKAtom->element()), m_newName(newEl), m_atom(changeMSKAtom)
 {}
 
 void ChangeElement::undo()
@@ -67,40 +72,56 @@ void ChangeElement::redo()
   m_undone = false;
 }
 
+////////////////////////////////////////
 // IncCharge
-IncCharge::IncCharge(MsKAtom* atom, const QString & text) : QUndoCommand(text), m_atom(atom)
-{};
+////////////////////////////////////////
+
+IncCharge::IncCharge(MSKAtom* atom, const QString & text) : QUndoCommand(text), m_atom(atom)
+{
+}
+
 void IncCharge::undo()
 {
-  m_atom->setOxidationState(m_atom->oxidationState() - 1);
-  if (m_atom->scene()) m_atom->scene()->update();
+  m_atom->setCharge(m_atom->charge() - 1);
+  if (m_atom->scene()) 
+    m_atom->scene()->update();
   m_undone = true;
 }
+
 void IncCharge::redo()
 {
-  m_atom->setOxidationState(m_atom->oxidationState() + 1);
-  if (m_atom->scene()) m_atom->scene()->update();
+  m_atom->setCharge(m_atom->charge() + 1);
+  if (m_atom->scene()) 
+    m_atom->scene()->update();
   m_undone = false;
 }
 
+////////////////////////////////////////
 // DecCharge
-DecCharge::DecCharge(MsKAtom* atom, const QString & text) : QUndoCommand(text), m_atom(atom)
-{};
+////////////////////////////////////////
+
+DecCharge::DecCharge(MSKAtom* atom, const QString & text) : QUndoCommand(text), m_atom(atom)
+{
+}
+
 void DecCharge::undo()
 {
-  m_atom->setOxidationState(m_atom->oxidationState() + 1);
-  if (m_atom->scene()) m_atom->scene()->update();
+  m_atom->setCharge(m_atom->charge() + 1);
+  if (m_atom->scene()) 
+    m_atom->scene()->update();
   m_undone = true;
 }
+
 void DecCharge::redo()
 {
-  m_atom->setOxidationState(m_atom->oxidationState() - 1);
-  if (m_atom->scene()) m_atom->scene()->update();
+  m_atom->setCharge(m_atom->charge() - 1);
+  if (m_atom->scene()) 
+    m_atom->scene()->update();
   m_undone = false;
 }
 
 // AddImplicitHydrogen
-AddImplicitHydrogen::AddImplicitHydrogen(MsKAtom* atom, const QString & text) : QUndoCommand(text), m_atom(atom)
+AddImplicitHydrogen::AddImplicitHydrogen(MSKAtom* atom, const QString & text) : QUndoCommand(text), m_atom(atom)
 {};
 void AddImplicitHydrogen::undo()
 {
@@ -116,7 +137,7 @@ void AddImplicitHydrogen::redo()
 }
 
 // RemoveImplicitHydrogen
-RemoveImplicitHydrogen::RemoveImplicitHydrogen(MsKAtom* atom, const QString & text) : QUndoCommand(text), m_atom(atom)
+RemoveImplicitHydrogen::RemoveImplicitHydrogen(MSKAtom* atom, const QString & text) : QUndoCommand(text), m_atom(atom)
 {};
 void RemoveImplicitHydrogen::undo()
 {
@@ -132,19 +153,19 @@ void RemoveImplicitHydrogen::redo()
 }
 
 // DelAtom
-DelAtom::DelAtom(MsKAtom* delAtom, const QString & text) : QUndoCommand(text), m_atom(delAtom), m_molecule(delAtom->molecule())
+DelAtom::DelAtom(MSKAtom* delAtom, const QString & text) : QUndoCommand(text), m_atom(delAtom), m_molecule(delAtom->molecule())
 {};
 DelAtom::~DelAtom()
 {
   if (!m_undone)
   {
-    foreach(MsKBond* bond, m_bondList) delete bond;
+    foreach(MSKBond* bond, m_bondList) delete bond;
     delete m_atom;
   }
 }
 void DelAtom::undo()
 {
-  m_molecule->addMsKAtom(m_atom);
+  m_molecule->addMSKAtom(m_atom);
   m_atom->setFlag(QGraphicsItem::ItemIsSelectable, m_molecule->scene()->editMode()==MolScene::MoveMode);
   for (int i = 0; i < m_bondList.size(); i++) m_molecule->addBond(m_bondList.at(i));
   m_undone = true;
@@ -155,9 +176,9 @@ void DelAtom::redo()
   m_undone = false;
 }
 
-// MsKBond commands
+// MSKBond commands
 
-AddBond::AddBond(MsKBond* newBond, const QString & text) : QUndoCommand(text), m_bond(newBond), m_mol(newBond->firstMsKAtom()->molecule())
+AddBond::AddBond(MSKBond* newBond, const QString & text) : QUndoCommand(text), m_bond(newBond), m_mol(newBond->beginAtom()->molecule())
 {}
 
 AddBond::~AddBond()
@@ -177,7 +198,7 @@ void AddBond::redo()
 }
 
 
-DelBond::DelBond(MsKBond* delBond, const QString & text) : QUndoCommand(text), m_bond(delBond), m_mol(delBond->molecule())
+DelBond::DelBond(MSKBond* delBond, const QString & text) : QUndoCommand(text), m_bond(delBond), m_mol(delBond->molecule())
 {}
 DelBond::~DelBond()
 {
@@ -194,7 +215,7 @@ void DelBond::redo()
   m_undone = false;
 }
 
-IncType::IncType(MsKBond* incBond, const QString & text) : QUndoCommand(text), m_bond(incBond)
+IncType::IncType(MSKBond* incBond, const QString & text) : QUndoCommand(text), m_bond(incBond)
 {}
 void IncType::undo()
 {
@@ -207,7 +228,7 @@ void IncType::redo()
   m_undone = false;
 }
 
-IncOrder::IncOrder(MsKBond* incBond, const QString & text) : QUndoCommand(text), m_bond(incBond)
+IncOrder::IncOrder(MSKBond* incBond, const QString & text) : QUndoCommand(text), m_bond(incBond)
 {}
 void IncOrder::undo()
 {
@@ -238,11 +259,11 @@ void MergeMol::undo()
   m_scene->removeItem(m_molC);
   m_scene->addItem(m_molA);
   m_molA->setFlag(QGraphicsItem::ItemIsSelectable, m_scene->editMode()==MolScene::MoveMode);
-  foreach(MsKAtom* atom, m_molC->atoms()) 
+  foreach(MSKAtom* atom, m_molC->atoms()) 
     atom->setFlag(QGraphicsItem::ItemIsSelectable, m_scene->editMode()==MolScene::MoveMode);
   m_scene->addItem(m_molB);
   m_molB->setFlag(QGraphicsItem::ItemIsSelectable, m_scene->editMode()==MolScene::MoveMode);
-  foreach(MsKAtom* atom, m_molC->atoms()) 
+  foreach(MSKAtom* atom, m_molC->atoms()) 
     atom->setFlag(QGraphicsItem::ItemIsSelectable, m_scene->editMode()==MolScene::MoveMode);
   m_undone = true;
 }
@@ -252,7 +273,7 @@ void MergeMol::redo()
   m_scene->removeItem(m_molB);
   m_scene->addItem(m_molC);
   m_molC->setFlag(QGraphicsItem::ItemIsSelectable, m_scene->editMode()==MolScene::MoveMode);  
-  foreach(MsKAtom* atom, m_molC->atoms()) 
+  foreach(MSKAtom* atom, m_molC->atoms()) 
     atom->setFlag(QGraphicsItem::ItemIsSelectable, m_scene->editMode()==MolScene::MoveMode);
   m_undone = false;
 }
@@ -271,7 +292,7 @@ void SplitMol::undo()
   foreach(Molecule* mol,m_newMolList) m_scene->removeItem(mol);
   m_scene->addItem(m_oldMol);
   m_oldMol->setFlag(QGraphicsItem::ItemIsSelectable, m_scene->editMode()==MolScene::MoveMode);
-  foreach(MsKAtom* atom, m_oldMol->atoms()) 
+  foreach(MSKAtom* atom, m_oldMol->atoms()) 
     atom->setFlag(QGraphicsItem::ItemIsSelectable, m_scene->editMode()==MolScene::MoveMode);
   m_undone = true;
 }
@@ -282,7 +303,7 @@ void SplitMol::redo()
   {
     m_scene->addItem(mol);
 	mol->setFlag(QGraphicsItem::ItemIsSelectable, m_scene->editMode()==MolScene::MoveMode);
-	foreach(MsKAtom* atom, mol->atoms()) 
+	foreach(MSKAtom* atom, mol->atoms()) 
       atom->setFlag(QGraphicsItem::ItemIsSelectable, m_scene->editMode()==MolScene::MoveMode);
   }
   m_undone = false;
@@ -307,7 +328,7 @@ void AddItem::redo()
 {
   m_scene->addItem(m_item);
   m_item->setFlag(QGraphicsItem::ItemIsSelectable, m_scene->editMode()==MolScene::MoveMode);
-  if (m_item->type() == Molecule::Type) foreach(MsKAtom* atom, dynamic_cast<Molecule*>(m_item)->atoms()) 
+  if (m_item->type() == Molecule::Type) foreach(MSKAtom* atom, dynamic_cast<Molecule*>(m_item)->atoms()) 
     atom->setFlag(QGraphicsItem::ItemIsSelectable, m_scene->editMode()==MolScene::MoveMode);
   m_scene->update();
   m_undone = false;
@@ -327,7 +348,7 @@ void DelItem::undo()
 {
   m_scene->addItem(m_item);
   m_item->setFlag(QGraphicsItem::ItemIsSelectable, m_scene->editMode()==MolScene::MoveMode);
-  if (m_item->type() == Molecule::Type) foreach(MsKAtom* atom, dynamic_cast<Molecule*>(m_item)->atoms()) 
+  if (m_item->type() == Molecule::Type) foreach(MSKAtom* atom, dynamic_cast<Molecule*>(m_item)->atoms()) 
     atom->setFlag(QGraphicsItem::ItemIsSelectable, m_scene->editMode()==MolScene::MoveMode);
   m_scene->update();
   m_undone = true;
@@ -343,13 +364,13 @@ MoveItem::MoveItem(QGraphicsItem* moveItem, const QPointF & moveVector, const QS
 void MoveItem::undo()
 {
   m_item -> setPos(m_oldPos);
-  if (m_item->type()==MsKAtom::Type) dynamic_cast<MsKAtom*>(m_item)->molecule()->rebuild();
+  if (m_item->type()==MSKAtom::Type) dynamic_cast<MSKAtom*>(m_item)->molecule()->rebuild();
   m_undone = true;
 }
 void MoveItem::redo()
 {
   m_item -> setPos(m_newPos);
-  if (m_item->type()==MsKAtom::Type) dynamic_cast<MsKAtom*>(m_item)->molecule()->rebuild();
+  if (m_item->type()==MSKAtom::Type) dynamic_cast<MSKAtom*>(m_item)->molecule()->rebuild();
   m_undone = false;
 }
 

@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2007 by Harm van Eersel                                 *
- *   devsciurus@xs4all.nl                                                  *
+ *   Copyright (C) 2007 by Harm van Eersel <devsciurus@xs4all.nl>          *
+ *   Copyright (C) 2009 by Tim Vandermeersch                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -17,11 +17,12 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+
 /** @file
-* This file is part of molsKetch and contains the MolScene class.
-*
-* @author Harm van Eersel <devsciurus@xs4all.nl
-*/
+ * This file is part of molsKetch and contains the MolScene class.
+ *
+ * @author Harm van Eersel <devsciurus@xs4all.nl
+ */
  
  
 #ifndef molscene_H
@@ -37,9 +38,12 @@ class QImage;
 class QListWidgetItem;
 class QTableWidgetItem;
 class QUndoStack;
+
+namespace Molsketch {
+
 class Molecule;
-class MsKAtom;
-class MsKBond;
+class MSKAtom;
+class MSKBond;
 
 
 /**
@@ -102,7 +106,7 @@ public:
   /** Sets the atomsymbol font */
   void setAtomSymbolFont(const QFont & font);
   /** Sets the atom size. */
-  void setMsKAtomSize(qreal size);
+  void setMSKAtomSize(qreal size);
   /** Sets the number of hint points in the dynamic grid. */
   void setHintPointSize(int size);
 
@@ -116,13 +120,13 @@ public:
   /** Returns the first molecule at position @p pos or NULL if none. */
   Molecule* moleculeAt(const QPointF &pos);
   /** Returns the first atom at position @p pos or NULL if none. */
-  MsKAtom* atomAt(const QPointF &pos);
+  MSKAtom* atomAt(const QPointF &pos);
   /** Returns the first bond at position @p pos or NULL if none. */
-  MsKBond* bondAt(const QPointF &pos);
+  MSKBond* bondAt(const QPointF &pos);
 
   /** Enum for the different edit modes. */
   enum editModes {
-  MoveMode, /**< MsKAtoms and molecules are movable. */
+  MoveMode, /**< MSKAtoms and molecules are movable. */
   AddMode, /**< Mode to add atoms and bonds. */
   RemoveMode, /**< Mode to remove atoms, bonds and molecules. */
   RotateMode /**< Mode to rotate molecules. */
@@ -185,6 +189,15 @@ public slots:
   void addMolecule(Molecule* mol);
   /** Slot to align the molecules of the scene to the grid. */
   void alignToGrid();
+  
+  /**
+   * Slot to set the current MolLibItem
+   */
+  void setHintMolecule(MolLibItem*);
+  /**
+   * Wrapper around setHintMolecule(MolLibItem*) slot.
+   */
+  void setHintMolecule(QListWidgetItem* mol);
 
 protected:
   /** Generic event handler. Reimplementation for sceneChanged signals. */
@@ -308,9 +321,13 @@ private:
   QList<QGraphicsItem*> m_hintPoints;
   /** The group of dynamic grid points. */
   QGraphicsItemGroup* m_hintPointsGroup;
+  
+  QGraphicsItemGroup *m_hintMolecule;
   /** Method to initialize the hinting.*/
   void initHintItems();
 
 };
+
+} // namespace
 
 #endif

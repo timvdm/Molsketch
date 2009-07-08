@@ -44,7 +44,7 @@ PeriodicTableWidget::PeriodicTableWidget()
   // Inserting the elements
   for ( int i = 0; i < rowCount(); i++ )
     for ( int j = 0; j < columnCount(); j++ ) {
-      QTableWidgetItem * item = new QTableWidgetItem(molsKetch::position2symbol(i + 1, j + 1));
+      QTableWidgetItem * item = new QTableWidgetItem(Molsketch::position2symbol(i + 1, j + 1));
       item->setTextAlignment(Qt::AlignCenter);
       setItem( i, j, item);
     }

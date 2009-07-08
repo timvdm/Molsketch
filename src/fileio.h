@@ -19,14 +19,15 @@
  ***************************************************************************/
 
 /** @file
- * This file is part of molsKetch and contains routines for loading and 
+ * This file is part of Molsketch and contains routines for loading and 
  * saving files.
  *
  * @author Harm van Eersel
  * @since Hydrogen
  */
 
- 
+namespace Molsketch
+{
 class MolScene;
 class Molecule;
 
@@ -35,8 +36,7 @@ class Molecule;
  *
  * @author Harm van Eersel
  */
-namespace molsKetch
-{
+
 /** 
  * Loads file with @p fileName and returns it as pointer to a new Molecule 
  * object. 

@@ -31,7 +31,7 @@
 #include "mollibitem.h"
 #include "periodictablewidget.h"
 
-#define PROGRAM_NAME "molsKetch"
+#define PROGRAM_NAME "Molsketch"
 #define PROGRAM_VERSION "Helium"
 
 #define ALT_DOC_PATH ""
@@ -44,6 +44,8 @@
 #define GRAPHIC_DEFAULT_FORMAT "Scalable Vector Graphics (*.svg)"
 
 // Constructor
+
+using namespace Molsketch;
 
 MainWindow::MainWindow()
 {
@@ -71,7 +73,7 @@ MainWindow::MainWindow()
   QStringList loadedFiles;
 
   foreach(QString fileName, args.filter(rx)) {
-    Molecule* mol = molsKetch::loadFile(fileName);
+    Molecule* mol = Molsketch::loadFile(fileName);
       if (mol)
         {
           m_scene->addMolecule(mol);
@@ -109,7 +111,7 @@ MainWindow::MainWindow()
 //   mol->setPos(position);
 // 
 //   // Adding a atom to the molecule
-//   mol->addMsKAtom(element,position);
+//   mol->addMSKAtom(element,position);
 // 
 //   //   cerr << "Molecule added \n";
 // 
@@ -150,13 +152,13 @@ void MainWindow::open()
   if (maybeSave())
     {
 //       QFileDialog dialog(this);
-//       dialog.(tr("Open - molsKetch"));
+//       dialog.(tr("Open - Molsketch"));
 //       dialog.setFilter(tr(OB_FILE_FORMATS));
 //       dialog.selectFilter(tr("Chemical Markup Language (*.mol)"));
 //       dialog.setFileMode(QFileDialog::ExistingFile);
 //       QString fileName;
 //       if (dialog.exec()) fileName = dialog.selectedFiles()[0];
-      QString fileName = QFileDialog::getOpenFileName(this,tr("Open - molsKetch"), m_lastAccessedPath,
+      QString fileName = QFileDialog::getOpenFileName(this,tr("Open - Molsketch"), m_lastAccessedPath,
       tr(OB_FILE_FORMATS));
       if (fileName.isEmpty()) return;
 
@@ -166,7 +168,7 @@ void MainWindow::open()
           // Start a new document
           m_scene->clear();
 
-          Molecule* mol = saveAs3DAct->isChecked() ? molsKetch::loadFile3D(fileName) : molsKetch::loadFile(fileName);
+          Molecule* mol = saveAs3DAct->isChecked() ? Molsketch::loadFile3D(fileName) : Molsketch::loadFile(fileName);
 
           if (mol)
             {
@@ -201,7 +203,7 @@ bool MainWindow::save()
     }
   else
     {
-      if (saveAs3DAct->isChecked()?molsKetch::saveFile3D(m_curFile, m_scene):molsKetch::saveFile(m_curFile, m_scene))
+      if (saveAs3DAct->isChecked()?Molsketch::saveFile3D(m_curFile, m_scene):Molsketch::saveFile(m_curFile, m_scene))
       	{
       	  m_scene->stack()->setClean();
       	}
@@ -230,7 +232,7 @@ bool MainWindow::autoSave()
    }
 
   // And save the file
-  if (saveAs3DAct->isChecked() ? molsKetch::saveFile3D(fileName.absoluteFilePath(), m_scene) : molsKetch::saveFile(fileName.absoluteFilePath(), m_scene)) {
+  if (saveAs3DAct->isChecked() ? Molsketch::saveFile3D(fileName.absoluteFilePath(), m_scene) : Molsketch::saveFile(fileName.absoluteFilePath(), m_scene)) {
     statusBar()->showMessage(tr("Document autosaved"), 10000);
     return true;
   }
@@ -244,7 +246,7 @@ bool MainWindow::saveAs()
 {
   // Get the filename to save under
   QString filter = OB_DEFAULT_FORMAT;
-  QString fileName = QFileDialog::getSaveFileName(this, tr("Save as - molsKetch"), m_lastAccessedPath, tr(OB_FILE_FORMATS), &filter);
+  QString fileName = QFileDialog::getSaveFileName(this, tr("Save as - Molsketch"), m_lastAccessedPath, tr(OB_FILE_FORMATS), &filter);
   if (fileName.isEmpty()) return false;
 
   // Save accessed path
@@ -262,7 +264,7 @@ bool MainWindow::saveAs()
   qDebug() << "Trying to save as " << fileName << "\n";
 
   // Try to save the document
-  if (molsKetch::saveFile(fileName,m_scene))
+  if (Molsketch::saveFile(fileName,m_scene))
     {
       setCurrentFile(fileName);
       m_scene->stack()->setClean();
@@ -278,7 +280,7 @@ bool MainWindow::saveAs()
 
 bool MainWindow::importDoc()
 {
-  QString fileName = QFileDialog::getOpenFileName(this, tr("Import - molsKetch"), m_lastAccessedPath, tr(OB_FILE_FORMATS));
+  QString fileName = QFileDialog::getOpenFileName(this, tr("Import - Molsketch"), m_lastAccessedPath, tr(OB_FILE_FORMATS));
 
 
   if (!fileName.isEmpty())
@@ -286,7 +288,7 @@ bool MainWindow::importDoc()
       // Save accessed path
       m_lastAccessedPath = QFileInfo(fileName).path();
 
-      Molecule* mol = molsKetch::loadFile(fileName);
+      Molecule* mol = Molsketch::loadFile(fileName);
       if (mol)
         {
           m_scene->addMolecule(mol);
@@ -306,7 +308,7 @@ bool MainWindow::exportDoc()
 {
   // Getting the filename
   QString filter = GRAPHIC_DEFAULT_FORMAT;
-  QString fileName = QFileDialog::getSaveFileName(this,tr("Export - molsKetch"), m_lastAccessedPath,tr(GRAPHIC_FILE_FORMATS), &filter);
+  QString fileName = QFileDialog::getSaveFileName(this,tr("Export - Molsketch"), m_lastAccessedPath,tr(GRAPHIC_FILE_FORMATS), &filter);
 
   // Abort if filename is empty
   if (fileName.isEmpty()) return false;
@@ -328,9 +330,9 @@ bool MainWindow::exportDoc()
   m_lastAccessedPath = QFileInfo(fileName).path();
 
   // Try to export the file
-  if (fileName.endsWith(".svg")) return molsKetch::saveToSVG(fileName, m_scene);
+  if (fileName.endsWith(".svg")) return Molsketch::saveToSVG(fileName, m_scene);
 
-  if (molsKetch::exportFile(fileName,m_scene))
+  if (Molsketch::exportFile(fileName,m_scene))
     {
       return true;
     }
@@ -352,7 +354,7 @@ bool MainWindow::print()
   // Try to print the scene
   if (printDialog.exec() == QDialog::Accepted)
     {
-      if (molsKetch::printFile(printer,m_scene))
+      if (Molsketch::printFile(printer,m_scene))
       {
       	return true;
       }
@@ -420,7 +422,7 @@ void MainWindow::assistant()
 void MainWindow::about()
 {
   QMessageBox::about(this, tr("About"),
-                     tr("<H3>About molsKetch</H3> <P> molsKetch is a program for drawing molecular structures developed by Harm van Eersel at the <A href=\"http://www.tue.nl\">Eindhoven University of Technology</A>.<P> For more info check <A href=\"http://molsketch.sourceforge.net\">http://molsketch.sourceforge.net</A>  <P> It is <A href=\"http://www.gnu.org/philosophy/free-sw.html\">free software</A> and available under the <A>GPL</A>. <P> Special thanks to: <UL><LI>Prof. Dr. H. Zantema (coach of the initial version)</LI> <LI> Davy van der Vaart (tester)</LI><LI>Frans Visscher (tester)</LI><LI>Carsten Niehaus (reviewer)</LI></UL>Copyright 2007 - 2008, Harm van Eersel"));
+                     tr("<H3>About Molsketch</H3> <P> Molsketch is a program for drawing molecular structures developed by Harm van Eersel at the <A href=\"http://www.tue.nl\">Eindhoven University of Technology</A>.<P> For more info check <A href=\"http://molsketch.sourceforge.net\">http://molsketch.sourceforge.net</A>  <P> It is <A href=\"http://www.gnu.org/philosophy/free-sw.html\">free software</A> and available under the <A>GPL</A>. <P> Special thanks to: <UL><LI>Prof. Dr. H. Zantema (coach of the initial version)</LI> <LI> Davy van der Vaart (tester)</LI><LI>Frans Visscher (tester)</LI><LI>Carsten Niehaus (reviewer)</LI></UL>Copyright 2007 - 2008, Harm van Eersel"));
 }
 
 void MainWindow::documentWasModified()
@@ -778,28 +780,28 @@ void MainWindow::createToolBoxes()
   dir.setPath(ALT_LIB_PATH);
   for (unsigned int i = 0; i < dir.count(); i++)
     {
-      mol = molsKetch::loadFile(dir.filePath(dir[i]));
+      mol = Molsketch::loadFile(dir.filePath(dir[i]));
       if (mol) genericLib->addItem(new MolLibItem(mol,dir.filePath(dir[i])));
     }
   
   dir.setPath(QDir::homePath() + "/.molsketch/library");
   for (unsigned int i = 0; i < dir.count(); i++)
     {
-      mol = molsKetch::loadFile(dir.filePath(dir[i]));
+      mol = Molsketch::loadFile(dir.filePath(dir[i]));
       if (mol) genericLib->addItem(new MolLibItem(mol,dir.filePath(dir[i])));
     }
 
   dir.setPath(QApplication::applicationDirPath() + "/../share/molsketch/library");
   for (unsigned int i = 0; i < dir.count(); i++)
     {
-      mol = molsKetch::loadFile(dir.filePath(dir[i]));
+      mol = Molsketch::loadFile(dir.filePath(dir[i]));
       if (mol) genericLib->addItem(new MolLibItem(mol,dir.filePath(dir[i])));
     }
 
   dir.setPath(QApplication::applicationDirPath() + "/library");
   for (unsigned int i = 0; i < dir.count(); i++)
     {
-      mol = molsKetch::loadFile(dir.filePath(dir[i]));
+      mol = Molsketch::loadFile(dir.filePath(dir[i]));
       if (mol) genericLib->addItem(new MolLibItem(mol,dir.filePath(dir[i])));
     }
 
@@ -807,28 +809,28 @@ void MainWindow::createToolBoxes()
   dir.setPath(ALT_CUSTOM_LIB_PATH);
   for (unsigned int i = 0; i < dir.count(); i++)
     {
-      mol = molsKetch::loadFile(dir.filePath(dir[i]));
+      mol = Molsketch::loadFile(dir.filePath(dir[i]));
       if (mol) customLib->addItem(new MolLibItem(mol,dir.filePath(dir[i])));
     }
   
   dir.setPath(QDir::homePath() + "/.molsketch/library/custom");
   for (unsigned int i = 0; i < dir.count(); i++)
     {
-      mol = molsKetch::loadFile(dir.filePath(dir[i]));
+      mol = Molsketch::loadFile(dir.filePath(dir[i]));
       if (mol) customLib->addItem(new MolLibItem(mol,dir.filePath(dir[i])));
     }
 
   dir.setPath(QApplication::applicationDirPath() + "/../share/molsketch/library/custom");
   for (unsigned int i = 0; i < dir.count(); i++)
     {
-      mol = molsKetch::loadFile(dir.filePath(dir[i]));
+      mol = Molsketch::loadFile(dir.filePath(dir[i]));
       if (mol) customLib->addItem(new MolLibItem(mol,dir.filePath(dir[i])));
     }
 
   dir.setPath(QApplication::applicationDirPath() + "/library/custom");
   for (unsigned int i = 0; i < dir.count(); i++)
     {
-      mol = molsKetch::loadFile(dir.filePath(dir[i]));
+      mol = Molsketch::loadFile(dir.filePath(dir[i]));
       if (mol) customLib->addItem(new MolLibItem(mol,dir.filePath(dir[i])));
     }
 
@@ -950,6 +952,7 @@ void MainWindow::createToolBoxes()
 
 
   // Connecting signals and slots
+  connect(genericLib, SIGNAL(itemClicked(QListWidgetItem*)), m_scene, SLOT(setHintMolecule(QListWidgetItem*)));
   connect(genericLib,SIGNAL(itemDoubleClicked(QListWidgetItem*)),m_scene,SLOT(addMolecule(QListWidgetItem*)));
 //   connect(genericLib,SIGNAL(itemClicked(QTableWidgetItem*)),this,SLOT(updateRecentList(QTableWidgetItem*)));
   connect(customLib,SIGNAL(itemDoubleClicked(QListWidgetItem*)),m_scene,SLOT(addMolecule(QListWidgetItem*)));
@@ -1044,7 +1047,7 @@ void MainWindow::readPreferences(const QSettings & settings)
   m_lastAccessedPath = settings.value("last-save-path", QDir::homePath()).toString();
 
   // Load the draw settings
-  m_scene->setMsKAtomSize(settings.value("atom-size",30).toDouble());
+  m_scene->setMSKAtomSize(settings.value("atom-size",30).toDouble());
   m_scene->setAutoAddHydrogen(settings.value("auto-add-hydrogen",true).toBool());
   m_scene->setCarbonVisible(settings.value("carbon-visible",false).toBool());
   m_scene->setHydrogenVisible(settings.value("hydrogen-visible",true).toBool());

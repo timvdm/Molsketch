@@ -37,8 +37,8 @@ class QString;
  *
  * @author Harm van Eersel
  */
-namespace molsKetch
-{
+namespace Molsketch {
+
 /** Returns whether @p symbol is a proper element symbol. */
 bool isElementSymbol(const QString &symbol);
 /** Returns whether @p name is a proper element name. */
@@ -63,8 +63,14 @@ int symbol2number(const QString &symbol);
 
 /** Returns the weight of element with atom number @p number. */
 qreal weightOfElement(int number);
-/** Returns the valency of element with atom number @p number. */
-int valencyOfElement(int number);
+/** 
+ * Get the number of valence electrons of element with atomic number @p element. 
+ */
+int numValenceElectrons(int element);
+/**
+ * Get the maximum number of expected bonds to make the atom with atomic number p @element charge neutral (i.e. 4 for carbon, 3 for nitrogen, 2 for oxygen, ...).
+ */
+int expectedValence(int element);
 /** Returns the most common oxidation state of element with atom number @p number. */
 int oxidationStateOfElement(int number);
 

@@ -12,11 +12,18 @@ qt4_wrap_ui(molsketch_UIS_H ${molsketch_UIS})
 
 # Set the variables with main and library source
 set(molsketch_LIB_SRCS 
-molecule.cpp	atom.cpp 
-mollibitem.cpp	bond.cpp
-element.cpp	molview.cpp
-molscene.cpp	periodictablewidget.cpp
-commands.cpp	fileio.cpp
+    molecule.cpp	
+    atom.cpp 
+    mollibitem.cpp
+    bond.cpp
+    element.cpp	
+    molview.cpp
+    molscene.cpp
+    periodictablewidget.cpp
+    commands.cpp	
+    fileio.cpp
+    plugin.cpp
+    tool.cpp
 )
 set(molsketch_SRCS main.cpp mainwindow.cpp settings.cpp )
 
@@ -47,6 +54,7 @@ target_link_libraries(molsketch_LIB ${QT_LIBRARIES} ${OPENBABEL2_LIBRARIES})
 include_directories(${CMAKE_SOURCE_DIR}/src)
 link_directories(${CMAKE_BINARY_DIR}/lib)
 add_executable(molsketch ${molsketch_SRCS} ${molsketch_UIS_H})
+install(TARGETS molsketch DESTINATION bin)
 
 # Link the code against libmolsKetch, Qt and OpenBabel
 target_link_libraries(molsketch molsketch_LIB ${QT_LIBRARIES} ${OPENBABEL2_LIBRARIES})
@@ -59,10 +67,10 @@ install(TARGETS molsketch_LIB
 	ARCHIVE DESTINATION lib/static)
 
 # Install the molcules library
-install(DIRECTORY ${PROJECT_SOURCE_DIR}/library DESTINATION share/molsketch PATTERN ".svn" EXCLUDE)
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/library DESTINATION share/molsketch)
 
 # Install the documentation
-install(DIRECTORY ${PROJECT_SOURCE_DIR}/doc DESTINATION share/doc/molsketch PATTERN ".svn" EXCLUDE)
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/doc DESTINATION share/doc/molsketch)
 
 # Install menu entries on Linux
 if(UNIX)

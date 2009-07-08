@@ -24,23 +24,28 @@
 #include <QDebug>
 
 #include "atom.h"
-#include "element.h"
-#include "molscene.h"
+#include "bond.h"
 #include "molecule.h"
 
-// Constructor
+#include "element.h"
+#include "molscene.h"
 
-MsKAtom::MsKAtom(const QPointF &position, const QString &element, bool implicitHydrogens, 
-    QGraphicsItem* parent, QGraphicsScene* scene) : QGraphicsItem(parent,scene)
-{
+namespace Molsketch {
+
+  MSKAtom::MSKAtom(const QPointF &position, const QString &element, bool implicitHydrogens, 
+      QGraphicsItem* parent, QGraphicsScene* scene) : QGraphicsItem(parent,scene)
+  {
     //pre: position is a valid position in scene coordinates
+
     // Setting initial parameters
     setPos(position);
     setZValue(3);
-//     setFlag(QGraphicsItem::ItemIsMovable);
-//     setFlag(QGraphicsItem::ItemIgnoresTransformations);
-    if (dynamic_cast<MolScene*>(scene))
-        setFlag(QGraphicsItem::ItemIsSelectable, dynamic_cast<MolScene*>(scene)->editMode()==MolScene::MoveMode);
+    //setFlag(QGraphicsItem::ItemIsMovable);
+    //setFlag(QGraphicsItem::ItemIgnoresTransformations);
+
+    MolScene *molScene = dynamic_cast<MolScene*>(scene); // @todo qobject_cast is faster
+    if (molScene)
+      setFlag(QGraphicsItem::ItemIsSelectable, molScene->editMode() == MolScene::MoveMode);
 
     // Enabling hovereffects
     setAcceptsHoverEvents(true);
@@ -51,46 +56,37 @@ MsKAtom::MsKAtom(const QPointF &position, const QString &element, bool implicitH
     m_hidden = true;
     m_drawn = false;
 
-//     m_hidden = invisible;// || (m_elementSymbolement == "C" && ((MolScene*)parentItem()->scene())->getShowCarbon()) || (m_elementSymbolement == "H" && ((MolScene*)parentItem()->scene())->getShowHydrogen());
-//     m_valency = 0;
-    m_charge = 0; // The initial additional charge is zero
-    m_oxidationState = molsKetch::oxidationStateOfElement(molsKetch::symbol2number(m_elementSymbol));
-    m_valency = molsKetch::valencyOfElement(molsKetch::symbol2number(m_elementSymbol));
-    m_weight = molsKetch::weightOfElement(molsKetch::symbol2number(m_elementSymbol));
-
-    setImplicitHydrogens(implicitHydrogens);
-    m_numberOfImplicitHydrogens =  m_implicitHydrogens ? molsKetch::valencyOfElement(molsKetch::symbol2number(m_elementSymbol)) : 0;
-//     m_numberOfImplicitHydrogens = 0;
-
-    m_connectedAtoms = new QList<MsKAtom*>;
-    m_numberOfBonds = m_numberOfImplicitHydrogens;
-    m_oxidationState -= m_numberOfBonds;
-
-    // 	QPainterPath path;
-    // 	QFont font;
-    // 	path.addEllipse(QRectF(position.x(),position.y(),20,20));
-    // 	path.addText(position + QPointF(-5,5),font,m_elementSymbolement);
-    //
-    // 	setPath(path);
-}
+    m_userCharge = 0; // The initial additional charge is zero
+    m_userImplicitHydrogens =  0;
+    enableImplicitHydrogens(implicitHydrogens);
+  }
 
 
-// Inherited methods
+  //////////////////////////////////////////////////////////////////////////////
+  // Inherited painting methods
+  //////////////////////////////////////////////////////////////////////////////
 
-QRectF MsKAtom::boundingRect() const
-{
+  QRectF MSKAtom::boundingRect() const
+  {
     /* FIXME The implicit hydrogens don't seem te be included */
     if (m_shape.width() && m_shape.height())
       return m_shape;
     else
       return QRectF(-ATOM_SIZE/2, -ATOM_SIZE/2, ATOM_SIZE, ATOM_SIZE);
 
-}
+  }
 
-void MsKAtom::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
-{
+  void MSKAtom::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
+  {
+    Q_UNUSED(option)
+    Q_UNUSED(widget)
     // Save the original painter state
-//     painter->save();
+    //painter->save();
+        
+    qDebug() << "MSKAtom::paint()";
+    qDebug() << "m_hidden" << m_hidden;
+    qDebug() << "isSelected" << isSelected();
+    qDebug() << "numBonds" << numBonds();
 
     // Check the scene
     MolScene* molScene = dynamic_cast<MolScene*>(scene());
@@ -98,18 +94,15 @@ void MsKAtom::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, Q
 
     // If element is m_hidden, don't draw the atoms
     // Always draw the atom when there are no bonds
-//     qDebug() << numberOfBonds();
-    if (m_hidden && !isSelected() && numberOfBonds()) {
-        if (m_elementSymbol == "H" && !molScene->autoAddHydrogen() && 
-            (m_oxidationState == 1 || !molScene->chargeVisible())) 
-        {
+    if (m_hidden && !isSelected() && numBonds()) {
+        if (m_elementSymbol == "H" && !molScene->autoAddHydrogen() && (!molScene->chargeVisible())) {
             m_drawn = false;
             return;
         }
-        if (m_elementSymbol == "C" && !molScene->carbonVisible() && 
-            ((m_numberOfBonds - m_numberOfImplicitHydrogens) > 2 && 
-            charge() == 0 || !molScene->chargeVisible())) 
-        {
+        qDebug() << "bondOrderSum = " << bondOrderSum();
+        qDebug() << "# implicit H = " << numberOfImplicitHydrogens();
+        //if (m_elementSymbol == "C" && !molScene->carbonVisible() && ((bondOrderSum() - numberOfImplicitHydrogens()) > 2 && charge() == 0 || !molScene->chargeVisible())) {
+        if (m_elementSymbol == "C" && !molScene->carbonVisible() && (numBonds() > 1) && charge() == 0 || !molScene->chargeVisible()) {
             m_drawn = false;
             return;
         }
@@ -119,7 +112,7 @@ void MsKAtom::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, Q
 
     // Determine in which order we want to display the atom symbols
     qreal direction = 0;
-    foreach(MsKAtom * atom, *m_connectedAtoms)
+    foreach(MSKAtom * atom, m_neighbors)
         direction += atom->pos().x() - pos().x();
 
     bool inverse = direction > 0 ? true : false;
@@ -206,7 +199,7 @@ void MsKAtom::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, Q
 
     // Draw charge
     if (molScene->chargeVisible()) {
-        QString chargeId = chargeID();
+        QString chargeId = chargeString();
         painter->setFont( QFont("",molScene->atomSymbolFont().pointSizeF()/1.5) );
         int superscriptOffset = fmSymbol.width("H");
         painter->drawText(m_shape.translated(superscriptOffset/1.5, -superscriptOffset/1.5), Qt::AlignTop|Qt::AlignRight, chargeId);
@@ -239,225 +232,206 @@ void MsKAtom::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, Q
 
     // Restore the original painter state
 //     painter->restore();
-}
+  }
 
-QVariant MsKAtom::itemChange(GraphicsItemChange change, const QVariant &value)
-{
-    if (change == ItemPositionChange && parentItem())
-    {
+  QVariant MSKAtom::itemChange(GraphicsItemChange change, const QVariant &value)
+  {
+    if (change == ItemPositionChange && parentItem()) {
 //         setTransform(parentItem()->transform().transposed());
-        parentItem()->update();
-        dynamic_cast<Molecule*>(parentItem())->rebuild();
+      parentItem()->update();
+      dynamic_cast<Molecule*>(parentItem())->rebuild();
 
 // 	    setGroup(dynamic_cast<Molecule*>(parentItem()));
     };
-    if (change == ItemSelectedChange && molecule())
-    {
+    if (change == ItemSelectedChange && molecule()) {
 //       molecule()->setSm_elementSymbolected(isSm_elementSymbolected());
-      molecule()->setFlag(ItemIsSelectable,isSelected());
+      molecule()->setFlag(ItemIsSelectable, isSelected());
     }
     
     return QGraphicsItem::itemChange(change, value);
-}
+  }
+
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Event handlers
+  //////////////////////////////////////////////////////////////////////////////
+
+  void MSKAtom::mousePressEvent( QGraphicsSceneMouseEvent* event )
+  {
+    // Execute default behavior
+    QGraphicsItem::mousePressEvent( event );
+  }
+
+  void MSKAtom::hoverEnterEvent( QGraphicsSceneHoverEvent * event )
+  {
+    m_hidden = false;
+    // Execute default behavior
+    QGraphicsItem::hoverEnterEvent( event );
+  }
+
+  void MSKAtom::hoverLeaveEvent( QGraphicsSceneHoverEvent * event )
+  {
+    m_hidden = true;
+    // Execute default behavior
+    QGraphicsItem::hoverLeaveEvent( event );
+  }
+
+
+
+
+
+
 
 // Commands
 
-void MsKAtom::setElement(const QString &element)
+void MSKAtom::setElement(const QString &element)
 {
     m_elementSymbol = element;
     update();
 }
 
-void MsKAtom::setValency( int valency )
-{
-    // Adjusting the charge
-//     m_charge = m_charge - (valency - m_valency);
-
-    // Setting the new valency
-    m_valency = valency;
-}
-
-void MsKAtom::setOxidationState(int state)
-{
-  m_oxidationState = state;
-}
-
-void MsKAtom::setNumberOfBonds(int number)
-{
-  Q_ASSERT (number >= 0);
-
-  int deltaNoB = number - m_numberOfBonds;
-  m_oxidationState -= deltaNoB;
-
-  if (m_implicitHydrogens) {
-    int oldNoIH = m_numberOfImplicitHydrogens;
-    int newNoIH = oldNoIH - deltaNoB;
-    int deltaNoIH = (newNoIH - oldNoIH > -oldNoIH) ? newNoIH - oldNoIH : -oldNoIH;
-    m_numberOfImplicitHydrogens += deltaNoIH;
-    m_oxidationState -= deltaNoIH;
-  }
-
-  m_numberOfBonds = number;
-}
-
-void MsKAtom::setNumberOfImplicitHydrogens(int number)
+void MSKAtom::setNumberOfImplicitHydrogens(int number)
 {
   Q_ASSERT (number >= 0);
 
   m_implicitHydrogens = true;
 
-  int deltaNoIH = number - m_numberOfImplicitHydrogens;
-  int newNoB = m_numberOfBonds - deltaNoIH;
-  m_numberOfBonds = (newNoB < 0) ? 0 : newNoB;
+//  int deltaNoIH = number - m_numberOfImplicitHydrogens;
+//  int newNoB = m_numberOfBonds - deltaNoIH;
+  //m_numberOfBonds = (newNoB < 0) ? 0 : newNoB;
 
-  m_oxidationState += deltaNoIH;
-
-  m_numberOfImplicitHydrogens = number;
+  m_userImplicitHydrogens = number;
 }
 
 
 // Query methods
 
-int MsKAtom::numberOfBonds() const
-{
-  return m_numberOfBonds;
-}
+  int MSKAtom::numBonds() const
+  {
+    return m_neighbors.size();
+  }
 
-int MsKAtom::numberOfImplicitHydrogens() const
-{
-  return m_numberOfImplicitHydrogens;
-}
+  int MSKAtom::bondOrderSum() const
+  {
+    Molecule *mol = molecule();
 
-QString MsKAtom::element() const
-{
+    // count explicit bonds
+    int sum = 0;
+    foreach (MSKBond *bond, mol->bonds(this))
+      sum += bond->bondOrder();
+
+    // take implicit hydrogens into account 
+    sum += numberOfImplicitHydrogens();
+
+    return sum;
+  }
+
+  int MSKAtom::numberOfImplicitHydrogens() const
+  {
+    Molecule *mol = molecule();
+
+    // count explicit bonds
+    int bosum = 0;
+    foreach (MSKBond *bond, mol->bonds(this))
+      bosum += bond->bondOrder();
+
+    int n = Molsketch::expectedValence(Molsketch::symbol2number(m_elementSymbol)) - bosum + m_userImplicitHydrogens;
+    
+    return (n > 0) ? n : 0;
+  }
+
+  QString MSKAtom::element() const
+  {
     return m_elementSymbol;
-}
+  }
 
-int MsKAtom::oxidationState() const
-{
-  return m_oxidationState;
-}
+  int MSKAtom::charge()  const
+  {
+    /*
+    qDebug() << "MSKAtom::charge()";
+    qDebug() << "    element = " << m_elementSymbol;
+    qDebug() << "    numValenceElectrons = " << Molsketch::numValenceElectrons(Molsketch::symbol2number(m_elementSymbol));
+    qDebug() << "    bondOrderSum() = " << bondOrderSum();
+    qDebug() << "    charge = " << Molsketch::numValenceElectrons(Molsketch::symbol2number(m_elementSymbol)) 
+      - bondOrderSum() - (8 - 2 * bondOrderSum()) + m_userCharge;
+    */
+    return Molsketch::numValenceElectrons(Molsketch::symbol2number(m_elementSymbol)) 
+      - bondOrderSum() - (8 - 2 * bondOrderSum()) + m_userCharge;
+  }
 
-int MsKAtom::valency( )  const // return the number of expected bonds
-{
-    return m_valency;
-}
+  void MSKAtom::setCharge(int charge)
+  {
+  
+  }
 
-int MsKAtom::charge( )  const // Return the additional charge of the atom
-{
-    return m_oxidationState;
-}
-
-// int MsKAtom::hydrogenNeeded( )  const // Returs the number of hydrogens needed to make the atom neutral
-// {
-//     int needed = molsKetch::valencyOfElement(molsKetch::symbol2number(m_elementSymbol)) - m_valency;
-//     if (molsKetch::symbol2number(m_elementSymbol) > 10) needed = 0;
-// //     if (needed > -molsKetch::valencyOfElement(molsKetch::symbol2number(m_elementSymbol))) needed = -molsKetch::valencyOfElement(molsKetch::symbol2number(m_elementSymbol));
-//     if (needed < 0) needed = 0;
-//     if (scene()) return static_cast<MolScene*>(scene())->autoAddHydrogen()?needed:0;
-//       return 0;
-// }
-
-QString MsKAtom::chargeID( ) const
-{
+  QString MSKAtom::chargeString() const
+  {
     // Get the charge
     int c = charge();
 
     // Drawing text
-    QString chargeId;
-    chargeId.setNum(c);
-    if (c < -1) chargeId =  chargeId.remove(0,1) + "-";
-    if (c == -1) chargeId = "-";
-    if (c == 0) chargeId = "";
-    if (c == 1) chargeId = "+";
-    if (c > 1) chargeId = chargeId + "+";
+    QString string;
+    string.setNum(c);
+    if (c < -1) // ..., "3-", "2-"
+      string =  string.remove(0,1) + "-";
+    if (c == -1) // "-"
+      string = "-";
+    if (c == 0) // ""
+      string = "";
+    if (c == 1) // "+"
+      string = "+";
+    if (c > 1) // "2+", "3+", ...
+      string = string + "+";
 
-    // Return the charge ID string
-    return chargeId;
-}
+    // Return the charge string
+    return string;
+  }
 
-qreal MsKAtom::weight( ) const
-{
-    return m_weight + m_numberOfImplicitHydrogens*molsKetch::weightOfElement(1);
-}
+  qreal MSKAtom::weight( ) const
+  {
+    return Molsketch::weightOfElement(Molsketch::symbol2number(m_elementSymbol)) + numberOfImplicitHydrogens() * Molsketch::weightOfElement(1);
+  }
 
-Molecule * MsKAtom::molecule() const
-{
+  Molecule * MSKAtom::molecule() const
+  {
     return dynamic_cast<Molecule*>(this->parentItem());
-}
+  }
 
-// Event handlers
+  bool MSKAtom::hasImplicitHydrogens() const
+  {
+    return m_implicitHydrogens;
+  }
 
-void MsKAtom::mousePressEvent( QGraphicsSceneMouseEvent* event )
-{
-    // Execute default behavior
-    QGraphicsItem::mousePressEvent( event );
-}
+  bool MSKAtom::isDrawn() const
+  {
+    return m_drawn;
+  }
 
-void MsKAtom::hoverEnterEvent( QGraphicsSceneHoverEvent * event )
-{
-    m_hidden = false;
-    // Execute default behavior
-    QGraphicsItem::hoverEnterEvent( event );
-}
+  bool MSKAtom::isHidden() const
+  {
+    return m_hidden;
+  }
 
-void MsKAtom::hoverLeaveEvent( QGraphicsSceneHoverEvent * event )
-{
-    m_hidden = true;
-    // Execute default behavior
-    QGraphicsItem::hoverLeaveEvent( event );
-}
+  void MSKAtom::enableImplicitHydrogens(bool enabled)
+  {
+    m_implicitHydrogens = enabled && (m_elementSymbol == "C" || m_elementSymbol == "N" || m_elementSymbol == "O");
+  }
 
-bool MsKAtom::implicitHydrogens() const
-{
-  return m_implicitHydrogens;
-}
+  void MSKAtom::addNeighbor(MSKAtom * atom)
+  {
+    Q_CHECK_PTR(atom);
+    m_neighbors.append(atom);
+  }
 
-bool MsKAtom::isDrawn() const
-{
-  return m_drawn;
-}
+  void MSKAtom::removeNeighbor(MSKAtom * atom)
+  {
+    Q_CHECK_PTR(atom);
+    m_neighbors.removeAll(atom);
+  }
 
-bool MsKAtom::isHidden() const
-{
-  return m_hidden;
-}
+  const QList<MSKAtom*>& MSKAtom::neighbors() const
+  {
+    return m_neighbors;
+  }
 
-void MsKAtom::setImplicitHydrogens(bool enabled)
-{
-  m_implicitHydrogens = enabled && (m_elementSymbol == "C" || m_elementSymbol == "N" || m_elementSymbol == "O");
-}
-
-void MsKAtom::addConnectedAtom(MsKAtom * atom)
-{
-  // pre: atom is a valid atom pointer
-  Q_CHECK_PTR(atom);
-
-//   qDebug << "Atom connected:" << (void*)atom << "\n";
-
-  m_connectedAtoms->append(atom);
-
-
-  qDebug("Atom added to %x", this);
-  qDebug("New atom list:");
-  foreach(MsKAtom* a, *m_connectedAtoms)
-    qDebug("%x", a);
-}
-
-void MsKAtom::removeConnectedAtom(MsKAtom * atom)
-{
-  // pre: atom is a valid bond pointer
-  Q_CHECK_PTR(atom);
-
-//   qDebug("Atom removed: %x", atom);
-
-//   qDebug << "Atom removed:" << (void*)atom << "\n";
-
-  m_connectedAtoms->removeAll(atom);
-}
-
-QList< MsKAtom * > MsKAtom::connectedAtoms()
-{
-  return *m_connectedAtoms;
-}
-
+} // namespace

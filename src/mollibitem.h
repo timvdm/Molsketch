@@ -24,6 +24,7 @@
 #include <QListWidgetItem>
 #include <QFileInfo>
 
+namespace Molsketch {
 
 class Molecule;
 
@@ -48,7 +49,7 @@ class MolLibItem : public QListWidgetItem
   virtual ~MolLibItem();
 
   /** Sets a copy of @p molecule as the molecule of the library item */
-  void setMolecule(Molecule* molecule);
+  //void setMolecule(Molecule* molecule);
 
   /** Returns a pointer to copy of molecule of the library item. */
   Molecule* getMolecule();
@@ -62,5 +63,7 @@ private:
   /** Stores the filename of the library item. */
   QFileInfo m_fileName;
 };
+
+} // namespace
 
 #endif

@@ -27,6 +27,8 @@
 
 #include <math.h>
 
+namespace Molsketch {
+
 MolView::MolView(QGraphicsScene* scene) : QGraphicsView(scene)
 {
 	setContextMenuPolicy(Qt::ActionsContextMenu);
@@ -57,3 +59,5 @@ void MolView::scaleView(qreal scaleFactor)
 //         translate(-e->x(), -e->y());
 //     e->ignore();
 // }
+
+}

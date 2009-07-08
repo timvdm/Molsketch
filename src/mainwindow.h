@@ -32,7 +32,6 @@
 
 class QAction;
 class QMenu;
-class MolScene;
 class QToolBox;
 class QDockWidget;
 class QTextEdit;
@@ -45,8 +44,13 @@ class QAssistantClient;
 class QSettings;
 class QTimer;
 
-class Molecule;
-class MolView;
+namespace Molsketch {
+  class Molecule;
+  class MolScene;
+  class MolView;
+}
+
+
 
 
 /**
@@ -202,9 +206,9 @@ private:
 
   // Widgets
   /** The scene that contains the document's molecules. */
-  MolScene* m_scene;
+  Molsketch::MolScene* m_scene;
   /** The view of the MolScene. */
-  MolView* m_molView;
+  Molsketch::MolView* m_molView;
   /** The file name of the current document. */
   QString m_curFile;
 
