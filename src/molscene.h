@@ -331,8 +331,9 @@ private:
   QList<QGraphicsItem*> m_hintPoints;
   /** The group of dynamic grid points. */
   QGraphicsItemGroup* m_hintPointsGroup;
-  
-  QGraphicsItemGroup *m_hintMolecule;
+ 
+  Molecule *m_hintMolecule;
+  QGraphicsItemGroup *m_hintMoleculeItems;
   QList<QPointF> m_hintRingPoints;
 
   /** Method to initialize the hinting.*/

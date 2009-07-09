@@ -29,7 +29,7 @@ namespace Molsketch {
 
   DrawWidget::DrawWidget(MolScene *scene) : QWidget()
   {
-    Q_CHECK_PTR(m_scene);
+    Q_CHECK_PTR(scene);
     
     m_scene = scene;
     ui.setupUi(this);

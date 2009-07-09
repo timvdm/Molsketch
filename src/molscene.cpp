@@ -372,6 +372,7 @@ void MolScene::initHintItems()
 {
   // hint molecule always starts as none
   m_hintMolecule = 0;
+  m_hintMoleculeItems = 0;
 
   // Initialize hintline
   m_hintLine = new QGraphicsLineItem(QLineF(0,0,0,0));
@@ -421,10 +422,10 @@ void MolScene::initHintItems()
       return;
 
     // delete previous hint molecule
-    if (m_hintMolecule)
-      delete m_hintMolecule;
+    if (m_hintMoleculeItems)
+      delete m_hintMoleculeItems;
 
-    m_hintMolecule = new QGraphicsItemGroup();
+    m_hintMoleculeItems = new QGraphicsItemGroup();
     m_hintRingPoints.clear();
  
     // circumscribed circle regular polygon
@@ -439,36 +440,37 @@ void MolScene::initHintItems()
       // Add the line
       QGraphicsLineItem *line = new QGraphicsLineItem(p1.x(), p1.y(), p2.x(), p2.y());
       line->setPen(QPen(Qt::lightGray));
-      m_hintMolecule->addToGroup(line);
+      m_hintMoleculeItems->addToGroup(line);
       m_hintRingPoints.append(p1);
     }
      
-    addItem(m_hintMolecule);
+    addItem(m_hintMoleculeItems);
   }
  
   void MolScene::setHintMolecule(MolLibItem *item)
   {
     Q_CHECK_PTR(item);
     
-    Molecule *mol = item->getMolecule();
-
     // delete previous hint molecule
     if (m_hintMolecule)
       delete m_hintMolecule;
-
-    m_hintMolecule = new QGraphicsItemGroup();
+    if (m_hintMoleculeItems)
+      delete m_hintMoleculeItems;
+    
+    m_hintMolecule = item->getMolecule();
+    m_hintMoleculeItems = new QGraphicsItemGroup();
       
-    foreach (Bond *bond, mol->bonds()) {
+    foreach (Bond *bond, m_hintMolecule->bonds()) {
       // Create the line
       QPointF a = bond->beginAtom()->pos();
       QPointF b = bond->endAtom()->pos();
       QGraphicsLineItem *line = new QGraphicsLineItem(a.x(), a.y(), b.x(), b.y());
       line->setPen(QPen(Qt::lightGray));
       // Add the line
-      m_hintMolecule->addToGroup(line);
+      m_hintMoleculeItems->addToGroup(line);
     }
     
-    addItem(m_hintMolecule);
+    addItem(m_hintMoleculeItems);
   }
   
   void MolScene::setHintMolecule(QListWidgetItem *item)
@@ -669,7 +671,7 @@ bool MolScene::event(QEvent* event)
   
   void MolScene::alignRingWithAtom(Atom *atom)
   {
-    Q_CHECK_PTR(m_hintMolecule);
+    Q_CHECK_PTR(m_hintMoleculeItems);
 
     if (m_hintRingPoints.isEmpty())
       return;
@@ -679,9 +681,9 @@ bool MolScene::event(QEvent* event)
 
     if (atom->numBonds() == 0) {
       // just translate ring to make 1 atom align
-      m_hintMolecule->setTransform(QTransform());
-      m_hintMolecule->setPos(atom->scenePos() + m_hintRingPoints[0]);
-    } if (atom->numBonds() == 1) {
+      m_hintMoleculeItems->setTransform(QTransform());
+      m_hintMoleculeItems->setPos(atom->scenePos() + m_hintRingPoints[0]);
+    } else if (atom->numBonds() == 1) {
       // rotate/translate ring to align with the bond
       QPointF moleculeNormal = atom->scenePos() - atom->neighbors()[0]->scenePos();
       moleculeNormal = normalized(moleculeNormal);
@@ -692,12 +694,24 @@ bool MolScene::event(QEvent* event)
       if (angleSign(moleculeNormal, ringNormal) > 0.0)
         ang = -ang;
 
-      m_hintMolecule->setTransform(QTransform().rotate(ang+180.0).translate(-rp.x(), -rp.y()));
-      m_hintMolecule->setPos(atom->scenePos());
+      m_hintMoleculeItems->setTransform(QTransform().rotate(ang+180.0).translate(-rp.x(), -rp.y()));
+      m_hintMoleculeItems->setPos(atom->scenePos());
 
+    } else if (atom->numBonds() == 2) {
+      // rotate/translate ring to align with the bond
+      QPointF moleculeNormal = atom->scenePos() - atom->neighbors()[0]->scenePos();
+      moleculeNormal += atom->scenePos() - atom->neighbors()[1]->scenePos();
+      moleculeNormal = normalized(moleculeNormal);
+      QPointF ringNormal = normalized(m_hintRingPoints[0]);
+      QPointF rp = m_hintRingPoints[0];
+
+      qreal ang = angle(moleculeNormal, ringNormal) * 180.0 / M_PI;
+      if (angleSign(moleculeNormal, ringNormal) > 0.0)
+        ang = -ang;
+
+      m_hintMoleculeItems->setTransform(QTransform().rotate(ang+180.0).translate(-rp.x(), -rp.y()));
+      m_hintMoleculeItems->setPos(atom->scenePos());
     }
-    
-  
   }
   
   void MolScene::alignRingWithBond(Bond *bond)
@@ -751,9 +765,9 @@ void MolScene::mousePressEvent(QGraphicsSceneMouseEvent* event)
 void MolScene::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 {
   // Determine the right action
-  if (m_hintMolecule) {
-    m_hintMolecule->setPos(event->scenePos());
-    m_hintMolecule->setTransform(QTransform());
+  if (m_hintMoleculeItems) {
+    m_hintMoleculeItems->setPos(event->scenePos());
+    m_hintMoleculeItems->setTransform(QTransform());
 
     // Get the position
     QPointF downPos = event->scenePos();
@@ -1005,16 +1019,38 @@ void MolScene::addModePress(QGraphicsSceneMouseEvent* event)
   // Check which molecule has been clicked on
   Atom* atom = atomAt(downPos);
 
-  // Add a new molecule if necesarry
-  if (!atom && m_currentElementSymbol!="+" && m_currentElementSymbol!="-" && m_currentElementSymbol != "H+" && m_currentElementSymbol != "H-")
-    {
+  if (!atom) {
+    if (m_hintMoleculeItems) {
+      // insert the hinted molecule
       Molecule* mol = new Molecule;
       mol->setPos(downPos);
       m_stack->beginMacro("Add Molecule");
       m_stack->push(new AddItem(mol,this));
-      m_stack->push(new AddAtom(new Atom( downPos, m_currentElementSymbol, m_autoAddHydrogen ), mol));
+
+      if (!m_hintRingPoints.isEmpty()) {
+        foreach (const QPointF &p, m_hintRingPoints)
+          m_stack->push(new AddAtom(new Atom( m_hintMoleculeItems->mapToScene(p), "C", m_autoAddHydrogen ), mol));
+      } else {
+        Q_CHECK_PTR(m_hintMolecule);
+        foreach (Atom *hintAtom, m_hintMolecule->atoms())
+          m_stack->push(new AddAtom(new Atom( hintAtom->scenePos(), hintAtom->element(), m_autoAddHydrogen ), mol));
+      }
       m_stack->endMacro();
+
+    
+    } else {
+      // Add a new molecule if necesarry
+      if (m_currentElementSymbol!="+" && m_currentElementSymbol!="-" && m_currentElementSymbol != "H+" && m_currentElementSymbol != "H-")
+      {
+        Molecule* mol = new Molecule;
+        mol->setPos(downPos);
+        m_stack->beginMacro("Add Molecule");
+        m_stack->push(new AddItem(mol,this));
+        m_stack->push(new AddAtom(new Atom( downPos, m_currentElementSymbol, m_autoAddHydrogen ), mol));
+        m_stack->endMacro();
+      }
     }
+  }
 }
 
 void MolScene::addModeMove(QGraphicsSceneMouseEvent* event)
@@ -1055,7 +1091,63 @@ void MolScene::addModeRelease(QGraphicsSceneMouseEvent* event)
   Atom* a2 = atomAt(upPos);
   Bond* b = bondAt(downPos);
   Molecule* m1 = a1 ? a1->molecule() : 0;
-   
+ 
+
+
+  if (m_hintMoleculeItems) {
+    
+    m_stack->beginMacro(tr("add ring"));
+
+    Molecule *mol = 0;
+    QList<Atom*> ringAtoms;
+    QList<Bond*> ringBonds;
+    // add an atom for each ring corner if there is none at that position
+    foreach (const QPointF &p, m_hintRingPoints) {
+      Atom *atom = atomAt(m_hintMoleculeItems->mapToScene(p));
+      if (!atom) {
+        // create a new atom if there isn't any for this position
+        atom = new Atom(m_hintMoleculeItems->mapToScene(p), "C", m_autoAddHydrogen);
+       //m_stack->push(new AddAtom(atom, mol));
+      } else {
+        if (!mol)
+          mol = atom->molecule();
+      }
+      ringAtoms.append(atom);
+    }
+    // connect the bonds
+    for (int i = 0; i < ringAtoms.size(); ++i) {
+      int next = i + 1;
+      if (next == ringAtoms.size())
+        next = 0;
+
+      Bond *bond = 0;
+      if (ringAtoms[i]->molecule())
+        bond = ringAtoms[i]->molecule()->bondBetween(ringAtoms[i], ringAtoms[next]);
+
+      if (!bond) {
+        bond = new Bond(ringAtoms[i], ringAtoms[next]);
+        //m_stack->push(new AddBond(bond));
+      }
+      ringBonds.append(bond);
+    }
+    //m_stack->push(new AddItem(mol,this)); 
+    if (!mol)
+      mol = new Molecule;
+    foreach(Atom *atom, ringAtoms)
+      if (!atom->molecule())
+        mol->addAtom(atom);
+    foreach(Bond *bond, ringBonds)
+      if (!bond->molecule())
+        mol->addBond(bond);
+ 
+    //if (mol->canSplit()) 
+    //  m_stack->push(new SplitMol(mol));
+    m_stack->endMacro();
+    return;
+  }
+
+
+
   if (!a1 && !b) return;
   if (b && !a1) return;
   
@@ -1305,9 +1397,9 @@ int MolScene::toRoundedAngle(int angle)
     m_currentElementSymbol = symbol;
 
     // Delete the hint molecule if it exists
-    if (m_hintMolecule) {
-      delete m_hintMolecule;
-      m_hintMolecule = 0;
+    if (m_hintMoleculeItems) {
+      delete m_hintMoleculeItems;
+      m_hintMoleculeItems = 0;
     }
   
     setEditMode(MolScene::AddMode);

@@ -98,8 +98,7 @@ MainWindow::MainWindow()
 //   connect(m_scene,SIGNAL(newMolecule(QPointF,QString)),this, SLOT(newMolecule(QPointF,QString)));
   connect(m_scene,SIGNAL(editModeChange(int)),this,SLOT(updateEditMode(int)));
 
-  connect(recentLib,SIGNAL(itemClicked(QListWidgetItem*)),m_scene,SLOT(setElement(QListWidgetItem*)));
-  connect(recentLib,SIGNAL(itemClicked(QListWidgetItem*)),this,SLOT(updateRecentList(QListWidgetItem*)));
+  //connect(recentLib,SIGNAL(itemClicked(QListWidgetItem*)),this,SLOT(updateRecentList(QListWidgetItem*)));
   connect(periodicTable,SIGNAL(currentItemChanged(QTableWidgetItem*, QTableWidgetItem*)),m_scene,SLOT(setElement(QTableWidgetItem*)));
   connect(periodicTable,SIGNAL(currentItemChanged(QTableWidgetItem*, QTableWidgetItem*)),this,SLOT(updateRecentList(QTableWidgetItem*)));
 }
@@ -759,29 +758,17 @@ void MainWindow::createToolBoxes()
 
 
   // Create libraries
-  recentLib = new QListWidget;
   genericLib = new QListWidget;
   customLib = new QListWidget;
 
   QPushButton* addButton = new QPushButton(tr("Add..."));
   QPushButton* delButton = new QPushButton(tr("Delete"));
 
-  // Setting the views
-  recentLib->setViewMode(QListView::IconMode);
-  recentLib->setMovement(QListView::Static);
-  recentLib->setResizeMode(QListWidget::Adjust);
-  recentLib->setAlternatingRowColors(true);
-
   genericLib->setAlternatingRowColors(true);
   genericLib->setIconSize(QSize(64,64));
 
   customLib->setAlternatingRowColors(true);
   customLib->setIconSize(QSize(64,64));
-
-  // Adding common elements
-  QStringList celements;
-  celements << "H" << "C" << "N" << "O" << "Cl" << "F" << "P" << "R" << "X";
-  recentLib->addItems(celements);
 
   // Declaring variables
   QDir dir;
@@ -864,27 +851,6 @@ void MainWindow::createToolBoxes()
   QGroupBox* groupBoxAtomOptions = new QGroupBox("Atom options");
   groupBoxAtomOptions->setLayout(hLayoutAS);
 
-  QHBoxLayout* hLayoutBS1 = new QHBoxLayout();
-  hLayoutBS1->addWidget(new QLabel("Bond order"));
-  QSpinBox * spinBoxBondOrder = new QSpinBox;
-  spinBoxBondOrder->setValue(m_scene->bondOrder());
-  spinBoxBondOrder->setMinimum(1);
-  spinBoxBondOrder->setMaximum(3);
-  connect(spinBoxBondOrder, SIGNAL(valueChanged(int)), m_scene, SLOT(setBondOrder(int)));
-  hLayoutBS1->addWidget(spinBoxBondOrder);
-
-  QHBoxLayout* hLayoutBS2 = new QHBoxLayout();
-  hLayoutBS2->addWidget(new QLabel("Bond type"));
-  QComboBox * comboBoxBondType = new QComboBox;
-  comboBoxBondType->addItem("Normal bond");
-  comboBoxBondType->addItem("Up bond");
-  comboBoxBondType->addItem("Up bond reversed");
-  comboBoxBondType->addItem("Down bond");
-  comboBoxBondType->addItem("Down bond reversed");
-  comboBoxBondType->addItem("Striped Bond");
-  connect(comboBoxBondType, SIGNAL(currentIndexChanged(int)), m_scene, SLOT(setBondType(int)));
-  hLayoutBS2->addWidget(comboBoxBondType);
-
   QHBoxLayout* hLayoutBS3 = new QHBoxLayout();
   hLayoutBS3->addWidget(new QLabel("Bond angle"));
   QSpinBox * spinBoxBondAngle = new QSpinBox;
@@ -907,8 +873,6 @@ void MainWindow::createToolBoxes()
   hLayoutBS4->addWidget(doubleSpinBoxBondLength);
 
   QVBoxLayout* vLayoutBS = new QVBoxLayout;
-  vLayoutBS->addLayout(hLayoutBS1);
-  vLayoutBS->addLayout(hLayoutBS2);
   vLayoutBS->addLayout(hLayoutBS3);
   vLayoutBS->addLayout(hLayoutBS4);
 
@@ -1141,18 +1105,22 @@ QString MainWindow::strippedName(const QString &fullFileName)
 void MainWindow::updateRecentList( QListWidgetItem* element )
 {
   //   recentLib->addItem(element);
+  /*
   bool unique = true;
   for (int i = 0; i < recentLib->count(); i++)
     if (recentLib->item(i)->text() == element->text()) unique = false;
   if (unique) recentLib->addItem(element->text());
+  */
 }
 
 void MainWindow::updateRecentList( QTableWidgetItem * element )
 {
+  /*
   bool unique = true;
   for (int i = 0; i < recentLib->count(); i++)
     if (recentLib->item(i)->text() == element->text()) unique = false;
   if (unique) recentLib->addItem(element->text());
+  */
 }
 
 void MainWindow::updateInfoBox( )
