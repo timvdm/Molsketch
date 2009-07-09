@@ -37,8 +37,8 @@ class QPainter;
 
 namespace Molsketch {
 
-  class MSKAtom;
-  class MSKBond;
+  class Atom;
+  class Bond;
   class MolScene;
 
 /**
@@ -55,7 +55,7 @@ class Molecule : public QGraphicsItemGroup
     /** Creates a molecule with @p parent on MolScene @p scene. */
     Molecule(QGraphicsItem* parent = 0, MolScene* scene = 0);
     /** Creates a molecule from the atoms and bonds of the sets with @p parent on MolScene @p scene. */
-    Molecule(QSet<MSKAtom*>, QSet<MSKBond*>, QGraphicsItem* parent = 0, MolScene* scene = 0);
+    Molecule(QSet<Atom*>, QSet<Bond*>, QGraphicsItem* parent = 0, MolScene* scene = 0);
     /** Creates a copy of molecule @p mol with @p parent on MolScene @p scene. */
     Molecule(Molecule* mol, QGraphicsItem* parent = 0, MolScene* scene = 0);
 
@@ -81,7 +81,7 @@ class Molecule : public QGraphicsItemGroup
     * 
     * @return return a pointer to the new atom which has been added to the molecule
     */
-    MSKAtom* addMSKAtom(const QString &element, const QPointF &position, bool implicitHydrogen);
+    Atom* addAtom(const QString &element, const QPointF &position, bool implicitHydrogen);
 
     /**
     * This method adds an existing atom to the molecule.
@@ -90,7 +90,7 @@ class Molecule : public QGraphicsItemGroup
     *
     * @return return a pointer to the atom just added to the molecule.
     */
-    MSKAtom* addMSKAtom(MSKAtom* atom);
+    Atom* addAtom(Atom* atom);
 
     /**
     * This method removes an atom from the molecule. The bonds connected to this atom will be removed as well. 
@@ -101,17 +101,17 @@ class Molecule : public QGraphicsItemGroup
     *
     * @return a list with the bonds which were connected to the removed atom..
     */
-    QList<MSKBond*> delAtom(MSKAtom* atom);
+    QList<Bond*> delAtom(Atom* atom);
 
     /** Adds a bond between @p atomA and @p atomB with @p order and @p type. */
-    MSKBond* addBond(MSKAtom* atomA, MSKAtom* atomB, int order = 1, int type = 0);
+    Bond* addBond(Atom* atomA, Atom* atomB, int order = 1, int type = 0);
     /** Adds existing bond @p bond to the molecule. */
-    MSKBond* addBond(MSKBond* bond);
+    Bond* addBond(Bond* bond);
     /** Deletes @p bond from the molecule. */
-    void delBond(MSKBond* bond);
+    void delBond(Bond* bond);
 
-//    /** Automaticly adds an atom with a bond to @p startMSKAtom at a convenient position. */
-//   void addAutoMSKAtom(MSKAtom* startMSKAtom);
+//    /** Automaticly adds an atom with a bond to @p startAtom at a convenient position. */
+//   void addAutoAtom(Atom* startAtom);
 
     /**
       * Splits the molecule up in different seperate molecules. Used to clean up the molecule after removing the connection 
@@ -130,22 +130,22 @@ class Molecule : public QGraphicsItemGroup
     void rebuild();
 
 //   void normalize();
-//   void setMSKAtomSize(qreal pt);
+//   void setAtomSize(qreal pt);
 
     // Query methods
     /** Returns a pointer to the atom at position @p pos, or NULL id none. */
-    MSKAtom* atomAt(const QPointF &pos) const;
+    Atom* atomAt(const QPointF &pos) const;
 //    /** Returns a pointer to the atom with @p id. */
-//     MSKAtom* atom(int id) const;
+//     Atom* atom(int id) const;
 
     /** Returns a pointer to the bond at position @p pos or NULL id none. */
-    MSKBond* bondAt(const QPointF &pos) const;
+    Bond* bondAt(const QPointF &pos) const;
 //    /** Returns a pointer to bond with @p id. */
-//     MSKBond* bond(int id) const;
+//     Bond* bond(int id) const;
     /** Returns a list of the bonds connected to @p atom. */
-    QList<MSKBond*> bonds(const MSKAtom* atom);
+    QList<Bond*> bonds(const Atom* atom);
     /** Returns a pointer to the bond between @p atomA and @p atomB, or a NULL if none. */
-    MSKBond* bondBetween(MSKAtom* atomA, MSKAtom* atomB) const;
+    Bond* bondBetween(Atom* atomA, Atom* atomB) const;
 
     /** Returns @c true if the molecule exists of two seperate submolecules, and @c false otherwise. */
     bool canSplit() const;
@@ -153,11 +153,11 @@ class Molecule : public QGraphicsItemGroup
     /** 
      * Get a list of the atoms in the molecule. 
      */
-    const QList<MSKAtom*>& atoms() const;
+    const QList<Atom*>& atoms() const;
     /** 
      * Get a list of the bonds in the molecule 
      */
-    const QList<MSKBond*>& bonds() const;
+    const QList<Bond*>& bonds() const;
 
     /** Returns the MolScene of the molecule. */
     virtual MolScene* scene() const;
@@ -182,9 +182,9 @@ class Molecule : public QGraphicsItemGroup
   private:
     // Internal representation
     /** A list of pointers to the atoms of the molecule. Used as internal reprentation. */
-    QList<MSKAtom*> m_atomList;
+    QList<Atom*> m_atomList;
     /** A list of pointers to the bonds of the molecule. Used as internal representation. */
-    QList<MSKBond*> m_bondList;
+    QList<Bond*> m_bondList;
 
   };
 

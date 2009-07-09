@@ -32,6 +32,7 @@
 #include <QUndoCommand>
 
 #include "mollibitem.h"
+#include "bond.h"
 
 class QString;
 class QImage;
@@ -42,8 +43,8 @@ class QUndoStack;
 namespace Molsketch {
 
 class Molecule;
-class MSKAtom;
-class MSKBond;
+class Atom;
+class Bond;
 
 
 /**
@@ -106,10 +107,7 @@ public:
   /** Sets the atomsymbol font */
   void setAtomSymbolFont(const QFont & font);
   /** Sets the atom size. */
-  void setMSKAtomSize(qreal size);
-  /** Sets the number of hint points in the dynamic grid. */
-  void setHintPointSize(int size);
-
+  void setAtomSize(qreal size);
   /** Merges @p molA and @p molB. Used two merge two molecules when connected with a bond. */
   Molecule* merge(const Molecule* molA, const Molecule* molB);
 
@@ -120,13 +118,13 @@ public:
   /** Returns the first molecule at position @p pos or NULL if none. */
   Molecule* moleculeAt(const QPointF &pos);
   /** Returns the first atom at position @p pos or NULL if none. */
-  MSKAtom* atomAt(const QPointF &pos);
+  Atom* atomAt(const QPointF &pos);
   /** Returns the first bond at position @p pos or NULL if none. */
-  MSKBond* bondAt(const QPointF &pos);
+  Bond* bondAt(const QPointF &pos);
 
   /** Enum for the different edit modes. */
   enum editModes {
-  MoveMode, /**< MSKAtoms and molecules are movable. */
+  MoveMode, /**< Atoms and molecules are movable. */
   AddMode, /**< Mode to add atoms and bonds. */
   RemoveMode, /**< Mode to remove atoms, bonds and molecules. */
   RotateMode /**< Mode to rotate molecules. */
@@ -145,7 +143,11 @@ signals:
   void selectionChange( );
 //  /** Signal emitted if a new molecule is added to the scene. */
 //   void newMolecule(QPointF,QString);
-
+  /** 
+   * Sets the number of hint points in the dynamic grid. 
+   */
+  void setHintPointSize(int size);
+ 
 public slots:
   /** Slot to cut the current selection to the clipboard. */
   void cut();
@@ -167,11 +169,15 @@ public slots:
   void setDecHydrogenMode();
   /** Slot to select all contents of the scene. */
   void selectAll();
+  /** 
+   * Slot to set the current element to the element of @p item. */
+  void setElement(QListWidgetItem* item); // @todo remove -- widgets need to figure this ou themselves
   /** Slot to set the current element to the element of @p item. */
-  void setElement(QListWidgetItem* item);
-  /** Slot to set the current element to the element of @p item. */
-  void setElement(QTableWidgetItem* item);
-  /** Slot to set the current element to the element of @p symbol. */
+  void setElement(QTableWidgetItem* item); // @todo remove -- widgets need to figure this ou themselves
+  /** 
+   * Slot to set the current element to the element of @p symbol. This will also set the editMode() to 
+   * AddMode. If there exists a hint molecule, it will be deleted.
+   */
   void setElement(const QString & symbol);
   /** Sets the bond angle. */
   void setBondAngle(int angle);
@@ -189,8 +195,10 @@ public slots:
   void addMolecule(Molecule* mol);
   /** Slot to align the molecules of the scene to the grid. */
   void alignToGrid();
-  
-  /**
+ 
+
+
+ /**
    * Slot to set the current MolLibItem
    */
   void setHintMolecule(MolLibItem*);
@@ -198,6 +206,8 @@ public slots:
    * Wrapper around setHintMolecule(MolLibItem*) slot.
    */
   void setHintMolecule(QListWidgetItem* mol);
+
+  void setHintRing(int ringSize);
 
 protected:
   /** Generic event handler. Reimplementation for sceneChanged signals. */
@@ -323,8 +333,13 @@ private:
   QGraphicsItemGroup* m_hintPointsGroup;
   
   QGraphicsItemGroup *m_hintMolecule;
+  QList<QPointF> m_hintRingPoints;
+
   /** Method to initialize the hinting.*/
   void initHintItems();
+
+  void alignRingWithAtom(Atom *atom);
+  void alignRingWithBond(Bond *bond);
 
 };
 

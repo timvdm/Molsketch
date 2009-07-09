@@ -40,22 +40,45 @@ namespace Molsketch {
  *
  * @author Harm van Eersel
  */
-class MSKBond : public QGraphicsItem
+class Bond : public QGraphicsItem
 {
   public:
+
+    /** 
+     * Enum for the different bond types 
+     */
+    enum BondType { 
+      InPlane,
+      Wedge,
+      InvertedWedge,
+      Hash,
+      InvertedHash,
+      WedgeOrHash,
+      CisOrTrans,
+      NoType,
+    };
+    /** Enum for the different bondorders. */
+    enum bondOrders { 
+      Single = 1, /**< Single bond */
+      Double = 2, /**< Double bond */
+      Triple = 3 /**< Triple bond */
+    };
+
+
+
     /**
      * Constructor. Create a new bond between @p atomA and @p atomB. 
      *
      * @param atomA the origin atom of the bond
      * @param atomB the target atom of the bond
-     * @param order the bond order (@c MSKBond::Single for single, @c MSKBond::Double for double, @c MSKBond::Triple for tripple)
-     * @param type the bond type (@c MSKBond::Normal, @c MSKBond::Up, @c MSKBond::Down, e.g.)
+     * @param order the bond order (@c Bond::Single for single, @c Bond::Double for double, @c Bond::Triple for tripple)
+     * @param type the bond type (@c Bond::Normal, @c Bond::Up, @c Bond::Down, e.g.)
      */
-    MSKBond(MSKAtom* atomA, MSKAtom* atomB, int order = 1, int type = 0, QGraphicsItem* parent = 0, QGraphicsScene* scene = 0);
+    Bond(Atom* atomA, Atom* atomB, int order = 1, int type = 0, QGraphicsItem* parent = 0, QGraphicsScene* scene = 0);
     /**
      * Destructor. 
      */
-    virtual ~MSKBond();
+    virtual ~Bond();
 
     /** Undos the valency change caused by this bond in the two atoms connected to this bond. */
     //  void undoValency();
@@ -74,7 +97,7 @@ class MSKBond : public QGraphicsItem
     /** Returns the bounding rectangle of the bond. Needed for Qt painting. */
     virtual QRectF boundingRect() const;
     /** Returns the type of the class. Needed for Qt type casting. */
-    virtual int type() const {return MSKBond::Type;};
+    virtual int type() const {return Bond::Type;};
 
     // Manipulation methods
     /** Sets the bond type to @p type. */
@@ -98,11 +121,11 @@ class MSKBond : public QGraphicsItem
     int bondType() const;
 
     /** Returns the origin atom of the bond. */
-    MSKAtom* beginAtom() const;
+    Atom* beginAtom() const;
     /** Returns the target atom of the bond. */
-    MSKAtom* endAtom() const;
+    Atom* endAtom() const;
     /** Return @c true if @p atom takes part in this bond and @c false otherwise. */
-    bool hasMSKAtom(const MSKAtom* atom) const;
+    bool hasAtom(const Atom* atom) const;
 
     /** Returns the molecule this bond is part of. */
     Molecule* molecule() const;
@@ -110,22 +133,6 @@ class MSKBond : public QGraphicsItem
     // Public enums
     /** Defines the class type. Needed for Qt typecasting. */
     enum { Type = UserType + 4 };
-    /** Enum for the different bond types */
-    enum bondTypes { 
-      Normal, /**< Normal bond */
-      Up, /**< A bond from atomA upto atomB */
-      UpR, /**< A bond from atomB upto atomA */
-      Down, /**< A bond from atomA downto atomB */
-      DownR, /**< A bond from atomB downto atomA */
-      Dot /**< A dotted bond */
-    };
-    /** Enum for the different bondorders. */
-    enum bondOrders { 
-      Single = 1, /**< Single bond */
-      Double = 2, /**< Double bond */
-      Triple = 3 /**< Triple bond */
-    };
-
     // Static auxillary methods
     /** 
      * Auxillary method for shifting a bond perpendicular to the original bond.
@@ -146,9 +153,9 @@ class MSKBond : public QGraphicsItem
     /** Stores the bond order as integer. */
     int m_bondOrder;
     /** Stores a pointer to the first atom. */
-    MSKAtom* m_beginAtom;
+    Atom* m_beginAtom;
     /** Stores a pointer to the second atom. */
-    MSKAtom* m_endAtom;
+    Atom* m_endAtom;
 
 };
 

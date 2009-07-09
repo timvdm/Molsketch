@@ -21,6 +21,7 @@
 #include <QtGui>
 
 #include "molecule.h"
+#include "bond.h"
 #include "molscene.h"
 #include "mollibitem.h"
 #include "fileio.h"
@@ -48,7 +49,7 @@ MolLibItem::MolLibItem( Molecule* molecule, const QString & name )
   // set the sceneRect to the items bouding rectangle
   renderScene.setSceneRect(renderScene.itemsBoundingRect());
 
-  // use a pixmap because we'll be using Qt::white in MSKAtom::paint(...)
+  // use a pixmap because we'll be using Qt::white in Atom::paint(...)
   QPixmap pixmap(int(renderScene.width()), int(renderScene.height()));
   /*  TODO Perhaps the icons should all be the same size... */
   pixmap.fill();
@@ -89,8 +90,8 @@ MolLibItem::MolLibItem( Molecule* molecule, const QString & name )
 MolLibItem::~ MolLibItem( )
 {
   // Delete all bonds and atoms and finally the molecule
-  foreach(MSKBond* bond, m_molecule->bonds()) delete bond;
-  foreach(MSKAtom* atom, m_molecule->atoms()) delete atom;
+  foreach(Bond* bond, m_molecule->bonds()) delete bond;
+  foreach(Atom* atom, m_molecule->atoms()) delete atom;
   //delete m_molecule;
 }
 
@@ -104,8 +105,8 @@ Molecule* MolLibItem::getMolecule( )
 void MolLibItem::setMolecule( Molecule* mol )
 {
   // Delete the old molecule
-  foreach(MSKBond* bond, m_molecule->bonds()) delete bond;
-  foreach(MSKAtom* atom, m_molecule->atoms()) delete atom;
+  foreach(Bond* bond, m_molecule->bonds()) delete bond;
+  foreach(Atom* atom, m_molecule->atoms()) delete atom;
   //delete m_molecule;
 
   // Set a copy of mol as the new molecule

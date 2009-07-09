@@ -20,16 +20,20 @@
 
 #include <QtGui>
 #include <QAssistantClient>
+#include <QGridLayout>
 
 #include "molecule.h"
 #include "mainwindow.h"
 #include "molview.h"
 #include "molscene.h"
 #include "element.h"
-#include "settings.h"
 #include "fileio.h"
 #include "mollibitem.h"
 #include "periodictablewidget.h"
+
+// widgets
+#include "settings.h"
+#include "drawwidget.h"
 
 #define PROGRAM_NAME "Molsketch"
 #define PROGRAM_VERSION "Helium"
@@ -111,7 +115,7 @@ MainWindow::MainWindow()
 //   mol->setPos(position);
 // 
 //   // Adding a atom to the molecule
-//   mol->addMSKAtom(element,position);
+//   mol->addAtom(element,position);
 // 
 //   //   cerr << "Molecule added \n";
 // 
@@ -747,6 +751,13 @@ void MainWindow::createToolBoxes()
   periodicTableDock = new QDockWidget(tr("Periodic Table"));
   periodicTableDock->setObjectName("periodic-table-dockwidget");
 
+
+  ////////////////////////
+  // draw widget
+  ////////////////////////
+  DrawWidget *drawWidget = new DrawWidget(m_scene);
+
+
   // Create libraries
   recentLib = new QListWidget;
   genericLib = new QListWidget;
@@ -924,10 +935,10 @@ void MainWindow::createToolBoxes()
 
   // Create a library toolbox and add the libraries
   toolBox = new QToolBox;
-  toolBox->addItem(recentLib,tr("Recent Items"));
+  toolBox->addItem(drawWidget, tr("Draw"));
   toolBox->addItem(frameDrawOptions,tr("Draw options"));
 //   toolBox->addItem(elementLib,tr("Elements"));
-  toolBox->addItem(genericLib,tr("Generic Molecules"));
+  toolBox->addItem(genericLib, tr("Generic Molecules"));
   toolBox->addItem(frameCustomLib,tr("Custom Molecules"));
   toolBoxDock->setWidget(toolBox);
 
@@ -1047,7 +1058,7 @@ void MainWindow::readPreferences(const QSettings & settings)
   m_lastAccessedPath = settings.value("last-save-path", QDir::homePath()).toString();
 
   // Load the draw settings
-  m_scene->setMSKAtomSize(settings.value("atom-size",30).toDouble());
+  m_scene->setAtomSize(settings.value("atom-size",30).toDouble());
   m_scene->setAutoAddHydrogen(settings.value("auto-add-hydrogen",true).toBool());
   m_scene->setCarbonVisible(settings.value("carbon-visible",false).toBool());
   m_scene->setHydrogenVisible(settings.value("hydrogen-visible",true).toBool());

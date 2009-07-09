@@ -32,7 +32,7 @@
 
 namespace Molsketch {
 
-  MSKBond::MSKBond(MSKAtom* atomA, MSKAtom* atomB, int order, int type, QGraphicsItem* parent,QGraphicsScene* scene) : QGraphicsItem(parent,scene)
+  Bond::Bond(Atom* atomA, Atom* atomB, int order, int type, QGraphicsItem* parent,QGraphicsScene* scene) : QGraphicsItem(parent,scene)
   {
     Q_CHECK_PTR(atomA);
     Q_CHECK_PTR(atomB);
@@ -51,14 +51,14 @@ namespace Molsketch {
   //   setAcceptedMouseButtons(Qt::LeftButton);
   }
   
-  MSKBond::~MSKBond()
+  Bond::~Bond()
   {
     //m_beginAtom->removeNeighbor(m_endAtom);
     //m_endAtom->removeNeighbor(m_beginAtom);
   }
 
 /*
-void MSKBond::redoValency()
+void Bond::redoValency()
 {
   // Check if the atoms still exist
   if (!m_beginAtom || !m_endAtom) return;
@@ -108,7 +108,7 @@ void MSKBond::redoValency()
 /*
 }
 
-void MSKBond::undoValency()
+void Bond::undoValency()
 {
   // Check if the atoms still exist
   if (!m_beginAtom || !m_endAtom) return;
@@ -159,7 +159,7 @@ void MSKBond::undoValency()
 //}
 // Inherited methods
 
-  QRectF MSKBond::boundingRect() const
+  QRectF Bond::boundingRect() const
   {
     Q_CHECK_PTR(m_beginAtom);
     Q_CHECK_PTR(m_endAtom);
@@ -172,8 +172,11 @@ void MSKBond::undoValency()
     return QRectF(mapFromParent(m_beginAtom->pos()) - QPointF(5,5), QSizeF(w+10,h+10));
   }
 
-void MSKBond::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
+void Bond::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
 {
+  Q_UNUSED(option);
+  Q_UNUSED(widget);
+
   // Check the scene
   MolScene* molScene = dynamic_cast<MolScene*>(scene());
   Q_CHECK_PTR(molScene);
@@ -215,26 +218,26 @@ void MSKBond::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, Q
 
   switch ( m_bondType )
     {
-    case MSKBond::Down:
+    case Bond::Hash:
       painter->setPen( Qt::NoPen );
       painter->setBrush( radialGrad );
       painter->drawConvexPolygon( points2, 4);
       break;
-    case MSKBond::DownR:
+    case Bond::InvertedHash:
       painter->setPen( Qt::NoPen );
       painter->setBrush( radialGrad );
       painter->drawConvexPolygon( points, 4);
       break;
-    case MSKBond::Dot:
+    case Bond::WedgeOrHash:
       pen.setDashPattern(dash);
       painter->setPen(pen);
       painter->drawLine(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())));
       break;
-    case MSKBond::Up:
+    case Bond::Wedge:
       painter->setBrush( QBrush(Qt::black) );
       painter->drawConvexPolygon( points, 4);
       break;
-    case MSKBond::UpR:
+    case Bond::InvertedWedge:
       painter->setBrush( QBrush(Qt::black) );
       painter->drawConvexPolygon( points2, 4);
       break;
@@ -242,24 +245,24 @@ void MSKBond::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, Q
     default:
       switch ( m_bondOrder )
         {
-        case MSKBond::Single:
+        case Bond::Single:
           painter->drawLine(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())));
           break;
-        case MSKBond::Double:
+        case Bond::Double:
           {
 //             qDebug("In bond %x", this);
             qreal direction1 = 0;
 //             qDebug("Connected atoms of %x", m_beginAtom);
-//             foreach(MSKAtom * atom, m_beginAtom->connectedAtoms())
+//             foreach(Atom * atom, m_beginAtom->connectedAtoms())
 //               qDebug("%x", atom);
-            foreach(MSKAtom * atom, m_beginAtom->neighbors())
+            foreach(Atom * atom, m_beginAtom->neighbors())
               if (atom && atom != m_endAtom)
                 direction1 += (atom->pos().x()*pos().x() + atom->pos().y()*pos().y())/(sqrt(pow(atom->pos().x(),2) + pow(atom->pos().y(), 2))*sqrt(pow(pos().x(),2) + pow(pos().y(),2)));
             qreal direction2 = 0;
 /*            qDebug("Connected atoms of %x", m_endAtom);
-            foreach(MSKAtom * atom, m_endAtom->connectedAtoms())
+            foreach(Atom * atom, m_endAtom->connectedAtoms())
               qDebug("%x", atom);*/
-            foreach(MSKAtom * atom, m_endAtom->neighbors())
+            foreach(Atom * atom, m_endAtom->neighbors())
               if (atom && atom != m_beginAtom)
                 direction2 += (atom->pos().x()*pos().x() + atom->pos().y()*pos().y())/(sqrt(pow(atom->pos().x(),2) + pow(pos().x(),2))*sqrt(pow(atom->pos().y(),2) + pow(pos().y(),2)));
             if ((direction1 + direction2) > 0) {
@@ -274,7 +277,7 @@ void MSKBond::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, Q
             }
           }
           break;
-        case MSKBond::Triple:
+        case Bond::Triple:
           painter->drawLine(shiftVector(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())),3));
           painter->drawLine(shiftVector(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())),-3));
           painter->drawLine(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())));
@@ -288,13 +291,13 @@ void MSKBond::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, Q
   painter->restore();
 }
 
-QVariant MSKBond::itemChange(GraphicsItemChange change, const QVariant &value)
+QVariant Bond::itemChange(GraphicsItemChange change, const QVariant &value)
 {
   if (change == ItemPositionChange && parentItem()) parentItem()->update();
   return QGraphicsItem::itemChange(change, value);
 }
 
-QPainterPath MSKBond::shape() const
+QPainterPath Bond::shape() const
   {
     QPolygonF polygon;
     polygon << shiftVector(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())),10).p1()
@@ -311,7 +314,7 @@ QPainterPath MSKBond::shape() const
 
 // Manipulation methods
 
-void MSKBond::setOrder(int order)
+void Bond::setOrder(int order)
 {
   //pre: order>0
   //post: m_bondOrder=order
@@ -323,7 +326,7 @@ void MSKBond::setOrder(int order)
   update();
 }
 
-void MSKBond::incOrder()
+void Bond::incOrder()
 {
   //pre: true
   //post: m_bondOrder = oldBondOrder % 3 + 1
@@ -333,7 +336,7 @@ void MSKBond::incOrder()
 
 }
 
-void MSKBond::decOrder()
+void Bond::decOrder()
 {
   //pre: true
   //post: m_bondOrder = (oldBondOrder + 1) % 3 + 1
@@ -343,7 +346,7 @@ void MSKBond::decOrder()
 
 }
 
-void MSKBond::setType(int t)
+void Bond::setType(int t)
 {
   //pre: 0 <= t < 6
   //post: bondType = t
@@ -353,14 +356,14 @@ void MSKBond::setType(int t)
   update();
 }
 
-void MSKBond::incType()
+void Bond::incType()
 {
   //pre: true
   //post: bondType = bondType % 6 + 1
   setType((m_bondType + 1) % 6);
 }
 
-void MSKBond::decType()
+void Bond::decType()
 {
   //pre: true
   //post: bondType = (bondType + 5) % 6
@@ -370,39 +373,39 @@ void MSKBond::decType()
 
 // Query methods
 
-  int MSKBond::bondOrder() const
+  int Bond::bondOrder() const
   {
     return m_bondOrder;
   }
 
-  int MSKBond::bondType() const
+  int Bond::bondType() const
   {
     return m_bondType;
   }
 
-  MSKAtom* MSKBond::beginAtom() const
+  Atom* Bond::beginAtom() const
   {
     return m_beginAtom;
   }
 
-  MSKAtom* MSKBond::endAtom() const
+  Atom* Bond::endAtom() const
   {
     return m_endAtom;
   }
 
-  bool MSKBond::hasMSKAtom(const MSKAtom* atom) const
+  bool Bond::hasAtom(const Atom* atom) const
   {
     return m_beginAtom == atom || m_endAtom == atom;
   }
   
-Molecule* MSKBond::molecule() const
+Molecule* Bond::molecule() const
   {
     return dynamic_cast<Molecule*>(this->parentItem());
   }
 
 // Auxilary methods
 
-QLineF MSKBond::shiftVector(const QLineF &vector, qreal shift) // Shifts a vector on the perpendicular axis
+QLineF Bond::shiftVector(const QLineF &vector, qreal shift) // Shifts a vector on the perpendicular axis
 {
   //pre: true
   //ret: shifted vector

@@ -21,7 +21,7 @@
 #ifndef MSK_ATOM_H
 #define MSK_ATOM_H
 
-#include <QGraphicsItem>
+ #include <QGraphicsItem>
 #include <QList>
 
 namespace Molsketch {
@@ -31,7 +31,7 @@ namespace Molsketch {
   /**
    * Atom class
    */
-  class MSKAtom : public QGraphicsItem
+  class Atom : public QGraphicsItem
   {
     public:
       /**
@@ -41,7 +41,7 @@ namespace Molsketch {
        * @param element the element symbol of the new atom
        * @param invisible makes the atom invisible if @c true
        */
-      MSKAtom(const QPointF & position, const QString & element, 
+      Atom(const QPointF & position, const QString & element, 
           bool implicitHydrogens, QGraphicsItem* parent = 0, QGraphicsScene* scene = 0);
 
       //@name Inherited drawing methods
@@ -125,11 +125,11 @@ namespace Molsketch {
 
 
       /** Adds an external bond to the bondlist of the atom */
-      void addNeighbor(MSKAtom * atom);
+      void addNeighbor(Atom * atom);
       /** Removes an external bond from the bondlist of the atom */
-      void removeNeighbor(MSKAtom * atom);
+      void removeNeighbor(Atom * atom);
       /** Returns the list of connected atom */
-      const QList<MSKAtom*>& neighbors() const;
+      const QList<Atom*>& neighbors() const;
       /**
        * Sets the number of implicit hydrogens of the current atom to @p number.
        *
@@ -144,7 +144,7 @@ namespace Molsketch {
       /** Defines the type of the class. Needed for Qt typecasting.*/
       enum { Type = UserType + 8 };
       /** Returns the type of the class. Needed fro Qt typecasting. */
-      virtual int type() const {return MSKAtom::Type;};
+      virtual int type() const {return Atom::Type;};
 
     protected:
       // Event handlers
@@ -173,7 +173,7 @@ namespace Molsketch {
        * Used to determine the position of the implicit H's. The implicit hydrogens
        * are not included.
        */
-      QList<MSKAtom*> m_neighbors;
+      QList<Atom*> m_neighbors;
       /**
        * Stores the number of implicit hydrogens
        *

@@ -31,4 +31,4 @@ set_target_properties(molsketchpartshell PROPERTIES COMPILE_FLAGS -DMSKSRCDIR="\
 install(TARGETS molsketchpart DESTINATION ${PLUGIN_INSTALL_DIR})
 install(FILES partshell.rc DESTINATION  ${DATA_INSTALL_DIR}/molsketchpart)
 
-endif(WITH_KPART AND KDE4_FOUND)
+endif(FALSE) #WITH_KPART AND KDE4_FOUND)

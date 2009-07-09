@@ -43,7 +43,7 @@ Molecule::Molecule(QGraphicsItem* parent, MolScene* scene) : QGraphicsItemGroup(
     setFlag(QGraphicsItem::ItemIsSelectable, scene->editMode()==MolScene::MoveMode);
 }
 
-Molecule::Molecule(QSet<MSKAtom*> atomSet, QSet<MSKBond*> bondSet, 
+Molecule::Molecule(QSet<Atom*> atomSet, QSet<Bond*> bondSet, 
   QGraphicsItem* parent, MolScene* scene) : QGraphicsItemGroup(parent,scene)
 {
   // Setting properties
@@ -54,12 +54,12 @@ Molecule::Molecule(QSet<MSKAtom*> atomSet, QSet<MSKBond*> bondSet,
   if (scene) setFlag(QGraphicsItem::ItemIsSelectable, scene->editMode()==MolScene::MoveMode);
 
   // Add the new atoms
-  foreach(MSKAtom* atom, atomSet)
-    addMSKAtom(new MSKAtom(atom->scenePos(), atom->element(), atom->hasImplicitHydrogens()));
+  foreach(Atom* atom, atomSet)
+    addAtom(new Atom(atom->scenePos(), atom->element(), atom->hasImplicitHydrogens()));
 
   // ...and bonds
-  foreach(MSKBond* bond, bondSet)
-    addBond(new MSKBond(atomAt(bond->beginAtom()->scenePos()),atomAt(bond->endAtom()->scenePos()),bond->bondOrder(),bond->bondType()));
+  foreach(Bond* bond, bondSet)
+    addBond(new Bond(atomAt(bond->beginAtom()->scenePos()),atomAt(bond->endAtom()->scenePos()),bond->bondOrder(),bond->bondType()));
 }
 
 Molecule::Molecule(Molecule* mol, QGraphicsItem* parent, MolScene* scene) : QGraphicsItemGroup(parent,scene)
@@ -73,14 +73,14 @@ Molecule::Molecule(Molecule* mol, QGraphicsItem* parent, MolScene* scene) : QGra
     setFlag(QGraphicsItem::ItemIsSelectable, scene->editMode()==MolScene::MoveMode);
 
   // Add the new atoms
-  foreach(MSKAtom* atom, mol->atoms())
+  foreach(Atom* atom, mol->atoms())
   {
-    addMSKAtom(new MSKAtom(atom->pos(),atom->element(), atom->hasImplicitHydrogens()));
+    addAtom(new Atom(atom->pos(),atom->element(), atom->hasImplicitHydrogens()));
   }
   // ...and bonds
-  foreach(MSKBond* bond, mol->bonds())
+  foreach(Bond* bond, mol->bonds())
   {
-    addBond(new MSKBond(atomAt(bond->beginAtom()->pos()),atomAt(bond->endAtom()->pos()),bond->bondOrder(),bond->bondType()));
+    addBond(new Bond(atomAt(bond->beginAtom()->pos()),atomAt(bond->endAtom()->pos()),bond->bondOrder(),bond->bondType()));
   }
   
   // Set the position
@@ -90,17 +90,17 @@ Molecule::Molecule(Molecule* mol, QGraphicsItem* parent, MolScene* scene) : QGra
 
 // Manipulation methods
 
-MSKAtom* Molecule::addMSKAtom(const QString &element, const QPointF &point, bool implicitHydrogen)
+Atom* Molecule::addAtom(const QString &element, const QPointF &point, bool implicitHydrogen)
 {
   //pre: element is a non-empty string and point is a valid position on the canvas in scene coordinates
   Q_ASSERT(!element.isEmpty());
   //post: an atom of element has been added to the molecule
-//   MSKAtom* atom = new MSKAtom(point,element,((element == "C") && !(scene()->getShowCarbon() ) || ((element == "H") && !(scene()->getShowHydrogen()))),this);
-  MSKAtom* atom = new MSKAtom(point,element,implicitHydrogen);
-  return addMSKAtom(atom);
+//   Atom* atom = new Atom(point,element,((element == "C") && !(scene()->getShowCarbon() ) || ((element == "H") && !(scene()->getShowHydrogen()))),this);
+  Atom* atom = new Atom(point,element,implicitHydrogen);
+  return addAtom(atom);
 }
 
-MSKAtom* Molecule::addMSKAtom(MSKAtom* atom)
+Atom* Molecule::addAtom(Atom* atom)
 {
   // pre: atom is a valid pointer to a atom
   Q_CHECK_PTR(atom);
@@ -115,7 +115,7 @@ MSKAtom* Molecule::addMSKAtom(MSKAtom* atom)
   return atom;
 }
 
-MSKBond* Molecule::addBond(MSKAtom* atomA, MSKAtom* atomB, int order, int type)
+Bond* Molecule::addBond(Atom* atomA, Atom* atomB, int order, int type)
 {
   //pre: atomA and atomB are existing different atoms in the molecule
   Q_ASSERT (m_atomList.contains(atomA));
@@ -124,11 +124,11 @@ MSKBond* Molecule::addBond(MSKAtom* atomA, MSKAtom* atomB, int order, int type)
   //post: a bond of type has been added between atomA and atomB
 
   // Creating a new bond
-  MSKBond* bond = new MSKBond(atomA,atomB,order,type);
+  Bond* bond = new Bond(atomA,atomB,order,type);
   return addBond(bond);
 }
 
-MSKBond* Molecule::addBond(MSKBond* bond)
+Bond* Molecule::addBond(Bond* bond)
 {
   //pre(1): bond is a valid pointer to a bond
   Q_CHECK_PTR(bond);
@@ -138,7 +138,7 @@ MSKBond* Molecule::addBond(MSKBond* bond)
 
 
   // Checking if and altering when a bond exists
-  MSKBond* bondX = bondBetween(bond->beginAtom(), bond->endAtom());
+  Bond* bondX = bondBetween(bond->beginAtom(), bond->endAtom());
   if (bondX) return bondX;
 //   {
 //     bondX->incOrder();
@@ -159,7 +159,7 @@ MSKBond* Molecule::addBond(MSKBond* bond)
   return bond;
 }
 
-QList<MSKBond*> Molecule::delAtom(MSKAtom* atom)
+QList<Bond*> Molecule::delAtom(Atom* atom)
 {
   //pre: atom is an existing atom in the molecule
   Q_ASSERT(m_atomList.contains(atom));
@@ -168,8 +168,8 @@ QList<MSKBond*> Molecule::delAtom(MSKAtom* atom)
   //ret: the former bonds of this atom
 
   // Remove all connected bonds from the molecule
-  QList<MSKBond*> delList = bonds(atom);
-  foreach(MSKBond* bond, delList) delBond(bond);
+  QList<Bond*> delList = bonds(atom);
+  foreach(Bond* bond, delList) delBond(bond);
 
   // Remove the atom
   m_atomList.removeAll(atom);
@@ -181,7 +181,7 @@ QList<MSKBond*> Molecule::delAtom(MSKAtom* atom)
 
 }
 
-void Molecule::delBond(MSKBond* bond)
+void Molecule::delBond(Bond* bond)
 {
   //pre: bond is an existing bond in the molecule
   Q_ASSERT(m_bondList.contains(bond));
@@ -199,20 +199,20 @@ void Molecule::delBond(MSKBond* bond)
 //  //   delete bond;
 }
 
-// void Molecule::addAutoMSKAtom(MSKAtom* startMSKAtom)
+// void Molecule::addAutoAtom(Atom* startAtom)
 // {
 //   //pre: atom is part of the molecule
-//   //post: the molecule has a new atom with a bond to startMSKAtom
-//   Q_ASSERT(m_atomList.contains(startMSKAtom));
+//   //post: the molecule has a new atom with a bond to startAtom
+//   Q_ASSERT(m_atomList.contains(startAtom));
 //
 //     // Calculate a conveniant position
 //     QPointF pos;
-//     pos.setX( startMSKAtom->pos().x() + 5 );
-//     pos.setY( startMSKAtom->pos().y()  + 5 );
+//     pos.setX( startAtom->pos().x() + 5 );
+//     pos.setY( startAtom->pos().y()  + 5 );
 //
 //     // Add a atom at this position
-//     MSKAtom* endMSKAtom = addMSKAtom( scene()->curElement, pos);
-//     addBond( startMSKAtom, endMSKAtom );
+//     Atom* endAtom = addAtom( scene()->curElement, pos);
+//     addBond( startAtom, endAtom );
 //
 // }
 
@@ -226,15 +226,15 @@ QList<Molecule*> Molecule::split()
   QList<Molecule*> molList;
 
   // Create sets with the bonds and molcules
-  QSet<MSKAtom*> atomSet(m_atomList.toSet());
-  QSet<MSKBond*> bondSet(m_bondList.toSet());
-  QSet<MSKAtom*> atomSubSet;
-  QSet<MSKBond*> bondSubSet;
+  QSet<Atom*> atomSet(m_atomList.toSet());
+  QSet<Bond*> bondSet(m_bondList.toSet());
+  QSet<Atom*> atomSubSet;
+  QSet<Bond*> bondSubSet;
 
   // Declarations
   int lastSize;
-  MSKAtom* atom;
-  MSKBond* bond;
+  Atom* atom;
+  Bond* bond;
 
   // Main loop
   while (!atomSet.isEmpty())
@@ -252,7 +252,7 @@ QList<Molecule*> Molecule::split()
           foreach (atom,atomSubSet)
           {
             foreach(bond,bondSet)
-              if (bond->hasMSKAtom(atom)) bondSubSet << bond;
+              if (bond->hasAtom(atom)) bondSubSet << bond;
             foreach(bond,bondSubSet)
               atomSubSet << bond->beginAtom() << bond->endAtom();
           }
@@ -273,12 +273,12 @@ QList<Molecule*> Molecule::split()
 
 // Query methods
 
-MSKAtom* Molecule::atomAt(const QPointF &pos) const
+Atom* Molecule::atomAt(const QPointF &pos) const
   {
     //pre: pos is a valid position on the canvas in scene coordinates
     //post: return the atom op position pos or nil
 
-    foreach(MSKAtom* atom, m_atomList)
+    foreach(Atom* atom, m_atomList)
     {
       if (atom->contains(atom->mapFromScene(pos))) return atom;
     }
@@ -286,16 +286,16 @@ MSKAtom* Molecule::atomAt(const QPointF &pos) const
 
     // 	for ( int i = 0; i < children().count() ;i++)
     // 	{
-    // 		if ((children()[i]->type() ==  MSKAtom::Type) && (children()[i]->contains(pos)))
+    // 		if ((children()[i]->type() ==  Atom::Type) && (children()[i]->contains(pos)))
     // 		{
-    // 			return (MSKAtom*)children()[i];
+    // 			return (Atom*)children()[i];
     // 		}
     // 	}
 
     return 0;
   }
 
-// MSKAtom* Molecule::atom(int id) const
+// Atom* Molecule::atom(int id) const
 //   {   //pre: id does not exceed the number of atoms
 //     Q_ASSERT(id<m_atomList.size());
 //     //post: returns the i-th atom
@@ -303,11 +303,11 @@ MSKAtom* Molecule::atomAt(const QPointF &pos) const
 //     return m_atomList.at(id);
 //   }
 
-MSKBond* Molecule::bondAt(const QPointF &pos) const
+Bond* Molecule::bondAt(const QPointF &pos) const
   {
     //pre: pos is a valid position on the canvas in scene coordinates
     //post: return the first bond on position pos
-    foreach(MSKBond* bond, m_bondList)
+    foreach(Bond* bond, m_bondList)
     {
       if (bond->contains(bond->mapFromScene(pos))) return bond;
     }
@@ -315,7 +315,7 @@ MSKBond* Molecule::bondAt(const QPointF &pos) const
   }
 
 
-// MSKBond* Molecule::bond(int id) const
+// Bond* Molecule::bond(int id) const
 // {
 //     //pre: id does not exceed the number of atoms
 //     Q_ASSERT(0 <= id && id < m_bondList.size());
@@ -324,12 +324,12 @@ MSKBond* Molecule::bondAt(const QPointF &pos) const
 //     return m_bondList.at(id);
 // }
 
-  const QList<MSKAtom*>& Molecule::atoms() const
+  const QList<Atom*>& Molecule::atoms() const
   {
     return m_atomList;
   }
 
-  const QList<MSKBond*>& Molecule::bonds() const
+  const QList<Bond*>& Molecule::bonds() const
   {
     return m_bondList;
   }
@@ -339,7 +339,7 @@ MSKBond* Molecule::bondAt(const QPointF &pos) const
     //pre: true
     //ret: total charge of the atoms
 
-    MSKAtom* atom;
+    Atom* atom;
     int totalCharge = 0;
     foreach(atom,m_atomList)
       totalCharge += atom->charge();
@@ -359,8 +359,8 @@ QString Molecule::formula( ) const
     // Analyse the molecule and create a hash with the atoms
     QHash<QString,int> hash;
 
-//     for (int i = 0; i < countMSKAtoms(); i++)
-    foreach(MSKAtom* atom, m_atomList)
+//     for (int i = 0; i < countAtoms(); i++)
+    foreach(Atom* atom, m_atomList)
     {
       QString element = atom->element();
       hash.insert(element, hash.value(element,0) + 1 );
@@ -406,7 +406,7 @@ double Molecule::weight( ) const
 
     double weight = 0;
 
-    foreach(MSKAtom* atom, m_atomList)
+    foreach(Atom* atom, m_atomList)
     {
       weight += atom->weight();
     }
@@ -441,15 +441,15 @@ bool Molecule::canSplit() const
     // Return false if molecule is empty
     if (m_atomList.isEmpty()) return false;
     // Create sets with the bonds and molcules
-    QSet<MSKAtom*> atomSet(m_atomList.toSet());
-    QSet<MSKBond*> bondSet(m_bondList.toSet());
-    QSet<MSKAtom*> atomSubSet;
-    QSet<MSKBond*> bondSubSet;
+    QSet<Atom*> atomSet(m_atomList.toSet());
+    QSet<Bond*> bondSet(m_bondList.toSet());
+    QSet<Atom*> atomSubSet;
+    QSet<Bond*> bondSubSet;
 
     // Declarations
     int lastSize = 0;
-    MSKAtom* atom;
-    MSKBond* bond;
+    Atom* atom;
+    Bond* bond;
 
     atomSubSet.clear();
     bondSubSet.clear();
@@ -463,7 +463,7 @@ bool Molecule::canSplit() const
         {
           lastSize = atomSubSet.size();
           foreach(bond,bondSet)
-            if (bond->hasMSKAtom(atom)) bondSubSet << bond;
+            if (bond->hasAtom(atom)) bondSubSet << bond;
           foreach(bond,bondSubSet)
             atomSubSet << bond->beginAtom() << bond->endAtom();
         }
@@ -489,18 +489,18 @@ void Molecule::rebuild()
 
   // Remove and then readd all elements
   prepareGeometryChange();
-  foreach(MSKBond* bond, m_bondList) removeFromGroup(bond);
-  foreach(MSKAtom* atom, m_atomList) removeFromGroup(atom);
+  foreach(Bond* bond, m_bondList) removeFromGroup(bond);
+  foreach(Atom* atom, m_atomList) removeFromGroup(atom);
   resetTransform();
-  foreach(MSKAtom* atom, m_atomList) addToGroup(atom);
-  foreach(MSKBond* bond, m_bondList) addToGroup(bond);
+  foreach(Atom* atom, m_atomList) addToGroup(atom);
+  foreach(Bond* bond, m_bondList) addToGroup(bond);
 }
 
 
-MSKBond* Molecule::bondBetween(MSKAtom* atomA, MSKAtom* atomB) const
+Bond* Molecule::bondBetween(Atom* atomA, Atom* atomB) const
 {
 //     for (int i = 0; i < countBonds(); i++)
-  foreach(MSKBond* bond, m_bondList)
+  foreach(Bond* bond, m_bondList)
     if (((bond->beginAtom() == atomA) || (bond->beginAtom() == atomB )) && ((bond->endAtom() == atomA) || (bond->endAtom() == atomB )))
       return bond;
 
@@ -539,12 +539,12 @@ MSKBond* Molecule::bondBetween(MSKAtom* atomA, MSKAtom* atomB) const
 //     return QGraphicsItem::itemChange(change, value);
 // }
 
-  QList< MSKBond * > Molecule::bonds(const MSKAtom * atom)
+  QList< Bond * > Molecule::bonds(const Atom * atom)
   {
-    QList<MSKBond*> bondList;
+    QList<Bond*> bondList;
 
-    foreach(MSKBond* bond, m_bondList)
-      if (bond->hasMSKAtom(atom)) 
+    foreach(Bond* bond, m_bondList)
+      if (bond->hasAtom(atom)) 
         bondList << bond;
 
     return bondList;

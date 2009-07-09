@@ -1,17 +1,15 @@
 # CMakeLists.txt for the main sourcecode of molsKetch
 
+cmake_policy(SET CMP0003 NEW)
+
 # Including qt4 and OpenBabel
 set(QT_USE_QTASSISTANT TRUE)
 set(QT_USE_QTSVG TRUE)
 include(${QT_USE_FILE})
 include_directories(${OPENBABEL2_INCLUDE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
-# Set the variable with the .ui files
-set(molsketch_UIS settings.ui)
-qt4_wrap_ui(molsketch_UIS_H ${molsketch_UIS})
-
-# Set the variables with main and library source
-set(molsketch_LIB_SRCS 
+# Source files
+set(libmolsketch_SRCS 
     molecule.cpp	
     atom.cpp 
     mollibitem.cpp
@@ -22,13 +20,21 @@ set(molsketch_LIB_SRCS
     periodictablewidget.cpp
     commands.cpp	
     fileio.cpp
-    plugin.cpp
-    tool.cpp
+
 )
-set(molsketch_SRCS main.cpp mainwindow.cpp settings.cpp )
+set(molsketch_SRCS 
+    main.cpp 
+    mainwindow.cpp 
+    settings.cpp 
+    drawwidget.cpp)
 
 # Including the resources
-qt4_add_resources(molsketch_SRCS molsketch.qrc)
+file(GLOB molsketch_RCS "*.qrc")
+file(GLOB molsketch_UIS "*.ui")
+qt4_automoc(${molsketch_SRCS})
+qt4_add_resources(molsketch_SRCS ${molsketch_RCS})
+qt4_wrap_ui(molsketch_UIS_H ${molsketch_UIS})
+
 
 # Add a program icon for windows
 if(WIN32)
@@ -36,24 +42,31 @@ if(WIN32)
 endif(WIN32)
 
 # MOC-ing headers
-set(molsketch_LIB_MOC_HDRS molscene.h molview.h periodictablewidget.h)
-set(molsketch_MOC_HDRS mainwindow.h settings.h)
-qt4_wrap_cpp(molsketch_LIB_SRCS ${molsketch_LIB_MOC_HDRS})
+set(molsketch_LIB_MOC_HDRS molscene.h molview.h periodictablewidget.h )
+set(molsketch_MOC_HDRS mainwindow.h settings.h drawwidget.h)
+qt4_wrap_cpp(libmolsketch_SRCS ${molsketch_LIB_MOC_HDRS})
 qt4_wrap_cpp(molsketch_SRCS ${molsketch_MOC_HDRS})
 
 # Take care of the .moc files
-qt4_automoc(${molsketch_LIB_SRCS})
+qt4_automoc(${libmolsketch_SRCS})
 qt4_automoc(${molsketch_SRCS})
 
+
+
+
+
+
+
+
 # Create the molsKetch libraries
-add_library(molsketch_LIB ${molsketch_LIB_SRCS})
+add_library(molsketch_LIB ${libmolsketch_SRCS})
 set_target_properties(molsketch_LIB PROPERTIES OUTPUT_NAME "molsketch")
 target_link_libraries(molsketch_LIB ${QT_LIBRARIES} ${OPENBABEL2_LIBRARIES})
 
 # Create the main executable
 include_directories(${CMAKE_SOURCE_DIR}/src)
 link_directories(${CMAKE_BINARY_DIR}/lib)
-add_executable(molsketch ${molsketch_SRCS} ${molsketch_UIS_H})
+add_executable(molsketch ${molsketch_SRCS} ${molsketch_UIS_H} ${molsketch_MOC_HDRS})
 install(TARGETS molsketch DESTINATION bin)
 
 # Link the code against libmolsKetch, Qt and OpenBabel
