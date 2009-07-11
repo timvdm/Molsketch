@@ -47,38 +47,36 @@ using namespace Commands;
 
 // Constructor & destructor
 
-MolScene::MolScene(QObject* parent) : QGraphicsScene(parent)
-{
-  //Initializing properties
-  m_currentElementSymbol = "C";
-  m_editMode = MolScene::AddMode;
-  m_bondLength = 40;
-  m_bondOrder = 1;
-  m_bondWidth = 0;
-  m_bondType = Bond::InPlane;
-  m_atomSize = 5;
-  m_bondAngle = 30;
-  m_carbonVisible = false;
-  m_hydrogenVisible = true;
-  m_chargeVisible = true;
-  m_autoAddHydrogen = true;
+  MolScene::MolScene(QObject* parent) : QGraphicsScene(parent)
+  {
+    //Initializing properties
+    m_currentElementSymbol = "C";
+    m_editMode = MolScene::AddMode;
+    m_bondLength = 40;
+    m_bondOrder = 1;
+    m_bondWidth = 0;
+    m_bondType = Bond::InPlane;
+    m_atomSize = 5;
+    m_bondAngle = 30;
+    m_carbonVisible = false;
+    m_hydrogenVisible = true;
+    m_chargeVisible = true;
+    m_autoAddHydrogen = true;
 
 
-  // Prepare undo m_stack
-  m_stack = new QUndoStack(this);
-  connect(m_stack, SIGNAL(indexChanged(int)), this, SIGNAL(documentChange()));
-  connect(m_stack, SIGNAL(indexChanged(int)), this, SIGNAL(selectionChange()));
-//   connect(m_stack, SIGNAL(indexChanged(int)), this, SIGNAL());
-  connect(m_stack, SIGNAL(indexChanged(int)), this, SLOT(update()));
+    // Prepare undo m_stack
+    m_stack = new QUndoStack(this);
+    connect(m_stack, SIGNAL(indexChanged(int)), this, SIGNAL(documentChange()));
+    connect(m_stack, SIGNAL(indexChanged(int)), this, SIGNAL(selectionChange()));
+    connect(m_stack, SIGNAL(indexChanged(int)), this, SLOT(update()));
 
-  // Prepare hinting items
-  initHintItems();
+    // Prepare hinting items
+    initHintItems();
 
-  // Set initial size
-  QRectF sizerect(-5000,-5000,10000,10000);
-  setSceneRect(sizerect);
-}
-
+    // Set initial size
+    QRectF sizerect(-5000,-5000,10000,10000);
+    setSceneRect(sizerect);
+  }
 
   MolScene::~MolScene()
   {
@@ -92,47 +90,47 @@ MolScene::MolScene(QObject* parent) : QGraphicsScene(parent)
     //delete m_hoverRect;
   }
 
-// Commands
+  // Commands
 
-void MolScene::setCarbonVisible( bool value )
-{
-  m_carbonVisible = value;
-}
+  void MolScene::setCarbonVisible(bool value)
+  {
+    m_carbonVisible = value;
+  }
 
-void MolScene::setHydrogenVisible( bool value )
-{
-  m_hydrogenVisible = value;
-}
+  void MolScene::setHydrogenVisible(bool value)
+  {
+    m_hydrogenVisible = value;
+  }
 
-void MolScene::setBondLength( double length )
-{
-  //pre: bondlength > 0
-  Q_ASSERT(length > 0);
-//   if (m_bondLength <= 0) return;
-  
-  // Set the bondlength
-  m_bondLength = length;
+  void MolScene::setBondLength(double length)
+  {
+    //pre: bondlength > 0
+    Q_ASSERT(length > 0);
+    //   if (m_bondLength <= 0) return;
 
-  // Reinitialize hintitems
-  foreach (QGraphicsItem* item, m_hintPoints) delete item;
-  m_hintPoints.clear();
-  initHintItems();
-}
+    // Set the bondlength
+    m_bondLength = length;
 
-void MolScene::setAtomSize( qreal size )
-{
-  m_atomSize = size;
-}
+    // Reinitialize hintitems
+    foreach (QGraphicsItem* item, m_hintPoints) delete item;
+    m_hintPoints.clear();
+    initHintItems();
+  }
 
-void MolScene::alignToGrid()
-{
-  m_stack->beginMacro(tr("aligning to grid"));
-  foreach(QGraphicsItem* item,items()) 
-  if (item->type() == Molecule::Type) 
-    m_stack->push(new MoveItem(item,toGrid(item->scenePos()) - item->scenePos()));
-  m_stack->endMacro();
-  update();
-}
+  void MolScene::setAtomSize( qreal size )
+  {
+    m_atomSize = size;
+  }
+
+  void MolScene::alignToGrid()
+  {
+    m_stack->beginMacro(tr("aligning to grid"));
+    foreach(QGraphicsItem* item,items()) 
+      if (item->type() == Molecule::Type) 
+        m_stack->push(new MoveItem(item,toGrid(item->scenePos()) - item->scenePos()));
+    m_stack->endMacro();
+    update();
+  }
 
   void MolScene::setEditMode(int mode)
   {
@@ -324,6 +322,57 @@ void MolScene::addMolecule(Molecule* mol)
   m_stack->endMacro();
 }
 
+  void MolScene::insertRing(const QPointF &pos)
+  {
+    QList<Atom*> atoms;
+    QList<Bond*> bonds;
+    QList<Molecule*> molecules;
+    foreach (const QPointF &p, m_hintRingPoints) {
+      Atom *atom = atomAt(m_hintMoleculeItems->mapToScene(p));
+      if (!atom) {
+        // create a new atom if there isn't any for this position
+        atom = new Atom(m_hintMoleculeItems->mapToScene(p), "C", m_autoAddHydrogen);
+      } else {
+        if (atom->molecule())
+          if (!molecules.contains(atom->molecule()))
+            molecules.append(atom->molecule());
+      }
+      atoms.append(atom);
+    }
+    for (int i = 0; i < atoms.size(); ++i) {
+      int next = i + 1;
+      if (next == atoms.size())
+        next = 0;
+
+      Bond *bond = 0;
+      if (atoms[i]->molecule())
+        bond = atoms[i]->molecule()->bondBetween(atoms[i], atoms[next]);
+
+      if (!bond) {
+        bond = new Bond(atoms[i], atoms[next]);
+      }
+      bonds.append(bond);
+    }
+ 
+    m_stack->beginMacro("Add Molecule");
+    if (molecules.isEmpty()) {
+      molecules.append(new Molecule);
+      m_stack->push(new AddItem(molecules[0],this));
+      molecules[0]->setPos(pos);
+    }
+    foreach(Atom *atom, atoms)
+      if (!atom->molecule()) {
+        //molecules[0]->addAtom(atom);
+        m_stack->push(new AddAtom(atom, molecules[0]));
+      }
+    foreach(Bond *bond, bonds)
+      if (!bond->molecule()) {
+        //molecules[0]->addBond(bond);
+        m_stack->push(new AddBond(bond));
+      }
+    m_stack->endMacro();
+  }
+
 void MolScene::setBondAngle(int angle)
 {
   Q_ASSERT (angle > 0 and angle <= 360);
@@ -384,7 +433,7 @@ void MolScene::initHintItems()
 //   m_hoverRect->setZValue(5);
 //   m_hoverRect->setAcceptedMouseButtons(0);
 
-  // Initialize hintpoints
+  // Initialize hint points circle
   m_hintPointsGroup = new QGraphicsItemGroup();
   int parts = 360/m_bondAngle;
   for (int i = 0; i < parts; i++)
@@ -416,6 +465,7 @@ void MolScene::initHintItems()
       addItem(m_hintLine);
   }
 
+  // create a QGraphicsItem for regular polygon rings
   void MolScene::setHintRing(int ringSize)
   {
     if (ringSize < 3)
@@ -675,9 +725,6 @@ bool MolScene::event(QEvent* event)
 
     if (m_hintRingPoints.isEmpty())
       return;
-
-    QPointF center(0.0, 0.0);
-
 
     if (atom->numBonds() == 0) {
       // just translate ring to make 1 atom align
@@ -1020,34 +1067,35 @@ void MolScene::addModePress(QGraphicsSceneMouseEvent* event)
   Atom* atom = atomAt(downPos);
 
   if (!atom) {
+    //
+    // mousePress in empty space
+    //
     if (m_hintMoleculeItems) {
-      // insert the hinted molecule
-      Molecule* mol = new Molecule;
-      mol->setPos(downPos);
-      m_stack->beginMacro("Add Molecule");
-      m_stack->push(new AddItem(mol,this));
-
+      // insert the hinted molecule if it exists
       if (!m_hintRingPoints.isEmpty()) {
-        foreach (const QPointF &p, m_hintRingPoints)
-          m_stack->push(new AddAtom(new Atom( m_hintMoleculeItems->mapToScene(p), "C", m_autoAddHydrogen ), mol));
+        insertRing(downPos);
       } else {
-        Q_CHECK_PTR(m_hintMolecule);
-        foreach (Atom *hintAtom, m_hintMolecule->atoms())
-          m_stack->push(new AddAtom(new Atom( hintAtom->scenePos(), hintAtom->element(), m_autoAddHydrogen ), mol));
-      }
-      m_stack->endMacro();
-
-    
-    } else {
-      // Add a new molecule if necesarry
-      if (m_currentElementSymbol!="+" && m_currentElementSymbol!="-" && m_currentElementSymbol != "H+" && m_currentElementSymbol != "H-")
-      {
         Molecule* mol = new Molecule;
         mol->setPos(downPos);
         m_stack->beginMacro("Add Molecule");
         m_stack->push(new AddItem(mol,this));
-        m_stack->push(new AddAtom(new Atom( downPos, m_currentElementSymbol, m_autoAddHydrogen ), mol));
+
+        Q_CHECK_PTR(m_hintMolecule);
+        foreach (Atom *hintAtom, m_hintMolecule->atoms())
+          m_stack->push(new AddAtom(new Atom( hintAtom->scenePos(), hintAtom->element(), m_autoAddHydrogen ), mol));
         m_stack->endMacro();
+      }
+    
+    } else {
+      if (m_currentElementSymbol!="+" && m_currentElementSymbol!="-" && m_currentElementSymbol != "H+" && m_currentElementSymbol != "H-") {
+        // insert a new atom
+        //Molecule* mol = new Molecule;
+        //mol->setPos(downPos);
+        //m_stack->beginMacro("Add Molecule");
+        //m_stack->push(new AddItem(mol,this));
+        //m_stack->push(new AddAtom(new Atom( downPos, m_currentElementSymbol, m_autoAddHydrogen ), mol));
+        //m_stack->endMacro();
+        addItem(new Atom( downPos, m_currentElementSymbol, m_autoAddHydrogen ));
       }
     }
   }
@@ -1075,130 +1123,92 @@ void MolScene::addModeMove(QGraphicsSceneMouseEvent* event)
 //   setHoverRect(atom);
 }
 
-void MolScene::addModeRelease(QGraphicsSceneMouseEvent* event)
-{
+  void MolScene::addModeRelease(QGraphicsSceneMouseEvent* event)
+  {
+    // Remove the hinting
+    removeHintLine();
+    removeHintPoints();
 
-  // Remove the hinting
-  removeHintLine();
-  removeHintPoints();
+    // Get position
+    QPointF downPos = event->buttonDownScenePos(event->button());
+    QPointF upPos = nearestPoint(event->scenePos());
 
-  // Get position
-  QPointF downPos = event->buttonDownScenePos(event->button());
-  QPointF upPos = nearestPoint(event->scenePos());
-
-  // Check possible targets
-  Atom* a1 = atomAt(downPos);
-  Atom* a2 = atomAt(upPos);
-  Bond* b = bondAt(downPos);
-  Molecule* m1 = a1 ? a1->molecule() : 0;
- 
+    // Check possible targets
+    Atom* a1 = atomAt(downPos);
+    Atom* a2 = atomAt(upPos);
+    Bond* b = bondAt(downPos);
+    Molecule* m1 = a1 ? a1->molecule() : 0;
 
 
-  if (m_hintMoleculeItems) {
-    
-    m_stack->beginMacro(tr("add ring"));
 
-    Molecule *mol = 0;
-    QList<Atom*> ringAtoms;
-    QList<Bond*> ringBonds;
-    // add an atom for each ring corner if there is none at that position
-    foreach (const QPointF &p, m_hintRingPoints) {
-      Atom *atom = atomAt(m_hintMoleculeItems->mapToScene(p));
-      if (!atom) {
-        // create a new atom if there isn't any for this position
-        atom = new Atom(m_hintMoleculeItems->mapToScene(p), "C", m_autoAddHydrogen);
-       //m_stack->push(new AddAtom(atom, mol));
-      } else {
-        if (!mol)
-          mol = atom->molecule();
-      }
-      ringAtoms.append(atom);
+    if (m_hintMoleculeItems && a1) {
+      //
+      // Add aligned hint molecule
+      //
+      insertRing(upPos);
+      return;
     }
-    // connect the bonds
-    for (int i = 0; i < ringAtoms.size(); ++i) {
-      int next = i + 1;
-      if (next == ringAtoms.size())
-        next = 0;
 
-      Bond *bond = 0;
-      if (ringAtoms[i]->molecule())
-        bond = ringAtoms[i]->molecule()->bondBetween(ringAtoms[i], ringAtoms[next]);
-
-      if (!bond) {
-        bond = new Bond(ringAtoms[i], ringAtoms[next]);
-        //m_stack->push(new AddBond(bond));
-      }
-      ringBonds.append(bond);
-    }
-    //m_stack->push(new AddItem(mol,this)); 
-    if (!mol)
-      mol = new Molecule;
-    foreach(Atom *atom, ringAtoms)
-      if (!atom->molecule())
-        mol->addAtom(atom);
-    foreach(Bond *bond, ringBonds)
-      if (!bond->molecule())
-        mol->addBond(bond);
- 
-    //if (mol->canSplit()) 
-    //  m_stack->push(new SplitMol(mol));
-    m_stack->endMacro();
-    return;
-  }
+    qDebug() << "a1 =" << a1;
+    qDebug() << "a2 =" << a2;
 
 
+    if (!a1 && !b) return;
+    if (b && !a1) return;
 
-  if (!a1 && !b) return;
-  if (b && !a1) return;
-  
 
-  if (m_currentElementSymbol=="+")
+    if (m_currentElementSymbol=="+")
     {
       m_stack->push(new IncCharge(a1, tr("increasing charge")));
       return;
     }
-  if (m_currentElementSymbol=="-")
+    if (m_currentElementSymbol=="-")
     {
       m_stack->push(new DecCharge(a1,tr("decreasing charge")));
       return;
     }
-  if (m_currentElementSymbol=="H+")
+    if (m_currentElementSymbol=="H+")
     {
       m_stack->push(new AddImplicitHydrogen(a1, tr("add implicit hydrogen")));
       return;
     }
-  if (m_currentElementSymbol=="H-")
+    if (m_currentElementSymbol=="H-")
     {
       if (a1->numberOfImplicitHydrogens() > 0) m_stack->push(new RemoveImplicitHydrogen(a1,tr("remove implicit hydrogen")));
       return;
     }
 
-  // Check for atom release
-  if (a2)
-    {
+    // Check for atom release
+    if (a2) {
       Molecule* m2 = a2->molecule();
 
       // Check for atom click
-      if (a1==a2)
-        {
-          if (a1->element()!=m_currentElementSymbol)
-            m_stack->push(new ChangeElement(a1,m_currentElementSymbol,tr("changing element")));
-// 		else
-// 			m_stack->push(new AddAtom(new Atom(QPointF(0,0),m_currentElementSymbol),a1->molecule()));
-          return;
+      if (a1 == a2) {
+        if (a1->element() != m_currentElementSymbol) {
+          // Press + Release with different symbol -> Change Element
+          m_stack->push(new ChangeElement(a1, m_currentElementSymbol, tr("Change Element")));
+        } else {
+          if (!m1) {
+            m1 = new Molecule;
+            m_stack->beginMacro("Add Atom");
+            m_stack->push(new AddItem(m1, this));
+            m_stack->push(new AddAtom(a1,m1));
+            m_stack->endMacro();
+          }
         }
+        return;
+      }
 
       // Begin adding macro
-      m_stack->beginMacro("adding bond");
+      m_stack->beginMacro("Add Bond");
 
       // Check for merge
-      if (m1 != m2)
-        {
-          m_stack->push(new MergeMol(m1,m2,m1));
-          a1 = m1->atomAt(downPos);
-          a2 = m1->atomAt(upPos);
-          m1->setFocus();
-        }
+      if (m1 != m2) {
+        m_stack->push(new MergeMol(m1,m2,m1));
+        a1 = m1->atomAt(downPos);
+        a2 = m1->atomAt(upPos);
+        m1->setFocus();
+      }
 
       // Adding bond
       Bond* bond = new Bond(a1,a2);
@@ -1212,21 +1222,26 @@ void MolScene::addModeRelease(QGraphicsSceneMouseEvent* event)
       m_stack->endMacro();
       return;
     };
-  
-  // Else scene release
-  m_stack->beginMacro(tr("adding atom"));
-  Atom* atom = new Atom(upPos,m_currentElementSymbol,m_autoAddHydrogen);
-  m_stack->push(new AddAtom(atom,m1));
-  Bond* bond = new Bond(a1,atom);
-  m_stack->push(new AddBond(bond));
-  for (int i = 0; i < m_bondOrder - 1; i++) 
-    m_stack->push(new IncOrder(bond));
-  for (int i = 0; i < m_bondType; i++) 
-    m_stack->push(new IncType(bond));
-  m_stack->endMacro();
 
-  update();
-}
+    // Else scene release
+    m_stack->beginMacro(tr("Add Atoms"));
+    if (!m1) {
+      m1 = new Molecule;
+      m_stack->push(new AddItem(m1,this));
+      m_stack->push(new AddAtom(a1,m1));
+    }
+    Atom* atom = new Atom(upPos,m_currentElementSymbol,m_autoAddHydrogen);
+    m_stack->push(new AddAtom(atom,m1));
+    Bond* bond = new Bond(a1,atom);
+    m_stack->push(new AddBond(bond));
+    for (int i = 0; i < m_bondOrder - 1; i++) 
+      m_stack->push(new IncOrder(bond));
+    for (int i = 0; i < m_bondType; i++) 
+      m_stack->push(new IncType(bond));
+    m_stack->endMacro();
+
+    update();
+  }
 
 void MolScene::addModeDoubleRelease( QGraphicsSceneMouseEvent * event )
 {

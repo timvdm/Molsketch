@@ -169,35 +169,51 @@ QList<Bond*> Molecule::delAtom(Atom* atom)
 
   // Remove all connected bonds from the molecule
   QList<Bond*> delList = bonds(atom);
-  foreach(Bond* bond, delList) delBond(bond);
+  foreach(Bond* bond, delList) {
+    //delBond(bond);
+    Q_ASSERT(m_bondList.contains(bond));
+    m_bondList.removeAll(bond);
+    removeFromGroup(bond);
+    if (scene()) 
+      scene()->removeItem(bond);
+  }
 
   // Remove the atom
   m_atomList.removeAll(atom);
   removeFromGroup(atom);
-  if (scene()) scene()->removeItem(atom);
+  if (scene()) 
+    scene()->removeItem(atom);
   
   // Return the list of bonds that were connected for undo
   return delList;
-
 }
 
-void Molecule::delBond(Bond* bond)
-{
-  //pre: bond is an existing bond in the molecule
-  Q_ASSERT(m_bondList.contains(bond));
+  void Molecule::delBond(Bond* bond)
+  {
+    Q_CHECK_PTR(bond);
+    //pre: bond is an existing bond in the molecule
+    Q_ASSERT(m_bondList.contains(bond));
 
-  //post: bond has been removed from the molecule
+    //post: bond has been removed from the molecule
 
-  // Removing the bond
-  m_bondList.removeAll(bond);
-  removeFromGroup(bond);
-  if (scene()) 
-    scene()->removeItem(bond);
+    Atom *begin = bond->beginAtom();
+    Atom *end = bond->beginAtom();
+    if (begin)
+      begin->removeNeighbor(end);
+    if (end)
+      end->removeNeighbor(begin);
+ 
+    // Removing the bond
+    m_bondList.removeAll(bond);
+    removeFromGroup(bond);
+    if (scene()) 
+      scene()->removeItem(bond);
 
 //  bond->undoValency();
 //  /// Superseded by undo
-//  //   delete bond;
-}
+     //delete bond;
+     //bond = 0;
+  }
 
 // void Molecule::addAutoAtom(Atom* startAtom)
 // {

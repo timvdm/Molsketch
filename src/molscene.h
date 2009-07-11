@@ -124,10 +124,12 @@ public:
 
   /** Enum for the different edit modes. */
   enum editModes {
-  MoveMode, /**< Atoms and molecules are movable. */
-  AddMode, /**< Mode to add atoms and bonds. */
-  RemoveMode, /**< Mode to remove atoms, bonds and molecules. */
-  RotateMode /**< Mode to rotate molecules. */
+    MoveMode, /**< Atoms and molecules are movable. */
+    AddMode, /**< Mode to add atoms and bonds. */
+    RemoveMode, /**< Mode to remove atoms, bonds and molecules. */
+    RotateMode, /**< Mode to rotate molecules. */
+    ChargeMode, //<! Increase/decrease charges
+    HydrogenMode //<! increase/decrease implicit hydrogen count
   };
 
 signals:
@@ -207,6 +209,13 @@ public slots:
    */
   void setHintMolecule(QListWidgetItem* mol);
 
+  /**
+   * Create a regular polygon shaped ring and make it the current hint molecule 
+   * (i.e. m_hintMoleculeItems or the gray molecule following the cursor). The 
+   * coordinates for the ring corners will be stored in m_hintRingPoints. This
+   * slot is meant to be connected to a widget specifying the ring size (e.g.
+   * buttons with icons, a QComboBox, ...).
+   */
   void setHintRing(int ringSize);
 
 protected:
@@ -341,6 +350,11 @@ private:
 
   void alignRingWithAtom(Atom *atom);
   void alignRingWithBond(Bond *bond);
+
+  /**
+   * Make hint ring into real atoms/bonds
+   */
+  void insertRing(const QPointF &pos);
 
 };
 

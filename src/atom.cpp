@@ -283,19 +283,19 @@ namespace Molsketch {
 
 
 
-// Commands
+  // Commands
 
-void Atom::setElement(const QString &element)
-{
+  void Atom::setElement(const QString &element)
+  {
     m_elementSymbol = element;
     update();
-}
+  }
 
-void Atom::setNumberOfImplicitHydrogens(int number)
-{
-  Q_ASSERT (number >= 0);
+  void Atom::setNumberOfImplicitHydrogens(int number)
+  {
+    Q_ASSERT (number >= 0);
 
-  m_implicitHydrogens = true;
+    m_implicitHydrogens = true;
 
 //  int deltaNoIH = number - m_numberOfImplicitHydrogens;
 //  int newNoB = m_numberOfBonds - deltaNoIH;
@@ -315,6 +315,8 @@ void Atom::setNumberOfImplicitHydrogens(int number)
   int Atom::bondOrderSum() const
   {
     Molecule *mol = molecule();
+    if (!mol) 
+      return 0;
 
     // count explicit bonds
     int sum = 0;
@@ -330,6 +332,8 @@ void Atom::setNumberOfImplicitHydrogens(int number)
   int Atom::numberOfImplicitHydrogens() const
   {
     Molecule *mol = molecule();
+    if (!mol) 
+      return 0;
 
     // count explicit bonds
     int bosum = 0;
@@ -348,6 +352,19 @@ void Atom::setNumberOfImplicitHydrogens(int number)
 
   int Atom::charge()  const
   {
+    if (m_elementSymbol == "X" || m_elementSymbol == "R")
+      return 0;
+    int bosum = bondOrderSum();
+
+    if (m_elementSymbol == "H") {
+      if (bosum == 0) {
+        if (m_implicitHydrogens)
+          return 0 + m_userCharge;
+        else
+          return 1 + m_userCharge;
+      } else
+        return 1 - bosum + m_userCharge;
+    }
     /*
     qDebug() << "Atom::charge()";
     qDebug() << "    element = " << m_elementSymbol;
@@ -418,13 +435,14 @@ void Atom::setNumberOfImplicitHydrogens(int number)
     m_implicitHydrogens = enabled && (m_elementSymbol == "C" || m_elementSymbol == "N" || m_elementSymbol == "O");
   }
 
-  void Atom::addNeighbor(Atom * atom)
+  void Atom::addNeighbor(Atom *atom)
   {
     Q_CHECK_PTR(atom);
-    m_neighbors.append(atom);
+    if (!m_neighbors.contains(atom))
+      m_neighbors.append(atom);
   }
 
-  void Atom::removeNeighbor(Atom * atom)
+  void Atom::removeNeighbor(Atom *atom)
   {
     Q_CHECK_PTR(atom);
     m_neighbors.removeAll(atom);

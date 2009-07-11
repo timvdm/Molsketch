@@ -19,6 +19,7 @@
  ***************************************************************************/
 
 #include <QTransform>
+#include <QDebug>
 
 #include "commands.h"
 
@@ -33,14 +34,19 @@ using Molsketch::Bond;
 using Molsketch::Molecule;
 using namespace Molsketch::Commands;
 
+/////////////////////////////////////////
 // AddAtom
+/////////////////////////////////////////
 
 AddAtom::AddAtom(Atom * newAtom, Molecule * newMol, const QString & text) : QUndoCommand(text), m_atom(newAtom), m_molecule(newMol)
-{}
+{
+  qDebug() << "AddAtom::AddAtom";
+}
 
 AddAtom::~AddAtom()
 {
-  if (m_undone) delete m_atom;
+  if (m_undone) 
+    delete m_atom;
 }
 
 void AddAtom::undo()
@@ -52,11 +58,13 @@ void AddAtom::undo()
 void AddAtom::redo()
 {
   m_molecule->addAtom(m_atom);
-  m_atom->setFlag(QGraphicsItem::ItemIsSelectable, m_molecule->scene()->editMode()==MolScene::MoveMode);
+  m_atom->setFlag(QGraphicsItem::ItemIsSelectable, m_molecule->scene()->editMode() == MolScene::MoveMode);
   m_undone = false;
 }
 
+////////////////////////////////////////
 // Change element
+////////////////////////////////////////
 ChangeElement::ChangeElement(Atom* changeAtom, const QString &newEl, const QString & text) : QUndoCommand(text), m_oldName(changeAtom->element()), m_newName(newEl), m_atom(changeAtom)
 {}
 
@@ -179,21 +187,39 @@ void DelAtom::redo()
 // Bond commands
 
 AddBond::AddBond(Bond* newBond, const QString & text) : QUndoCommand(text), m_bond(newBond), m_mol(newBond->beginAtom()->molecule())
-{}
+{
+  qDebug() << "AddBond::AddBond";
+}
 
 AddBond::~AddBond()
 {
-  if (m_undone) delete m_bond;
+  if (m_undone)
+    delete m_bond;
 }
 
 void AddBond::undo()
 {
   m_mol->delBond(m_bond);
+  Atom *begin = m_bond->beginAtom();
+  Atom *end = m_bond->endAtom();
+  if (begin)
+    begin->removeNeighbor(end);
+  if (end)
+    end->removeNeighbor(begin);
   m_undone = true;
 }
+
 void AddBond::redo()
 {
   m_mol->addBond(m_bond);
+  Atom *begin = m_bond->beginAtom();
+  Atom *end = m_bond->endAtom(); 
+  if (begin)
+    if (!begin->neighbors().contains(end))
+      begin->addNeighbor(end);
+  if (end)
+    if (!end->neighbors().contains(begin))
+      end->addNeighbor(begin);
   m_undone = false;
 }
 

@@ -346,15 +346,15 @@ void Bond::decOrder()
 
 }
 
-void Bond::setType(int t)
-{
-  //pre: 0 <= t < 6
-  //post: bondType = t
-  Q_ASSERT(0 <= t && t < 6);
+  void Bond::setType(int t)
+  {
+    //pre: 0 <= t < 6
+    //post: bondType = t
+    Q_ASSERT(0 <= t && t < 6);
 
-  m_bondType = t;
-  update();
-}
+    m_bondType = t;
+    update();
+  }
 
 void Bond::incType()
 {
@@ -371,7 +371,7 @@ void Bond::decType()
 }
 
 
-// Query methods
+  // Query methods
 
   int Bond::bondOrder() const
   {
@@ -398,26 +398,26 @@ void Bond::decType()
     return m_beginAtom == atom || m_endAtom == atom;
   }
   
-Molecule* Bond::molecule() const
+  Molecule* Bond::molecule() const
   {
     return dynamic_cast<Molecule*>(this->parentItem());
   }
 
-// Auxilary methods
+  // Auxilary methods
 
-QLineF Bond::shiftVector(const QLineF &vector, qreal shift) // Shifts a vector on the perpendicular axis
-{
-  //pre: true
-  //ret: shifted vector
+  QLineF Bond::shiftVector(const QLineF &vector, qreal shift) // Shifts a vector on the perpendicular axis
+  {
+    //pre: true
+    //ret: shifted vector
 
-  // Calculating the new coordinates
-  qreal rx1 = vector.x1() + shift*(vector.unitVector().y2()-vector.unitVector().y1());
-  qreal ry1 = vector.y1() + shift*-(vector.unitVector().x2()-vector.unitVector().x1());
-  qreal rx2 = vector.x2() + shift*(vector.unitVector().y2()-vector.unitVector().y1());
-  qreal ry2 = vector.y2() + shift*-(vector.unitVector().x2()-vector.unitVector().x1());
+    // Calculating the new coordinates
+    qreal rx1 = vector.x1() + shift*(vector.unitVector().y2()-vector.unitVector().y1());
+    qreal ry1 = vector.y1() + shift*-(vector.unitVector().x2()-vector.unitVector().x1());
+    qreal rx2 = vector.x2() + shift*(vector.unitVector().y2()-vector.unitVector().y1());
+    qreal ry2 = vector.y2() + shift*-(vector.unitVector().x2()-vector.unitVector().x1());
 
-  // Returning the new vector
-  return QLineF(rx1,ry1,rx2,ry2);
-}
+    // Returning the new vector
+    return QLineF(rx1,ry1,rx2,ry2);
+  }
 
 } // namespace
