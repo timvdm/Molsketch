@@ -235,9 +235,18 @@ protected:
   virtual void keyPressEvent(QKeyEvent* keyEvent);
 
   //void contextMenuEvent(Reason reason, );
+	
+	
+	/** Used for rotations. Stores the last vector from mouse pointer to center of rotation */
+	QPointF lastRotationVect;
+	
+	//Item that is being rotated
+	QGraphicsItem *rotationItem;
+
 
 private:
 
+	
   // Global properties
   /** Contains the current element */
   QString m_currentElementSymbol;
@@ -289,6 +298,10 @@ private:
   bool m_chargeVisible;
   /** Stores whether hydrogens are to be added automaticly.*/
   bool m_autoAddHydrogen;
+	
+	
+	
+
 
   // Internal clipboard
   /** Internal clipboard for scene items.*/
