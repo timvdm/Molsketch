@@ -1005,9 +1005,7 @@ void MolScene::moveModeRelease(QGraphicsSceneMouseEvent* event)
 		lassoSelect ();
 		lassoPolygon ->setPolygon(QPolygonF ());
 		lassoPolygon ->hide ();
-	//	foreach(QGraphicsItem* item, items())
-	//	if (item->type() == Molecule::Type || item->type() == Atom::Type) 
-	//		item->setFlag(QGraphicsItem::ItemIsSelectable,false);
+
 	
 		
 	}
