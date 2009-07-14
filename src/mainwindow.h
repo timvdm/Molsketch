@@ -94,6 +94,8 @@ private slots:
   void setRemoveMode();
   /** Switch to move mode. */
   void setMoveMode();
+	/** Switch to lasso mode. */
+	void setLassoMode();
   /** Switch to rotate mode. */
   void setRotateMode();
 
@@ -288,7 +290,9 @@ private:
   QAction* delModeAct;
   /** Switch to move mode action. */
   QAction* moveModeAct;
-  /** Switch to move mode action. */
+	/** Switch to lasso mode action. */
+	QAction* lassoModeAct;
+  /** Switch to rotate mode action. */
   QAction* rotateModeAct;
   /** Open the settings dialog action. */
   QAction* prefAct;

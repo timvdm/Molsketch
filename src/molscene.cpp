@@ -52,6 +52,10 @@ using namespace Commands;
 	  
 	  rotationItem = NULL;  
 	  
+	  lassoPolygon = addPolygon (QPolygon ());
+	  lassoPolygon ->hide ();
+
+ 
     //Initializing properties
     m_currentElementSymbol = "C";
     m_editMode = MolScene::AddMode;
@@ -91,6 +95,7 @@ using namespace Commands;
       delete item;
     delete m_hintLine;
     //delete m_hoverRect;
+	  
   }
 
   // Commands
@@ -801,6 +806,9 @@ void MolScene::mousePressEvent(QGraphicsSceneMouseEvent* event)
         case MolScene::RotateMode:
           rotateModePress( event );
           break;
+		case MolScene::LassoMode:
+		  lassoModePress (event);
+		  break;
         default:
           break;
         };
@@ -831,6 +839,7 @@ void MolScene::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
       alignRingWithBond(bond);
       
   } 
+  
     
   switch (event->buttons())
     {
@@ -849,7 +858,11 @@ void MolScene::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
         case MolScene::RotateMode:
           rotateModeMove(event);
           break;
-        }
+
+		case MolScene::LassoMode:
+			lassoModeMove(event);
+			break;
+        }	
     }
 
   // Execute default behavior
@@ -878,6 +891,9 @@ void MolScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
         case MolScene::MoveMode:
           moveModeRelease(event);
           break;
+		case MolScene::LassoMode:
+		  lassoModeRelease(event);
+		break;
         case MolScene::RotateMode:
           rotateModeRelease(event);
           break;
@@ -937,7 +953,6 @@ void MolScene::moveModeMove(QGraphicsSceneMouseEvent* event)
 
 void MolScene::moveModeRelease(QGraphicsSceneMouseEvent* event)
 {
-
   QPointF moveVector = event->scenePos() - event->buttonDownScenePos(event->button());
   if(moveVector.isNull()) 
     {
@@ -957,6 +972,60 @@ void MolScene::moveModeRelease(QGraphicsSceneMouseEvent* event)
   clearFocus();
 }
 
+	
+	void MolScene::lassoModePress(QGraphicsSceneMouseEvent* event)
+	{
+		foreach(QGraphicsItem* item, items())
+		if (item->type() == Molecule::Type || item->type() == Atom::Type) 
+			item->setFlag(QGraphicsItem::ItemIsSelectable,true);
+	
+		
+		
+		lassoPolygon ->show ();
+		lassoTrail.clear ();
+		lassoTrail.push_back (event->scenePos());
+
+	}
+	
+	void MolScene::lassoModeMove(QGraphicsSceneMouseEvent* event)
+	{
+		if (!(event->buttons() & Qt::LeftButton)) return;
+		
+		lassoTrail.push_back (event->scenePos());
+		if (lassoTrail.size () > 4) {
+			lassoPolygon ->setPolygon (QPolygonF (lassoTrail));
+		}
+		event->accept();
+	}
+	
+	void MolScene::lassoModeRelease(QGraphicsSceneMouseEvent* event)
+	{
+		
+		lassoTrail.clear ();
+		lassoSelect ();
+		lassoPolygon ->setPolygon(QPolygonF ());
+		lassoPolygon ->hide ();
+	//	foreach(QGraphicsItem* item, items())
+	//	if (item->type() == Molecule::Type || item->type() == Atom::Type) 
+	//		item->setFlag(QGraphicsItem::ItemIsSelectable,false);
+	
+		
+	}
+	
+	void MolScene::lassoSelect()
+	{
+		clearSelection();
+		QList<QGraphicsItem *> its = items (lassoPolygon ->polygon (), Qt::ContainsItemShape);
+		std::cerr << its.size () << std::endl;
+		for (unsigned int i = 0; i < its.size (); i++) {
+			its[i] ->setSelected (true);
+		}
+
+		
+	}	
+	
+	
+	
 void MolScene::rotateModePress(QGraphicsSceneMouseEvent* event)
 {
 	

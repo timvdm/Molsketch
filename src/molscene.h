@@ -129,7 +129,8 @@ public:
     RemoveMode, /**< Mode to remove atoms, bonds and molecules. */
     RotateMode, /**< Mode to rotate molecules. */
     ChargeMode, //<! Increase/decrease charges
-    HydrogenMode //<! increase/decrease implicit hydrogen count
+    HydrogenMode, //<! increase/decrease implicit hydrogen count
+	LassoMode //lasso selection tool
   };
 
 signals:
@@ -240,6 +241,10 @@ protected:
 	/** Used for rotations. Stores the last vector from mouse pointer to center of rotation */
 	QPointF lastRotationVect;
 	
+	//lasso polygon
+	QVector <QPointF> lassoTrail;
+	QGraphicsPolygonItem *lassoPolygon;
+	
 	//Item that is being rotated
 	QGraphicsItem *rotationItem;
 
@@ -327,6 +332,13 @@ private:
   void moveModeMove(QGraphicsSceneMouseEvent* event);
   /** Event handler for mouse releases in move mode.*/
   void moveModeRelease(QGraphicsSceneMouseEvent* event);
+	
+	/** Event handler for mouse presses in lasso mode. */
+	void lassoModePress(QGraphicsSceneMouseEvent* event);
+	/** Event handler for mouse moves in lasso mode.*/
+	void lassoModeMove(QGraphicsSceneMouseEvent* event);
+	/** Event handler for mouse releases in lasso mode.*/
+	void lassoModeRelease(QGraphicsSceneMouseEvent* event);
 
   /** Event handler for mouse presses in rotate mode. */
   void rotateModePress(QGraphicsSceneMouseEvent* event);
@@ -358,6 +370,10 @@ private:
   QGraphicsItemGroup *m_hintMoleculeItems;
   QList<QPointF> m_hintRingPoints;
 
+	//selects item inside lassopolygon
+	void lassoSelect ();
+	
+	
   /** Method to initialize the hinting.*/
   void initHintItems();
 
