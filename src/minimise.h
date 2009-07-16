@@ -22,6 +22,8 @@
 #define MINIMISE_H
 
 #define KSTRETCH 0.2
+#define KCLASH 0.2
+
 #define KBEND 0.7
 #define KORIENT 0.7
 
@@ -113,6 +115,7 @@ namespace Molsketch {
 		FFAtom *p1, *p2;
 	};
 	
+	//bond lengths
 	class FFBondstretch : public FFInteraction {
 	public:
 		FFBondstretch (FFAtom *at1, FFAtom *at2, qreal length = 40) : FFInteraction(at1, at2), len (length) {}
@@ -123,10 +126,7 @@ namespace Molsketch {
 			normalise (v);
 			multiply (v, d * KSTRETCH);
 			QPointF v2 (-v.x(), -v.y());
-		//	std::cerr << p1 ->x() << "   "<< p1->y()<<"   "<<p2 ->x()<<"   "<<p2 ->y()<<std::endl;
 
-		//	std::cerr <<"dist"<< dist << " "<<d << std::endl;
-		//	std::cerr << v.x() << "   "<< v.y()<<"   "<<v2.x()<<"   "<<v2.y()<<std::endl;
 			p1 ->force_x () += v.x();
 			p1 ->force_y () += v.y();
 			
@@ -137,6 +137,28 @@ namespace Molsketch {
 		qreal len;
 	};
 	
+	//clashes
+	class FFclash : public FFInteraction {
+	public:
+		FFclash (FFAtom *at1, FFAtom *at2, qreal length = 40) : FFInteraction(at1, at2), len (length) {}
+		void apply () {
+			qreal dist = distance (*p1, *p2);
+			qreal d = len - dist;
+			if (d < len / 4) return;
+			QPointF v = vect (*p1, *p2);
+			normalise (v);
+			multiply (v, d * KCLASH);
+			QPointF v2 (-v.x(), -v.y());
+
+			p2 ->force_x () += v.x();
+			p2 ->force_y () += v.y();
+			
+			p1 ->force_x () += v2.x();
+			p1 ->force_y () += v2.y();
+			
+		}
+		qreal len;
+	};
 	
 	
 	class FFBondorient : public FFInteraction {
@@ -148,9 +170,9 @@ namespace Molsketch {
 			qreal targetang;
 			if (ang < 0) ang = 2 * M_PI + ang;
 //			if (ang >= 0) {
-				int n = ang / (M_PI / 3);
-				targetang = n * (M_PI / 3);
-				if ((ang - targetang) > (M_PI / 6)) targetang = (n+1) * (M_PI / 3);
+				int n = ang / (M_PI / 6);
+				targetang = n * (M_PI / 6);
+				if ((ang - targetang) > (M_PI / 12)) targetang = (n+1) * (M_PI / 6);
 //			}
 //			else {
 //				int n = ang / (M_PI / 3);

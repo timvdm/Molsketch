@@ -58,6 +58,13 @@ namespace Molsketch {
 			}
 		}
 		
+		for (unsigned int i = 0; i < ats.size (); i++) {
+			for (unsigned int j = i; j < ats.size (); j++) {
+				if (i==j) continue;
+				interactions.push_back (new FFclash (atoms[i], atoms[j]));
+
+			}
+		}
 	}	
 	
 	void Minimise::run () {
