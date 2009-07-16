@@ -117,6 +117,10 @@ private slots:
   /** Mark the current document as modified. */
   void documentWasModified( );
 
+	//adjust geometry of all molecules
+	void minimiseSlot ();
+
+	
   /** Zoom in on the current view. */
   void zoomIn();
   /** Zoom out on the current view. */
@@ -296,6 +300,8 @@ private:
   QAction* rotateModeAct;
   /** Open the settings dialog action. */
   QAction* prefAct;
+	/** Minimiser **/
+	QAction *minimiseAct;
 
   // View actions
   /** Zoom in on the view action. */

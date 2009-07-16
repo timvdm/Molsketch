@@ -427,6 +427,11 @@ void MainWindow::assistant()
   assistantClient->showPage(file.absoluteFilePath());
 }
 
+void MainWindow::minimiseSlot () {
+	m_scene ->minimiseAllMolecules ();
+}
+
+
 void MainWindow::about()
 {
   QMessageBox::about(this, tr("About"),
@@ -610,6 +615,11 @@ void MainWindow::createActions()
   prefAct->setShortcut(tr("Ctrl+F"));
   prefAct->setStatusTip(tr("Edit your preferences"));
   connect(prefAct, SIGNAL(triggered()), this, SLOT(editPreferences()));
+	
+	minimiseAct = new QAction(QIcon(":/images/minimise.png"),tr("Minimiser"),this);
+	//minimiseAct->setShortcut(tr("Ctrl+F"));
+	minimiseAct->setStatusTip(tr("Adjust Geometry"));
+	connect(minimiseAct, SIGNAL(triggered()), this, SLOT(minimiseSlot()));
 
   // Zoom actions
   zoomInAct = new QAction(QIcon(":/images/zoom-in.png"),tr("Zoom &In"), this);
@@ -694,6 +704,7 @@ void MainWindow::createMenus()
   editMenu->addAction(rotateModeAct);
   editMenu->addSeparator();
   editMenu->addAction(prefAct);
+  editMenu->addAction(minimiseAct);
 
   viewMenu = menuBar()->addMenu(tr("&View"));
   viewMenu->addAction(zoomInAct);
@@ -741,6 +752,8 @@ void MainWindow::createToolBars()
   editToolBar->addAction(moveModeAct);
   editToolBar->addAction(lassoModeAct);
   editToolBar->addAction(rotateModeAct);
+	  
+  editToolBar->addAction(minimiseAct);
 
   zoomToolBar = addToolBar(tr("Zoom"));
   zoomToolBar->setObjectName("zoom-toolbar");

@@ -40,6 +40,9 @@
 #include "mollibitem.h"
 #include "commands.h"
 
+#include "minimise.h"
+
+
 namespace Molsketch {
 
 using namespace Commands;
@@ -994,6 +997,8 @@ void MolScene::moveModeRelease(QGraphicsSceneMouseEvent* event)
 		lassoTrail.push_back (event->scenePos());
 		if (lassoTrail.size () > 4) {
 			lassoPolygon ->setPolygon (QPolygonF (lassoTrail));
+			lassoSelect ();
+
 		}
 		event->accept();
 	}
@@ -1016,7 +1021,7 @@ void MolScene::moveModeRelease(QGraphicsSceneMouseEvent* event)
 		QList<QGraphicsItem *> its = items (lassoPolygon ->polygon (), Qt::ContainsItemShape);
 		std::cerr << its.size () << std::endl;
 		for (unsigned int i = 0; i < its.size (); i++) {
-			its[i] ->setSelected (true);
+	//		its[i] ->setSelected (true);
 		}
 
 		
@@ -1070,7 +1075,7 @@ void MolScene::rotateModeMove(QGraphicsSceneMouseEvent* event)
 	qreal rotateAngle = std::atan2 (crossprod, dotprod) * 180 / M_PI;
 
 	
-	std::cerr << rotateAngle<<"   "<<std::endl;
+//	std::cerr << rotateAngle<<"   "<<std::endl;
 //   if (event->modifiers() != Qt::AltModifier) rotateAngle = toRoundedAngle(rotateAngle);
   if (rotateAngle == 0) return;
 
@@ -1127,6 +1132,24 @@ void MolScene::rotateModeRelease(QGraphicsSceneMouseEvent* event)
 	*/
 }
 
+	
+void MolScene::minimiseAllMolecules () {
+	
+	foreach(QGraphicsItem* item, items())	{
+        if (item->type() == Molecule::Type) {
+            Molecule* mol = dynamic_cast<Molecule*>(item);
+			minimiseMolecule (mol);
+		}
+	}	
+}
+
+void MolScene::minimiseMolecule (Molecule *mol) {
+	Minimise *minimise = new Minimise ();
+	minimise ->minimiseMolecule (mol);
+	
+}
+	
+	
 void MolScene::addModePress(QGraphicsSceneMouseEvent* event)
 {
   // Get the position

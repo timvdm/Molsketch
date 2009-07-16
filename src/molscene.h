@@ -65,6 +65,10 @@ public:
   /** Cleans up the UndoStack and deletes the molscene. */
   ~MolScene();
 
+	//adjust geometry
+	void minimiseAllMolecules ();
+	void minimiseMolecule (Molecule *mol);
+	
   // Queries
   /** Returns the EditMode of the scene. */
   int editMode() const;
