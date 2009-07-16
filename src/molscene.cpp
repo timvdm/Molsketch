@@ -253,19 +253,6 @@ using namespace Commands;
     return image;
   }
 
-  void MolScene::setElement( QListWidgetItem * item )
-  {
-    if (item->text() != "  ")
-      setElement(item->text());
-    setEditMode(MolScene::AddMode);
-  }
-
-  void MolScene::setElement( QTableWidgetItem * item )
-  {
-    m_currentElementSymbol = item->text();
-    setEditMode(MolScene::AddMode);
-  }
-
   Molecule * MolScene::merge( const Molecule * molA, const Molecule* molB )
   {
     // pre: molA and molB are different molecules
@@ -1423,6 +1410,13 @@ using namespace Commands;
     Q_ASSERT( type >= Bond::InPlane and type < Bond::NoType );
     m_bondType = type;
 
+    // Delete the hint molecule if it exists
+    if (m_hintMoleculeItems) {
+      delete m_hintMoleculeItems;
+      m_hintMoleculeItems = 0;
+    }
+    m_hintRingPoints.clear();
+
     switch (type) {
       case Bond::Wedge:
       case Bond::Hash:
@@ -1452,6 +1446,7 @@ using namespace Commands;
       delete m_hintMoleculeItems;
       m_hintMoleculeItems = 0;
     }
+    m_hintRingPoints.clear();
 
     setEditMode(MolScene::AddMode);
   }

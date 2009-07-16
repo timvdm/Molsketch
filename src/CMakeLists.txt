@@ -17,7 +17,6 @@ set(libmolsketch_SRCS
     element.cpp	
     molview.cpp
     molscene.cpp
-    periodictablewidget.cpp
     commands.cpp	
     fileio.cpp
 
@@ -42,7 +41,7 @@ if(WIN32)
 endif(WIN32)
 
 # MOC-ing headers
-set(molsketch_LIB_MOC_HDRS molscene.h molview.h periodictablewidget.h )
+set(molsketch_LIB_MOC_HDRS molscene.h molview.h )
 set(molsketch_MOC_HDRS mainwindow.h settings.h drawwidget.h)
 qt4_wrap_cpp(libmolsketch_SRCS ${molsketch_LIB_MOC_HDRS})
 qt4_wrap_cpp(molsketch_SRCS ${molsketch_MOC_HDRS})

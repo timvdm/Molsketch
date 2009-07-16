@@ -172,11 +172,6 @@ public slots:
   /** Slot to select all contents of the scene. */
   void selectAll();
   /** 
-   * Slot to set the current element to the element of @p item. */
-  void setElement(QListWidgetItem* item); // @todo remove -- widgets need to figure this ou themselves
-  /** Slot to set the current element to the element of @p item. */
-  void setElement(QTableWidgetItem* item); // @todo remove -- widgets need to figure this ou themselves
-  /** 
    * Slot to set the current element to the element of @p symbol. This will also set the editMode() to 
    * AddMode. If there exists a hint molecule, it will be deleted.
    */

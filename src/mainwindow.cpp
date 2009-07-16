@@ -29,7 +29,6 @@
 #include "element.h"
 #include "fileio.h"
 #include "mollibitem.h"
-#include "periodictablewidget.h"
 
 // widgets
 #include "settings.h"
@@ -98,9 +97,6 @@ MainWindow::MainWindow()
 //   connect(m_scene,SIGNAL(newMolecule(QPointF,QString)),this, SLOT(newMolecule(QPointF,QString)));
   connect(m_scene,SIGNAL(editModeChange(int)),this,SLOT(updateEditMode(int)));
 
-  //connect(recentLib,SIGNAL(itemClicked(QListWidgetItem*)),this,SLOT(updateRecentList(QListWidgetItem*)));
-  connect(periodicTable,SIGNAL(currentItemChanged(QTableWidgetItem*, QTableWidgetItem*)),m_scene,SLOT(setElement(QTableWidgetItem*)));
-  connect(periodicTable,SIGNAL(currentItemChanged(QTableWidgetItem*, QTableWidgetItem*)),this,SLOT(updateRecentList(QTableWidgetItem*)));
 }
 
 // Molecuul manipulation methods
@@ -747,8 +743,6 @@ void MainWindow::createToolBoxes()
   toolBoxDock->setMinimumWidth(270);
   infoDock = new QDockWidget(tr("Infobox"));
   infoDock->setObjectName("infobox-dockwidget");
-  periodicTableDock = new QDockWidget(tr("Periodic Table"));
-  periodicTableDock->setObjectName("periodic-table-dockwidget");
 
 
   ////////////////////////
@@ -911,19 +905,11 @@ void MainWindow::createToolBoxes()
   infoText->setReadOnly(true);
   infoDock->setWidget(infoText);
 
-  // Create the periodic table at the bottem
-  periodicTable = new PeriodicTableWidget();
-  periodicTableDock->setWidget(periodicTable);
-  periodicTable->setCurrentCell(1,13);
-
   // Placing the dockwidgets in their default position
   setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
   setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
   addDockWidget(Qt::LeftDockWidgetArea,toolBoxDock);
   addDockWidget(Qt::LeftDockWidgetArea,infoDock);
-  addDockWidget(Qt::BottomDockWidgetArea, periodicTableDock);
-//   periodicTableDock->setFloating(true);
-  periodicTableDock->resize(460,280);
 
 
   // Connecting signals and slots

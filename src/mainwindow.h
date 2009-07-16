@@ -216,14 +216,10 @@ private:
   QDockWidget* toolBoxDock;
   /** The dock widget for the info box. */
   QDockWidget* infoDock;
-  /** The dock for the periodic table. */
-  QDockWidget* periodicTableDock;
   /** The toolbox with the libraries. */
   QToolBox* toolBox;
   /** The info textbox. */
   QTextEdit* infoText;
-  /** The periodic table. */
-  QTableWidget* periodicTable;
 
   // Menus
   /** The file menu. */

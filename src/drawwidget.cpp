@@ -253,7 +253,7 @@ namespace Molsketch {
 
   void DrawWidget::wedgeBondClicked()
   {
-    m_scene->setBondOrder(1);
+    // also sets order
     m_scene->setBondType(Bond::Wedge);
  
     if (!checkedAtomButton())
@@ -265,7 +265,7 @@ namespace Molsketch {
   
   void DrawWidget::hashBondClicked()
   {
-    m_scene->setBondOrder(1);
+    // also sets order
     m_scene->setBondType(Bond::Hash);  
 
     if (!checkedAtomButton())
@@ -277,7 +277,7 @@ namespace Molsketch {
   
   void DrawWidget::wedgeOrHashBondClicked()
   {
-    m_scene->setBondOrder(1);
+    // also sets order
     m_scene->setBondType(Bond::WedgeOrHash);  
     
     if (!checkedAtomButton())
@@ -289,8 +289,8 @@ namespace Molsketch {
   
   void DrawWidget::cisOrTransBondClicked()
   {
-    m_scene->setBondOrder(2);
-    m_scene->setBondType(Bond::CisOrTrans);  
+    // also sets order
+    m_scene->setBondType(Bond::CisOrTrans); 
 
     if (!checkedAtomButton())
       ui.buttonC->setChecked(true);
