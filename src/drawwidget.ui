@@ -53,7 +53,7 @@
       <bool>true</bool>
      </property>
      <property name="autoExclusive">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
      <property name="autoDefault">
       <bool>false</bool>
@@ -99,7 +99,7 @@
       <bool>true</bool>
      </property>
      <property name="autoExclusive">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -136,7 +136,7 @@
       <bool>true</bool>
      </property>
      <property name="autoExclusive">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -173,7 +173,7 @@
       <bool>true</bool>
      </property>
      <property name="autoExclusive">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -210,7 +210,7 @@
       <bool>true</bool>
      </property>
      <property name="autoExclusive">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -247,7 +247,7 @@
       <bool>true</bool>
      </property>
      <property name="autoExclusive">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -287,7 +287,7 @@
       <bool>false</bool>
      </property>
      <property name="autoExclusive">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -324,7 +324,7 @@
       <bool>true</bool>
      </property>
      <property name="autoExclusive">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -361,7 +361,7 @@
       <bool>true</bool>
      </property>
      <property name="autoExclusive">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -398,7 +398,7 @@
       <bool>true</bool>
      </property>
      <property name="autoExclusive">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -435,7 +435,7 @@
       <bool>true</bool>
      </property>
      <property name="autoExclusive">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -472,7 +472,7 @@
       <bool>true</bool>
      </property>
      <property name="autoExclusive">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -522,7 +522,7 @@
       <bool>true</bool>
      </property>
      <property name="autoExclusive">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -556,8 +556,11 @@
      <property name="checkable">
       <bool>true</bool>
      </property>
-     <property name="autoExclusive">
+     <property name="checked">
       <bool>true</bool>
+     </property>
+     <property name="autoExclusive">
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -592,7 +595,7 @@
       <bool>true</bool>
      </property>
      <property name="autoExclusive">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -627,7 +630,7 @@
       <bool>true</bool>
      </property>
      <property name="autoExclusive">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -662,7 +665,7 @@
       <bool>true</bool>
      </property>
      <property name="autoExclusive">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -697,7 +700,7 @@
       <bool>true</bool>
      </property>
      <property name="autoExclusive">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -732,7 +735,7 @@
       <bool>true</bool>
      </property>
      <property name="autoExclusive">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -767,7 +770,7 @@
       <bool>true</bool>
      </property>
      <property name="autoExclusive">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -802,7 +805,7 @@
       <bool>true</bool>
      </property>
      <property name="autoExclusive">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -837,7 +840,7 @@
       <bool>true</bool>
      </property>
      <property name="autoExclusive">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -872,7 +875,7 @@
       <bool>true</bool>
      </property>
      <property name="autoExclusive">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -907,7 +910,7 @@
       <bool>true</bool>
      </property>
      <property name="autoExclusive">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -942,7 +945,7 @@
       <bool>true</bool>
      </property>
      <property name="autoExclusive">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -977,7 +980,7 @@
       <bool>true</bool>
      </property>
      <property name="autoExclusive">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -1025,7 +1028,7 @@
       <bool>true</bool>
      </property>
      <property name="autoExclusive">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -1060,7 +1063,7 @@
       <bool>true</bool>
      </property>
      <property name="autoExclusive">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
     </widget>
    </item>

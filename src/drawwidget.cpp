@@ -69,82 +69,293 @@ namespace Molsketch {
     connect(ui.buttonRing6Arom, SIGNAL(clicked()), this, SLOT(aromaticRing6Clicked()));
   }
 
+
+  void DrawWidget::uncheckAllButtons()
+  {
+    uncheckAtomButtons();
+    uncheckBondButtons();
+    uncheckRingButtons();
+  }
+
+  void DrawWidget::uncheckAtomButtons()
+  {
+    ui.buttonH->setChecked(false);
+    ui.buttonC->setChecked(false);
+    ui.buttonN->setChecked(false);
+    ui.buttonO->setChecked(false);
+    ui.buttonP->setChecked(false);
+    ui.buttonS->setChecked(false);
+    ui.buttonF->setChecked(false);
+    ui.buttonCl->setChecked(false);
+    ui.buttonBr->setChecked(false);
+    ui.buttonI->setChecked(false);
+    ui.buttonX->setChecked(false);
+    ui.buttonR->setChecked(false);
+    ui.buttonAny->setChecked(false);
+  }
+   
+  void DrawWidget::uncheckBondButtons()
+  {
+    ui.buttonSingleBond->setChecked(false);
+    ui.buttonDoubleBond->setChecked(false);
+    ui.buttonTripleBond->setChecked(false);
+    ui.buttonWedge->setChecked(false);
+    ui.buttonHash->setChecked(false);
+    ui.buttonWedgeOrHash->setChecked(false);
+    ui.buttonCisOrTrans->setChecked(false);
+  }
+
+  void DrawWidget::uncheckRingButtons()
+  {  
+    ui.buttonRing3->setChecked(false);
+    ui.buttonRing4->setChecked(false);
+    ui.buttonRing5->setChecked(false);
+    ui.buttonRing6->setChecked(false);
+    ui.buttonRing7->setChecked(false);
+    ui.buttonRing8->setChecked(false);
+    ui.buttonRing5Arom->setChecked(false);
+    ui.buttonRing6Arom->setChecked(false);
+  }
+
+  QPushButton* DrawWidget::checkedBondButton()
+  {
+    if (ui.buttonSingleBond->isChecked())
+      return ui.buttonSingleBond;
+    if (ui.buttonDoubleBond->isChecked())
+      return ui.buttonDoubleBond;
+    if (ui.buttonTripleBond->isChecked())
+      return ui.buttonTripleBond;
+    if (ui.buttonWedge->isChecked())
+      return ui.buttonWedge;
+    if (ui.buttonHash->isChecked())
+      return ui.buttonHash;
+    if (ui.buttonWedgeOrHash->isChecked())
+      return ui.buttonWedgeOrHash;
+    if (ui.buttonCisOrTrans->isChecked())
+      return ui.buttonCisOrTrans;  
+    return 0;
+  }
+
+  QPushButton* DrawWidget::checkedAtomButton()
+  {
+    if (ui.buttonH->isChecked())
+      return ui.buttonH;
+    if (ui.buttonC->isChecked())
+      return ui.buttonC;
+    if (ui.buttonN->isChecked())
+      return ui.buttonN;
+    if (ui.buttonO->isChecked())
+      return ui.buttonO;
+    if (ui.buttonP->isChecked())
+      return ui.buttonP;
+    if (ui.buttonS->isChecked())
+      return ui.buttonS;
+    if (ui.buttonF->isChecked())
+      return ui.buttonF;
+    if (ui.buttonCl->isChecked())
+      return ui.buttonCl;
+    if (ui.buttonBr->isChecked())
+      return ui.buttonBr;
+    if (ui.buttonI->isChecked())
+      return ui.buttonI;
+    if (ui.buttonX->isChecked())
+      return ui.buttonX;
+    if (ui.buttonR->isChecked())
+      return ui.buttonR;
+    if (ui.buttonAny->isChecked())
+      return ui.buttonAny;
+    return 0;
+  }
+
+  //
+  // Atoms
+  //
+
   void DrawWidget::textButtonClicked()
   {
     QObject *sender = QObject::sender();
     QPushButton *button = qobject_cast<QPushButton*>(sender);
-    button->setDown(true);
-    m_scene->setElement(button->text());  
+    QString text = button->text();
+    m_scene->setElement(text);
+
+    uncheckAtomButtons();
+    if (text == "H")
+      ui.buttonH->setChecked(true);
+    else if (text == "C")
+      ui.buttonC->setChecked(true);
+    else if (text == "N")
+      ui.buttonN->setChecked(true);
+    else if (text == "O")
+      ui.buttonO->setChecked(true);
+    else if (text == "P")
+      ui.buttonP->setChecked(true);
+    else if (text == "S")
+      ui.buttonS->setChecked(true);
+    else if (text == "F")
+      ui.buttonF->setChecked(true);
+    else if (text == "Cl")
+      ui.buttonCl->setChecked(true);
+    else if (text == "Br")
+      ui.buttonBr->setChecked(true);
+    else if (text == "I")
+      ui.buttonI->setChecked(true);
+    else if (text == "X")
+      ui.buttonX->setChecked(true);
+    else if (text == "R")
+      ui.buttonR->setChecked(true);
+    else if (text == "Any")
+      ui.buttonAny->setChecked(true);
+   
+    if (!checkedBondButton())
+      ui.buttonSingleBond->setChecked(true);
+    uncheckRingButtons();
   }
+
+  //
+  // Bonds
+  //
 
   void DrawWidget::singleBondClicked()
   {
     m_scene->setBondOrder(1);
-    m_scene->setBondType(Bond::InPlane);  
+    m_scene->setBondType(Bond::InPlane);
+
+    if (!checkedAtomButton())
+      ui.buttonC->setChecked(true);
+    uncheckBondButtons();
+    ui.buttonSingleBond->setChecked(true);
+    uncheckRingButtons();
   }
 
   void DrawWidget::doubleBondClicked()
   {
     m_scene->setBondOrder(2);
-    m_scene->setBondType(Bond::InPlane);  
-  }
+    m_scene->setBondType(Bond::InPlane);
+
+    if (!checkedAtomButton())
+      ui.buttonC->setChecked(true);
+    uncheckBondButtons();
+    ui.buttonDoubleBond->setChecked(true);
+    uncheckRingButtons();
+   }
 
   void DrawWidget::tripleBondClicked()
   {
     m_scene->setBondOrder(3);
     m_scene->setBondType(Bond::InPlane);  
+    
+    if (!checkedAtomButton())
+      ui.buttonC->setChecked(true);
+    uncheckBondButtons();
+    ui.buttonTripleBond->setChecked(true);
+    uncheckRingButtons();
   }
 
   void DrawWidget::wedgeBondClicked()
   {
-    m_scene->setBondType(Bond::Wedge);  
+    m_scene->setBondOrder(1);
+    m_scene->setBondType(Bond::Wedge);
+ 
+    if (!checkedAtomButton())
+      ui.buttonC->setChecked(true);
+    uncheckBondButtons();
+    ui.buttonWedge->setChecked(true);    
+    uncheckRingButtons();
   }
   
   void DrawWidget::hashBondClicked()
   {
+    m_scene->setBondOrder(1);
     m_scene->setBondType(Bond::Hash);  
+
+    if (!checkedAtomButton())
+      ui.buttonC->setChecked(true);
+    uncheckBondButtons();
+    ui.buttonHash->setChecked(true);
+    uncheckRingButtons();
   }
   
   void DrawWidget::wedgeOrHashBondClicked()
   {
+    m_scene->setBondOrder(1);
     m_scene->setBondType(Bond::WedgeOrHash);  
+    
+    if (!checkedAtomButton())
+      ui.buttonC->setChecked(true);
+    uncheckBondButtons();
+    ui.buttonWedgeOrHash->setChecked(true); 
+    uncheckRingButtons();
   }
   
   void DrawWidget::cisOrTransBondClicked()
   {
+    m_scene->setBondOrder(2);
     m_scene->setBondType(Bond::CisOrTrans);  
+
+    if (!checkedAtomButton())
+      ui.buttonC->setChecked(true);
+    uncheckBondButtons();
+    ui.buttonCisOrTrans->setChecked(true);
+    uncheckRingButtons();
   }
-  
+ 
+  //
+  // Rings
+  //
+
   void DrawWidget::ring3Clicked()
   {
+    uncheckAllButtons();
+    ui.buttonRing3->setChecked(true);
     m_scene->setHintRing(3);
   }
+
   void DrawWidget::ring4Clicked()
   {
+    uncheckAllButtons();
+    ui.buttonRing4->setChecked(true);
     m_scene->setHintRing(4);
   }
+  
   void DrawWidget::ring5Clicked()
   {
+    uncheckAllButtons();
+    ui.buttonRing5->setChecked(true);
     m_scene->setHintRing(5);
   }
+  
   void DrawWidget::ring6Clicked()
   {
+    uncheckAllButtons();
+    ui.buttonRing6->setChecked(true);
     m_scene->setHintRing(6);
   }
+  
   void DrawWidget::ring7Clicked()
   {
+    uncheckAllButtons();
+    ui.buttonRing7->setChecked(true);
     m_scene->setHintRing(7);
   }
+  
   void DrawWidget::ring8Clicked()
   {
+    uncheckAllButtons();
+    ui.buttonRing8->setChecked(true);
     m_scene->setHintRing(8);
   }
+  
   void DrawWidget::aromaticRing5Clicked()
   {
+    uncheckAllButtons();
+    ui.buttonRing5Arom->setChecked(true);
     m_scene->setHintRing(5);
   }
+
   void DrawWidget::aromaticRing6Clicked()
   {
+    uncheckAllButtons();
+    ui.buttonRing6Arom->setChecked(true);
     m_scene->setHintRing(6);
   }
 

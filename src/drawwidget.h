@@ -40,6 +40,13 @@ namespace Molsketch {
       DrawWidget(MolScene *scene);
 
     private Q_SLOTS:
+      void uncheckAllButtons();
+      void uncheckAtomButtons();
+      void uncheckBondButtons();
+      void uncheckRingButtons();
+      QPushButton* checkedAtomButton();
+      QPushButton* checkedBondButton();
+
       void textButtonClicked();
       void singleBondClicked();
       void doubleBondClicked();

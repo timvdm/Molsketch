@@ -57,6 +57,10 @@ void AddAtom::undo()
 
 void AddAtom::redo()
 {
+  Q_CHECK_PTR(m_atom);
+  Q_CHECK_PTR(m_molecule);
+  Q_CHECK_PTR(m_molecule->scene());
+
   m_molecule->addAtom(m_atom);
   m_atom->setFlag(QGraphicsItem::ItemIsSelectable, m_molecule->scene()->editMode() == MolScene::MoveMode);
   m_undone = false;
