@@ -42,6 +42,7 @@ set(_obLinkDir ${CMAKE_SOURCE_DIR}/lib)
 set(QT_MIN_VERSION "4.3.0") # we need at least version 4.3 of Qt
 cmake_minimum_required(VERSION 2.4.0) # Depend on CMake 2.4 or better
 
+find_package(PkgConfig)
 find_package(Qt4 REQUIRED)
 find_package(KDE4)
 find_package(OpenBabel2 REQUIRED)

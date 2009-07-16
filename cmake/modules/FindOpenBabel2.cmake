@@ -10,54 +10,59 @@
 # Redistribution and use is allowed according to the terms of the BSD license.
 # For details see the accompanying COPYING-CMAKE-SCRIPTS file.
 
-if (OPENBABEL2_INCLUDE_DIR AND OPENBABEL2_LIBRARIES)
+if (OPENBABEL2_INCLUDE_DIRS AND OPENBABEL2_LIBRARIES)
 
   # in cache already
   set(OPENBABEL2_FOUND TRUE)
 
-else (OPENBABEL2_INCLUDE_DIR AND OPENBABEL2_LIBRARIES)
-if(NOT WIN32)
-  include(UsePkgConfig)
+else (OPENBABEL2_INCLUDE_DIRS AND OPENBABEL2_LIBRARIES)
 
-  pkgconfig(openbabel-2.0 _obIncDir _obLinkDir _obLinkFlags _obCflags)
+  # not cached
+  if(NOT WIN32)
+#    set(PKG_CONFIG_PATH ${PKG_CONFIG_PATH} /usr/local)
+    pkg_check_modules(OPENBABEL2 openbabel-2.0)
 
-  # query pkg-config asking for a openbabel >= 2.1.0
-  exec_program(${PKGCONFIG_EXECUTABLE} ARGS --atleast-version=2.1.0 openbabel-2.0 RETURN_VALUE _return_VALUE OUTPUT_VARIABLE _pkgconfigDevNull )
-  if(_return_VALUE STREQUAL "0")
-	set(OPENBABEL_MINI_FOUND TRUE)
-  endif(_return_VALUE STREQUAL "0")
+    # query pkg-config asking for a openbabel >= 2.1.0
+    exec_program(${PKG_CONFIG_EXECUTABLE} ARGS --atleast-version=2.1.0 openbabel-2.0 RETURN_VALUE _return_VALUE OUTPUT_VARIABLE _pkgconfigDevNull )
+    if(_return_VALUE STREQUAL "0")
+      set(OPENBABEL_MINI_FOUND TRUE)
+    endif(_return_VALUE STREQUAL "0")
 
-  exec_program(${PKGCONFIG_EXECUTABLE} ARGS --variable=pkgincludedir openbabel-2.0 RETURN_VALUE _return_VALUE OUTPUT_VARIABLE _obPkgIncDir )
-  if (_obPkgIncDir)
-    set(_obIncDir "${_obPkgIncDir}")
-  endif (_obPkgIncDir)
-else(NOT WIN32)
-  set(OPENBABEL_MINI_FOUND TRUE)
-endif(NOT WIN32)
+    exec_program(${PKGCONFIG_EXECUTABLE} ARGS --variable=pkgincludedir openbabel-2.0 RETURN_VALUE _return_VALUE OUTPUT_VARIABLE _obPkgIncDir )
+    if (_obPkgIncDir)
+      set(OPENBABEL_INCLUDE_DIRS "${_obPkgIncDir}")
+    endif (_obPkgIncDir)
+
+  else(NOT WIN32)
+    set(OPENBABEL_MINI_FOUND TRUE)
+  endif(NOT WIN32)
+  
   if(OPENBABEL_MINI_FOUND)
 
-  find_path(OPENBABEL2_INCLUDE_DIR openbabel/obconversion.h
-    ${_obIncDir}
-    /usr/local/include
-    /usr/include
-    ${GNUWIN32_DIR}/include
-    $ENV{OPENBABEL2_INCLUDE_DIR}
-  )
+    # minimal installation on unix / all windows
 
-  find_library(OPENBABEL2_LIBRARIES NAMES openbabel
-    PATHS
-    ${_obLinkDir}
-    /usr/lib
-    /usr/local/lib
-    ${GNUWIN32_DIR}/lib
-    $ENV{OPENBABEL2_LIBRARIES}
-  )
+    find_path(OPENBABEL2_INCLUDE_DIR openbabel/obconversion.h
+      ${_obIncDir}
+      /usr/local/include
+      /usr/include
+      ${GNUWIN32_DIR}/include
+      $ENV{OPENBABEL2_INCLUDE_DIR}
+    )
+
+    find_library(OPENBABEL2_LIBRARIES NAMES openbabel
+      PATHS
+      ${_obLinkDir}
+      /usr/lib
+      /usr/local/lib
+      ${GNUWIN32_DIR}/lib
+      $ENV{OPENBABEL2_LIBRARIES}
+    )
 
   endif(OPENBABEL_MINI_FOUND)
 
-  if(OPENBABEL2_INCLUDE_DIR AND OPENBABEL2_LIBRARIES AND OPENBABEL_MINI_FOUND)
+  if(OPENBABEL2_INCLUDE_DIRS AND OPENBABEL2_LIBRARIES AND OPENBABEL_MINI_FOUND)
     set(OPENBABEL2_FOUND TRUE)
-  endif(OPENBABEL2_INCLUDE_DIR AND OPENBABEL2_LIBRARIES AND OPENBABEL_MINI_FOUND)
+  endif(OPENBABEL2_INCLUDE_DIRS AND OPENBABEL2_LIBRARIES AND OPENBABEL_MINI_FOUND)
 
   if (OPENBABEL2_FOUND)
     if (NOT OpenBabel2_FIND_QUIETLY)
@@ -69,30 +74,6 @@ endif(NOT WIN32)
     endif (OpenBabel2_FIND_REQUIRED)
   endif (OPENBABEL2_FOUND)
 
-  mark_as_advanced(OPENBABEL2_INCLUDE_DIR OPENBABEL2_LIBRARIES)
+  mark_as_advanced(OPENBABEL2_INCLUDE_DIRS OPENBABEL2_LIBRARIES)
 
-endif (OPENBABEL2_INCLUDE_DIR AND OPENBABEL2_LIBRARIES)
-
-# Search for Open Babel2 executable
-if(OPENBABEL2_EXECUTABLE)
-
-  # in cache already
-  set(OPENBABEL2_EXECUTABLE_FOUND TRUE)
-
-else(OPENBABEL2_EXECUTABLE)
-  find_program(OPENBABEL2_EXECUTABLE NAMES babel
-    PATHS
-    [HKEY_CURRENT_USER\\SOFTWARE\\OpenBabel\ 2.1.0]
-    $ENV{OPENBABEL2_EXECUTABLE}
-  )
-
-  if(OPENBABEL2_EXECUTABLE)
-    set(OPENBABEL2_EXECUTABLE_FOUND TRUE)
-  endif(OPENBABEL2_EXECUTABLE)
-
-  if(OPENBABEL2_EXECUTABLE_FOUND)
-    message(STATUS "Found OpenBabel2 executable: ${OPENBABEL2_EXECUTABLE}")
-  endif(OPENBABEL2_EXECUTABLE_FOUND)
-
-endif(OPENBABEL2_EXECUTABLE)
-
+endif (OPENBABEL2_INCLUDE_DIRS AND OPENBABEL2_LIBRARIES)
