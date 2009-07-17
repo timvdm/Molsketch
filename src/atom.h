@@ -145,6 +145,11 @@ namespace Molsketch {
       enum { Type = UserType + 8 };
       /** Returns the type of the class. Needed fro Qt typecasting. */
       virtual int type() const {return Atom::Type;};
+	  int n;
+	  
+	  //returns a list of atoms connected to atom
+	  QList<Atom*> neighbours () {return m_neighbors;};
+
 
     protected:
       // Event handlers
@@ -167,6 +172,9 @@ namespace Molsketch {
       bool m_drawn;
       /** Stores the charge of the atom. */
       int m_userCharge;
+	  
+	  //identifies the atom in a molecule. set with molecule::numberAtoms ()
+	  
       /**
        * Stores the list of atoms connected to this atom by a bond
        *

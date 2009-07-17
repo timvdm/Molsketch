@@ -40,15 +40,25 @@
 #include "mollibitem.h"
 #include "commands.h"
 
+#include "minimise.h"
+
+
 namespace Molsketch {
 
-using namespace Commands;
+  using namespace Commands;
 
 
-// Constructor & destructor
+  // Constructor & destructor
 
   MolScene::MolScene(QObject* parent) : QGraphicsScene(parent)
   {
+
+    rotationItem = NULL;  
+
+    lassoPolygon = addPolygon (QPolygon ());
+    lassoPolygon ->hide ();
+
+
     //Initializing properties
     m_currentElementSymbol = "C";
     m_editMode = MolScene::AddMode;
@@ -321,20 +331,20 @@ using namespace Commands;
         if (atom->molecule() && !molecules.contains(atom->molecule()))
           molecules.append(atom->molecule());
       /*
-      if (!atom) {
-        // create a new atom if there isn't any for this position
-        atom = new Atom(m_hintMoleculeItems->mapToScene(p), "C", m_autoAddHydrogen);
+         if (!atom) {
+      // create a new atom if there isn't any for this position
+      atom = new Atom(m_hintMoleculeItems->mapToScene(p), "C", m_autoAddHydrogen);
       } else {
-        // store the molecules which will be merged by the ring
-        if (atom->molecule())
-          if (!molecules.contains(atom->molecule()))
-            molecules.append(atom->molecule());
+      // store the molecules which will be merged by the ring
+      if (atom->molecule())
+      if (!molecules.contains(atom->molecule()))
+      molecules.append(atom->molecule());
       }
-      */
+       */
       // 
       //atoms.append(atom);
     }
-    
+
     qDebug() << molecules;
 
     m_stack->beginMacro("Add Molecule");
@@ -348,7 +358,7 @@ using namespace Commands;
       Molecule *mergedMol = molecules[0];
       for (int i = 1; i < molecules.size(); ++i)
         mergedMol = merge(mergedMol, molecules[i]);
-        //m_stack->push(new MergeMol(molecules[0], molecules[i], molecules[0]));
+      //m_stack->push(new MergeMol(molecules[0], molecules[i], molecules[0]));
       m_stack->push(new AddItem(mergedMol,this));
       molecules[0] = mergedMol;
     }
@@ -382,17 +392,17 @@ using namespace Commands;
     }
     molecules[0]->setFocus();
     /*
-    foreach(Atom *atom, atoms)
-      if (!atom->molecule()) {
-        //molecules[0]->addAtom(atom);
-        m_stack->push(new AddAtom(atom, molecules[0]));
-      }
+       foreach(Atom *atom, atoms)
+       if (!atom->molecule()) {
+    //molecules[0]->addAtom(atom);
+    m_stack->push(new AddAtom(atom, molecules[0]));
+    }
     foreach(Bond *bond, bonds)
-      if (!bond->molecule()) {
-        //molecules[0]->addBond(bond);
-        m_stack->push(new AddBond(bond));
-      }
-      */
+    if (!bond->molecule()) {
+    //molecules[0]->addBond(bond);
+    m_stack->push(new AddBond(bond));
+    }
+     */
     m_stack->endMacro();
   }
 
@@ -821,6 +831,9 @@ using namespace Commands;
           case MolScene::RotateMode:
             rotateModePress( event );
             break;
+          case MolScene::LassoMode:
+            lassoModePress (event);
+            break;
           default:
             break;
         };
@@ -869,7 +882,10 @@ using namespace Commands;
           case MolScene::RotateMode:
             rotateModeMove(event);
             break;
-        }
+          case MolScene::LassoMode:
+            lassoModeMove(event);
+            break;
+        }	
     }
 
     // Execute default behavior
@@ -877,102 +893,295 @@ using namespace Commands;
   }
 
 
-  void MolScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
-  {
+void MolScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
+{
 
-    // Determin the right action
-    switch (event->button())
-    {
-      case Qt::RightButton:
-        break;
-      case Qt::MidButton:
-        moveModeRelease(event);
-        break;
-      default:
-        switch (m_editMode)
-        {
-          case MolScene::AddMode:
+  // Determin the right action
+  switch (event->button())
+  {
+    case Qt::RightButton:
+      break;
+    case Qt::MidButton:
+      moveModeRelease(event);
+      break;
+    default:
+      switch (m_editMode)
+      {
+        case MolScene::AddMode:
             addModeRelease(event);
             clearSelection();
             break;
-          case MolScene::MoveMode:
+        case MolScene::MoveMode:
             moveModeRelease(event);
             break;
-          case MolScene::RotateMode:
+        case MolScene::LassoMode:
+            lassoModeRelease(event);
+            break;
+        case MolScene::RotateMode:
             rotateModeRelease(event);
             break;
-        }
-    }
-
-    // Execute the normal behavior
-    QGraphicsScene::mouseReleaseEvent(event);
+      }
   }
 
+  // Execute the normal behavior
+  QGraphicsScene::mouseReleaseEvent(event);
+}
 
-  void MolScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * event )
+
+void MolScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * event )
+{
+
+  // Determin the corresponding action
+  switch (event->button())
   {
+    case Qt::RightButton:
+      delModeDoubleClick(event);
+      break;
+    default:
+      switch (m_editMode)
+      {
+        case MolScene::AddMode:
+          break;
+        case MolScene::RemoveMode:
+          delModeDoubleClick(event);
+          break;
+        case MolScene::MoveMode:
+          break;
+      }
+  }
 
-    // Determin the corresponding action
-    switch (event->button())
-    {
-      case Qt::RightButton:
-        delModeDoubleClick(event);
-        break;
-      default:
-        switch (m_editMode)
+  // Execute default behavior
+  QGraphicsScene::mouseDoubleClickEvent( event );
+}
+
+void MolScene::moveModePress(QGraphicsSceneMouseEvent* event)
+{
+  // Check whether to select an item
+  QGraphicsItem * item = itemAt(event->scenePos());
+  if (item && !item->isSelected()) {
+    clearSelection();
+    item->setSelected(true);
+  }
+
+  // Flag the selected items as moveable
+  clearFocus();
+  foreach(QGraphicsItem* item,selectedItems()) item->setFlag(QGraphicsItem::ItemIsMovable,true);
+  emit copyAvailable(!selectedItems().isEmpty());
+}
+
+void MolScene::moveModeMove(QGraphicsSceneMouseEvent* event)
+{
+  event->accept();
+}
+
+      void MolScene::moveModeRelease(QGraphicsSceneMouseEvent* event)
+      {
+        QPointF moveVector = event->scenePos() - event->buttonDownScenePos(event->button());
+        if(moveVector.isNull()) 
+          {
+            clearFocus();
+            return;
+          }
+
+          m_stack->beginMacro(tr("moving item(s)"));
+
+        foreach(QGraphicsItem* item,selectedItems())
         {
-          case MolScene::AddMode:
-            break;
-          case MolScene::RemoveMode:
-            delModeDoubleClick(event);
-            break;
-          case MolScene::MoveMode:
-            break;
+          item->moveBy(-moveVector.x(), -moveVector.y());
+          if (!moveVector.isNull()) m_stack->push(new MoveItem(item,moveVector,tr("moving item(s)")));
+          item->setFlag(QGraphicsItem::ItemIsMovable,false);
         }
-    }
+        m_stack->endMacro();
+        clearFocus();
+      }
 
-    // Execute default behavior
-    QGraphicsScene::mouseDoubleClickEvent( event );
+
+  void MolScene::lassoModePress(QGraphicsSceneMouseEvent* event)
+  {
+    foreach(QGraphicsItem* item, items())
+      if (item->type() == Molecule::Type || item->type() == Atom::Type) 
+        item->setFlag(QGraphicsItem::ItemIsSelectable,true);
+
+
+
+    lassoPolygon ->show ();
+    lassoTrail.clear ();
+    lassoTrail.push_back (event->scenePos());
+
   }
 
-  void MolScene::moveModePress(QGraphicsSceneMouseEvent* event)
+  void MolScene::lassoModeMove(QGraphicsSceneMouseEvent* event)
   {
-    // Check whether to select an item
-    QGraphicsItem * item = itemAt(event->scenePos());
-    if (item && !item->isSelected()) {
-      clearSelection();
-      item->setSelected(true);
+    if (!(event->buttons() & Qt::LeftButton)) return;
+
+    lassoTrail.push_back (event->scenePos());
+    if (lassoTrail.size () > 4) {
+      lassoPolygon ->setPolygon (QPolygonF (lassoTrail));
+      lassoSelect ();
+
     }
-
-    // Flag the selected items as moveable
-    clearFocus();
-    foreach(QGraphicsItem* item,selectedItems()) item->setFlag(QGraphicsItem::ItemIsMovable,true);
-    emit copyAvailable(!selectedItems().isEmpty());
-  }
-
-  void MolScene::moveModeMove(QGraphicsSceneMouseEvent* event)
-  {
     event->accept();
   }
 
-  void MolScene::moveModeRelease(QGraphicsSceneMouseEvent* event)
+  void MolScene::lassoModeRelease(QGraphicsSceneMouseEvent* event)
   {
 
-    QPointF moveVector = event->scenePos() - event->buttonDownScenePos(event->button());
-    if(moveVector.isNull()) 
-    {
-      clearFocus();
-      return;
+    lassoTrail.clear ();
+    lassoSelect ();
+    lassoPolygon ->setPolygon(QPolygonF ());
+    lassoPolygon ->hide ();
+
+
+
+  }
+
+  void MolScene::lassoSelect()
+  {
+    clearSelection();
+    QList<QGraphicsItem *> its = items (lassoPolygon ->polygon (), Qt::ContainsItemShape);
+    std::cerr << its.size () << std::endl;
+    for (unsigned int i = 0; i < its.size (); i++) {
+      //		its[i] ->setSelected (true);
     }
 
-    m_stack->beginMacro(tr("moving item(s)"));
 
-    foreach(QGraphicsItem* item,selectedItems())
-    {
-      item->moveBy(-moveVector.x(), -moveVector.y());
-      if (!moveVector.isNull()) m_stack->push(new MoveItem(item,moveVector,tr("moving item(s)")));
-      item->setFlag(QGraphicsItem::ItemIsMovable,false);
-    }
+  }	
+
+
+
+  void MolScene::rotateModePress(QGraphicsSceneMouseEvent* event)
+  {
+
+
+    QGraphicsItem * item = itemAt(event->buttonDownScenePos(Qt::LeftButton));
+    if (!item) return;
+    if (item->type() == Atom::Type) item = item->parentItem();
+    if (item->type() == Bond::Type) item = item->parentItem();
+    QPointF rotatePoint = item->boundingRect().center();
+    QPointF rotatePointAbs = item->mapToScene(rotatePoint);
+
+    rotationItem = item;
+    lastRotationVect = event->buttonDownScenePos(Qt::LeftButton) - rotatePointAbs ; //save vector for relative rotation step
+
+    // Execute default behavior
+    QGraphicsScene::mousePressEvent(event);
+  }
+
+  void MolScene::rotateModeMove(QGraphicsSceneMouseEvent* event)
+  {
+    // Do nothing if no buttons are pressed or no item has been selected
+    if (!rotationItem) return;
+    if (!(event->buttons() & Qt::LeftButton)) return;
+    /*
+    // Find the item to rotate and it's rotation point
+    QGraphicsItem * item = itemAt(event->buttonDownScenePos(Qt::LeftButton));
+    if (!item) return;
+    if (item->type() == Atom::Type) item = item->parentItem();
+    if (item->type() == Bond::Type) item = item->parentItem();
+    QPointF rotatePoint = item->boundingRect().center();
+    QPointF rotatePointAbs = item->mapToScene(rotatePoint);
+     */
+
+    QPointF rotatePoint = rotationItem->boundingRect().center();
+    QPointF rotatePointAbs = rotationItem->mapToScene(rotatePoint);
+
+
+    // Calculate the rotation angle
+    QPointF vec1 = lastRotationVect;
+    QPointF vec2 = event->scenePos() - rotatePointAbs;
+
+    qreal crossprod = vec1.x () * vec2.y () - vec1.y () * vec2.x ();
+    qreal dotprod =   vec1.x () * vec2.x () + vec1.y () * vec2.y ();
+    qreal rotateAngle = std::atan2 (crossprod, dotprod) * 180 / M_PI;
+
+
+    //	std::cerr << rotateAngle<<"   "<<std::endl;
+    //   if (event->modifiers() != Qt::AltModifier) rotateAngle = toRoundedAngle(rotateAngle);
+    if (rotateAngle == 0) return;
+
+    // Temporary rotate the item
+    QTransform transform;
+    transform.translate(rotatePoint.x(), rotatePoint.y());
+    switch (event->modifiers()) {
+      case Qt::ControlModifier: transform.rotate(rotateAngle, Qt::XAxis); break;
+      case Qt::ShiftModifier: transform.rotate(rotateAngle, Qt::YAxis); break;
+      default: transform.rotate(rotateAngle, Qt::ZAxis);
+    };
+    transform.translate(-rotatePoint.x(), -rotatePoint.y());
+    rotationItem->setTransform(transform, true);
+    lastRotationVect = vec2;
+    //   item->rotate(rotateAngle);
+  }
+
+  void MolScene::rotateModeRelease(QGraphicsSceneMouseEvent* event)
+  {
+    rotationItem = NULL;
+    /*
+
+    // Find the item to rotate find the rotate point
+    QGraphicsItem * item = itemAt(event->buttonDownScenePos(Qt::LeftButton));
+    if (!item) return;
+    if (item->type() == Atom::Type) item = item->parentItem();
+    if (item->type() == Bond::Type) item = item->parentItem();
+    QPointF rotatePoint = item->boundingRect().center();
+
+    // Calculate the rotation angle
+    QPointF vec1 = event->buttonDownScenePos(Qt::LeftButton) - item->mapToScene(rotatePoint);
+    QPointF vec2 = event->scenePos() - item->mapToScene(rotatePoint);
+    qreal alpha = std::atan2(vec1.y(), vec1.x());
+    qreal beta = std::atan2(vec2.y(), vec2.x());
+    qreal rotateAngle = beta - alpha;
+    //   if (event->modifiers() != Qt::AltModifier) rotateAngle = toRoundedAngle(rotateAngle);
+    if (rotateAngle == 0) return;
+
+    // Rotate the item
+    QTransform transform;
+    transform.translate(rotatePoint.x(), rotatePoint.y());
+    switch (event->modifiers()) {
+    case Qt::ControlModifier: transform.rotate(rotateAngle, Qt::XAxis); break;
+    case Qt::ShiftModifier: transform.rotate(rotateAngle, Qt::YAxis); break;
+    default: transform.rotate(rotateAngle, Qt::ZAxis);
+    };
+    transform.translate(-rotatePoint.x(), -rotatePoint.y());
+    item->setTransform(transform.inverted(), true);
+    //   item->rotate(-rotateAngle/(2*M_PI)*360);
+
+    m_stack->beginMacro(tr("rotating item(s)"));
+    m_stack->push(new RotateItem(item, transform, tr("rotating item(s)")));
+    m_stack->endMacro();
+     */
+  }
+
+
+  void MolScene::minimiseAllMolecules () {
+
+    foreach(QGraphicsItem* item, items())	{
+      if (item->type() == Molecule::Type) {
+        Molecule* mol = dynamic_cast<Molecule*>(item);
+        minimiseMolecule (mol);
+      }
+    }	
+  }
+
+  void MolScene::minimiseMolecule (Molecule *mol) {
+    Minimise *minimise = new Minimise ();
+    minimise ->minimiseMolecule (mol);
+
+  }
+
+
+  void MolScene::addModePress(QGraphicsSceneMouseEvent* event)
+  {
+    // Get the position
+    QPointF downPos = event->buttonDownScenePos(event->button());
+
+    // Check for bond click
+    if (bondAt(downPos) && !atomAt(downPos))
+      {
+        item->moveBy(-moveVector.x(), -moveVector.y());
+        if (!moveVector.isNull()) m_stack->push(new MoveItem(item,moveVector,tr("moving item(s)")));
+        item->setFlag(QGraphicsItem::ItemIsMovable,false);
+      }
     m_stack->endMacro();
     clearFocus();
   }

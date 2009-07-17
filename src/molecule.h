@@ -1,6 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2007 by Harm van Eersel                                 *
- *   devsciurus@xs4all.nl                                                  *
+ *   devsciurus@xs4all.nl                                            *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -128,6 +128,8 @@ class Molecule : public QGraphicsItemGroup
     * of a proper solution.
     */
     void rebuild();
+	  void numberAtoms ();
+
 
 //   void normalize();
 //   void setAtomSize(qreal pt);
@@ -170,8 +172,12 @@ class Molecule : public QGraphicsItemGroup
     int charge() const;
     /** Returns the charge as a string with an appropiate + or - sign. */
     QString chargeID() const;
+	  
+
 
   protected:
+	  
+	  
 //    /** Event handler for mouse press events on the molecule. */
 //     virtual void mousePressEvent(QGraphicsSceneMouseEvent* event);
 //    /** Event handler for mouse release events on the molecule.*/

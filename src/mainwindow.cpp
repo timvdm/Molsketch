@@ -385,6 +385,11 @@ void MainWindow::setMoveMode()
   m_scene->setEditMode(MolScene::MoveMode);
 }
 
+void MainWindow::setLassoMode()
+{
+	m_scene->setEditMode(MolScene::LassoMode);
+}
+
 void MainWindow::setRotateMode()
 {
   m_scene->setEditMode(MolScene::RotateMode);
@@ -418,6 +423,11 @@ void MainWindow::assistant()
   assistantClient->showPage(file.absoluteFilePath());
 }
 
+void MainWindow::minimiseSlot () {
+	m_scene ->minimiseAllMolecules ();
+}
+
+
 void MainWindow::about()
 {
   QMessageBox::about(this, tr("About"),
@@ -431,42 +441,46 @@ void MainWindow::documentWasModified()
 
 void MainWindow::updateEditMode(int mode)
 {
+	addModeAct->setChecked(false);
+	delModeAct->setChecked(false);
+	moveModeAct->setChecked(false);
+	lassoModeAct ->setChecked (false);
+	rotateModeAct->setChecked(false);
+	m_molView->setDragMode(QGraphicsView::NoDrag);
   // Change the buttonstates depending on the edit mode
   switch (mode)
     {
     case MolScene::AddMode:
-      addModeAct->setChecked(true);
-      delModeAct->setChecked(false);
-      moveModeAct->setChecked(false);
-      rotateModeAct->setChecked(false);
-      m_molView->setDragMode(QGraphicsView::NoDrag);
+		addModeAct->setChecked(true);
       statusBar()->showMessage(tr("Left Click: add atom, Drag: add bond, Click on bond: change order, Shift + Left Click on bond: change type, Right Click: remove item"));
       break;
     case MolScene::RemoveMode:
-      addModeAct->setChecked(false);
+  //    addModeAct->setChecked(false);
       delModeAct->setChecked(true);
-      moveModeAct->setChecked(false);
-      rotateModeAct->setChecked(false);
-      m_molView->setDragMode(QGraphicsView::NoDrag);
+   //   moveModeAct->setChecked(false);
+    //  rotateModeAct->setChecked(false);
+   //   m_molView->setDragMode(QGraphicsView::NoDrag);
       statusBar()->showMessage(tr("Click on an item to delete it. Double click on an molecule to delete it."));
       break;
     case MolScene::MoveMode:
-      addModeAct->setChecked(false);
-      delModeAct->setChecked(false);
+
       moveModeAct->setChecked(true);
-      rotateModeAct->setChecked(false);
       m_molView->setDragMode(QGraphicsView::RubberBandDrag);
       statusBar()->showMessage(tr("Click on an item to select it. Drag to move selected items."));
       break;
     case MolScene::RotateMode:
-      addModeAct->setChecked(false);
-      delModeAct->setChecked(false);
-      moveModeAct->setChecked(false);
+     // addModeAct->setChecked(false);
+    //  delModeAct->setChecked(false);
+    //  moveModeAct->setChecked(false);
       rotateModeAct->setChecked(true);
-      m_molView->setDragMode(QGraphicsView::NoDrag);
+    //  m_molView->setDragMode(QGraphicsView::NoDrag);
       statusBar()->showMessage(tr("Click on an item to select it. Drag: rotate Z axis, Control + drag: rotate X axis, Shift + drag: rotate Y axis"));
       break;
-    }
+
+	case MolScene::LassoMode:
+	lassoModeAct ->setChecked (true);
+	break;
+	}
 }
 
 // Widget creators
@@ -575,6 +589,13 @@ void MainWindow::createActions()
   moveModeAct->setShortcut(tr("F7"));
   moveModeAct->setStatusTip(tr("Go to the molecule move mode"));
   connect(moveModeAct, SIGNAL(triggered()), this, SLOT(setMoveMode()));
+	
+	lassoModeAct = new QAction(QIcon(":/images/select-lasso.png"), tr("&Lasso mode"), this);
+	lassoModeAct->setCheckable(true);
+//	lassoModeAct->setShortcut(tr("F7"));
+	lassoModeAct->setStatusTip(tr("Go to the lasso select mode"));
+	connect(lassoModeAct, SIGNAL(triggered()), this, SLOT(setLassoMode()));	
+	
 
   rotateModeAct = new QAction(QIcon(":/images/transform-rotate.png"), tr("&Rotate mode"), this);
   rotateModeAct->setCheckable(true);
@@ -590,6 +611,11 @@ void MainWindow::createActions()
   prefAct->setShortcut(tr("Ctrl+F"));
   prefAct->setStatusTip(tr("Edit your preferences"));
   connect(prefAct, SIGNAL(triggered()), this, SLOT(editPreferences()));
+	
+	minimiseAct = new QAction(QIcon(":/images/minimise.png"),tr("Minimiser"),this);
+	//minimiseAct->setShortcut(tr("Ctrl+F"));
+	minimiseAct->setStatusTip(tr("Adjust Geometry"));
+	connect(minimiseAct, SIGNAL(triggered()), this, SLOT(minimiseSlot()));
 
   // Zoom actions
   zoomInAct = new QAction(QIcon(":/images/zoom-in.png"),tr("Zoom &In"), this);
@@ -670,9 +696,11 @@ void MainWindow::createMenus()
   editMenu->addAction(addModeAct);
   editMenu->addAction(delModeAct);
   editMenu->addAction(moveModeAct);
+  editMenu->addAction(lassoModeAct);	
   editMenu->addAction(rotateModeAct);
   editMenu->addSeparator();
   editMenu->addAction(prefAct);
+  editMenu->addAction(minimiseAct);
 
   viewMenu = menuBar()->addMenu(tr("&View"));
   viewMenu->addAction(zoomInAct);
@@ -718,7 +746,10 @@ void MainWindow::createToolBars()
   editToolBar->addAction(addModeAct);
   editToolBar->addAction(delModeAct);
   editToolBar->addAction(moveModeAct);
+  editToolBar->addAction(lassoModeAct);
   editToolBar->addAction(rotateModeAct);
+	  
+  editToolBar->addAction(minimiseAct);
 
   zoomToolBar = addToolBar(tr("Zoom"));
   zoomToolBar->setObjectName("zoom-toolbar");
@@ -851,7 +882,7 @@ void MainWindow::createToolBoxes()
   spinBoxBondAngle->setValue(m_scene->bondAngle());
   spinBoxBondAngle->setMaximum(180);
   spinBoxBondAngle->setSingleStep(6);
-  spinBoxBondAngle->setSuffix("°");
+  spinBoxBondAngle->setSuffix("âˆž");
   connect(spinBoxBondAngle, SIGNAL(valueChanged(int)), m_scene, SLOT(setBondAngle(int)));
   hLayoutBS3->addWidget(spinBoxBondAngle);
 

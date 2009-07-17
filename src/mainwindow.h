@@ -94,6 +94,8 @@ private slots:
   void setRemoveMode();
   /** Switch to move mode. */
   void setMoveMode();
+	/** Switch to lasso mode. */
+	void setLassoMode();
   /** Switch to rotate mode. */
   void setRotateMode();
 
@@ -115,6 +117,10 @@ private slots:
   /** Mark the current document as modified. */
   void documentWasModified( );
 
+	//adjust geometry of all molecules
+	void minimiseSlot ();
+
+	
   /** Zoom in on the current view. */
   void zoomIn();
   /** Zoom out on the current view. */
@@ -284,10 +290,14 @@ private:
   QAction* delModeAct;
   /** Switch to move mode action. */
   QAction* moveModeAct;
-  /** Switch to move mode action. */
+	/** Switch to lasso mode action. */
+	QAction* lassoModeAct;
+  /** Switch to rotate mode action. */
   QAction* rotateModeAct;
   /** Open the settings dialog action. */
   QAction* prefAct;
+	/** Minimiser **/
+	QAction *minimiseAct;
 
   // View actions
   /** Zoom in on the view action. */
