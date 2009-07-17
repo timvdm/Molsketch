@@ -55,7 +55,7 @@ namespace Molsketch {
     connect(ui.buttonTripleBond, SIGNAL(clicked()), this, SLOT(tripleBondClicked()));
     connect(ui.buttonWedge, SIGNAL(clicked()), this, SLOT(wedgeBondClicked()));
     connect(ui.buttonHash, SIGNAL(clicked()), this, SLOT(hashBondClicked()));
-    connect(ui.buttonWedgeOrHash, SIGNAL(clicked()), this, SLOT(hashOrWedgeBondClicked()));
+    connect(ui.buttonWedgeOrHash, SIGNAL(clicked()), this, SLOT(wedgeOrHashBondClicked()));
     connect(ui.buttonCisOrTrans, SIGNAL(clicked()), this, SLOT(cisOrTransBondClicked()));
 
     // rings

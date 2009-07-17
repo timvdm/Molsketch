@@ -19,7 +19,7 @@ set(libmolsketch_SRCS
     molscene.cpp
     commands.cpp	
     fileio.cpp
-
+    minimise.cpp
 )
 set(molsketch_SRCS 
     main.cpp 

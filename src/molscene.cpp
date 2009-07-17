@@ -761,8 +761,15 @@ namespace Molsketch {
 
     if (atom->numBonds() == 0) {
       // just translate ring to make 1 atom align
-      m_hintMoleculeItems->setTransform(QTransform());
-      m_hintMoleculeItems->setPos(atom->scenePos() + m_hintRingPoints[0]);
+      QPointF moleculeNormal = QPointF(0.0, -1.0);
+      QPointF ringNormal = normalized(m_hintRingPoints[0]);
+      QPointF rp = m_hintRingPoints[0];
+
+      qreal ang = angle(moleculeNormal, ringNormal) * 180.0 / M_PI;
+      if (angleSign(moleculeNormal, ringNormal) > 0.0)
+        ang = -ang;
+
+      m_hintMoleculeItems->setTransform(QTransform().rotate(ang+180.0).translate(-rp.x(), -rp.y()));
     } else if (atom->numBonds() == 1) {
       // rotate/translate ring to align with the bond
       QPointF moleculeNormal = atom->scenePos() - atom->neighbors()[0]->scenePos();
@@ -796,7 +803,25 @@ namespace Molsketch {
 
   void MolScene::alignRingWithBond(Bond *bond)
   {
+    Q_CHECK_PTR(m_hintMoleculeItems);
+    Q_CHECK_PTR(bond->beginAtom());
+    Q_CHECK_PTR(bond->endAtom());
 
+    /*
+    if (m_hintRingPoints.isEmpty())
+      return;
+
+    // just translate ring to make 1 atom align
+    QPointF bondNormal = normalized(bond->endAtom()->pos() - bond->beginAtom()->pos());
+      QPointF ringNormal = normalized(m_hintRingPoints[0]);
+      QPointF rp = m_hintRingPoints[0];
+
+      qreal ang = angle(moleculeNormal, ringNormal) * 180.0 / M_PI;
+      if (angleSign(moleculeNormal, ringNormal) > 0.0)
+        ang = -ang;
+
+      m_hintMoleculeItems->setTransform(QTransform().rotate(ang+180.0).translate(-rp.x(), -rp.y()));
+ */
   }
 
 
@@ -1169,97 +1194,6 @@ void MolScene::moveModeMove(QGraphicsSceneMouseEvent* event)
 
   }
 
-
-  void MolScene::addModePress(QGraphicsSceneMouseEvent* event)
-  {
-    // Get the position
-    QPointF downPos = event->buttonDownScenePos(event->button());
-
-    // Check for bond click
-    if (bondAt(downPos) && !atomAt(downPos))
-      {
-        item->moveBy(-moveVector.x(), -moveVector.y());
-        if (!moveVector.isNull()) m_stack->push(new MoveItem(item,moveVector,tr("moving item(s)")));
-        item->setFlag(QGraphicsItem::ItemIsMovable,false);
-      }
-    m_stack->endMacro();
-    clearFocus();
-  }
-
-  void MolScene::rotateModePress(QGraphicsSceneMouseEvent* event)
-  {
-    // Execute default behavior
-    QGraphicsScene::mousePressEvent(event);
-  }
-
-  void MolScene::rotateModeMove(QGraphicsSceneMouseEvent* event)
-  {
-    // Do nothing if no buttons are pressed
-    if (!(event->buttons() & Qt::LeftButton)) return;
-
-    // Find the item to rotate and it's rotation point
-    QGraphicsItem * item = itemAt(event->buttonDownScenePos(Qt::LeftButton));
-    if (!item) return;
-    if (item->type() == Atom::Type) item = item->parentItem();
-    if (item->type() == Bond::Type) item = item->parentItem();
-    QPointF rotatePoint = item->boundingRect().center();
-
-    // Calculate the rotation angle
-    QPointF vec1 = event->buttonDownScenePos(Qt::LeftButton) - item->mapToScene(rotatePoint);
-    QPointF vec2 = event->scenePos() - item->mapToScene(rotatePoint);
-    qreal alpha = std::atan2(vec1.y(), vec1.x());
-    qreal beta = std::atan2(vec2.y(), vec2.x());
-    qreal rotateAngle = beta - alpha;
-    //   if (event->modifiers() != Qt::AltModifier) rotateAngle = toRoundedAngle(rotateAngle);
-    if (rotateAngle == 0) return;
-
-    // Temporary rotate the item
-    QTransform transform;
-    transform.translate(rotatePoint.x(), rotatePoint.y());
-    switch (event->modifiers()) {
-      case Qt::ControlModifier: transform.rotate(rotateAngle, Qt::XAxis); break;
-      case Qt::ShiftModifier: transform.rotate(rotateAngle, Qt::YAxis); break;
-      default: transform.rotate(rotateAngle, Qt::ZAxis);
-    };
-    transform.translate(-rotatePoint.x(), -rotatePoint.y());
-    item->setTransform(transform, true);
-    //   item->rotate(rotateAngle);
-  }
-
-  void MolScene::rotateModeRelease(QGraphicsSceneMouseEvent* event)
-  {
-    // Find the item to rotate find the rotate point
-    QGraphicsItem * item = itemAt(event->buttonDownScenePos(Qt::LeftButton));
-    if (!item) return;
-    if (item->type() == Atom::Type) item = item->parentItem();
-    if (item->type() == Bond::Type) item = item->parentItem();
-    QPointF rotatePoint = item->boundingRect().center();
-
-    // Calculate the rotation angle
-    QPointF vec1 = event->buttonDownScenePos(Qt::LeftButton) - item->mapToScene(rotatePoint);
-    QPointF vec2 = event->scenePos() - item->mapToScene(rotatePoint);
-    qreal alpha = std::atan2(vec1.y(), vec1.x());
-    qreal beta = std::atan2(vec2.y(), vec2.x());
-    qreal rotateAngle = beta - alpha;
-    //   if (event->modifiers() != Qt::AltModifier) rotateAngle = toRoundedAngle(rotateAngle);
-    if (rotateAngle == 0) return;
-
-    // Rotate the item
-    QTransform transform;
-    transform.translate(rotatePoint.x(), rotatePoint.y());
-    switch (event->modifiers()) {
-      case Qt::ControlModifier: transform.rotate(rotateAngle, Qt::XAxis); break;
-      case Qt::ShiftModifier: transform.rotate(rotateAngle, Qt::YAxis); break;
-      default: transform.rotate(rotateAngle, Qt::ZAxis);
-    };
-    transform.translate(-rotatePoint.x(), -rotatePoint.y());
-    item->setTransform(transform.inverted(), true);
-    //   item->rotate(-rotateAngle/(2*M_PI)*360);
-
-    m_stack->beginMacro(tr("rotating item(s)"));
-    m_stack->push(new RotateItem(item, transform, tr("rotating item(s)")));
-    m_stack->endMacro();
-  }
 
   void MolScene::addModePress(QGraphicsSceneMouseEvent* event)
   {
