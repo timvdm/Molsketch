@@ -1213,24 +1213,15 @@ void MolScene::moveModeMove(QGraphicsSceneMouseEvent* event)
     QPointF downPos = event->buttonDownScenePos(event->button());
 
     // Check for bond click
-    if (bondAt(downPos) && !atomAt(downPos))
-    {
-      //       if (bondAt(downPos)->bondOrder() != m_bondOrder or bondAt(downPos)->bondType() != m_bondType) {
-      //         m_stack->beginMacro("Change bond style");
-      //         Bond * bond = bondAt(downPos);
-      //         while (bond->bondOrder() != m_bondOrder)
-      //           m_stack->push(new IncOrder(bond));
-      //         while (bond->bondType() != m_bondType)
-      //           m_stack->push(new IncType(bond));
-      //         m_stack->endMacro();
-      //         return;
-      //       } else {
+    if (bondAt(downPos) && !atomAt(downPos)) {
+      if (m_hintMoleculeItems)
+        return;
+
       if (event->modifiers() == Qt::SHIFT)
         m_stack->push(new IncType(bondAt(downPos),tr("change of bondtype")));
       else
         m_stack->push(new IncOrder(bondAt(downPos),tr("change of bondorder")));
       return;
-      //       }
     }
 
     // Show hinting
@@ -1319,7 +1310,7 @@ void MolScene::moveModeMove(QGraphicsSceneMouseEvent* event)
     Molecule* m2 = a2 ? a2->molecule() : 0;
 
     // Add aligned hint molecule if applicable
-    if (m_hintMoleculeItems && a1) {
+    if (m_hintMoleculeItems && (a1 || b)) {
       insertRing(upPos);
       return;
     }
