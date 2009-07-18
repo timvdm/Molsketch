@@ -1070,32 +1070,6 @@ void MolScene::moveModeMove(QGraphicsSceneMouseEvent* event)
       }
 
 
-  void MolScene::lassoModePress(QGraphicsSceneMouseEvent* event)
-  {
-    foreach(QGraphicsItem* item, items())
-      if (item->type() == Molecule::Type || item->type() == Atom::Type) 
-        item->setFlag(QGraphicsItem::ItemIsSelectable,true);
-
-
-
-    lassoPolygon ->show ();
-    lassoTrail.clear ();
-    lassoTrail.push_back (event->scenePos());
-
-  }
-
-  void MolScene::lassoModeMove(QGraphicsSceneMouseEvent* event)
-  {
-    if (!(event->buttons() & Qt::LeftButton)) return;
-
-    lassoTrail.push_back (event->scenePos());
-    if (lassoTrail.size () > 4) {
-      lassoPolygon ->setPolygon (QPolygonF (lassoTrail));
-      lassoSelect ();
-
-    }
-    event->accept();
-  }
 
 	void MolScene::textModePress(QGraphicsSceneMouseEvent* event) {
 		Atom * atom = atomAt(event->scenePos());
@@ -1205,102 +1179,6 @@ void MolScene::moveModeMove(QGraphicsSceneMouseEvent* event)
 	
 	
 	
-void MolScene::rotateModePress(QGraphicsSceneMouseEvent* event)
-{
-	
-	
-	QGraphicsItem * item = itemAt(event->buttonDownScenePos(Qt::LeftButton));
-	if (!item) return;
-	if (item->type() == Atom::Type) item = item->parentItem();
-	if (item->type() == Bond::Type) item = item->parentItem();
-	QPointF rotatePoint = item->boundingRect().center();
-	rotatePointAbs = rotatePoint;
-	//item->mapToScene(rotatePoint);
-
-	rotationItem = item;
-	lastRotationVect = event->buttonDownScenePos(Qt::LeftButton) - rotatePointAbs ; //save vector for relative rotation step
-
-void MolScene::rotateModeMove(QGraphicsSceneMouseEvent* event)
-{
-  // Do nothing if no buttons are pressed or no item has been selected
-	if (!rotationItem) return;
-  if (!(event->buttons() & Qt::LeftButton)) return;
-/*
-  // Find the item to rotate and it's rotation point
-  QGraphicsItem * item = itemAt(event->buttonDownScenePos(Qt::LeftButton));
-  if (!item) return;
-  if (item->type() == Atom::Type) item = item->parentItem();
-  if (item->type() == Bond::Type) item = item->parentItem();
-  QPointF rotatePoint = item->boundingRect().center();
-	QPointF rotatePointAbs = item->mapToScene(rotatePoint);
- */
-
-	//QPointF rotatePoint = rotationItem->boundingRect().center();
-//	QPointF rotatePointAbs = rotationItem->mapToScene(rotatePoint);
-	
-//	std::cerr << rotatePointAbs.x () << " rotate  "<<rotatePointAbs.y()<<std::endl;
-  // Calculate the rotation angle
-  QPointF vec1 = lastRotationVect;
-  QPointF vec2 = event->scenePos() - rotatePointAbs;
-
-	qreal crossprod = vec1.x () * vec2.y () - vec1.y () * vec2.x ();
-	qreal dotprod =   vec1.x () * vec2.x () + vec1.y () * vec2.y ();
-	qreal rotateAngle = std::atan2 (crossprod, dotprod) * 180 / M_PI;
-
-	
-//	std::cerr << rotateAngle<<"   "<<std::endl;
-//   if (event->modifiers() != Qt::AltModifier) rotateAngle = toRoundedAngle(rotateAngle);
-  if (rotateAngle == 0) return;
-
-  // Temporary rotate the item
-  QTransform transform;
-  transform.translate(rotatePointAbs.x(), rotatePointAbs.y());
-  switch (event->modifiers()) {
-    case Qt::ControlModifier: transform.rotate(rotateAngle, Qt::XAxis); break;
-    case Qt::ShiftModifier: transform.rotate(rotateAngle, Qt::YAxis); break;
-    default: transform.rotate(rotateAngle, Qt::ZAxis);
-  };
-  transform.translate(-rotatePointAbs.x(), -rotatePointAbs.y());
-  rotationItem->setTransform(transform, true);
-	lastRotationVect = vec2;
-//   item->rotate(rotateAngle);
-}
-
-
-  }
-
-  void MolScene::lassoSelect()
-  {
-    clearSelection();
-    QList<QGraphicsItem *> its = items (lassoPolygon ->polygon (), Qt::ContainsItemShape);
-    std::cerr << its.size () << std::endl;
-    for (int i = 0; i < its.size (); i++) {
-      its[i] ->setSelected (true);
-    }
-
-
-  }	
-
-
-
-  void MolScene::rotateModePress(QGraphicsSceneMouseEvent* event)
-  {
-
-
-    QGraphicsItem * item = itemAt(event->buttonDownScenePos(Qt::LeftButton));
-    if (!item) return;
-    if (item->type() == Atom::Type) item = item->parentItem();
-    if (item->type() == Bond::Type) item = item->parentItem();
-    QPointF rotatePoint = item->boundingRect().center();
-    QPointF rotatePointAbs = item->mapToScene(rotatePoint);
-
-    rotationItem = item;
-    lastRotationVect = event->buttonDownScenePos(Qt::LeftButton) - rotatePointAbs ; //save vector for relative rotation step
-
-    // Execute default behavior
-    QGraphicsScene::mousePressEvent(event);
-  }
-
   void MolScene::rotateModeMove(QGraphicsSceneMouseEvent* event)
   {
     // Do nothing if no buttons are pressed or no item has been selected
@@ -1345,6 +1223,27 @@ void MolScene::rotateModeMove(QGraphicsSceneMouseEvent* event)
     rotationItem->setTransform(transform, true);
     lastRotationVect = vec2;
     //   item->rotate(rotateAngle);
+  }
+
+
+
+
+  void MolScene::rotateModePress(QGraphicsSceneMouseEvent* event)
+  {
+
+
+    QGraphicsItem * item = itemAt(event->buttonDownScenePos(Qt::LeftButton));
+    if (!item) return;
+    if (item->type() == Atom::Type) item = item->parentItem();
+    if (item->type() == Bond::Type) item = item->parentItem();
+    QPointF rotatePoint = item->boundingRect().center();
+    QPointF rotatePointAbs = item->mapToScene(rotatePoint);
+
+    rotationItem = item;
+    lastRotationVect = event->buttonDownScenePos(Qt::LeftButton) - rotatePointAbs ; //save vector for relative rotation step
+
+    // Execute default behavior
+    QGraphicsScene::mousePressEvent(event);
   }
 
   void MolScene::rotateModeRelease(QGraphicsSceneMouseEvent* event)
@@ -1401,9 +1300,11 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
 		Atom *at1 = atomAt (downPos);
 		switch (at1 ->numBonds()) {
 			case 0:
+                          {
 				qreal x = new_atom_pos.x ();
 				new_atom_pos.setX (x + m_bondLength);
 				break;
+                          }
 			case 1:
 			{
 				Atom *at2 = at1 ->neighbors()[0];
@@ -1462,9 +1363,6 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
 	
 }
 	
-  // Get the position
-  QPointF downPos = event->buttonDownScenePos(event->button());
-
   void MolScene::minimiseAllMolecules () {
 
     foreach(QGraphicsItem* item, items())	{
@@ -1475,11 +1373,6 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
     }	
   }
 
-  void MolScene::minimiseMolecule (Molecule *mol) {
-    Minimise *minimise = new Minimise ();
-    minimise ->minimiseMolecule (mol);
-
-  }
 
 
   void MolScene::addModePress(QGraphicsSceneMouseEvent* event)
