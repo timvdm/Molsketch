@@ -69,6 +69,10 @@ namespace Molsketch {
        * Get the molecule of the atom or NULL if there is none. 
        */
       virtual Molecule* molecule() const;
+      /**
+       * Set the molecule of the atom. 
+       */
+      void setMolecule(Molecule *molecule);
       /** 
        * Get the element symbol of the atom, including the implicit hydrogens. 
        */

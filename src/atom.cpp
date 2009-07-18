@@ -415,6 +415,11 @@ namespace Molsketch {
     return dynamic_cast<Molecule*>(this->parentItem());
   }
 
+  void Atom::setMolecule(Molecule *molecule)
+  {
+    setParentItem(static_cast<QGraphicsItem*>(molecule));
+  }
+
   bool Atom::hasImplicitHydrogens() const
   {
     return m_implicitHydrogens;
