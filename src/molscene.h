@@ -377,7 +377,7 @@ private:
   void initHintItems();
 
   void alignRingWithAtom(Atom *atom);
-  void alignRingWithBond(Bond *bond);
+  void alignRingWithBond(Bond *bond, const QPointF &pos);
 
   /**
    * Make hint ring into real atoms/bonds

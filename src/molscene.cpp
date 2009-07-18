@@ -801,27 +801,39 @@ namespace Molsketch {
     }
   }
 
-  void MolScene::alignRingWithBond(Bond *bond)
+  double triangleSign(const QPointF &a, const QPointF &b, const QPointF &c)
+  {
+    return (a.x() - c.x()) * (b.y() - c.y()) - (a.y() - c.y()) * (b.x() - c.x());  
+  }
+
+  void MolScene::alignRingWithBond(Bond *bond, const QPointF &pos)
   {
     Q_CHECK_PTR(m_hintMoleculeItems);
     Q_CHECK_PTR(bond->beginAtom());
     Q_CHECK_PTR(bond->endAtom());
 
-    /*
     if (m_hintRingPoints.isEmpty())
       return;
 
     // just translate ring to make 1 atom align
     QPointF bondNormal = normalized(bond->endAtom()->pos() - bond->beginAtom()->pos());
-      QPointF ringNormal = normalized(m_hintRingPoints[0]);
-      QPointF rp = m_hintRingPoints[0];
+    QPointF ringNormal = normalized( (m_hintRingPoints[0] + m_hintRingPoints[1]) / 2.0 );
+    QPointF rp = m_hintRingPoints[0];
 
-      qreal ang = angle(moleculeNormal, ringNormal) * 180.0 / M_PI;
-      if (angleSign(moleculeNormal, ringNormal) > 0.0)
-        ang = -ang;
+    qreal ang = angle(bondNormal, ringNormal) * 180.0 / M_PI;
+    double angSign = angleSign(bondNormal, ringNormal);
+    if (angSign > 0.0) 
+      ang = -ang;
 
-      m_hintMoleculeItems->setTransform(QTransform().rotate(ang+180.0).translate(-rp.x(), -rp.y()));
- */
+    double triSign = triangleSign(bond->beginAtom()->scenePos(), bond->endAtom()->scenePos(), pos);
+
+    if (triSign > 0.0) {
+      m_hintMoleculeItems->setTransform(QTransform().rotate(ang+270.0).translate(-rp.x(), -rp.y()));
+      m_hintMoleculeItems->setPos(bond->endAtom()->scenePos());
+    } else {
+      m_hintMoleculeItems->setTransform(QTransform().rotate(ang+90.0).translate(-rp.x(), -rp.y()));
+      m_hintMoleculeItems->setPos(bond->beginAtom()->scenePos());
+    }
   }
 
 
@@ -886,7 +898,7 @@ namespace Molsketch {
 
       Bond *bond = bondAt(downPos);
       if (bond)
-        alignRingWithBond(bond);
+        alignRingWithBond(bond, downPos);
 
     } 
 
@@ -1065,8 +1077,8 @@ void MolScene::moveModeMove(QGraphicsSceneMouseEvent* event)
     clearSelection();
     QList<QGraphicsItem *> its = items (lassoPolygon ->polygon (), Qt::ContainsItemShape);
     std::cerr << its.size () << std::endl;
-    for (unsigned int i = 0; i < its.size (); i++) {
-      //		its[i] ->setSelected (true);
+    for (int i = 0; i < its.size (); i++) {
+      its[i] ->setSelected (true);
     }
 
 
@@ -1304,19 +1316,38 @@ void MolScene::moveModeMove(QGraphicsSceneMouseEvent* event)
     Atom* a2 = atomAt(upPos);
     Bond* b = bondAt(downPos);
     Molecule* m1 = a1 ? a1->molecule() : 0;
+    Molecule* m2 = a2 ? a2->molecule() : 0;
 
-
-
+    // Add aligned hint molecule if applicable
     if (m_hintMoleculeItems && a1) {
-      //
-      // Add aligned hint molecule
-      //
       insertRing(upPos);
       return;
     }
 
+    // Begin adding macro
+    m_stack->beginMacro("Draw");
+
     qDebug() << "a1 =" << a1;
     qDebug() << "a2 =" << a2;
+    qDebug() << "m1 =" << m1;
+    qDebug() << "m2 =" << m2;
+
+    // Make sure both molecules are valid
+    if (m1 && !m2 && a2) {
+      m2 = m1;
+      a2->setMolecule(m2);
+      m_stack->push(new AddAtom(a2, m2));
+    } else if (m2 && !m1 && a1) {
+      m1 = m2;
+      a1->setMolecule(m1);
+      m_stack->push(new AddAtom(a1, m1));
+    }
+
+    qDebug() << "    a1 =" << a1;
+    qDebug() << "    a2 =" << a2;
+    qDebug() << "    m1 =" << m1;
+    qDebug() << "    m2 =" << m2;
+
 
 
     if (!a1 && !b) return;
@@ -1346,7 +1377,6 @@ void MolScene::moveModeMove(QGraphicsSceneMouseEvent* event)
 
     // Check for atom release
     if (a2) {
-      Molecule* m2 = a2->molecule();
 
       // Check for atom click
       if (a1 == a2) {
@@ -1356,7 +1386,7 @@ void MolScene::moveModeMove(QGraphicsSceneMouseEvent* event)
         } else {
           if (!m1) {
             m1 = new Molecule;
-            m_stack->beginMacro("Add Atom");
+            //m_stack->beginMacro("Add Atom");
             m_stack->push(new AddItem(m1, this));
             m_stack->push(new AddAtom(a1,m1));
             m_stack->endMacro();
@@ -1365,37 +1395,43 @@ void MolScene::moveModeMove(QGraphicsSceneMouseEvent* event)
         return;
       }
 
-      // Begin adding macro
-      m_stack->beginMacro("Add Bond");
 
+      qDebug() << "1";
       // Check for merge
-      if (m1 != m2) {
-        m_stack->push(new MergeMol(m1,m2,m1));
+      if (m1 && m2 && (m1 != m2)) {
+        m_stack->push(new MergeMol(m1, m2, m1));
         a1 = m1->atomAt(downPos);
         a2 = m1->atomAt(upPos);
         m1->setFocus();
-      }
+      } 
+      qDebug() << "2";
 
       // Adding bond
       Bond* bond = new Bond(a1,a2);
+      qDebug() << "3";
       m_stack->push(new AddBond(bond));
+      qDebug() << "4";
       for (int i = 0; i < m_bondOrder - 1; i++) 
         m_stack->push(new IncOrder(bond));
+      qDebug() << "5";
       for (int i = 0; i < m_bondType; i++) 
         m_stack->push(new IncType(bond));
+      qDebug() << "6";
 
       // End adding macro
       m_stack->endMacro();
+      qDebug() << "7";
       return;
-    };
+    }
 
     // Else scene release
-    m_stack->beginMacro(tr("Add Atoms"));
+    //m_stack->beginMacro(tr("Add Atoms"));
     if (!m1) {
       m1 = new Molecule;
       m_stack->push(new AddItem(m1,this));
       m_stack->push(new AddAtom(a1,m1));
     }
+
     Atom* atom = new Atom(upPos,m_currentElementSymbol,m_autoAddHydrogen);
     m_stack->push(new AddAtom(atom,m1));
     Bond* bond = new Bond(a1,atom);
