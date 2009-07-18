@@ -98,6 +98,8 @@ private slots:
 	void setLassoMode();
   /** Switch to rotate mode. */
   void setRotateMode();
+	/** Switch to text mode. */
+	void setTextMode();
 
   /** Open the preferences editor. */
   void editPreferences();
@@ -294,6 +296,8 @@ private:
 	QAction* lassoModeAct;
   /** Switch to rotate mode action. */
   QAction* rotateModeAct;
+	/** Switch to text mode action*/
+	QAction* textModeAct;
   /** Open the settings dialog action. */
   QAction* prefAct;
 	/** Minimiser **/

@@ -52,6 +52,26 @@ namespace Molsketch {
 
   MolScene::MolScene(QObject* parent) : QGraphicsScene(parent)
   {
+	  
+	  rotationItem = NULL;  
+	  inputTextItem = addText ("sdf");
+
+	  inputTextItem->setFlag(QGraphicsItem::ItemIsMovable, false);
+
+	  inputTextItem ->hide ();
+	  inputTextItem ->setTextInteractionFlags (Qt::TextEditable);
+	  inputTextItem ->setFlag(QGraphicsItem::ItemIsSelectable);
+	  inputTextItem ->setTextInteractionFlags(Qt::TextEditorInteraction);
+	  
+	//  inputTextItem ->show ();
+	  
+	  inputTextItem ->setPlainText ("atom");
+	  inputTextItem ->setFocus ();
+
+	 
+	  
+	  lassoPolygon = addPolygon (QPolygon ());
+	  lassoPolygon ->hide ();
 
     rotationItem = NULL;  
 
@@ -880,6 +900,9 @@ namespace Molsketch {
           case MolScene::LassoMode:
             lassoModePress (event);
             break;
+	  case MolScene::TextMode:
+	    textModePress (event);
+	    break;
           default:
             break;
         };
@@ -964,10 +987,13 @@ void MolScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
             lassoModeRelease(event);
             break;
         case MolScene::RotateMode:
-            rotateModeRelease(event);
-            break;
-      }
-  }
+          rotateModeRelease(event);
+          break;
+	case MolScene::TextMode:
+	  textModePress (event);
+	  break;
+        }
+    }
 
   // Execute the normal behavior
   QGraphicsScene::mouseReleaseEvent(event);
@@ -987,6 +1013,8 @@ void MolScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * event )
       switch (m_editMode)
       {
         case MolScene::AddMode:
+				addModeDoubleClick (event);
+
           break;
         case MolScene::RemoveMode:
           delModeDoubleClick(event);
@@ -1069,14 +1097,174 @@ void MolScene::moveModeMove(QGraphicsSceneMouseEvent* event)
     event->accept();
   }
 
-  void MolScene::lassoModeRelease(QGraphicsSceneMouseEvent* event)
-  {
+	void MolScene::textModePress(QGraphicsSceneMouseEvent* event) {
+		Atom * atom = atomAt(event->scenePos());
+		if (atom) {
+			atom -> hide ();
+			inputTextItem ->setFlag(QGraphicsItem::ItemIsSelectable);
+			inputTextItem ->setTextInteractionFlags(Qt::TextEditorInteraction);
 
-    lassoTrail.clear ();
-    lassoSelect ();
-    lassoPolygon ->setPolygon(QPolygonF ());
-    lassoPolygon ->hide ();
+			inputTextItem ->setPos (atom ->pos ());
+			inputTextItem ->show ();
+			inputTextItem ->setEnabled(true);
 
+			inputTextItem ->setFocus ();
+			inputTextItem ->setSelected(true);
+			inputTextItem ->setPlainText ("atom");
+			if (inputTextItem ->textInteractionFlags() & Qt::TextEditable) std::cerr<<"editable"<<std::endl;
+
+		}
+		
+		else {
+			QGraphicsTextItem *text = addText("");
+			text ->show ();
+			text ->setFlag(QGraphicsItem::ItemIsSelectable);
+			text->setTextInteractionFlags(Qt::TextEditorInteraction);
+			text->setPos (event->buttonDownScenePos(event->button()));
+			text ->setFocus ();
+
+		}
+
+		
+
+	}
+	
+	void MolScene::textModeRelease(QGraphicsSceneMouseEvent* event) {
+		Atom * atom = atomAt(event->scenePos());
+		if (atom) {
+			atom -> hide ();
+			inputTextItem ->setFlag(QGraphicsItem::ItemIsSelectable);
+			inputTextItem ->setTextInteractionFlags(Qt::TextEditorInteraction);
+			
+			inputTextItem ->setPos (atom ->pos ());
+			inputTextItem ->show ();
+			inputTextItem ->setEnabled(true);
+			
+			inputTextItem ->setFocus ();
+			inputTextItem ->setSelected(true);
+			inputTextItem ->setPlainText ("atom");
+			if (inputTextItem ->textInteractionFlags() & Qt::TextEditable) std::cerr<<"editable"<<std::endl;
+			
+		}
+		
+		
+		
+	}
+
+	
+	void MolScene::lassoModePress(QGraphicsSceneMouseEvent* event)
+	{
+		foreach(QGraphicsItem* item, items())
+		if (item->type() == Molecule::Type || item->type() == Atom::Type) 
+			item->setFlag(QGraphicsItem::ItemIsSelectable,true);
+	
+		
+		
+		lassoPolygon ->show ();
+		lassoTrail.clear ();
+		lassoTrail.push_back (event->scenePos());
+
+	}
+	
+	void MolScene::lassoModeMove(QGraphicsSceneMouseEvent* event)
+	{
+		if (!(event->buttons() & Qt::LeftButton)) return;
+		
+		lassoTrail.push_back (event->scenePos());
+		if (lassoTrail.size () > 4) {
+			lassoPolygon ->setPolygon (QPolygonF (lassoTrail));
+			lassoSelect ();
+
+		}
+		event->accept();
+	}
+	
+	void MolScene::lassoModeRelease(QGraphicsSceneMouseEvent* event)
+	{
+		
+		lassoTrail.clear ();
+		lassoSelect ();
+		lassoPolygon ->setPolygon(QPolygonF ());
+		lassoPolygon ->hide ();
+
+	
+		
+	}
+	
+	void MolScene::lassoSelect()
+	{
+		clearSelection();
+		QList<QGraphicsItem *> its = items (lassoPolygon ->polygon (), Qt::ContainsItemShape);
+		std::cerr << its.size () << std::endl;
+		for (unsigned int i = 0; i < its.size (); i++) {
+			its[i] ->setSelected (true);
+		}
+
+		
+	}	
+	
+	
+	
+void MolScene::rotateModePress(QGraphicsSceneMouseEvent* event)
+{
+	
+	
+	QGraphicsItem * item = itemAt(event->buttonDownScenePos(Qt::LeftButton));
+	if (!item) return;
+	if (item->type() == Atom::Type) item = item->parentItem();
+	if (item->type() == Bond::Type) item = item->parentItem();
+	QPointF rotatePoint = item->boundingRect().center();
+	rotatePointAbs = rotatePoint;
+	//item->mapToScene(rotatePoint);
+
+	rotationItem = item;
+	lastRotationVect = event->buttonDownScenePos(Qt::LeftButton) - rotatePointAbs ; //save vector for relative rotation step
+
+void MolScene::rotateModeMove(QGraphicsSceneMouseEvent* event)
+{
+  // Do nothing if no buttons are pressed or no item has been selected
+	if (!rotationItem) return;
+  if (!(event->buttons() & Qt::LeftButton)) return;
+/*
+  // Find the item to rotate and it's rotation point
+  QGraphicsItem * item = itemAt(event->buttonDownScenePos(Qt::LeftButton));
+  if (!item) return;
+  if (item->type() == Atom::Type) item = item->parentItem();
+  if (item->type() == Bond::Type) item = item->parentItem();
+  QPointF rotatePoint = item->boundingRect().center();
+	QPointF rotatePointAbs = item->mapToScene(rotatePoint);
+ */
+
+	//QPointF rotatePoint = rotationItem->boundingRect().center();
+//	QPointF rotatePointAbs = rotationItem->mapToScene(rotatePoint);
+	
+//	std::cerr << rotatePointAbs.x () << " rotate  "<<rotatePointAbs.y()<<std::endl;
+  // Calculate the rotation angle
+  QPointF vec1 = lastRotationVect;
+  QPointF vec2 = event->scenePos() - rotatePointAbs;
+
+	qreal crossprod = vec1.x () * vec2.y () - vec1.y () * vec2.x ();
+	qreal dotprod =   vec1.x () * vec2.x () + vec1.y () * vec2.y ();
+	qreal rotateAngle = std::atan2 (crossprod, dotprod) * 180 / M_PI;
+
+	
+//	std::cerr << rotateAngle<<"   "<<std::endl;
+//   if (event->modifiers() != Qt::AltModifier) rotateAngle = toRoundedAngle(rotateAngle);
+  if (rotateAngle == 0) return;
+
+  // Temporary rotate the item
+  QTransform transform;
+  transform.translate(rotatePointAbs.x(), rotatePointAbs.y());
+  switch (event->modifiers()) {
+    case Qt::ControlModifier: transform.rotate(rotateAngle, Qt::XAxis); break;
+    case Qt::ShiftModifier: transform.rotate(rotateAngle, Qt::YAxis); break;
+    default: transform.rotate(rotateAngle, Qt::ZAxis);
+  };
+  transform.translate(-rotatePointAbs.x(), -rotatePointAbs.y());
+  rotationItem->setTransform(transform, true);
+	lastRotationVect = vec2;
+//   item->rotate(rotateAngle);
+}
 
 
   }
@@ -1198,6 +1386,84 @@ void MolScene::moveModeMove(QGraphicsSceneMouseEvent* event)
      */
   }
 
+void MolScene::minimiseMolecule (Molecule *mol) {
+	Minimise *minimise = new Minimise ();
+	minimise ->minimiseMolecule (mol);
+	
+}
+
+void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
+	QPointF downPos = event->buttonDownScenePos(event->button());
+
+	//clicking on an atom spawns a new bond from that atom
+	if (atomAt (downPos)) {
+		QPointF new_atom_pos = downPos;
+		Atom *at1 = atomAt (downPos);
+		switch (at1 ->numBonds()) {
+			case 0:
+				qreal x = new_atom_pos.x ();
+				new_atom_pos.setX (x + m_bondLength);
+				break;
+			case 1:
+			{
+				Atom *at2 = at1 ->neighbors()[0];
+				if (at2 ->neighbors() .size ()< 2) {
+				QPointF v = downPos - at1 ->neighbors()[0] ->pos ();
+
+				QPointF rotated_v (v.x()*0.5 - v.y()*sqrt(3)*0.5, v.x()*0.5*sqrt(3) + v.y () *0.5);
+				qreal mod = sqrt (rotated_v.x()*rotated_v.x() + rotated_v.y()*rotated_v.y());
+				rotated_v *= m_bondLength/mod;
+				new_atom_pos = rotated_v + downPos;
+				}
+				else {
+					Atom *at3 = at2 ->neighbors()[0];
+					if (at3 == at1) at3 = at2 ->neighbors()[1];
+					QPointF rotated_v = at2 ->pos () - at3 ->pos ();
+					qreal mod = sqrt (rotated_v.x()*rotated_v.x() + rotated_v.y()*rotated_v.y());
+					rotated_v *= m_bondLength/mod;
+
+
+					new_atom_pos = rotated_v + downPos;
+
+				}
+			}
+				break;
+			case 2:
+			{
+				Atom *n1 = at1 ->neighbors()[0];
+				Atom * n2 = at1 ->neighbors()[1];
+				QPointF v1 = n1 ->pos ();
+				QPointF v2 = n2 ->pos ();
+				QPointF v3 = v1 + v2;
+				QPointF v4 (v3.x () / 2, v3.y () / 2);
+				QPointF v5 =  at1 ->pos () - v4;
+				qreal mod = sqrt (v5.x()*v5.x() + v5.y()*v5.y());
+				v5 = QPointF (v5.x()/mod * m_bondLength, v5.y()/mod * m_bondLength);
+				new_atom_pos = v5 + at1->pos();
+			}
+				break;
+			default:
+				break;
+		}
+		if (new_atom_pos != downPos) {
+			m_stack->beginMacro("Add Bond");
+			Atom* atom = new Atom(new_atom_pos,m_currentElementSymbol,m_autoAddHydrogen);
+			m_stack->push(new AddAtom(atom,at1 ->molecule()));
+			Bond* bond = new Bond(at1,atom);
+			m_stack->push(new AddBond(bond));
+			for (int i = 0; i < m_bondOrder - 1; i++) 
+				m_stack->push(new IncOrder(bond));
+			for (int i = 0; i < m_bondType; i++) 
+				m_stack->push(new IncType(bond));
+			m_stack->endMacro();
+		}
+	}
+		
+	
+}
+	
+  // Get the position
+  QPointF downPos = event->buttonDownScenePos(event->button());
 
   void MolScene::minimiseAllMolecules () {
 
@@ -1240,6 +1506,16 @@ void MolScene::moveModeMove(QGraphicsSceneMouseEvent* event)
       setHintLine(downPos,event->scenePos());
       m_hintLine->setVisible(true);
     }
+
+	
+  
+  // Show hinting
+  if (m_currentElementSymbol != "+" && m_currentElementSymbol != "-" && m_currentElementSymbol != "H+" && m_currentElementSymbol != "H-")
+  {
+    drawHintPoints(downPos);
+    setHintLine(downPos,event->scenePos());
+    m_hintLine->setVisible(true);
+  }
 
     // Check which molecule has been clicked on
     Atom* atom = atomAt(downPos);

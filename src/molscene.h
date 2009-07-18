@@ -34,6 +34,7 @@
 #include "mollibitem.h"
 #include "bond.h"
 
+
 class QString;
 class QImage;
 class QListWidgetItem;
@@ -134,7 +135,8 @@ public:
     RotateMode, /**< Mode to rotate molecules. */
     ChargeMode, //<! Increase/decrease charges
     HydrogenMode, //<! increase/decrease implicit hydrogen count
-	LassoMode //lasso selection tool
+	LassoMode, //lasso selection tool
+	TextMode //add / edit text
   };
 
 signals:
@@ -239,13 +241,15 @@ protected:
 	
 	/** Used for rotations. Stores the last vector from mouse pointer to center of rotation */
 	QPointF lastRotationVect;
-	
+	QPointF  rotatePointAbs;
 	//lasso polygon
 	QVector <QPointF> lassoTrail;
 	QGraphicsPolygonItem *lassoPolygon;
 	
 	//Item that is being rotated
 	QGraphicsItem *rotationItem;
+	//item to accept input for text tool
+	QGraphicsTextItem *inputTextItem;
 
 
 private:
@@ -318,6 +322,8 @@ private:
   // Event handlers
   /** Event handler for mouse presses in add mode. */
   void addModePress(QGraphicsSceneMouseEvent* event);
+	/** Event handler for double click in add mode. */
+	void addModeDoubleClick(QGraphicsSceneMouseEvent* event);
   /** Event handler for mouse moves in add mode.*/
   void addModeMove(QGraphicsSceneMouseEvent* event);
   /** Event handler for mouse releases in add mode.*/
@@ -331,6 +337,11 @@ private:
   void moveModeMove(QGraphicsSceneMouseEvent* event);
   /** Event handler for mouse releases in move mode.*/
   void moveModeRelease(QGraphicsSceneMouseEvent* event);
+	
+	/** Event handler for mouse presses in text mode. */
+	void textModePress(QGraphicsSceneMouseEvent* event);	
+	/** Event handler for mouse releases in text mode. */
+	void textModeRelease(QGraphicsSceneMouseEvent* event);	
 	
 	/** Event handler for mouse presses in lasso mode. */
 	void lassoModePress(QGraphicsSceneMouseEvent* event);

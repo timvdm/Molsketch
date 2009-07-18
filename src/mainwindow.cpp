@@ -390,6 +390,11 @@ void MainWindow::setLassoMode()
 	m_scene->setEditMode(MolScene::LassoMode);
 }
 
+void MainWindow::setTextMode()
+{
+	m_scene->setEditMode(MolScene::TextMode);
+}
+
 void MainWindow::setRotateMode()
 {
   m_scene->setEditMode(MolScene::RotateMode);
@@ -445,6 +450,7 @@ void MainWindow::updateEditMode(int mode)
 	delModeAct->setChecked(false);
 	moveModeAct->setChecked(false);
 	lassoModeAct ->setChecked (false);
+	textModeAct ->setChecked (false);
 	rotateModeAct->setChecked(false);
 	m_molView->setDragMode(QGraphicsView::NoDrag);
   // Change the buttonstates depending on the edit mode
@@ -476,7 +482,10 @@ void MainWindow::updateEditMode(int mode)
     //  m_molView->setDragMode(QGraphicsView::NoDrag);
       statusBar()->showMessage(tr("Click on an item to select it. Drag: rotate Z axis, Control + drag: rotate X axis, Shift + drag: rotate Y axis"));
       break;
-
+		case MolScene::TextMode:
+			textModeAct ->setChecked (true);
+			statusBar()->showMessage(tr("Edit or add text"));
+			break;
 	case MolScene::LassoMode:
 	lassoModeAct ->setChecked (true);
 	break;
@@ -597,6 +606,12 @@ void MainWindow::createActions()
 	connect(lassoModeAct, SIGNAL(triggered()), this, SLOT(setLassoMode()));	
 	
 
+	textModeAct = new QAction(QIcon(":/images/transform-text.png"), tr("T"), this);
+	textModeAct->setCheckable(true);
+	//	lassoModeAct->setShortcut(tr("F7"));
+	textModeAct->setStatusTip(tr("Go to the text edit mode"));
+	connect(textModeAct, SIGNAL(triggered()), this, SLOT(setTextMode()));	
+	
   rotateModeAct = new QAction(QIcon(":/images/transform-rotate.png"), tr("&Rotate mode"), this);
   rotateModeAct->setCheckable(true);
   rotateModeAct->setShortcut(tr("F8"));
@@ -701,6 +716,8 @@ void MainWindow::createMenus()
   editMenu->addSeparator();
   editMenu->addAction(prefAct);
   editMenu->addAction(minimiseAct);
+  editMenu->addAction(textModeAct);
+
 
   viewMenu = menuBar()->addMenu(tr("&View"));
   viewMenu->addAction(zoomInAct);
@@ -748,7 +765,7 @@ void MainWindow::createToolBars()
   editToolBar->addAction(moveModeAct);
   editToolBar->addAction(lassoModeAct);
   editToolBar->addAction(rotateModeAct);
-	  
+	editToolBar->addAction(textModeAct);
   editToolBar->addAction(minimiseAct);
 
   zoomToolBar = addToolBar(tr("Zoom"));
@@ -1179,6 +1196,7 @@ void MainWindow::updateInfoBox( )
 
   // Else check for focussed item
   if (formula.isEmpty() && m_scene->focusItem())
+	  if (m_scene ->focusItem () ->type () == Molecule::Type) {
     {
       item = m_scene->focusItem();
 
@@ -1202,6 +1220,7 @@ void MainWindow::updateInfoBox( )
       bonds += mol->bonds().count();
       charge += mol->charge();
     }
+	  }
 
   // Else failsafe
   if (formula.isEmpty()) formula = tr("Non selected");

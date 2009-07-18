@@ -33,7 +33,7 @@
 namespace Molsketch {
 
   Atom::Atom(const QPointF &position, const QString &element, bool implicitHydrogens, 
-      QGraphicsItem* parent, QGraphicsScene* scene) : QGraphicsItem(parent,scene)
+      QGraphicsItem* parent, QGraphicsScene* scene) : QGraphicsItem (parent,scene)
   {
     //pre: position is a valid position in scene coordinates
 
