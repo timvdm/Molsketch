@@ -206,8 +206,11 @@ namespace Molsketch {
     else if (text == "Any")
       ui.buttonAny->setChecked(true);
    
-    if (!checkedBondButton())
+    if (!checkedBondButton()) {
       ui.buttonSingleBond->setChecked(true);
+      m_scene->setBondOrder(1);
+      m_scene->setBondType(Bond::InPlane);
+    }
     uncheckRingButtons();
   }
 
@@ -220,8 +223,10 @@ namespace Molsketch {
     m_scene->setBondOrder(1);
     m_scene->setBondType(Bond::InPlane);
 
-    if (!checkedAtomButton())
+    if (!checkedAtomButton()) {
       ui.buttonC->setChecked(true);
+      m_scene->setElement("C");
+    }
     uncheckBondButtons();
     ui.buttonSingleBond->setChecked(true);
     uncheckRingButtons();
@@ -232,8 +237,10 @@ namespace Molsketch {
     m_scene->setBondOrder(2);
     m_scene->setBondType(Bond::InPlane);
 
-    if (!checkedAtomButton())
+    if (!checkedAtomButton()) {
       ui.buttonC->setChecked(true);
+      m_scene->setElement("C");
+    }
     uncheckBondButtons();
     ui.buttonDoubleBond->setChecked(true);
     uncheckRingButtons();
@@ -244,8 +251,10 @@ namespace Molsketch {
     m_scene->setBondOrder(3);
     m_scene->setBondType(Bond::InPlane);  
     
-    if (!checkedAtomButton())
+    if (!checkedAtomButton()) {
       ui.buttonC->setChecked(true);
+      m_scene->setElement("C");
+    }
     uncheckBondButtons();
     ui.buttonTripleBond->setChecked(true);
     uncheckRingButtons();
@@ -256,8 +265,10 @@ namespace Molsketch {
     // also sets order
     m_scene->setBondType(Bond::Wedge);
  
-    if (!checkedAtomButton())
+    if (!checkedAtomButton()) {
       ui.buttonC->setChecked(true);
+      m_scene->setElement("C");
+    }
     uncheckBondButtons();
     ui.buttonWedge->setChecked(true);    
     uncheckRingButtons();
@@ -268,8 +279,10 @@ namespace Molsketch {
     // also sets order
     m_scene->setBondType(Bond::Hash);  
 
-    if (!checkedAtomButton())
+    if (!checkedAtomButton()) {
       ui.buttonC->setChecked(true);
+      m_scene->setElement("C");
+    }
     uncheckBondButtons();
     ui.buttonHash->setChecked(true);
     uncheckRingButtons();
@@ -280,8 +293,10 @@ namespace Molsketch {
     // also sets order
     m_scene->setBondType(Bond::WedgeOrHash);  
     
-    if (!checkedAtomButton())
+    if (!checkedAtomButton()) {
       ui.buttonC->setChecked(true);
+      m_scene->setElement("C");
+    }
     uncheckBondButtons();
     ui.buttonWedgeOrHash->setChecked(true); 
     uncheckRingButtons();
@@ -292,8 +307,10 @@ namespace Molsketch {
     // also sets order
     m_scene->setBondType(Bond::CisOrTrans); 
 
-    if (!checkedAtomButton())
+    if (!checkedAtomButton()) {
       ui.buttonC->setChecked(true);
+      m_scene->setElement("C");
+    }
     uncheckBondButtons();
     ui.buttonCisOrTrans->setChecked(true);
     uncheckRingButtons();
