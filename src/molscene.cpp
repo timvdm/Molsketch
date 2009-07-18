@@ -153,6 +153,15 @@ namespace Molsketch {
       if (item->type() == Molecule::Type || item->type() == Atom::Type) 
         item->setFlag(QGraphicsItem::ItemIsSelectable,mode == MolScene::MoveMode);
 
+    // Delete hint Ring if mode != addMode
+    if (mode != MolScene::AddMode) {
+      if (m_hintMoleculeItems) {
+        delete m_hintMoleculeItems;
+        m_hintMoleculeItems = 0;
+      }
+      m_hintRingPoints.clear();
+    }
+
     // Set the new edit mode and signal other components
     m_editMode = mode;
     emit editModeChange( mode );
