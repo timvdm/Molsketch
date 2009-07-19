@@ -1741,6 +1741,9 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
       default:
         keyEvent->ignore();
     }
+  
+    // execute default behaviour (needed for text tool)
+    QGraphicsScene::keyPressEvent(keyEvent)
   }
 
   QUndoStack * MolScene::stack()
