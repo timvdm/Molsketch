@@ -974,7 +974,7 @@
      </property>
      <property name="icon">
       <iconset resource="molsketch.qrc">
-       <normaloff>:/images/c1cccc1.png</normaloff>:/images/c1cccc1.png</iconset>
+       <normaloff>:/images/a1aaaa1.png</normaloff>:/images/a1aaaa1.png</iconset>
      </property>
      <property name="checkable">
       <bool>true</bool>
@@ -1057,7 +1057,7 @@
      </property>
      <property name="icon">
       <iconset resource="molsketch.qrc">
-       <normaloff>:/images/c1ccccc1.png</normaloff>:/images/c1ccccc1.png</iconset>
+       <normaloff>:/images/a1aaaaa1.png</normaloff>:/images/a1aaaaa1.png</iconset>
      </property>
      <property name="checkable">
       <bool>true</bool>
