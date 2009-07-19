@@ -44,6 +44,7 @@ else (OPENBABEL2_INCLUDE_DIRS AND OPENBABEL2_LIBRARIES)
     find_path(OPENBABEL2_INCLUDE_DIR openbabel/obconversion.h
       ${_obIncDir}
       /usr/local/include
+      /usr/local/include/openbabel-2.0
       /usr/include
       ${GNUWIN32_DIR}/include
       $ENV{OPENBABEL2_INCLUDE_DIR}
