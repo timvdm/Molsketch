@@ -108,23 +108,6 @@ QString svgDefs()
 
   return defs;
 }
-/*
-bool Molsketch::saveToSVG( const QString & fileName, MolScene * scene )
-{
-  QSvgGenerator svgGen;
-  svgGen.setFileName( fileName );
-  QPainter painter(&svgGen);
-    
-  // Clear selection
-  QList<QGraphicsItem*> selList(scene->selectedItems());
-  scene->clearSelection();
-  
-  scene->render( &painter );
-  
-  // Restore selection
-  foreach(QGraphicsItem* item, selList) item->setSelected(true);
-  
-}*/
 
 bool saveToSVG( const QString & fileName, MolScene * scene )
 {
@@ -250,22 +233,16 @@ bool saveFile(const QString &fileName, QGraphicsScene* scene)
             hash.clear();
 
             obmol->BeginModify();
-//                 obmol->ReserveAtoms(mol->countAtoms());
             foreach (Atom* atom, mol->atoms())
               {
                 OpenBabel::OBAtom* obatom = obmol->NewAtom();
-//                 Atom* atom = mol->atom(j);
                 obatom->SetVector(atom->scenePos().x()/40,atom->scenePos().y()/40,0);
                 std::string element = atom->element().toStdString();
-//                 obatom->SetType(element);
                 obatom->SetAtomicNum(Molsketch::symbol2number(atom->element()));
-//                 obmol->AddAtom(*obatom);
                 hash.insert(atom,obatom);
-//                 cerr << hash.count() << "\n";
               }
             foreach (Bond* bond, mol->bonds())
               {
-//                 Bond* bond = mol->bonds[j];
                 Atom* a1 = bond->beginAtom();
                 Atom* a2 = bond->endAtom();
 
@@ -273,14 +250,7 @@ bool saveFile(const QString &fileName, QGraphicsScene* scene)
                 OBAtom* oba2 = hash.value(a2);
 
                 OpenBabel::OBBond* obbond = new OpenBabel::OBBond();
-//                 OBBond* obbond = obmol->NewBond();
-
-                // Set identifier
-//                 obbond->SetIdx(j);
-
-                // Set bondorder
                 obbond->SetBO(bond->bondOrder());
-
                 // Setting bondtype
                 switch (bond->bondType())
                   {
@@ -303,14 +273,10 @@ bool saveFile(const QString &fileName, QGraphicsScene* scene)
                     obbond->SetEnd(oba2);
                   }
 
-                // Adding the bond
-//                 obmol->AddBond(oba1->GetIdx(),oba2->GetIdx(),bond->getOrder());
-
                 obmol->AddBond(*obbond);
-
               }
             if(dynamic_cast<MolScene*>(scene) && dynamic_cast<MolScene*>(scene)->autoAddHydrogen())
-              obmol->AddHydrogens();
+              //obmol->AddHydrogens();
             obmol->EndModify();
           }
       }
@@ -324,7 +290,6 @@ bool saveFile(const QString &fileName, QGraphicsScene* scene)
 
       // Writing the final result to the file
       conversion->WriteFile(obmol,fileName.toStdString());
-//       qDebug << "File saved: " << fileName.toStdString() << "\n";
     }
   else
     {
