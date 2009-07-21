@@ -128,7 +128,7 @@ public:
   /** Returns the first bond at position @p pos or NULL if none. */
   Bond* bondAt(const QPointF &pos);
 
-	bool MolScene::textEditItemAt (const QPointF &pos) ;
+	bool textEditItemAt (const QPointF &pos) ;
 
   /** Enum for the different edit modes. */
   enum editModes {

@@ -35,10 +35,15 @@ class QString;
 class QPoint;
 class QPainter;
 
+namespace OpenBabel {
+  class OBMol;
+}
+
 namespace Molsketch {
 
   class Atom;
   class Bond;
+  class Ring;
   class MolScene;
 
 /**
@@ -174,6 +179,7 @@ class Molecule : public QGraphicsItemGroup
     QString chargeID() const;
 	  
 
+    OpenBabel::OBMol* OBMol() const;
 
   protected:
 	  
@@ -191,7 +197,9 @@ class Molecule : public QGraphicsItemGroup
     QList<Atom*> m_atomList;
     /** A list of pointers to the bonds of the molecule. Used as internal representation. */
     QList<Bond*> m_bondList;
-
+    
+    void perceiveRings();
+    QList<Ring*> m_rings;
   };
 
 } // namespace

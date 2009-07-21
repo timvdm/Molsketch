@@ -20,6 +20,7 @@ set(libmolsketch_SRCS
     commands.cpp	
     fileio.cpp
     minimise.cpp
+    TextInputItem.cpp
 )
 set(molsketch_SRCS 
     main.cpp 

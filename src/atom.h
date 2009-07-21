@@ -26,6 +26,7 @@
 
 namespace Molsketch {
 
+  class Ring;
   class Molecule;
 
   /**
@@ -33,6 +34,8 @@ namespace Molsketch {
    */
   class Atom : public QGraphicsItem
   {
+    friend class Molecule;
+
     public:
       /**
        * Creates a new atom.
@@ -106,6 +109,8 @@ namespace Molsketch {
        */
       QString chargeString() const;
 
+
+      bool hasLabel() const;
 	  //Returns full atom string . e.g. CH3    Fe2+ etc
 	  QString string ()const;
 
@@ -155,6 +160,7 @@ namespace Molsketch {
 	  //returns a list of atoms connected to atom
 	  QList<Atom*> neighbours () {return m_neighbors;};
 
+      Ring* ring() const { return m_ring; }
 
 	  void hoverOut () {m_hidden = true;}
     protected:
@@ -168,6 +174,8 @@ namespace Molsketch {
       /** Event handler to handle element changes. */
       QVariant itemChange(GraphicsItemChange change, const QVariant & value);
 
+      void setRing(Ring *ring) { m_ring = ring; }
+
     private:
       // Internal representation
       /** Represents the atom's element symbol. */
@@ -180,7 +188,8 @@ namespace Molsketch {
       int m_userCharge;
 	  
 	  //identifies the atom in a molecule. set with molecule::numberAtoms ()
-	  
+
+      Ring *m_ring;      
       /**
        * Stores the list of atoms connected to this atom by a bond
        *

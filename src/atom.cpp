@@ -56,6 +56,8 @@ namespace Molsketch {
     m_hidden = true;
     m_drawn = false;
 
+    m_ring = 0;
+
     m_userCharge = 0; // The initial additional charge is zero
     m_userImplicitHydrogens =  0;
     enableImplicitHydrogens(implicitHydrogens);
@@ -74,6 +76,17 @@ namespace Molsketch {
     else
       return QRectF(-ATOM_SIZE/2, -ATOM_SIZE/2, ATOM_SIZE, ATOM_SIZE);
 
+  }
+
+  bool Atom::hasLabel() const
+  {
+    MolScene* molScene = dynamic_cast<MolScene*>(scene());
+    Q_CHECK_PTR(molScene);
+
+    if ((m_elementSymbol == "C") && !molScene->carbonVisible() && (numBonds() > 1) && ((charge() == 0) || !molScene->chargeVisible()))
+      return false;
+
+    return true;
   }
 
   void Atom::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
