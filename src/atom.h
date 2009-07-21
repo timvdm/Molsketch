@@ -111,6 +111,8 @@ namespace Molsketch {
 
 
       bool hasLabel() const;
+	  //Returns full atom string . e.g. CH3    Fe2+ etc
+	  QString string ()const;
 
 
       /**
@@ -160,6 +162,7 @@ namespace Molsketch {
 
       Ring* ring() const { return m_ring; }
 
+	  void hoverOut () {m_hidden = true;}
     protected:
       // Event handlers
       /** Event handler to show hidden atoms when the mouse hovers over them. */

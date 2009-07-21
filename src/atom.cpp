@@ -1,6 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2007-2008 by Harm van Eersel                            *
- *   devsciurus@xs4all.nl                                                  *
+ *   devsciurus@xs4all.nl                                            *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -342,6 +342,20 @@ namespace Molsketch {
     return sum;
   }
 
+	QString Atom::string () const {
+		QString el = element ();
+		int n = numberOfImplicitHydrogens();
+		QString hs;
+		QString num = "";
+		if (n) {
+			if (n > 1) num.setNum (n);
+			hs = QString ("H") + num;
+		}
+		else hs = QString ("");
+		QString q = chargeString();
+		return el+hs+q;
+	}
+	
   int Atom::numberOfImplicitHydrogens() const
   {
     Molecule *mol = molecule();
