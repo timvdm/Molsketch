@@ -26,6 +26,7 @@
 
 namespace Molsketch {
 
+  class Ring;
   class Molecule;
 
   /**
@@ -33,6 +34,8 @@ namespace Molsketch {
    */
   class Atom : public QGraphicsItem
   {
+    friend class Molecule;
+
     public:
       /**
        * Creates a new atom.
@@ -107,6 +110,7 @@ namespace Molsketch {
       QString chargeString() const;
 
 
+      bool hasLabel() const;
 
 
       /**
@@ -154,6 +158,7 @@ namespace Molsketch {
 	  //returns a list of atoms connected to atom
 	  QList<Atom*> neighbours () {return m_neighbors;};
 
+      Ring* ring() const { return m_ring; }
 
     protected:
       // Event handlers
@@ -165,6 +170,8 @@ namespace Molsketch {
       void mousePressEvent(QGraphicsSceneMouseEvent* event);
       /** Event handler to handle element changes. */
       QVariant itemChange(GraphicsItemChange change, const QVariant & value);
+
+      void setRing(Ring *ring) { m_ring = ring; }
 
     private:
       // Internal representation
@@ -178,7 +185,8 @@ namespace Molsketch {
       int m_userCharge;
 	  
 	  //identifies the atom in a molecule. set with molecule::numberAtoms ()
-	  
+
+      Ring *m_ring;      
       /**
        * Stores the list of atoms connected to this atom by a bond
        *

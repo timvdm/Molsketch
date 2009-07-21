@@ -41,6 +41,7 @@
 #include "commands.h"
 
 #include "minimise.h"
+#include "math2d.h"
 
 
 namespace Molsketch {
@@ -759,28 +760,6 @@ namespace Molsketch {
     return accepted;
   }
 
-  QPointF normalized(const QPointF &v)
-  {
-    QPointF n = v;
-    qreal length = sqrt(n.x() * n.x() + n.y() * n.y());
-    n /= length;
-    return n;
-  }
-
-  qreal angle(const QPointF &v1, const QPointF &v2) 
-  {
-    QPointF n1 = normalized(v1);
-    QPointF n2 = normalized(v2);
-
-    qreal dot = n1.x() * n2.x() + n1.y() * n2.y();
-    return acos(dot);
-  }
-
-  qreal angleSign(const QPointF &v1, const QPointF &v2)
-  {
-    return v1.x() * v2.y() - v1.y() * v2.x();
-  }
-
   void MolScene::alignRingWithAtom(Atom *atom)
   {
     Q_CHECK_PTR(m_hintMoleculeItems);
@@ -828,11 +807,6 @@ namespace Molsketch {
       m_hintMoleculeItems->setTransform(QTransform().rotate(ang+180.0).translate(-rp.x(), -rp.y()));
       m_hintMoleculeItems->setPos(atom->scenePos());
     }
-  }
-
-  double triangleSign(const QPointF &a, const QPointF &b, const QPointF &c)
-  {
-    return (a.x() - c.x()) * (b.y() - c.y()) - (a.y() - c.y()) * (b.x() - c.x());  
   }
 
   void MolScene::alignRingWithBond(Bond *bond, const QPointF &pos)

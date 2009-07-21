@@ -25,8 +25,12 @@
 #include "bond.h"
 
 #include "atom.h"
+#include "ring.h"
 #include "element.h"
 #include "molscene.h"
+#include "math2d.h"
+
+#include <QDebug>
 
 // Constructor
 
@@ -41,6 +45,7 @@ namespace Molsketch {
     m_bondOrder = order;
     m_beginAtom = atomA;
     m_endAtom = atomB;
+    m_ring = 0;
 
     atomA->addNeighbor(atomB);
     atomB->addNeighbor(atomA);
@@ -172,6 +177,89 @@ void Bond::undoValency()
     return QRectF(mapFromParent(m_beginAtom->pos()) - QPointF(5,5), QSizeF(w+10,h+10));
   }
 
+  void Bond::drawSimpleBond(QPainter *painter)
+  {
+    if (m_ring && (m_bondOrder == 2)) {
+      drawRingBond(painter);
+      return;
+    }
+
+    Q_CHECK_PTR(m_beginAtom);
+    Q_CHECK_PTR(m_endAtom);
+
+    qreal m_bondSpacing = 4.0;
+
+    QPointF begin = mapFromParent(m_beginAtom->pos());
+    QPointF end = mapFromParent(m_endAtom->pos());
+    QPointF vb = end - begin;
+
+    if (m_beginAtom->hasLabel())
+      begin += 0.20 * vb;
+    if (m_endAtom->hasLabel())
+      end -= 0.20 * vb;
+
+    switch (m_bondOrder) {
+      case 1:
+          painter->drawLine(QLineF(begin, end));
+          break;
+      case 2:
+          {
+          QPointF uvb = vb / sqrt(vb.x()*vb.x() + vb.y()*vb.y());
+          QPointF orthogonal(uvb.y(), -uvb.x());
+          QPointF offset = orthogonal * 0.5 * m_bondSpacing;
+          painter->drawLine(QLineF(begin + offset, end + offset));
+          painter->drawLine(QLineF(begin - offset, end - offset));
+          }
+          break;
+      case 3:
+          {
+          QPointF uvb = vb / sqrt(vb.x()*vb.x() + vb.y()*vb.y());
+          QPointF orthogonal(uvb.y(), -uvb.x());
+          QPointF offset = orthogonal * m_bondSpacing;
+          painter->drawLine(QLineF(begin, end));
+          painter->drawLine(QLineF(begin + offset, end + offset));
+          painter->drawLine(QLineF(begin - offset, end - offset));
+          }
+          break;
+    }
+
+  
+  }
+
+  void Bond::drawRingBond(QPainter *painter)
+  {
+    Q_CHECK_PTR(m_beginAtom);
+    Q_CHECK_PTR(m_endAtom);
+    Q_CHECK_PTR(m_ring);
+
+    qreal m_bondSpacing = 4.0;
+
+    QPointF center = mapFromParent(m_ring->center());
+    QPointF begin = mapFromParent(m_beginAtom->pos());
+    QPointF end = mapFromParent(m_endAtom->pos());
+    QPointF vb = end - begin;
+
+    /*
+    if (m_beginAtom->hasLabel())
+      begin += 0.20 * vb;
+    if (m_endAtom->hasLabel())
+      end -= 0.20 * vb;
+    */
+
+    QPointF uvb = vb / sqrt(vb.x()*vb.x() + vb.y()*vb.y());
+    QPointF orthogonal(uvb.y(), -uvb.x());
+    QPointF spacing = orthogonal * m_bondSpacing;
+    QPointF offset = uvb * m_bondSpacing;
+    if (length(begin + spacing - center) > length(begin - spacing - center))
+      spacing *= -1.0;
+    
+    qDebug() << " + = " << length(begin + spacing - center);
+    qDebug() << " - = " << length(begin - spacing - center);
+
+    painter->drawLine(QLineF(begin, end));
+    painter->drawLine(QLineF(begin + spacing + offset, end + spacing - offset));
+  }
+
 void Bond::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
 {
   Q_UNUSED(option);
@@ -216,6 +304,8 @@ void Bond::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWid
   radialGrad.setColorAt(1, Qt::white);
   radialGrad.setSpread(QGradient::RepeatSpread);
 
+
+
   switch ( m_bondType )
     {
     case Bond::Hash:
@@ -243,48 +333,7 @@ void Bond::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWid
       break;
 
     default:
-      switch ( m_bondOrder )
-        {
-        case Bond::Single:
-          painter->drawLine(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())));
-          break;
-        case Bond::Double:
-          {
-//             qDebug("In bond %x", this);
-            qreal direction1 = 0;
-//             qDebug("Connected atoms of %x", m_beginAtom);
-//             foreach(Atom * atom, m_beginAtom->connectedAtoms())
-//               qDebug("%x", atom);
-            foreach(Atom * atom, m_beginAtom->neighbors())
-              if (atom && atom != m_endAtom)
-                direction1 += (atom->pos().x()*pos().x() + atom->pos().y()*pos().y())/(sqrt(pow(atom->pos().x(),2) + pow(atom->pos().y(), 2))*sqrt(pow(pos().x(),2) + pow(pos().y(),2)));
-            qreal direction2 = 0;
-/*            qDebug("Connected atoms of %x", m_endAtom);
-            foreach(Atom * atom, m_endAtom->connectedAtoms())
-              qDebug("%x", atom);*/
-            foreach(Atom * atom, m_endAtom->neighbors())
-              if (atom && atom != m_beginAtom)
-                direction2 += (atom->pos().x()*pos().x() + atom->pos().y()*pos().y())/(sqrt(pow(atom->pos().x(),2) + pow(pos().x(),2))*sqrt(pow(atom->pos().y(),2) + pow(pos().y(),2)));
-            if ((direction1 + direction2) > 0) {
-              painter->drawLine(shiftVector(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())),0));
-              painter->drawLine(shiftVector(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())),-4));
-            } else if ((direction1 + direction2) < 0) {
-              painter->drawLine(shiftVector(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())),4));
-              painter->drawLine(shiftVector(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())),0));
-            } else {
-              painter->drawLine(shiftVector(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())),2));
-              painter->drawLine(shiftVector(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())),-2));
-            }
-          }
-          break;
-        case Bond::Triple:
-          painter->drawLine(shiftVector(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())),3));
-          painter->drawLine(shiftVector(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())),-3));
-          painter->drawLine(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())));
-          break;
-        default:
-          painter->drawLine(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())));
-        }
+      drawSimpleBond(painter);
     }
 
   // Restore old painter

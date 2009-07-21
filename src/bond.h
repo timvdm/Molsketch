@@ -42,6 +42,8 @@ namespace Molsketch {
  */
 class Bond : public QGraphicsItem
 {
+    friend class Molecule;
+
   public:
 
     /** 
@@ -145,7 +147,12 @@ class Bond : public QGraphicsItem
      */
     static QLineF shiftVector(const QLineF & vector, qreal shift);
 
+  protected:
+    void setRing(Ring *ring) { m_ring = ring; }
+
   private:
+    void drawSimpleBond(QPainter *painter);
+    void drawRingBond(QPainter *painter);
 
     // Internal representation
     /** Stores the bond type as integer. */
@@ -156,6 +163,8 @@ class Bond : public QGraphicsItem
     Atom* m_beginAtom;
     /** Stores a pointer to the second atom. */
     Atom* m_endAtom;
+
+    Ring *m_ring;      
 
 };
 

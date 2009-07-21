@@ -25,8 +25,12 @@
 
 #include "atom.h"
 #include "bond.h"
+#include "ring.h"
 #include "molscene.h"
 #include "element.h"
+
+#include <openbabel/mol.h>
+#include <openbabel/obiter.h>
 
 namespace Molsketch {
 
@@ -162,6 +166,7 @@ Bond* Molecule::addBond(Bond* bond)
 //  /// Work-around qt-bug
 //  if (scene()) scene()->addItem(bond);
 
+  perceiveRings();
   return bond;
 }
 
@@ -215,6 +220,7 @@ QList<Bond*> Molecule::delAtom(Atom* atom)
     if (scene()) 
       scene()->removeItem(bond);
 
+  perceiveRings();
 //  bond->undoValency();
 //  /// Superseded by undo
      //delete bond;
@@ -594,6 +600,102 @@ void Molecule::paint(QPainter * painter, const QStyleOptionGraphicsItem * option
   MolScene* Molecule::scene() const
   {
     return static_cast<MolScene*>(QGraphicsItemGroup::scene());
+  }
+
+  OpenBabel::OBMol* Molecule::OBMol() const
+  {
+    // Create the output molecule
+    OpenBabel::OBMol* obmol = new OpenBabel::OBMol;
+    QHash<Atom*,OpenBabel::OBAtom*> hash;
+
+    hash.clear();
+
+    obmol->BeginModify();
+    foreach (Atom* atom, m_atomList) {
+      OpenBabel::OBAtom* obatom = obmol->NewAtom();
+      obatom->SetVector(atom->scenePos().x()/40,atom->scenePos().y()/40,0);
+      std::string element = atom->element().toStdString();
+      obatom->SetAtomicNum(Molsketch::symbol2number(atom->element()));
+      hash.insert(atom,obatom);
+    }
+    foreach (Bond* bond, m_bondList) {
+      Atom* a1 = bond->beginAtom();
+      Atom* a2 = bond->endAtom();
+      OpenBabel::OBAtom* oba1 = hash.value(a1);
+      OpenBabel::OBAtom* oba2 = hash.value(a2);
+
+      OpenBabel::OBBond* obbond = new OpenBabel::OBBond();
+      obbond->SetBO(bond->bondOrder());
+      // Setting bondtype
+      switch (bond->bondType()) {
+        case Bond::Wedge:
+          obbond->SetWedge();
+          break;
+        case Bond::InvertedWedge:
+          obbond->SetBegin(oba2);
+          obbond->SetEnd(oba1);
+          obbond->SetWedge();
+          break;
+        case Bond::Hash:
+          obbond->SetHash();
+          break;
+        case Bond::InvertedHash:
+          obbond->SetBegin(oba2);
+          obbond->SetEnd(oba1);
+          obbond->SetHash();
+          break;
+        default:
+          obbond->SetBegin(oba1);
+          obbond->SetEnd(oba2);
+          break;
+      }
+
+      obmol->AddBond(*obbond);
+    }
+    obmol->EndModify();
+
+    return obmol;
+  }
+
+  using OpenBabel::OBRing;
+
+  void Molecule::perceiveRings()
+  {
+    OpenBabel::OBMol *obmol = OBMol();
+
+    qDebug() << "Molecule::perceiveRings";
+
+    // clear ring info
+    foreach (Atom *atom, m_atomList)
+      atom->setRing(0);
+    foreach (Bond *bond, m_bondList)
+      bond->setRing(0);
+    foreach (Ring *ring, m_rings)
+      delete ring;
+    m_rings.clear();
+
+
+    std::vector<OBRing*> rings = obmol->GetSSSR();
+    for (std::vector<OBRing*>::iterator r = rings.begin(); r != rings.end(); ++r) {
+      unsigned int ringSize = (*r)->_path.size();
+      Ring *ring = new Ring;
+      QList<Atom*> atoms;
+      for (unsigned int i = 0; i < ringSize; ++i) {
+        Atom *ringAtom = m_atomList.at((*r)->_path[i] - 1);
+        ringAtom->setRing(ring);
+
+        if (i+1 < ringSize) {
+          bondBetween(ringAtom, m_atomList.at((*r)->_path[i+1] - 1))->setRing(ring);
+        } else {
+          bondBetween(ringAtom, m_atomList.at((*r)->_path[0] - 1))->setRing(ring);
+        }
+        
+        atoms.append(ringAtom);
+      }
+
+      ring->setAtoms(atoms);
+      m_rings.append(ring);
+    }
   }
 
 
