@@ -1245,9 +1245,8 @@ void MolScene::moveModeMove(QGraphicsSceneMouseEvent* event)
 
 void MolScene::minimiseMolecule (Molecule *mol) {
 	Minimise *minimise = new Minimise (m_bondLength);
-	//minimise ->minimiseMolecule (mol);
-	minimise ->conformationalSearchMolecule (mol);
-
+	minimise ->minimiseMolecule (mol);
+	
 	
 }
 
