@@ -1177,13 +1177,13 @@ void MolScene::moveModeMove(QGraphicsSceneMouseEvent* event)
     QPointF rotatePointAbs = item->mapToScene(rotatePoint);
      */
 
-    QPointF rotatePoint = rotationItem->boundingRect().center();
-    QPointF rotatePointAbs = rotationItem->mapToScene(rotatePoint);
+  //  QPointF rotatePoint = rotationItem->boundingRect().center();
+ //   QPointF rotatePointAbs = rotationItem->mapToScene(rotatePoint);
 
 
     // Calculate the rotation angle
     QPointF vec1 = lastRotationVect;
-    QPointF vec2 = event->scenePos() - rotatePointAbs;
+    QPointF vec2 = event->scenePos() - rotationCenter;
 
     qreal crossprod = vec1.x () * vec2.y () - vec1.y () * vec2.x ();
     qreal dotprod =   vec1.x () * vec2.x () + vec1.y () * vec2.y ();
@@ -1196,13 +1196,13 @@ void MolScene::moveModeMove(QGraphicsSceneMouseEvent* event)
 
     // Temporary rotate the item
     QTransform transform;
-    transform.translate(rotatePoint.x(), rotatePoint.y());
+    transform.translate(rotationCenter.x(), rotationCenter.y());
     switch (event->modifiers()) {
       case Qt::ControlModifier: transform.rotate(rotateAngle, Qt::XAxis); break;
       case Qt::ShiftModifier: transform.rotate(rotateAngle, Qt::YAxis); break;
       default: transform.rotate(rotateAngle, Qt::ZAxis);
     };
-    transform.translate(-rotatePoint.x(), -rotatePoint.y());
+    transform.translate(-rotationCenter.x(), -rotationCenter.y());
     rotationItem->setTransform(transform, true);
     lastRotationVect = vec2;
     //   item->rotate(rotateAngle);
@@ -1222,6 +1222,7 @@ void MolScene::moveModeMove(QGraphicsSceneMouseEvent* event)
     QPointF rotatePoint = item->boundingRect().center();
     QPointF rotatePointAbs = item->mapToScene(rotatePoint);
 
+	rotationCenter = rotatePointAbs;
     rotationItem = item;
     lastRotationVect = event->buttonDownScenePos(Qt::LeftButton) - rotatePointAbs ; //save vector for relative rotation step
 
@@ -1269,8 +1270,10 @@ void MolScene::moveModeMove(QGraphicsSceneMouseEvent* event)
   }
 
 void MolScene::minimiseMolecule (Molecule *mol) {
-	Minimise *minimise = new Minimise ();
-	minimise ->minimiseMolecule (mol);
+	Minimise *minimise = new Minimise (m_bondLength);
+	//minimise ->minimiseMolecule (mol);
+	minimise ->conformationalSearchMolecule (mol);
+
 	
 }
 

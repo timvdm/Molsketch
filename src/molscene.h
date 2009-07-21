@@ -245,6 +245,7 @@ protected:
 	/** Used for rotations. Stores the last vector from mouse pointer to center of rotation */
 	QPointF lastRotationVect;
 	QPointF  rotatePointAbs;
+	QPointF rotationCenter;
 	
 
 	//lasso polygon
