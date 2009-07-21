@@ -54,19 +54,14 @@ namespace Molsketch {
   {
 	  
 	  rotationItem = NULL;  
-	  inputTextItem = addText ("sdf");
+	  inputTextItem = new TextInputItem ();
+	  addItem (inputTextItem);
 
-	  inputTextItem->setFlag(QGraphicsItem::ItemIsMovable, false);
 
 	  inputTextItem ->hide ();
-	  inputTextItem ->setTextInteractionFlags (Qt::TextEditable);
-	  inputTextItem ->setFlag(QGraphicsItem::ItemIsSelectable);
-	  inputTextItem ->setTextInteractionFlags(Qt::TextEditorInteraction);
+
 	  
-	//  inputTextItem ->show ();
-	  
-	  inputTextItem ->setPlainText ("atom");
-	  inputTextItem ->setFocus ();
+
 
 	 
 	  
@@ -151,6 +146,8 @@ namespace Molsketch {
   {
     m_atomSize = size;
   }
+	
+
 
   void MolScene::alignToGrid()
   {
@@ -711,6 +708,11 @@ namespace Molsketch {
     return 0;
 
   }
+	bool MolScene::textEditItemAt (const QPointF &pos) {
+	    foreach(QGraphicsItem* item,items(pos))
+		if (item->type() == TextInputItem::Type) return true;
+		return false;
+	}
 
   Atom* MolScene::atomAt(const QPointF &pos)
   {
@@ -870,6 +872,14 @@ namespace Molsketch {
 
   void MolScene::mousePressEvent(QGraphicsSceneMouseEvent* event)
   {
+	  
+	  
+	  // Execute default behavior
+	  QGraphicsScene::mousePressEvent(event);
+	  
+	  
+	  
+	  
     //   // Execute default behavior
     //   QGraphicsScene::mousePressEvent(event);
 
@@ -910,8 +920,6 @@ namespace Molsketch {
         break;
     }
 
-    // Execute default behavior
-    QGraphicsScene::mousePressEvent(event);
   }
 
   void MolScene::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
@@ -990,7 +998,7 @@ void MolScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
           rotateModeRelease(event);
           break;
 	case MolScene::TextMode:
-	  textModePress (event);
+	  textModeRelease (event);
 	  break;
         }
     }
@@ -1072,23 +1080,16 @@ void MolScene::moveModeMove(QGraphicsSceneMouseEvent* event)
 
 
 	void MolScene::textModePress(QGraphicsSceneMouseEvent* event) {
+		if (textEditItemAt (event ->scenePos())) {
+			inputTextItem ->setFocus();
+		}
+		else {
 		Atom * atom = atomAt(event->scenePos());
 		if (atom) {
-			atom -> hide ();
-			inputTextItem ->setFlag(QGraphicsItem::ItemIsSelectable);
-			inputTextItem ->setTextInteractionFlags(Qt::TextEditorInteraction);
+			inputTextItem ->clickedOn (atom);
 
-			inputTextItem ->setPos (atom ->pos ());
-			inputTextItem ->show ();
-			inputTextItem ->setEnabled(true);
-
-			inputTextItem ->setFocus ();
-			inputTextItem ->setSelected(true);
-			inputTextItem ->setPlainText ("atom");
-			if (inputTextItem ->textInteractionFlags() & Qt::TextEditable) std::cerr<<"editable"<<std::endl;
-
-		}
-		
+				}
+/*		
 		else {
 			QGraphicsTextItem *text = addText("");
 			text ->show ();
@@ -1098,31 +1099,13 @@ void MolScene::moveModeMove(QGraphicsSceneMouseEvent* event)
 			text ->setFocus ();
 
 		}
-
+*/
 		
-
+			}
 	}
 	
 	void MolScene::textModeRelease(QGraphicsSceneMouseEvent* event) {
-		Atom * atom = atomAt(event->scenePos());
-		if (atom) {
-			atom -> hide ();
-			inputTextItem ->setFlag(QGraphicsItem::ItemIsSelectable);
-			inputTextItem ->setTextInteractionFlags(Qt::TextEditorInteraction);
 			
-			inputTextItem ->setPos (atom ->pos ());
-			inputTextItem ->show ();
-			inputTextItem ->setEnabled(true);
-			
-			inputTextItem ->setFocus ();
-			inputTextItem ->setSelected(true);
-			inputTextItem ->setPlainText ("atom");
-			if (inputTextItem ->textInteractionFlags() & Qt::TextEditable) std::cerr<<"editable"<<std::endl;
-			
-		}
-		
-		
-		
 	}
 
 	
@@ -1658,6 +1641,7 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
 
   void MolScene::keyPressEvent(QKeyEvent* keyEvent)
   {
+	  if ( !inputTextItem ->hasFocus ()) {
     // Declare item
     QGraphicsItem* item;
     Atom* atom;
@@ -1707,6 +1691,48 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
         m_stack->endMacro();
         keyEvent->accept();
         break;
+		case Qt::Key_Backspace:
+			m_stack->beginMacro(tr("removing item(s)"));
+			// First delete all selected molecules
+			foreach (item, selectedItems())
+			if (item->type() == Molecule::Type)
+			{
+				m_stack->push(new DelItem(item));
+			}
+			//       // Then delete 
+			//       foreach (item, selectedItems())
+			//         if (item->type() == Bond::Type)
+			//         {
+			//           bond = dynamic_cast<Bond*>(item);
+			//           mol = bond->molecule();
+			//           m_stack->push(new DelBond(bond));
+			//           if (mol->canSplit()) m_stack->push(new SplitMol(mol));
+			//         };
+			
+			// Then delete all selected atoms
+			foreach (item, selectedItems())
+			if (item->type() == Atom::Type)
+			{
+				atom = dynamic_cast<Atom*>(item);
+				molSet << atom->molecule();
+				m_stack->push(new DelAtom(atom));
+			}
+			
+			// Cleanup the affected molecules
+			foreach (Molecule* mol, molSet)
+        {
+			if (mol->canSplit()) m_stack->push(new SplitMol(mol));
+			if (mol->atoms().isEmpty()) m_stack->push(new DelItem(mol));
+        }
+			
+			// Finally delete all the residues
+			foreach (item, selectedItems()) m_stack->push(new DelItem(item));
+			
+			m_stack->endMacro();
+			keyEvent->accept();
+			break;
+			
+			
       case Qt::Key_Up:
         m_stack->beginMacro("moving item(s)");
         foreach (item, selectedItems())
@@ -1741,6 +1767,7 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
       default:
         keyEvent->ignore();
     }
+	  }
   
     // execute default behaviour (needed for text tool)
     QGraphicsScene::keyPressEvent(keyEvent);

@@ -106,7 +106,8 @@ namespace Molsketch {
        */
       QString chargeString() const;
 
-
+	  //Returns full atom string . e.g. CH3    Fe2+ etc
+	  QString string ()const;
 
 
       /**
@@ -155,6 +156,7 @@ namespace Molsketch {
 	  QList<Atom*> neighbours () {return m_neighbors;};
 
 
+	  void hoverOut () {m_hidden = true;}
     protected:
       // Event handlers
       /** Event handler to show hidden atoms when the mouse hovers over them. */

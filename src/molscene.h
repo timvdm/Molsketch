@@ -33,6 +33,7 @@
 
 #include "mollibitem.h"
 #include "bond.h"
+#include "TextInputItem.h"
 
 
 class QString;
@@ -126,6 +127,8 @@ public:
   Atom* atomAt(const QPointF &pos);
   /** Returns the first bond at position @p pos or NULL if none. */
   Bond* bondAt(const QPointF &pos);
+
+	bool MolScene::textEditItemAt (const QPointF &pos) ;
 
   /** Enum for the different edit modes. */
   enum editModes {
@@ -242,14 +245,18 @@ protected:
 	/** Used for rotations. Stores the last vector from mouse pointer to center of rotation */
 	QPointF lastRotationVect;
 	QPointF  rotatePointAbs;
+	
+
 	//lasso polygon
 	QVector <QPointF> lassoTrail;
 	QGraphicsPolygonItem *lassoPolygon;
 	
 	//Item that is being rotated
 	QGraphicsItem *rotationItem;
+
+public:
 	//item to accept input for text tool
-	QGraphicsTextItem *inputTextItem;
+	TextInputItem *inputTextItem;
 
 
 private:
