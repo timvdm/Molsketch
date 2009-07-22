@@ -1438,17 +1438,17 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
     qDebug() << "m1 =" << m1;
     qDebug() << "m2 =" << m2;
     */
+    if (a1 != a2)
+      m_stack->beginMacro("Draw");
 
     // Make sure both molecules are valid
     if (m1 && !m2 && a2) {
       m2 = m1;
       a2->setMolecule(m2);
-      m_stack->beginMacro("Draw");
       m_stack->push(new AddAtom(a2, m2));
     } else if (m2 && !m1 && a1) {
       m1 = m2;
       a1->setMolecule(m1);
-      m_stack->beginMacro("Draw");
       m_stack->push(new AddAtom(a1, m1));
     }
 
