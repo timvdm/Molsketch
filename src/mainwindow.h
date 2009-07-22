@@ -100,6 +100,8 @@ private slots:
   void setRotateMode();
 	/** Switch to text mode. */
 	void setTextMode();
+	/** Switch to minimise mode. */
+	void setMinimiseMode();
 
   /** Open the preferences editor. */
   void editPreferences();
@@ -120,7 +122,7 @@ private slots:
   void documentWasModified( );
 
 	//adjust geometry of all molecules
-	void minimiseSlot ();
+	//void minimiseSlot ();
 
 	
   /** Zoom in on the current view. */
@@ -301,7 +303,7 @@ private:
   /** Open the settings dialog action. */
   QAction* prefAct;
 	/** Minimiser **/
-	QAction *minimiseAct;
+	QAction *minimiseModeAct;
 
   // View actions
   /** Zoom in on the view action. */

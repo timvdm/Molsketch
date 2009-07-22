@@ -395,6 +395,11 @@ void MainWindow::setTextMode()
 	m_scene->setEditMode(MolScene::TextMode);
 }
 
+void MainWindow::setMinimiseMode()
+{
+	m_scene->setEditMode(MolScene::MinimiseMode);
+}
+
 void MainWindow::setRotateMode()
 {
   m_scene->setEditMode(MolScene::RotateMode);
@@ -428,9 +433,11 @@ void MainWindow::assistant()
   assistantClient->showPage(file.absoluteFilePath());
 }
 
+/*
 void MainWindow::minimiseSlot () {
 	m_scene ->minimiseAllMolecules ();
 }
+ */
 
 
 void MainWindow::about()
@@ -446,6 +453,7 @@ void MainWindow::documentWasModified()
 
 void MainWindow::updateEditMode(int mode)
 {
+	minimiseModeAct->setChecked (false);
 	addModeAct->setChecked(false);
 	delModeAct->setChecked(false);
 	moveModeAct->setChecked(false);
@@ -488,6 +496,9 @@ void MainWindow::updateEditMode(int mode)
 			break;
 	case MolScene::LassoMode:
 	lassoModeAct ->setChecked (true);
+	break;
+	case MolScene::MinimiseMode:
+		minimiseModeAct ->setChecked (true);
 	break;
 	}
 }
@@ -627,10 +638,14 @@ void MainWindow::createActions()
   prefAct->setStatusTip(tr("Edit your preferences"));
   connect(prefAct, SIGNAL(triggered()), this, SLOT(editPreferences()));
 	
-	minimiseAct = new QAction(QIcon(":/images/minimise.png"),tr("Minimiser"),this);
-	//minimiseAct->setShortcut(tr("Ctrl+F"));
-	minimiseAct->setStatusTip(tr("Adjust Geometry"));
-	connect(minimiseAct, SIGNAL(triggered()), this, SLOT(minimiseSlot()));
+	minimiseModeAct = new QAction(QIcon(":/images/minimise.png"),tr("Energy Refinement"),this);
+	minimiseModeAct->setCheckable(true);
+
+	//minimiseModeAct->setShortcut(tr("Ctrl+F"));
+	minimiseModeAct->setStatusTip(tr("Adjust Geometry"));
+	textModeAct->setStatusTip(tr("Go to the minimise mode"));
+
+	connect(minimiseModeAct, SIGNAL(triggered()), this, SLOT(setMinimiseMode()));
 
   // Zoom actions
   zoomInAct = new QAction(QIcon(":/images/zoom-in.png"),tr("Zoom &In"), this);
@@ -713,10 +728,11 @@ void MainWindow::createMenus()
   editMenu->addAction(moveModeAct);
   editMenu->addAction(lassoModeAct);	
   editMenu->addAction(rotateModeAct);
+	editMenu->addAction(prefAct);
+	editMenu->addAction(minimiseModeAct);
+	editMenu->addAction(textModeAct);
   editMenu->addSeparator();
-  editMenu->addAction(prefAct);
-  editMenu->addAction(minimiseAct);
-  editMenu->addAction(textModeAct);
+
 
 
   viewMenu = menuBar()->addMenu(tr("&View"));
@@ -766,7 +782,7 @@ void MainWindow::createToolBars()
   editToolBar->addAction(lassoModeAct);
   editToolBar->addAction(rotateModeAct);
 	editToolBar->addAction(textModeAct);
-  editToolBar->addAction(minimiseAct);
+  editToolBar->addAction(minimiseModeAct);
 
   zoomToolBar = addToolBar(tr("Zoom"));
   zoomToolBar->setObjectName("zoom-toolbar");
