@@ -22,10 +22,10 @@
 #define MINIMISE_H
 
 #define KSTRETCH 0.2
-#define KCLASH 0.2
+#define KCLASH 0.5
 
-#define KBEND 0.7
-#define KORIENT 0.7
+#define KBEND 2
+#define KORIENT 1
 
 
 #include "atom.h"
@@ -42,11 +42,14 @@ namespace Molsketch {
 	//FFAtom	
 	class FFAtom {
 	public: 
-		FFAtom (Atom *at) {atom = at; x() = at ->pos ().x(); y() = at ->pos ().y(); _force_x =0; _force_y = 0;}
+		FFAtom (Atom *at) {atom = at; x() = at ->pos ().x(); y() = at ->pos ().y(); _force_x =0; _force_y = 0; save_pose ();}
 		qreal &x () {return _x;}
 		qreal &y () {return _y;}
+		qreal &xbest () {return _bestx;}
+		qreal &ybest () {return _besty;}
 		qreal &force_x () {return _force_x;}
 		qreal &force_y () {return _force_y;}
+		void save_pose () {_bestx = _x; _besty = _y;}
 		QPoint qpoint () {return QPoint (x(), y());}
 		Atom *atom;
 
@@ -57,6 +60,8 @@ namespace Molsketch {
 		qreal _y;
 		qreal _force_x;
 		qreal _force_y;
+		qreal _bestx;
+		qreal _besty;
 	};
 	
 	static qreal module (FFAtom &p) {
@@ -110,6 +115,7 @@ namespace Molsketch {
 
 	//	FFInteraction (): p1 (NULL), p2 (NULL) {};
 		virtual void apply () = 0;
+		virtual void score (qreal &score) = 0;
 
 	protected:
 		FFAtom *p1, *p2;
@@ -135,7 +141,15 @@ namespace Molsketch {
 			
 		}
 		qreal len;
-	};
+
+	void score (qreal &tot) {
+		qreal dist = distance (*p1, *p2);
+		qreal d = dist - len;
+		tot += d*d*KSTRETCH;
+		
+	}
+			
+};
 	
 	//clashes
 	class FFclash : public FFInteraction {
@@ -155,6 +169,13 @@ namespace Molsketch {
 			
 			p1 ->force_x () += v2.x();
 			p1 ->force_y () += v2.y();
+			
+		}
+		void score (qreal &tot) {
+			qreal dist = distance (*p1, *p2);
+			qreal d = len - dist;
+			if (d < len /4) return;
+			tot += d*d*KCLASH;
 			
 		}
 		qreal len;
@@ -195,6 +216,25 @@ namespace Molsketch {
 			p2 ->force_x () -= n1.x();
 			p2 ->force_y () -= n1.y();			
 			
+		}
+		void score (qreal &tot) {
+			QPointF v = vect (*p1, *p2);
+			qreal ang = atan2 (v.y(), v.x());
+			qreal targetang;
+			if (ang < 0) ang = 2 * M_PI + ang;
+			//			if (ang >= 0) {
+			int n = ang / (M_PI / 6);
+			targetang = n * (M_PI / 6);
+			if ((ang - targetang) > (M_PI / 12)) targetang = (n+1) * (M_PI / 6);
+			//			}
+			//			else {
+			//				int n = ang / (M_PI / 3);
+			//				targetang = n * (M_PI / 3);
+			//				if ((targetang - ang) > (M_PI / 6)) targetang = (n-1) * (M_PI / 3);
+			//			}
+			
+			qreal a = targetang - ang;
+			tot += a*a*KORIENT;
 		}
 	};
 	
@@ -238,6 +278,11 @@ namespace Molsketch {
 			
 			
 		}
+		void score (qreal &tot) {
+			qreal ang = angle (*p1, *p2, *p3);
+			if (ang < 0) ang = -ang;
+			qreal a = (2* M_PI / 3) - ang;
+		}
 		FFAtom *p3;
 
 	};
@@ -245,17 +290,25 @@ namespace Molsketch {
 	//class to adjust the geometry of 2D molecules and scenes
 	class Minimise  {
 	public:
-		Minimise () {};
+		Minimise (qreal bl=40) : bondLength (bl) { srand((unsigned)time(0)); };
 		~Minimise () {clear ();}
 		void initialise (Molecule *molecule);
 		void minimiseMolecule (Molecule *molecule);
+		void conformationalSearchMolecule (Molecule *molecule);
 		void run ();
+		void mutate ();
 		void finalise ();
+		void finaliseBest ();
 		void score_interactions ();
 		void score_rotations ();
+		void saveCurrentPose ();
 		bool move_atoms ();
+		qreal total_score ();
+		
 
 	private:
+		qreal bestScore;
+		qreal bondLength;
 		void clear() {
 			for (unsigned int i=0; i < atoms.size (); i++) delete atoms[i];
 			for (unsigned int i=0; i < interactions.size (); i++) delete interactions[i];	

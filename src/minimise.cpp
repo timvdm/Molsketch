@@ -37,7 +37,7 @@ namespace Molsketch {
 		}
 		QList <Bond *> bds = molecule ->bonds ();
 		for (unsigned int i = 0; i < bds.size (); i++) {
-			interactions.push_back (new FFBondstretch (atoms[bds[i]->beginAtom ()->n], atoms[bds[i]->endAtom ()->n]));
+			interactions.push_back (new FFBondstretch (atoms[bds[i]->beginAtom ()->n], atoms[bds[i]->endAtom ()->n], bondLength));
 			rotations.push_back (new FFBondorient (atoms[bds[i]->beginAtom ()->n], atoms[bds[i]->endAtom ()->n]));
 
 		}	
@@ -61,36 +61,97 @@ namespace Molsketch {
 		for (unsigned int i = 0; i < ats.size (); i++) {
 			for (unsigned int j = i; j < ats.size (); j++) {
 				if (i==j) continue;
-				interactions.push_back (new FFclash (atoms[i], atoms[j]));
+				interactions.push_back (new FFclash (atoms[i], atoms[j], bondLength));
 
 			}
 		}
 	}	
 	
 	void Minimise::run () {
-		for (unsigned int j = 0; j < 20; j++) {
-			for (unsigned int i = 0; i < 1000; i++) {
+		for (unsigned int i = 0; i < 500; i++) {
+			score_interactions ();
+			//	std::cerr << "interactions  " <<total_score()<<std::endl;
+			
+			if (!move_atoms ()) break;
+		}
+		for (unsigned int j = 0; j < 5; j++) {
+			for (unsigned int i = 0; i < 500; i++) {
 				score_rotations ();
+				//	std::cerr << total_score()<<std::endl;
+				
 				if (!move_atoms ()) break;
 			}
-			for (unsigned int i = 0; i < 1000; i++) {
+			for (unsigned int i = 0; i < 500; i++) {
 				score_interactions ();
+		//		std::cerr << total_score()<<std::endl;
 				if (!move_atoms ()) break;
+
+				//		if (!move_atoms ()) break;
 			}
+		}
+		for (unsigned int i = 0; i < 500; i++) {
+			
+			//	score_rotations ();
+			score_interactions ();
+			//	std::cerr << "interactions  " <<total_score()<<std::endl;
+			if (!move_atoms ()) break;
+		}
+		
+	}
+	
+	void Minimise::saveCurrentPose () {
+		for (unsigned int i = 0; i < atoms.size (); i++) {
+			atoms[i] ->save_pose ();
 		}
 	}
 	
+	void Minimise::mutate () {
+		qreal r1 = (((qreal) rand()) / RAND_MAX) - 0.5;
+		qreal r2 = (((qreal) rand()) / RAND_MAX) - 0.5;
+
+		for (unsigned int i = 0; i < atoms.size (); i++) {
+			atoms[i] ->x () += r1*bondLength *10;
+			atoms[i] ->y () += r2*bondLength *10;
+		}
+	}
+	
+	void Minimise::conformationalSearchMolecule (Molecule *molecule) {
+		initialise (molecule);
+		bestScore = total_score ();
+		for (unsigned int i = 0; i < 100; i++) {
+			mutate ();
+			run ();
+			qreal s = total_score();
+			if (s < bestScore) {
+				bestScore = s;
+				saveCurrentPose ();
+			}
+		}
+		finaliseBest ();
+		clear ();
+	}
 
 	
-	void Minimise::score_interactions () {
+	qreal Minimise::total_score () {
+		qreal e = 0;
 		for (unsigned int i = 0; i < interactions.size (); i++) {
-			interactions[i] ->apply ();
+			interactions[i] ->score (e);
 		}
+		for (unsigned int i = 0; i < rotations.size (); i++) {
+			rotations[i] ->score (e);
+		}
+		return e;
 	}
 	
 	void Minimise::score_rotations () {
 		for (unsigned int i = 0; i < rotations.size (); i++) {
 			rotations[i] ->apply ();
+		}
+	}
+	
+	void Minimise::score_interactions () {
+		for (unsigned int i = 0; i < interactions.size (); i++) {
+			interactions[i] ->apply ();
 		}
 	}
 	
@@ -119,7 +180,12 @@ namespace Molsketch {
 			QPointF point (atoms[i]->x(), atoms[i]->y());
 			atoms[i] ->atom ->setPos (point);
 		}
-		clear ();
+	}
+	void Minimise::finaliseBest () {
+		for (unsigned int i = 0; i < atoms.size (); i++) {
+			QPointF point (atoms[i]->xbest(), atoms[i]->ybest());
+			atoms[i] ->atom ->setPos (point);
+		}
 	}
 	
 } //namespace
