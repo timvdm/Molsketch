@@ -153,6 +153,8 @@ class Bond : public QGraphicsItem
   private:
     void drawSimpleBond(QPainter *painter);
     void drawRingBond(QPainter *painter);
+    void drawHashBond(QPainter *painter, bool inverted);
+    void drawWedgeBond(QPainter *painter, bool inverted);
 
     // Internal representation
     /** Stores the bond type as integer. */
