@@ -192,11 +192,13 @@ void Bond::undoValency()
     QPointF begin = mapFromParent(m_beginAtom->pos());
     QPointF end = mapFromParent(m_endAtom->pos());
     QPointF vb = end - begin;
+    QPointF uvb = vb / sqrt(vb.x()*vb.x() + vb.y()*vb.y());
 
+    MolScene* molScene = dynamic_cast<MolScene*>(scene());
     if (m_beginAtom->hasLabel())
-      begin += 0.20 * vb;
+      begin += 0.20 * uvb * molScene->bondLength();
     if (m_endAtom->hasLabel())
-      end -= 0.20 * vb;
+      end -= 0.20 * uvb * molScene->bondLength();
 
     switch (m_bondOrder) {
       case 1:
@@ -204,7 +206,6 @@ void Bond::undoValency()
           break;
       case 2:
           {
-          QPointF uvb = vb / sqrt(vb.x()*vb.x() + vb.y()*vb.y());
           QPointF orthogonal(uvb.y(), -uvb.x());
           QPointF offset = orthogonal * 0.5 * m_bondSpacing;
           painter->drawLine(QLineF(begin + offset, end + offset));
@@ -213,7 +214,6 @@ void Bond::undoValency()
           break;
       case 3:
           {
-          QPointF uvb = vb / sqrt(vb.x()*vb.x() + vb.y()*vb.y());
           QPointF orthogonal(uvb.y(), -uvb.x());
           QPointF offset = orthogonal * m_bondSpacing;
           painter->drawLine(QLineF(begin, end));
@@ -253,9 +253,6 @@ void Bond::undoValency()
     if (length(begin + spacing - center) > length(begin - spacing - center))
       spacing *= -1.0;
     
-    qDebug() << " + = " << length(begin + spacing - center);
-    qDebug() << " - = " << length(begin - spacing - center);
-
     painter->drawLine(QLineF(begin, end));
     painter->drawLine(QLineF(begin + spacing + offset, end + spacing - offset));
   }
