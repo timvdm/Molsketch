@@ -88,20 +88,8 @@ private slots:
   /** Prints the current document. */
   bool print();
 
-  /** Switch to add mode. */
-  void setAddMode();
-  /** Swich to del mode. */
-  void setRemoveMode();
-  /** Switch to move mode. */
-  void setMoveMode();
-	/** Switch to lasso mode. */
-	void setLassoMode();
-  /** Switch to rotate mode. */
-  void setRotateMode();
-	/** Switch to text mode. */
-	void setTextMode();
-	/** Switch to minimise mode. */
-	void setMinimiseMode();
+
+
 
   /** Open the preferences editor. */
   void editPreferences();
@@ -121,10 +109,7 @@ private slots:
   /** Mark the current document as modified. */
   void documentWasModified( );
 
-	//adjust geometry of all molecules
-	//void minimiseSlot ();
 
-	
   /** Zoom in on the current view. */
   void zoomIn();
   /** Zoom out on the current view. */
@@ -205,8 +190,6 @@ private:
   void initializeAssistant();
 
   // Libraries
-  /** The library widget with recently used elements. */
-  QListWidget* recentLib;
   /** The library widget of elements. */
   QListWidget* elementLib;
   /** The library widget with user-added molecules. */
@@ -288,18 +271,6 @@ private:
   QAction* selectAllAct;
   /** Align all items to the grid action. */
   QAction* alignAct;
-  /** Switch to add mode action. */
-  QAction* addModeAct;
-  /** Switch to delete mode action. */
-  QAction* delModeAct;
-  /** Switch to move mode action. */
-  QAction* moveModeAct;
-	/** Switch to lasso mode action. */
-	QAction* lassoModeAct;
-  /** Switch to rotate mode action. */
-  QAction* rotateModeAct;
-	/** Switch to text mode action*/
-	QAction* textModeAct;
   /** Open the settings dialog action. */
   QAction* prefAct;
 	/** Minimiser **/

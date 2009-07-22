@@ -93,7 +93,7 @@ Molecule::Molecule(Molecule* mol, QGraphicsItem* parent, MolScene* scene) : QGra
 
 	void Molecule::numberAtoms () {
 		QList <Atom *> ats = atoms ();
-		for (unsigned int i = 0; i < ats.size (); i++) {
+		for (int i = 0; i < ats.size (); i++) {
 			ats[i] ->n = i;
 		}
 	}

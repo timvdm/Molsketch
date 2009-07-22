@@ -44,10 +44,12 @@ namespace Molsketch {
       void uncheckAtomButtons();
       void uncheckBondButtons();
       void uncheckRingButtons();
+      void uncheckToolButtons();
       QPushButton* checkedAtomButton();
       QPushButton* checkedBondButton();
 
       void textButtonClicked();
+      void anyClicked();
       void singleBondClicked();
       void doubleBondClicked();
       void tripleBondClicked();
@@ -63,6 +65,11 @@ namespace Molsketch {
       void ring8Clicked();
       void aromaticRing5Clicked();
       void aromaticRing6Clicked();
+
+      void moveClicked();
+      void lassoClicked();
+      void rotateClicked();
+      void minimizeClicked();
 
     private:
       Ui::DrawWidget ui;

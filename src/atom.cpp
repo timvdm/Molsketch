@@ -379,8 +379,11 @@ namespace Molsketch {
 
   int Atom::charge()  const
   {
-    if (m_elementSymbol == "X" || m_elementSymbol == "R")
-      return 0;
+    // non element atoms have no charge unless explicitly set (m_userCharge)
+    int atomicNumber = symbol2number(m_elementSymbol);
+    if (!atomicNumber)
+      return m_userCharge;
+
     int bosum = bondOrderSum();
 
     if (m_elementSymbol == "H") {
