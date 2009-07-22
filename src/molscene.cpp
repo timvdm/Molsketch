@@ -77,7 +77,7 @@ namespace Molsketch {
 
     //Initializing properties
     m_currentElementSymbol = "C";
-    m_editMode = MolScene::AddMode;
+    m_editMode = MolScene::DrawMode;
     m_bondLength = 40;
     m_bondOrder = 1;
     m_bondWidth = 0;
@@ -172,7 +172,7 @@ namespace Molsketch {
         item->setFlag(QGraphicsItem::ItemIsSelectable,mode == MolScene::MoveMode);
 
     // Delete hint Ring if mode != addMode
-    if (mode != MolScene::AddMode) {
+    if (mode != MolScene::DrawMode) {
       if (m_hintMoleculeItems) {
         delete m_hintMoleculeItems;
         m_hintMoleculeItems = 0;
@@ -270,7 +270,7 @@ namespace Molsketch {
     // Reinitialize the scene
     m_hintPoints.clear();
     initHintItems();
-    setEditMode(MolScene::AddMode);
+    setEditMode(MolScene::DrawMode);
   }
 
 
@@ -372,8 +372,6 @@ namespace Molsketch {
       //atoms.append(atom);
     }
 
-    qDebug() << molecules;
-
     m_stack->beginMacro("Add Molecule");
     if (molecules.isEmpty()) {
       // Adding a totally new ring
@@ -406,9 +404,6 @@ namespace Molsketch {
         end = new Atom(endPoint, "C", m_autoAddHydrogen);
         m_stack->push(new AddAtom(end, molecules[0]));
       }
-
-      qDebug() << "begin =" << begin;
-      qDebug() << "end =" << end;
 
       Bond *bond = molecules[0]->bondBetween(begin, end);
       if (!bond) {
@@ -869,11 +864,8 @@ namespace Molsketch {
       case Qt::LeftButton:
         switch (m_editMode)
         {
-          case MolScene::AddMode:
+          case MolScene::DrawMode:
             addModePress( event );
-            break;
-          case MolScene::RemoveMode:
-            delModePress( event );
             break;
           case MolScene::MoveMode:
             moveModePress( event );
@@ -924,7 +916,7 @@ namespace Molsketch {
       default:
         switch (m_editMode)
         {
-          case MolScene::AddMode:
+          case MolScene::DrawMode:
             addModeMove(event);
             break;
             //         case MolScene::MoveMode:
@@ -958,7 +950,7 @@ void MolScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
     default:
       switch (m_editMode)
       {
-        case MolScene::AddMode:
+        case MolScene::DrawMode:
             addModeRelease(event);
             clearSelection();
             break;
@@ -994,12 +986,9 @@ void MolScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * event )
     default:
       switch (m_editMode)
       {
-        case MolScene::AddMode:
+        case MolScene::DrawMode:
 				addModeDoubleClick (event);
 
-          break;
-        case MolScene::RemoveMode:
-          delModeDoubleClick(event);
           break;
         case MolScene::MoveMode:
           break;
@@ -1350,22 +1339,13 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
     }
 
     // Show hinting
+    if (!m_hintMoleculeItems)
     if (m_currentElementSymbol != "+" && m_currentElementSymbol != "-" && m_currentElementSymbol != "H+" && m_currentElementSymbol != "H-")
     {
       drawHintPoints(downPos);
       setHintLine(downPos,event->scenePos());
       m_hintLine->setVisible(true);
     }
-
-	
-  
-  // Show hinting
-  if (m_currentElementSymbol != "+" && m_currentElementSymbol != "-" && m_currentElementSymbol != "H+" && m_currentElementSymbol != "H-")
-  {
-    drawHintPoints(downPos);
-    setHintLine(downPos,event->scenePos());
-    m_hintLine->setVisible(true);
-  }
 
     // Check which molecule has been clicked on
     Atom* atom = atomAt(downPos);
@@ -1377,7 +1357,7 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
       if (m_hintMoleculeItems) {
         // insert the hinted molecule if it exists
         if (!m_hintRingPoints.isEmpty()) {
-          insertRing(downPos);
+          //insertRing(downPos);
         } else {
           Molecule* mol = new Molecule;
           mol->setPos(downPos);
@@ -1445,34 +1425,37 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
     Molecule* m2 = a2 ? a2->molecule() : 0;
 
     // Add aligned hint molecule if applicable
-    if (m_hintMoleculeItems && (a1 || b)) {
+    if (m_hintMoleculeItems /*&& (a1 || b)*/) {
       insertRing(upPos);
       return;
     }
 
-    // Begin adding macro
-    m_stack->beginMacro("Draw");
-
+    /*
     qDebug() << "a1 =" << a1;
     qDebug() << "a2 =" << a2;
     qDebug() << "m1 =" << m1;
     qDebug() << "m2 =" << m2;
+    */
 
     // Make sure both molecules are valid
     if (m1 && !m2 && a2) {
       m2 = m1;
       a2->setMolecule(m2);
+      m_stack->beginMacro("Draw");
       m_stack->push(new AddAtom(a2, m2));
     } else if (m2 && !m1 && a1) {
       m1 = m2;
       a1->setMolecule(m1);
+      m_stack->beginMacro("Draw");
       m_stack->push(new AddAtom(a1, m1));
     }
 
+    /*
     qDebug() << "    a1 =" << a1;
     qDebug() << "    a2 =" << a2;
     qDebug() << "    m1 =" << m1;
     qDebug() << "    m2 =" << m2;
+    */
 
 
 
@@ -1522,7 +1505,6 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
       }
 
 
-      qDebug() << "1";
       // Check for merge
       if (m1 && m2 && (m1 != m2)) {
         m_stack->push(new MergeMol(m1, m2, m1));
@@ -1530,23 +1512,17 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
         a2 = m1->atomAt(upPos);
         m1->setFocus();
       } 
-      qDebug() << "2";
 
       // Adding bond
       Bond* bond = new Bond(a1,a2);
-      qDebug() << "3";
       m_stack->push(new AddBond(bond));
-      qDebug() << "4";
       for (int i = 0; i < m_bondOrder - 1; i++) 
         m_stack->push(new IncOrder(bond));
-      qDebug() << "5";
       for (int i = 0; i < m_bondType; i++) 
         m_stack->push(new IncType(bond));
-      qDebug() << "6";
 
       // End adding macro
       m_stack->endMacro();
-      qDebug() << "7";
       return;
     }
 
@@ -1800,7 +1776,7 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
     }
     m_hintRingPoints.clear();
 
-    setEditMode(MolScene::AddMode);
+    setEditMode(MolScene::DrawMode);
   }
 
   void MolScene::setIncChargeMode()

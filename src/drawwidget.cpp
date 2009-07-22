@@ -47,7 +47,8 @@ namespace Molsketch {
     connect(ui.buttonI, SIGNAL(clicked()), this, SLOT(textButtonClicked()));
     connect(ui.buttonX, SIGNAL(clicked()), this, SLOT(textButtonClicked()));
     connect(ui.buttonR, SIGNAL(clicked()), this, SLOT(textButtonClicked()));
-    connect(ui.buttonAny, SIGNAL(clicked()), this, SLOT(textButtonClicked()));
+
+    connect(ui.buttonAny, SIGNAL(clicked()), this, SLOT(anyClicked()));
 
     // bonds
     connect(ui.buttonSingleBond, SIGNAL(clicked()), this, SLOT(singleBondClicked()));
@@ -67,6 +68,12 @@ namespace Molsketch {
     connect(ui.buttonRing8, SIGNAL(clicked()), this, SLOT(ring8Clicked()));
     connect(ui.buttonRing5Arom, SIGNAL(clicked()), this, SLOT(aromaticRing5Clicked()));
     connect(ui.buttonRing6Arom, SIGNAL(clicked()), this, SLOT(aromaticRing6Clicked()));
+
+    // tools
+    connect(ui.buttonMove, SIGNAL(clicked()), this, SLOT(moveClicked()));
+    connect(ui.buttonLasso, SIGNAL(clicked()), this, SLOT(lassoClicked()));
+    connect(ui.buttonRotate, SIGNAL(clicked()), this, SLOT(rotateClicked()));
+    connect(ui.buttonMinimize, SIGNAL(clicked()), this, SLOT(minimizeClicked()));
   }
 
 
@@ -75,6 +82,7 @@ namespace Molsketch {
     uncheckAtomButtons();
     uncheckBondButtons();
     uncheckRingButtons();
+    uncheckToolButtons();
   }
 
   void DrawWidget::uncheckAtomButtons()
@@ -115,6 +123,14 @@ namespace Molsketch {
     ui.buttonRing8->setChecked(false);
     ui.buttonRing5Arom->setChecked(false);
     ui.buttonRing6Arom->setChecked(false);
+  }
+  
+  void DrawWidget::uncheckToolButtons()
+  {
+    ui.buttonMove->setChecked(false);
+    ui.buttonLasso->setChecked(false);
+    ui.buttonRotate->setChecked(false);
+    ui.buttonMinimize->setChecked(false);
   }
 
   QPushButton* DrawWidget::checkedBondButton()
@@ -177,6 +193,7 @@ namespace Molsketch {
     QPushButton *button = qobject_cast<QPushButton*>(sender);
     QString text = button->text();
     m_scene->setElement(text);
+    m_scene->setEditMode(MolScene::DrawMode);
 
     uncheckAtomButtons();
     if (text == "H")
@@ -203,8 +220,6 @@ namespace Molsketch {
       ui.buttonX->setChecked(true);
     else if (text == "R")
       ui.buttonR->setChecked(true);
-    else if (text == "Any")
-      ui.buttonAny->setChecked(true);
    
     if (!checkedBondButton()) {
       ui.buttonSingleBond->setChecked(true);
@@ -212,8 +227,16 @@ namespace Molsketch {
       m_scene->setBondType(Bond::InPlane);
     }
     uncheckRingButtons();
+    uncheckToolButtons();
   }
 
+  void DrawWidget::anyClicked()
+  {
+    uncheckAllButtons();
+    ui.buttonAny->setChecked(true);
+    m_scene->setEditMode(MolScene::TextMode);
+  }
+ 
   //
   // Bonds
   //
@@ -222,6 +245,7 @@ namespace Molsketch {
   {
     m_scene->setBondOrder(1);
     m_scene->setBondType(Bond::InPlane);
+    m_scene->setEditMode(MolScene::DrawMode);
 
     if (!checkedAtomButton()) {
       ui.buttonC->setChecked(true);
@@ -230,12 +254,14 @@ namespace Molsketch {
     uncheckBondButtons();
     ui.buttonSingleBond->setChecked(true);
     uncheckRingButtons();
+    uncheckToolButtons();
   }
 
   void DrawWidget::doubleBondClicked()
   {
     m_scene->setBondOrder(2);
     m_scene->setBondType(Bond::InPlane);
+    m_scene->setEditMode(MolScene::DrawMode);
 
     if (!checkedAtomButton()) {
       ui.buttonC->setChecked(true);
@@ -244,12 +270,14 @@ namespace Molsketch {
     uncheckBondButtons();
     ui.buttonDoubleBond->setChecked(true);
     uncheckRingButtons();
+    uncheckToolButtons();
    }
 
   void DrawWidget::tripleBondClicked()
   {
     m_scene->setBondOrder(3);
     m_scene->setBondType(Bond::InPlane);  
+    m_scene->setEditMode(MolScene::DrawMode);
     
     if (!checkedAtomButton()) {
       ui.buttonC->setChecked(true);
@@ -258,12 +286,14 @@ namespace Molsketch {
     uncheckBondButtons();
     ui.buttonTripleBond->setChecked(true);
     uncheckRingButtons();
+    uncheckToolButtons();
   }
 
   void DrawWidget::wedgeBondClicked()
   {
     // also sets order
     m_scene->setBondType(Bond::Wedge);
+    m_scene->setEditMode(MolScene::DrawMode);
  
     if (!checkedAtomButton()) {
       ui.buttonC->setChecked(true);
@@ -272,12 +302,14 @@ namespace Molsketch {
     uncheckBondButtons();
     ui.buttonWedge->setChecked(true);    
     uncheckRingButtons();
+    uncheckToolButtons();
   }
   
   void DrawWidget::hashBondClicked()
   {
     // also sets order
     m_scene->setBondType(Bond::Hash);  
+    m_scene->setEditMode(MolScene::DrawMode);
 
     if (!checkedAtomButton()) {
       ui.buttonC->setChecked(true);
@@ -286,12 +318,14 @@ namespace Molsketch {
     uncheckBondButtons();
     ui.buttonHash->setChecked(true);
     uncheckRingButtons();
+    uncheckToolButtons();
   }
   
   void DrawWidget::wedgeOrHashBondClicked()
   {
     // also sets order
     m_scene->setBondType(Bond::WedgeOrHash);  
+    m_scene->setEditMode(MolScene::DrawMode);
     
     if (!checkedAtomButton()) {
       ui.buttonC->setChecked(true);
@@ -300,12 +334,14 @@ namespace Molsketch {
     uncheckBondButtons();
     ui.buttonWedgeOrHash->setChecked(true); 
     uncheckRingButtons();
+    uncheckToolButtons();
   }
   
   void DrawWidget::cisOrTransBondClicked()
   {
     // also sets order
     m_scene->setBondType(Bond::CisOrTrans); 
+    m_scene->setEditMode(MolScene::DrawMode);
 
     if (!checkedAtomButton()) {
       ui.buttonC->setChecked(true);
@@ -314,6 +350,7 @@ namespace Molsketch {
     uncheckBondButtons();
     ui.buttonCisOrTrans->setChecked(true);
     uncheckRingButtons();
+    uncheckToolButtons();
   }
  
   //
@@ -325,6 +362,7 @@ namespace Molsketch {
     uncheckAllButtons();
     ui.buttonRing3->setChecked(true);
     m_scene->setHintRing(3);
+    m_scene->setEditMode(MolScene::DrawMode);
   }
 
   void DrawWidget::ring4Clicked()
@@ -332,6 +370,7 @@ namespace Molsketch {
     uncheckAllButtons();
     ui.buttonRing4->setChecked(true);
     m_scene->setHintRing(4);
+    m_scene->setEditMode(MolScene::DrawMode);
   }
   
   void DrawWidget::ring5Clicked()
@@ -339,6 +378,7 @@ namespace Molsketch {
     uncheckAllButtons();
     ui.buttonRing5->setChecked(true);
     m_scene->setHintRing(5);
+    m_scene->setEditMode(MolScene::DrawMode);
   }
   
   void DrawWidget::ring6Clicked()
@@ -346,6 +386,7 @@ namespace Molsketch {
     uncheckAllButtons();
     ui.buttonRing6->setChecked(true);
     m_scene->setHintRing(6);
+    m_scene->setEditMode(MolScene::DrawMode);
   }
   
   void DrawWidget::ring7Clicked()
@@ -353,6 +394,7 @@ namespace Molsketch {
     uncheckAllButtons();
     ui.buttonRing7->setChecked(true);
     m_scene->setHintRing(7);
+    m_scene->setEditMode(MolScene::DrawMode);
   }
   
   void DrawWidget::ring8Clicked()
@@ -360,6 +402,7 @@ namespace Molsketch {
     uncheckAllButtons();
     ui.buttonRing8->setChecked(true);
     m_scene->setHintRing(8);
+    m_scene->setEditMode(MolScene::DrawMode);
   }
   
   void DrawWidget::aromaticRing5Clicked()
@@ -367,6 +410,7 @@ namespace Molsketch {
     uncheckAllButtons();
     ui.buttonRing5Arom->setChecked(true);
     m_scene->setHintRing(5);
+    m_scene->setEditMode(MolScene::DrawMode);
   }
 
   void DrawWidget::aromaticRing6Clicked()
@@ -374,6 +418,33 @@ namespace Molsketch {
     uncheckAllButtons();
     ui.buttonRing6Arom->setChecked(true);
     m_scene->setHintRing(6);
+    m_scene->setEditMode(MolScene::DrawMode);
+  }
+
+  void DrawWidget::moveClicked()
+  {
+    uncheckAllButtons();
+    ui.buttonMove->setChecked(true);
+    m_scene->setEditMode(MolScene::MoveMode);
+  }
+
+  void DrawWidget::lassoClicked()
+  {
+    uncheckAllButtons();
+    ui.buttonLasso->setChecked(true);
+    m_scene->setEditMode(MolScene::LassoMode);
+  }
+
+  void DrawWidget::rotateClicked()
+  {
+    uncheckAllButtons();
+    ui.buttonRotate->setChecked(true);
+    m_scene->setEditMode(MolScene::RotateMode);
+  }
+  
+  void DrawWidget::minimizeClicked()
+  {
+    m_scene->minimiseAllMolecules();
   }
 
 

@@ -133,8 +133,7 @@ public:
   /** Enum for the different edit modes. */
   enum editModes {
     MoveMode, /**< Atoms and molecules are movable. */
-    AddMode, /**< Mode to add atoms and bonds. */
-    RemoveMode, /**< Mode to remove atoms, bonds and molecules. */
+    DrawMode, /**< Mode to add atoms and bonds. */
     RotateMode, /**< Mode to rotate molecules. */
     ChargeMode, //<! Increase/decrease charges
     HydrogenMode, //<! increase/decrease implicit hydrogen count
@@ -183,7 +182,7 @@ public slots:
   void selectAll();
   /** 
    * Slot to set the current element to the element of @p symbol. This will also set the editMode() to 
-   * AddMode. If there exists a hint molecule, it will be deleted.
+   * DrawMode. If there exists a hint molecule, it will be deleted.
    */
   void setElement(const QString & symbol);
   /** Sets the bond angle. */
@@ -366,12 +365,9 @@ private:
 
   /** Event handler for mouse presses in delete mode.*/
   void delModePress(QGraphicsSceneMouseEvent* event);
-  /** Event handler for mouse moves in delete mode.*/
-  void delModeMove(QGraphicsSceneMouseEvent* event);
-  /** Event handler for mouse releases in delete mode.*/
-  void delModeRelease(QGraphicsSceneMouseEvent* event);
   /** Event handler for mouse double clicks in delete mode.*/
   void delModeDoubleClick(QGraphicsSceneMouseEvent* event);
+
 
   // Auxillary feedback items
   /** The highlight rectangle. */
