@@ -88,6 +88,9 @@ private slots:
   /** Prints the current document. */
   bool print();
 
+
+
+
   /** Open the preferences editor. */
   void editPreferences();
 
@@ -105,6 +108,7 @@ private slots:
   
   /** Mark the current document as modified. */
   void documentWasModified( );
+
 
   /** Zoom in on the current view. */
   void zoomIn();
@@ -269,6 +273,8 @@ private:
   QAction* alignAct;
   /** Open the settings dialog action. */
   QAction* prefAct;
+	/** Minimiser **/
+	QAction *minimiseModeAct;
 
   // View actions
   /** Zoom in on the view action. */

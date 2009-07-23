@@ -878,6 +878,8 @@ namespace Molsketch {
             break;
 	  case MolScene::TextMode:
 	    textModePress (event);
+			case MolScene::MinimiseMode:
+				minimiseModePress (event);
 	    break;
           default:
             break;
@@ -965,6 +967,8 @@ void MolScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
           break;
 	case MolScene::TextMode:
 	  textModeRelease (event);
+		  case MolScene::MinimiseMode:
+			  minimiseModeRelease (event);
 	  break;
         }
     }
@@ -1040,6 +1044,17 @@ void MolScene::moveModeMove(QGraphicsSceneMouseEvent* event)
         clearFocus();
       }
 
+	void MolScene::minimiseModePress (QGraphicsSceneMouseEvent* event) {
+		Bond *bond = bondAt (event ->scenePos());
+		if (bond) {
+			Molecule *molecule = bond ->molecule();
+			mirrorBondInMolecule(molecule, bond);
+			return;
+		}
+		Molecule * molecule = moleculeAt(event->scenePos());
+		if (molecule) minimiseMolecule (molecule);
+
+	}
 
 
 	void MolScene::textModePress(QGraphicsSceneMouseEvent* event) {
@@ -1069,6 +1084,9 @@ void MolScene::moveModeMove(QGraphicsSceneMouseEvent* event)
 	
 	void MolScene::textModeRelease(QGraphicsSceneMouseEvent* event) {
 			
+	}
+	void MolScene::minimiseModeRelease(QGraphicsSceneMouseEvent* event) {
+		
 	}
 
 	
@@ -1234,10 +1252,19 @@ void MolScene::moveModeMove(QGraphicsSceneMouseEvent* event)
 
 void MolScene::minimiseMolecule (Molecule *mol) {
 	Minimise *minimise = new Minimise (m_bondLength);
-	minimise ->minimiseMolecule (mol);
-	
+	//minimise ->minimiseMolecule (mol);
+	minimise ->conformationalSearchMolecule(mol);
 	
 }
+	
+	
+	void MolScene::mirrorBondInMolecule (Molecule *mol, Bond *bo) {
+		Minimise *minimise = new Minimise (m_bondLength);
+		//minimise ->minimiseMolecule (mol);
+		minimise ->mirrorBondInMolecule(mol, bo);
+		
+	}	
+	
 
 void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
 	QPointF downPos = event->buttonDownScenePos(event->button());

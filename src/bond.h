@@ -146,6 +146,9 @@ class Bond : public QGraphicsItem
      * @return the shifted vector
      */
     static QLineF shiftVector(const QLineF & vector, qreal shift);
+	
+	Ring* ring() const { return m_ring; }
+
 
   protected:
     void setRing(Ring *ring) { m_ring = ring; }

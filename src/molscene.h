@@ -70,6 +70,8 @@ public:
 	//adjust geometry
 	void minimiseAllMolecules ();
 	void minimiseMolecule (Molecule *mol);
+	void mirrorBondInMolecule (Molecule *mol, Bond *bo);
+
 	
   // Queries
   /** Returns the EditMode of the scene. */
@@ -138,7 +140,8 @@ public:
     ChargeMode, //<! Increase/decrease charges
     HydrogenMode, //<! increase/decrease implicit hydrogen count
 	LassoMode, //lasso selection tool
-	TextMode //add / edit text
+	TextMode, //add / edit text
+	  MinimiseMode //gemoetry optimise
   };
 
 signals:
@@ -348,7 +351,12 @@ private:
 	/** Event handler for mouse presses in text mode. */
 	void textModePress(QGraphicsSceneMouseEvent* event);	
 	/** Event handler for mouse releases in text mode. */
-	void textModeRelease(QGraphicsSceneMouseEvent* event);	
+	void textModeRelease(QGraphicsSceneMouseEvent* event);
+	
+	/** Event handler for mouse presses in minimise mode. */
+	void minimiseModePress(QGraphicsSceneMouseEvent* event);	
+	/** Event handler for mouse releases in minimise mode. */
+	void minimiseModeRelease(QGraphicsSceneMouseEvent* event);
 	
 	/** Event handler for mouse presses in lasso mode. */
 	void lassoModePress(QGraphicsSceneMouseEvent* event);

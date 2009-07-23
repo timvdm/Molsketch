@@ -23,6 +23,8 @@
 
 #define KSTRETCH 0.2
 #define KCLASH 0.5
+#define ELONGATION_INCREMENT -5
+#define KXSIZE -0.1
 
 #define KBEND 2
 #define KORIENT 1
@@ -42,7 +44,7 @@ namespace Molsketch {
 	//FFAtom	
 	class FFAtom {
 	public: 
-		FFAtom (Atom *at) {atom = at; x() = at ->pos ().x(); y() = at ->pos ().y(); _force_x =0; _force_y = 0; save_pose ();}
+		FFAtom (Atom *at) {atom = at; x() = at ->pos ().x(); y() = at ->pos ().y(); _force_x =0; _force_y = 0; save_pose (); visited = false;}
 		qreal &x () {return _x;}
 		qreal &y () {return _y;}
 		qreal &xbest () {return _bestx;}
@@ -50,8 +52,11 @@ namespace Molsketch {
 		qreal &force_x () {return _force_x;}
 		qreal &force_y () {return _force_y;}
 		void save_pose () {_bestx = _x; _besty = _y;}
+		void load_pose () {_x = _bestx; _y = _besty;}
+
 		QPoint qpoint () {return QPoint (x(), y());}
 		Atom *atom;
+		bool visited;
 
 
 			
@@ -63,6 +68,14 @@ namespace Molsketch {
 		qreal _bestx;
 		qreal _besty;
 	};
+	class FFBond {
+	public: 
+		FFBond (Bond *bo) {bond =bo; at1 = 0; at2 = 0;}
+		FFAtom *at1;
+		FFAtom *at2;
+		Bond *bond;
+	};
+	
 	
 	static qreal module (FFAtom &p) {
 		return std::sqrt (p.x()*p.x() + p.y()*p.y());
@@ -76,13 +89,35 @@ namespace Molsketch {
 		return std::sqrt (square_distance (p1, p2));
 	}
 	
-	static QPoint vect (FFAtom &p1, FFAtom &p2) {
+	static QPointF vect (FFAtom &p1, FFAtom &p2) {
 		return p2.qpoint () - p1.qpoint ();
 	}
 	
+	static QPointF symmetric (QPointF p, QPointF a, QPointF b) {
+		QPointF diff = b - a;
+		if (diff.x () == 0) {
+			return QPointF (2*a.x() - p.x (), p.y ());
+		}
+		else if (diff.y () == 0) {
+				return QPointF ( p.x (), 2*a.y() - p.y ());
+		}
+		else {
+		qreal m = diff.y () / diff.x ();
+		qreal q = a.y() - m * a.x ();
+		// perpendicular line y = -1/m * x + q2
+		qreal q2 = p.y () + p.x()/m;
+		//intersecting y = mx +q and y = -1/m*x + q2
+		qreal x = (q2 - q) / (m + 1/m);
+		qreal y = m *x + q;
+		return QPointF (2*x-p.x(), 2*y-p.y());
+		}	
+		return p;
+	}
+	
+	
 	static qreal angle (FFAtom &p1, FFAtom &p2, FFAtom &p3) {
-		QPoint vec1 = vect (p2, p1);
-		QPoint vec2 = vect (p2, p3);
+		QPointF vec1 = vect (p2, p1);
+		QPointF vec2 = vect (p2, p3);
 		qreal crossprod = vec1.x () * vec2.y () - vec1.y () * vec2.x ();
 		qreal dotprod =   vec1.x () * vec2.x () + vec1.y () * vec2.y ();
 		return std::atan2 (crossprod, dotprod);
@@ -295,31 +330,44 @@ namespace Molsketch {
 		void initialise (Molecule *molecule);
 		void minimiseMolecule (Molecule *molecule);
 		void conformationalSearchMolecule (Molecule *molecule);
-		void run ();
+		void mirrorBondInMolecule (Molecule *molecule, Bond *bo);
+		void run (int n = 500);
 		void mutate ();
 		void finalise ();
 		void finaliseBest ();
 		void score_interactions ();
 		void score_rotations ();
 		void saveCurrentPose ();
+		void loadBestPose ();
+
 		bool move_atoms ();
 		qreal total_score ();
+		qreal elongation_score ();
 		
 
 	private:
+		void fixRings (Molecule *mol);
+
+		void mirror (FFAtom *at1, FFAtom*at2);
+		void mirrorAtom (FFAtom *a, FFAtom *at1, FFAtom *at2);
 		qreal bestScore;
 		qreal bondLength;
 		void clear() {
 			for (unsigned int i=0; i < atoms.size (); i++) delete atoms[i];
+			for (unsigned int i=0; i < bonds.size (); i++) delete bonds[i];
+
 			for (unsigned int i=0; i < interactions.size (); i++) delete interactions[i];	
 			for (unsigned int i=0; i < rotations.size (); i++) delete rotations[i];	
 
 			atoms.clear ();
+			bonds.clear ();
 			interactions.clear ();
 			rotations.clear ();
 		}
 			
 		std::vector <FFAtom *> atoms;
+		std::vector <FFBond *> bonds;
+
 		std::vector <FFInteraction *> interactions;
 		std::vector <FFInteraction *> rotations;
 

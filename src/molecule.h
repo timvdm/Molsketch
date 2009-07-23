@@ -165,6 +165,9 @@ class Molecule : public QGraphicsItemGroup
      * Get a list of the bonds in the molecule 
      */
     const QList<Bond*>& bonds() const;
+	  
+	const QList <Ring*>& rings () const{return m_rings;};
+
 
     /** Returns the MolScene of the molecule. */
     virtual MolScene* scene() const;
@@ -180,7 +183,6 @@ class Molecule : public QGraphicsItemGroup
 	  
 
     OpenBabel::OBMol* OBMol() const;
-
   protected:
 	  
 	  

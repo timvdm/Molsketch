@@ -444,7 +444,9 @@ namespace Molsketch {
   
   void DrawWidget::minimizeClicked()
   {
-    m_scene->minimiseAllMolecules();
+	  uncheckAllButtons();
+	  ui.buttonMinimize->setChecked(true);
+	  m_scene->setEditMode(MolScene::MinimiseMode);
   }
 
 

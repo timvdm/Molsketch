@@ -369,7 +369,6 @@ bool MainWindow::print()
     }
 }
 
-
 void MainWindow::zoomIn()
 {
   m_molView->scale(2,2);
@@ -398,6 +397,8 @@ void MainWindow::assistant()
   assistantClient->showPage(file.absoluteFilePath());
 }
 
+
+
 void MainWindow::about()
 {
   QMessageBox::about(this, tr("About"),
@@ -411,26 +412,12 @@ void MainWindow::documentWasModified()
 
 void MainWindow::updateEditMode(int mode)
 {
-  m_molView->setDragMode(QGraphicsView::NoDrag);
-  // Change the buttonstates depending on the edit mode
-  switch (mode)
-    {
-    case MolScene::DrawMode:
-      statusBar()->showMessage(tr("Left Click: add atom, Drag: add bond, Click on bond: change order, Shift + Left Click on bond: change type, Right Click: remove item"));
-      break;
-    case MolScene::MoveMode:
-      m_molView->setDragMode(QGraphicsView::RubberBandDrag);
-      statusBar()->showMessage(tr("Click on an item to select it. Drag to move selected items."));
-      break;
-    case MolScene::RotateMode:
-      statusBar()->showMessage(tr("Click on an item to select it. Drag: rotate Z axis, Control + drag: rotate X axis, Shift + drag: rotate Y axis"));
-      break;
-    case MolScene::TextMode:
-      statusBar()->showMessage(tr("Edit or add text"));
-      break;
-    case MolScene::LassoMode:
-      break;
-    }
+
+
+	m_molView->setDragMode(QGraphicsView::NoDrag);
+
+ 
+
 }
 
 // Widget creators
@@ -531,6 +518,16 @@ void MainWindow::createActions()
   prefAct->setStatusTip(tr("Edit your preferences"));
   connect(prefAct, SIGNAL(triggered()), this, SLOT(editPreferences()));
 	
+	minimiseModeAct = new QAction(QIcon(":/images/minimise.png"),tr("Energy Refinement"),this);
+	minimiseModeAct->setCheckable(true);
+
+	//minimiseModeAct->setShortcut(tr("Ctrl+F"));
+	minimiseModeAct->setStatusTip(tr("Adjust Geometry"));
+//	textModeAct->setStatusTip(tr("Go to the minimise mode"));
+
+	connect(minimiseModeAct, SIGNAL(triggered()), this, SLOT(setMinimiseMode()));
+
+
   // Zoom actions
   zoomInAct = new QAction(QIcon(":/images/zoom-in.png"),tr("Zoom &In"), this);
   zoomInAct->setShortcut(tr("Ctrl++"));
