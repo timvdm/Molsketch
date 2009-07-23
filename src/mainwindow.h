@@ -89,6 +89,7 @@ private slots:
   bool print();
 
 
+	void changeColor ();
 
 
   /** Open the preferences editor. */
@@ -275,6 +276,9 @@ private:
   QAction* prefAct;
 	/** Minimiser **/
 	QAction *minimiseModeAct;
+	
+	//change color
+	QAction *colorAct;
 
   // View actions
   /** Zoom in on the view action. */

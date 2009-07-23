@@ -115,6 +115,9 @@ class Bond : public QGraphicsItem
     void incOrder();
     /** Cycle backward through the bond orders. */
     void decOrder();
+	
+	void setColor (QColor col) {m_color = col;}
+	QColor getColor () {return m_color;}
 
     // Query methods
     /** Returns the bond order. */
@@ -164,6 +167,8 @@ class Bond : public QGraphicsItem
     int m_bondType;
     /** Stores the bond order as integer. */
     int m_bondOrder;
+	//color of the bond
+	QColor m_color;
     /** Stores a pointer to the first atom. */
     Atom* m_beginAtom;
     /** Stores a pointer to the second atom. */

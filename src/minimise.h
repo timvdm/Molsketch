@@ -22,7 +22,7 @@
 #define MINIMISE_H
 
 #define KSTRETCH 0.2
-#define KCLASH 0.5
+#define KCLASH 1
 #define ELONGATION_INCREMENT -5
 #define KXSIZE -0.1
 
@@ -210,7 +210,7 @@ namespace Molsketch {
 			qreal dist = distance (*p1, *p2);
 			qreal d = len - dist;
 			if (d < len /4) return;
-			tot += d*d*KCLASH;
+			tot += d*d*KCLASH*10;
 			
 		}
 		qreal len;
@@ -349,6 +349,7 @@ namespace Molsketch {
 		void fixRings (Molecule *mol);
 
 		void mirror (FFAtom *at1, FFAtom*at2);
+		void rotate (qreal angle, QPointF center);
 		void mirrorAtom (FFAtom *a, FFAtom *at1, FFAtom *at2);
 		qreal bestScore;
 		qreal bondLength;

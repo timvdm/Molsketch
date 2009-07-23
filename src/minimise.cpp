@@ -119,6 +119,17 @@ namespace Molsketch {
 		}
 	}
 	
+	void Minimise::rotate (qreal angle, QPointF center) {
+		for (unsigned int i = 0; i < atoms.size (); i++) {
+			qreal x = atoms[i] ->x () - center.x ();
+			qreal y = atoms[i] ->y () - center.y ();
+			qreal nx = cos(angle) * x - sin(angle) * y;
+			qreal ny = sin(angle) * x + cos(angle) * y;
+			atoms [i] ->x () = center.x() + nx;
+			atoms [i] ->y () = center.y() + ny;
+		}
+	}
+	
 	void Minimise::mirror (FFAtom *at1, FFAtom*at2) {
 		for (unsigned int i = 0; i < atoms.size (); i++) {
 			atoms[i] ->visited = false;
@@ -170,11 +181,17 @@ namespace Molsketch {
 
 		qreal r1 = (((qreal) rand()) / RAND_MAX);
 		int numberofMutations = r1 * bonds.size () * 0.6;
-	//	numberofMutations = 1;
 
-		if (!numberofMutations) numberofMutations = 1;
+		if (!numberofMutations) {
+			numberofMutations = 1;
+			qreal r2 = (((qreal) rand()) / RAND_MAX);
+			int ang = r2 * 12;
+			qreal angle = ang * M_PI / 6;
+			if (atoms.size ()) rotate (angle, atoms[0] ->qpoint ());
+		}
 		for (unsigned int i = 0; i < numberofMutations; i++) {
 			qreal r2 = (((qreal) rand()) / RAND_MAX);
+
 			int bond = r2 * bonds.size ();
 
 			int n = r2 *bonds.size ();

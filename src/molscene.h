@@ -260,10 +260,11 @@ protected:
 public:
 	//item to accept input for text tool
 	TextInputItem *inputTextItem;
+	void setColor (QColor);
+	QColor color;
 
 
 private:
-
 	
   // Global properties
   /** Contains the current element */

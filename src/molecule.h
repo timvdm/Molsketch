@@ -86,7 +86,7 @@ class Molecule : public QGraphicsItemGroup
     * 
     * @return return a pointer to the new atom which has been added to the molecule
     */
-    Atom* addAtom(const QString &element, const QPointF &position, bool implicitHydrogen);
+    Atom* addAtom(const QString &element, const QPointF &position, bool implicitHydrogen, QColor c = QColor (0, 0, 0));
 
     /**
     * This method adds an existing atom to the molecule.
@@ -109,7 +109,7 @@ class Molecule : public QGraphicsItemGroup
     QList<Bond*> delAtom(Atom* atom);
 
     /** Adds a bond between @p atomA and @p atomB with @p order and @p type. */
-    Bond* addBond(Atom* atomA, Atom* atomB, int order = 1, int type = 0);
+    Bond* addBond(Atom* atomA, Atom* atomB, int order = 1, int type = 0, QColor c = QColor (0, 0, 0));
     /** Adds existing bond @p bond to the molecule. */
     Bond* addBond(Bond* bond);
     /** Deletes @p bond from the molecule. */

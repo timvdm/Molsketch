@@ -53,7 +53,7 @@ namespace Molsketch {
 
   MolScene::MolScene(QObject* parent) : QGraphicsScene(parent)
   {
-	  
+	  color = QColor (0, 0, 0);
 	  rotationItem = NULL;  
 	  inputTextItem = new TextInputItem ();
 	  addItem (inputTextItem);
@@ -117,6 +117,23 @@ namespace Molsketch {
   }
 
   // Commands
+	
+	void MolScene::setColor (QColor c) {
+		color = c;
+		foreach (QGraphicsItem* item, selectedItems()) {
+			if (item->type() == Atom::Type) {
+				dynamic_cast<Atom*>(item) ->setColor(c);
+			}
+
+		}
+		foreach (QGraphicsItem* item, items()) {
+			if (item->type() == Bond::Type) {
+				Bond *b = dynamic_cast<Bond*>(item);
+				if (b-> beginAtom() ->isSelected () && b->endAtom() ->isSelected()) b->setColor(c);
+			}
+		}
+			
+	}
 
   void MolScene::setCarbonVisible(bool value)
   {
@@ -303,20 +320,20 @@ namespace Molsketch {
     // Adding the bonds and atoms of the first two molecules
     foreach (Atom* a, molA->atoms())
     {
-      Atom* a2 = new Atom(a->scenePos(),a->element(),a->hasImplicitHydrogens());
+      Atom* a2 = new Atom(a->scenePos(),a->element(),a->hasImplicitHydrogens(), a->getColor ());
       molC->addAtom(a2);
     }
     foreach (Bond* b, molA->bonds())
     {
-      molC->addBond( molC->atomAt(b->beginAtom()->scenePos()), molC->atomAt(b->endAtom()->scenePos()), b->bondOrder(), b->bondType());
+      molC->addBond( molC->atomAt(b->beginAtom()->scenePos()), molC->atomAt(b->endAtom()->scenePos()), b->bondOrder(), b->bondType(), b->getColor ());
     }
     foreach (Atom* a, molB->atoms())
     {
-      molC->addAtom( a->element(), a->scenePos(), a->hasImplicitHydrogens());
+      molC->addAtom( a->element(), a->scenePos(), a->hasImplicitHydrogens(), a->getColor ());
     }
     foreach (Bond* b, molB->bonds())
     {
-      molC->addBond( molC->atomAt(b->beginAtom()->scenePos()), molC->atomAt(b->endAtom()->scenePos()), b->bondOrder(), b->bondType());
+      molC->addBond( molC->atomAt(b->beginAtom()->scenePos()), molC->atomAt(b->endAtom()->scenePos()), b->bondOrder(), b->bondType(), b->getColor ());
     }
 
     //         molC->setPos(molA->scenePos());
@@ -449,10 +466,10 @@ namespace Molsketch {
     // Clear any previous selection
     clearSelection();
 
-    // Mark all molecules as selected
+    // Mark all atoms as selected
     foreach (QGraphicsItem* item, items())
     {
-      if (item->type() == Molecule::Type)
+      if (item->type() == Atom::Type)
         item->setSelected(true);
     }
   }
