@@ -267,6 +267,8 @@ private:
   QAction* copyAct;
   /** Paste the contents of the clipboard action. */
   QAction* pasteAct;
+  /** Converts Image to Mol using OSRA */
+  QAction* convertImageAct;
   /** Select all items on the scene action. */
   QAction* selectAllAct;
   /** Align all items to the grid action. */

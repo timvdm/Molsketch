@@ -30,6 +30,7 @@
 #include <QTableWidgetItem>
 #include <QKeyEvent>
 #include <QUndoStack>
+#include <QProcess>
 #include <QDebug>
 
 #include "molscene.h"
@@ -42,6 +43,9 @@
 
 #include "minimise.h"
 #include "math2d.h"
+
+//#include "filio.h"
+#include "osra.h"
 
 
 namespace Molsketch {
@@ -253,7 +257,23 @@ namespace Molsketch {
     m_stack->endMacro();
   }
 
+  void MolScene::convertImage()
+  {
+    QClipboard* clipboard = qApp->clipboard();
+    QImage img = clipboard->image();
 
+    if (!img.isNull()) {
+      m_stack->beginMacro(tr("converting image using OSRA"));
+      QString tmpimg = tmpnam(NULL);
+      img.save(tmpimg, "PNG", 100);
+      Molecule* mol = call_osra(tmpimg);
+      if (mol) 
+        m_stack->push(new AddItem(new Molecule(mol), this));
+      remove(tmpimg.toAscii());
+      m_stack->endMacro();
+    }
+  }
+ 
   void MolScene::clear()
   {
     // Purge the undom_stack

@@ -21,6 +21,7 @@ set(libmolsketch_SRCS
     fileio.cpp
     minimise.cpp
     TextInputItem.cpp
+    osra.cpp
 )
 set(molsketch_SRCS 
     main.cpp 

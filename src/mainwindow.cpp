@@ -34,6 +34,8 @@
 #include "settings.h"
 #include "drawwidget.h"
 
+#include "osra.h"
+
 #define PROGRAM_NAME "Molsketch"
 #define PROGRAM_VERSION "Helium"
 
@@ -45,6 +47,7 @@
 #define OB_DEFAULT_FORMAT "MDL Molfile (*.mdl *.mol *.sd *.sdf)"
 #define GRAPHIC_FILE_FORMATS "Scalable Vector Graphics (*.svg);;Portable Network Graphics (*.png);;Windows Bitmap (*.bmp);;Joint Photo Expert Group (*.jpeg)"
 #define GRAPHIC_DEFAULT_FORMAT "Scalable Vector Graphics (*.svg)"
+#define OSRA_GRAPHIC_FILE_FORMATS "All supported types (*.*);;Images (*.png *.bmp *.jpg *.jpeg *.gif *.tif *.tiff);;Documents (*.pdf *.ps)"
 
 // Constructor
 
@@ -277,16 +280,36 @@ bool MainWindow::saveAs()
     }
 }
 
-bool MainWindow::importDoc()
-{
-  QString fileName = QFileDialog::getOpenFileName(this, tr("Import - Molsketch"), m_lastAccessedPath, tr(OB_FILE_FORMATS));
+  bool MainWindow::importDoc()
+  {
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Import - molsKetch"), m_lastAccessedPath, tr(OSRA_GRAPHIC_FILE_FORMATS));
 
-
-  if (!fileName.isEmpty())
-    {
+    if (!fileName.isEmpty()) {
       // Save accessed path
       m_lastAccessedPath = QFileInfo(fileName).path();
 
+      m_scene->clear();
+      QProgressBar *pb = new QProgressBar(this);
+      pb->setMinimum(0);
+      pb->setMaximum(0);
+      Molecule* mol=call_osra(fileName);
+      if (mol) {
+        if (mol->canSplit()) {
+          QList<Molecule*> molList = mol->split();
+          foreach(Molecule* mol,molList) 
+            m_scene->addItem(mol);
+        } else {
+          m_scene->addItem(mol);          
+        }
+        
+        setCurrentFile(fileName);
+	return true;
+      } else {
+        QMessageBox::critical(this, tr(PROGRAM_NAME), tr("Error importing file"), QMessageBox::Ok, QMessageBox::Ok);
+	return false;
+      }
+
+      /*
       Molecule* mol = Molsketch::loadFile(fileName);
       if (mol)
         {
@@ -299,9 +322,11 @@ bool MainWindow::importDoc()
           QMessageBox::critical(this,tr(PROGRAM_NAME),tr("Error while loading file"),QMessageBox::Ok,QMessageBox::Ok);
           return false;
         }
+        */
     }
-  return false;
-}
+    
+    return false;
+  }
 
 bool MainWindow::exportDoc()
 {
@@ -504,6 +529,11 @@ void MainWindow::createActions()
                             "selection"));
   connect(pasteAct, SIGNAL(triggered()), m_scene, SLOT(paste()));
 
+  convertImageAct = new QAction(QIcon(""), tr("C&onvert Image to Mol"),this);
+  convertImageAct->setShortcut(tr("Ctrl+M"));
+  convertImageAct->setStatusTip(tr("Convert Image to Mol using OSRA"));
+  connect(convertImageAct, SIGNAL(triggered()), m_scene, SLOT(convertImage()));
+
   selectAllAct = new QAction(QIcon(":/images/edit-select-all.png"), tr("&Select all"),this);
   selectAllAct->setShortcut(tr("Ctrl+A"));
   selectAllAct->setStatusTip(tr("Selects all elements on the scene"));
@@ -599,6 +629,7 @@ void MainWindow::createMenus()
   editMenu->addAction(cutAct);
   editMenu->addAction(copyAct);
   editMenu->addAction(pasteAct);
+  editMenu->addAction(convertImageAct);
   editMenu->addSeparator();
   editMenu->addAction(selectAllAct);
   editMenu->addAction(alignAct);

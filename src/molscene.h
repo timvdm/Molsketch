@@ -205,7 +205,9 @@ public slots:
   /** Slot to align the molecules of the scene to the grid. */
   void alignToGrid();
  
-
+  /** Slot to convert image to mol using OSRA */
+  void convertImage();
+ 
 
  /**
    * Slot to set the current MolLibItem
