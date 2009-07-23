@@ -51,6 +51,11 @@ namespace Molsketch {
     atomB->addNeighbor(atomA);
   
     setPos(m_beginAtom->scenePos());
+	  MolScene* molScene = dynamic_cast<MolScene*>(scene);
+	  if (molScene) setColor (molScene ->color);
+	  else {
+		  setColor (QColor (0, 0, 0));
+	  }
 
   //   setFlag(QGraphicsItem::ItemIsSelectable);
   //   setAcceptedMouseButtons(Qt::LeftButton);
@@ -97,6 +102,7 @@ namespace Molsketch {
     QPointF uvb = vb / sqrt(vb.x()*vb.x() + vb.y()*vb.y());
 
     MolScene* molScene = dynamic_cast<MolScene*>(scene());
+	  
     if (m_beginAtom->hasLabel())
       begin += 0.20 * uvb * molScene->bondLength();
     if (m_endAtom->hasLabel())
@@ -236,7 +242,7 @@ namespace Molsketch {
       }
     }
 
-    painter->setBrush( QBrush(Qt::black) );
+    painter->setBrush( QBrush(m_color) );
     painter->drawConvexPolygon( points, i);
   }
 
@@ -253,7 +259,9 @@ namespace Molsketch {
     painter->save();
     QPen pen;
     pen.setWidthF(molScene->bondWidth());
+	pen.setColor (m_color);
     painter->setPen(pen);
+
 
     // Create dash pattern for dot
     QVector<qreal> dash;

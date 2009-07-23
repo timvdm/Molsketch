@@ -100,13 +100,14 @@ Molecule::Molecule(Molecule* mol, QGraphicsItem* parent, MolScene* scene) : QGra
 
 // Manipulation methods
 
-Atom* Molecule::addAtom(const QString &element, const QPointF &point, bool implicitHydrogen)
+Atom* Molecule::addAtom(const QString &element, const QPointF &point, bool implicitHydrogen, QColor c)
 {
   //pre: element is a non-empty string and point is a valid position on the canvas in scene coordinates
   Q_ASSERT(!element.isEmpty());
   //post: an atom of element has been added to the molecule
 //   Atom* atom = new Atom(point,element,((element == "C") && !(scene()->getShowCarbon() ) || ((element == "H") && !(scene()->getShowHydrogen()))),this);
   Atom* atom = new Atom(point,element,implicitHydrogen);
+	atom ->setColor (c);
   return addAtom(atom);
 }
 
@@ -118,6 +119,9 @@ Atom* Molecule::addAtom(Atom* atom)
   // Add the atom to the molecule
   m_atomList.append(atom);
   addToGroup(atom);
+	if (scene ()) {
+		atom ->setColor (dynamic_cast<MolScene *> (scene ()) ->color);
+	}
 
 //  /// Work-around qt-bug
 //   if (scene()) scene()->addItem(atom);
@@ -125,7 +129,7 @@ Atom* Molecule::addAtom(Atom* atom)
   return atom;
 }
 
-Bond* Molecule::addBond(Atom* atomA, Atom* atomB, int order, int type)
+Bond* Molecule::addBond(Atom* atomA, Atom* atomB, int order, int type, QColor c)
 {
   //pre: atomA and atomB are existing different atoms in the molecule
   Q_ASSERT (m_atomList.contains(atomA));
@@ -135,6 +139,7 @@ Bond* Molecule::addBond(Atom* atomA, Atom* atomB, int order, int type)
 
   // Creating a new bond
   Bond* bond = new Bond(atomA,atomB,order,type);
+	bond ->setColor(c);
   return addBond(bond);
 }
 
@@ -146,10 +151,14 @@ Bond* Molecule::addBond(Bond* bond)
   Q_ASSERT(m_atomList.contains(bond->beginAtom()));
   Q_ASSERT(m_atomList.contains(bond->endAtom()));
 
-
+	if (scene ())	bond ->setColor (dynamic_cast<MolScene *> (scene ()) ->color);
   // Checking if and altering when a bond exists
   Bond* bondX = bondBetween(bond->beginAtom(), bond->endAtom());
-  if (bondX) return bondX;
+	if (bondX) {
+		delete bond;
+		if (scene ())	bondX ->setColor (dynamic_cast<MolScene *> (scene ()) ->color);
+		return bondX;
+	}
 //   {
 //     bondX->incOrder();
 //     bondX->setType(bond->getType());

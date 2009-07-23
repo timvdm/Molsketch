@@ -45,7 +45,7 @@ namespace Molsketch {
        * @param invisible makes the atom invisible if @c true
        */
       Atom(const QPointF & position, const QString & element, 
-          bool implicitHydrogens, QGraphicsItem* parent = 0, QGraphicsScene* scene = 0);
+          bool implicitHydrogens, QColor c = QColor (0, 0, 0), QGraphicsItem* parent = 0, QGraphicsScene* scene = 0);
 
       //@name Inherited drawing methods
       //@{
@@ -65,6 +65,8 @@ namespace Molsketch {
       /** Returns whether the atom is hidden. */
       bool isHidden() const;
 
+	  void setColor (QColor col) {m_color = col;}
+	  QColor getColor () {return m_color;}
 
       //@name Chemistry methods
       //@{
@@ -188,6 +190,9 @@ namespace Molsketch {
       bool m_drawn;
       /** Stores the charge of the atom. */
       int m_userCharge;
+	  
+	  //color of the atom
+	  QColor m_color;
 	  
 	  //identifies the atom in a molecule. set with molecule::numberAtoms ()
 

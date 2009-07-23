@@ -367,6 +367,17 @@ bool MainWindow::exportDoc()
     }
 }
 
+void MainWindow::changeColor () {
+	QColor new_color = QColorDialog::getColor(m_scene ->color, this );
+	if ( new_color.isValid () ) {
+		m_scene ->setColor (new_color);
+	}
+	QPixmap pix(24, 24);
+    pix.fill(new_color);
+    colorAct->setIcon(pix);
+	
+}
+
 bool MainWindow::print()
 {
   // Creating a new printerobject
@@ -550,13 +561,16 @@ void MainWindow::createActions()
 	
 	minimiseModeAct = new QAction(QIcon(":/images/minimise.png"),tr("Energy Refinement"),this);
 	minimiseModeAct->setCheckable(true);
-
 	//minimiseModeAct->setShortcut(tr("Ctrl+F"));
 	minimiseModeAct->setStatusTip(tr("Adjust Geometry"));
 //	textModeAct->setStatusTip(tr("Go to the minimise mode"));
-
 	connect(minimiseModeAct, SIGNAL(triggered()), this, SLOT(setMinimiseMode()));
 
+    colorAct = new QAction (tr("Color"), this);;
+	QPixmap pix(24, 24);
+    pix.fill(m_scene ->color);
+    colorAct->setIcon(pix);
+	connect (colorAct, SIGNAL (triggered ()), this, SLOT (changeColor ()));
 
   // Zoom actions
   zoomInAct = new QAction(QIcon(":/images/zoom-in.png"),tr("Zoom &In"), this);
@@ -679,7 +693,10 @@ void MainWindow::createToolBars()
   editToolBar->addAction(copyAct);
   editToolBar->addAction(pasteAct);
   editToolBar->addSeparator();
-
+	editToolBar ->addAction (colorAct);
+  editToolBar->addSeparator();
+	
+	
   zoomToolBar = addToolBar(tr("Zoom"));
   zoomToolBar->setObjectName("zoom-toolbar");
   zoomToolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);

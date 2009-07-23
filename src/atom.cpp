@@ -47,11 +47,10 @@ namespace Molsketch {
   };
 
   Atom::Atom(const QPointF &position, const QString &element, bool implicitHydrogens, 
-      QGraphicsItem* parent, QGraphicsScene* scene) : QGraphicsItem (parent,scene)
+     QColor c, QGraphicsItem* parent, QGraphicsScene* scene) : QGraphicsItem (parent,scene)
   {
+	  setColor(c);
     //pre: position is a valid position in scene coordinates
-
-    // Setting initial parameters
     setPos(position);
     setZValue(3);
     //setFlag(QGraphicsItem::ItemIsMovable);
@@ -60,7 +59,11 @@ namespace Molsketch {
     MolScene *molScene = dynamic_cast<MolScene*>(scene); // @todo qobject_cast is faster
     if (molScene)
       setFlag(QGraphicsItem::ItemIsSelectable, molScene->editMode() == MolScene::MoveMode);
-
+	  
+	  if (molScene) {
+		  setColor (molScene ->color);    // Setting initial parameters
+	  }
+	  else setColor (QColor (0, 0, 0));
     // Enabling hovereffects
     setAcceptsHoverEvents(true);
     setAcceptedMouseButtons(Qt::LeftButton | Qt::MidButton);
@@ -261,6 +264,7 @@ namespace Molsketch {
 
   void Atom::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
   {
+	  painter ->setPen (m_color);
     Q_UNUSED(option)
     Q_UNUSED(widget)
     // Save the original painter state
