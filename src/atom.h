@@ -177,6 +177,8 @@ namespace Molsketch {
       void setRing(Ring *ring) { m_ring = ring; }
 
     private:
+      void drawAtomLabel(QPainter *painter, const QString &lbl, int alignment);
+
       // Internal representation
       /** Represents the atom's element symbol. */
       QString m_elementSymbol;

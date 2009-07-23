@@ -32,6 +32,20 @@
 
 namespace Molsketch {
 
+  //
+  //     /    \      \   /      H
+  //   HN      NH      N        N
+  //     \    /        H      /   \
+  //
+  //   Left   Right   Down     Up
+  //
+  enum {
+    Left,
+    Right,
+    Up,
+    Down
+  };
+
   Atom::Atom(const QPointF &position, const QString &element, bool implicitHydrogens, 
       QGraphicsItem* parent, QGraphicsScene* scene) : QGraphicsItem (parent,scene)
   {
@@ -89,6 +103,162 @@ namespace Molsketch {
     return true;
   }
 
+  int labelAlignment(Atom *atom)
+  {
+    // compute the sum of the bond vectors, this gives
+    QPointF direction(0.0, 0.0);
+    foreach (Atom *nbr, atom->neighbors())
+      direction += atom->pos() - nbr->pos();
+
+    int alignment = 0;
+    if ((atom->numBonds() == 2) && (abs(direction.y()) > abs(direction.x()))) {
+      if (direction.y() <= 0.0)
+        alignment = Up;
+      else
+        alignment = Down;
+    } else {
+      if (direction.x() < 0.0)
+        alignment = Left;
+      else
+        alignment = Right;
+    }
+
+    return alignment;
+  }
+
+  void Atom::drawAtomLabel(QPainter *painter, const QString &lbl, int alignment)
+  {
+    MolScene* molScene = dynamic_cast<MolScene*>(scene());
+
+    painter->save();
+    QFont symbolFont = molScene->atomSymbolFont();
+    QFont subscriptFont = symbolFont;
+    subscriptFont.setPointSize(0.75 * symbolFont.pointSize());
+    QFontMetrics fmSymbol(symbolFont);
+    QFontMetrics fmScript(subscriptFont);
+
+
+    // compute the total width
+    qreal totalWidth = 0.0;
+    if ((alignment == Right) || (alignment == Left) || !lbl.contains("H")) {
+      for (int i = 0; i < lbl.size(); ++i) {
+        if (lbl[i].isDigit())
+          totalWidth += fmScript.width(lbl[i]);
+        else
+          totalWidth += fmSymbol.width(lbl[i]);
+      }
+    } else {
+      totalWidth = fmSymbol.width(lbl.left(lbl.indexOf("H")));
+      qreal width = 0.0; 
+      for (int i = lbl.indexOf("H"); i < lbl.size(); ++i) {
+        if (lbl[i].isDigit())
+          width += fmScript.width(lbl[i]);
+        else
+          width += fmSymbol.width(lbl[i]);
+      }
+
+      if (width > totalWidth)
+        totalWidth = width; 
+    }
+
+    // debug
+    /*
+    painter->save();
+    painter->setPen(Qt::red);
+    painter->drawPoint(QPointF(0.0, 0.0));
+    painter->restore();
+    */
+
+    QString str, subscript;
+    // compute the horizontal starting position
+    qreal xOffset, yOffset, yOffsetSubscript;
+    switch (alignment) {
+      case Right:
+        xOffset = - 0.5 * fmSymbol.width(lbl.left(1));
+        break;
+      case Left:
+        xOffset = 0.5 * fmSymbol.width(lbl.right(1)) - totalWidth;
+        break;
+      case Up:
+      case Down:
+        if (lbl.contains("H"))
+          xOffset = - 0.5 * fmSymbol.width(lbl.left(lbl.indexOf("H")));
+        else
+          xOffset = - 0.5 * totalWidth;
+        break;
+      default:
+        xOffset = - 0.5 * totalWidth;
+        break;
+    }
+    // compute the vertical starting position
+    yOffset = 0.5 * (fmSymbol.ascent() - fmSymbol.descent());
+    yOffsetSubscript = yOffset + fmSymbol.descent();
+    qreal xInitial = xOffset;
+
+    // compute the shape
+    if ((alignment == Right) || (alignment == Left) || !lbl.contains("H"))
+      m_shape = QRectF(xOffset, yOffsetSubscript - fmSymbol.height(), totalWidth, fmSymbol.height());
+    else {
+      if (alignment == Down)
+        m_shape = QRectF(xOffset, yOffsetSubscript - fmSymbol.height(), totalWidth, fmSymbol.ascent() + fmSymbol.height());
+      else
+        m_shape = QRectF(xOffset, yOffsetSubscript - fmSymbol.ascent() - fmSymbol.height(), totalWidth, fmSymbol.ascent() + fmSymbol.height());
+    }
+
+    for (int i = 0; i < lbl.size(); ++i) {
+      if (lbl[i] == 'H') {
+        if ((alignment == Up) || (alignment == Down))
+          if (!str.isEmpty()) {
+            // write the current string
+            painter->setFont(symbolFont);
+            painter->drawText(xOffset, yOffset, str);
+            if (alignment == Down) {
+              yOffset += fmSymbol.ascent()/* - fmSymbol.descent()*/;
+              yOffsetSubscript += fmSymbol.ascent()/* - fmSymbol.descent()*/;
+            } else {
+              yOffset -= fmSymbol.ascent()/* + fmSymbol.descent()*/;
+              yOffsetSubscript -= fmSymbol.ascent()/* + fmSymbol.descent()*/;
+            }
+            xOffset = xInitial;
+            str.clear();
+          }
+      }
+
+      if (lbl[i].isDigit()) {
+        if (!str.isEmpty()) {
+          // write the current string
+          painter->setFont(symbolFont);
+          painter->drawText(xOffset, yOffset, str);
+          xOffset += fmSymbol.width(str);
+          str.clear();
+        }
+
+        subscript += lbl.mid(i, 1);
+      } else {
+        if (!subscript.isEmpty()) {
+          // write the current subscript
+          painter->setFont(subscriptFont);
+          painter->drawText(xOffset, yOffsetSubscript, subscript);
+          xOffset += fmScript.width(subscript);
+          subscript.clear();
+        }
+
+        str += lbl.mid(i, 1);
+      }
+    }
+    if (!str.isEmpty()) {
+      painter->setFont(symbolFont);
+      painter->drawText(xOffset, yOffset, str);
+    }
+    if (!subscript.isEmpty()) {
+      painter->setFont(subscriptFont);
+      painter->drawText(xOffset, yOffsetSubscript, subscript);
+    }
+
+    painter->restore();
+  }
+
+
   void Atom::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
   {
     Q_UNUSED(option)
@@ -124,93 +294,41 @@ namespace Molsketch {
 
     m_drawn = true;
 
-    // Determine in which order we want to display the atom symbols
-    qreal direction = 0;
-    foreach(Atom * atom, m_neighbors)
-        direction += atom->pos().x() - pos().x();
-
-    bool inverse = direction > 0 ? true : false;
-
-    int hydrogenCount = numberOfImplicitHydrogens();
-
-    // Compute the shape
-    QFontMetrics fmSymbol(molScene->atomSymbolFont());
-    QFontMetrics fmScript( QFont("", 7) );
-    int symbolHeight = fmSymbol.height();
-    int symbolWidth, symbolOffset;
-    if (hydrogenCount > 0) {
-        // Check if hydrogen
-        if (m_elementSymbol == "H") {
-            symbolWidth = fmSymbol.width("H");
-            symbolOffset = symbolWidth / 2;
-	    hydrogenCount += 1;
-	} else {
-            // Draw element + hydrogen
-            symbolWidth = fmSymbol.width(m_elementSymbol + "H");
-            symbolOffset = fmSymbol.width(m_elementSymbol) / 2;
-        }
-	
-        if (hydrogenCount > 1) {
-            symbolWidth += fmSymbol.boundingRect(QString::number(hydrogenCount)).width();
-        }
-    } else {
-        // Draw element
-        symbolWidth = fmSymbol.width(m_elementSymbol);
-        symbolOffset = symbolWidth / 2;
+    int alignment = labelAlignment(this);
+    bool leftAligned = false;
+    switch (alignment) {
+      case Left:
+        leftAligned = true;
+      default:
+        break;
     }
-//     prepareGeometryChange();
-    if (inverse)
-      m_shape = QRectF(symbolOffset - symbolWidth, -symbolHeight / 2, symbolWidth, symbolHeight);
-    else
-      m_shape = QRectF(-symbolOffset, -symbolHeight / 2, symbolWidth, symbolHeight);
+
+    int hCount = numberOfImplicitHydrogens();
+
+    QString lbl;
+    if (hCount && leftAligned)
+      lbl += "H";
+    if ((hCount > 1) && leftAligned)
+      lbl += QString::number(hCount);
+
+    lbl += m_elementSymbol;
+    
+    if (hCount && !leftAligned)
+      lbl += "H";
+    if ((hCount > 1) && !leftAligned)
+      lbl += QString::number(hCount);
+
+    drawAtomLabel(painter, lbl, alignment);
 
     // Drawing background
     painter->save();
     painter->setPen(Qt::NoPen);
-    if(parentItem() && parentItem()->hasFocus()) {
-      painter->setBrush(QColor("#f6f6ff"));
-//       painter->setOpacity(0.04);
-    } else
-      painter->setBrush(Qt::white);
-
-    // Use a different color if selected
     if (this->isSelected()) 
       painter->setPen(Qt::blue);
-    //painter->setPen(Qt::red);
-//     painter->setBrush(brush);
-    //painter->drawEllipse(m_shape);
     painter->drawRect(m_shape);
     painter->restore();
 
-    painter->setFont(molScene->atomSymbolFont());
-
-    // Check to add implicit hydrogens
-    if (hydrogenCount > 0) {
-        int subscriptOffset = 0;
-        // Check if hydrogen
-        if (m_elementSymbol =="H") {
-            painter->drawText(m_shape, Qt::AlignLeft, "H");
-	} else {
-            // Draw element + hydrogen
-            if (!inverse)
-              painter->drawText(m_shape, Qt::AlignLeft, m_elementSymbol + "H");
-            else {
-              painter->drawText(m_shape, Qt::AlignLeft, "H");
-              painter->drawText(m_shape, Qt::AlignRight, m_elementSymbol);
-              subscriptOffset = fmSymbol.width("H");
-            }
-        }
-
-        if (hydrogenCount > 1) {
-            painter->setFont(QFont("",molScene->atomSymbolFont().pointSizeF()/1.5));
-            painter->drawText( m_shape.translated(-subscriptOffset, 3),
-                Qt::AlignBottom|Qt::AlignRight, QString::number(hydrogenCount));
-        }
-    } else {
-        // Draw element
-        painter->drawText(m_shape, Qt::AlignLeft, m_elementSymbol);
-    }
-
+    /*
     // Draw charge
     if (molScene->chargeVisible()) {
         QString chargeId = chargeString();
@@ -218,7 +336,7 @@ namespace Molsketch {
         int superscriptOffset = fmSymbol.width("H");
         painter->drawText(m_shape.translated(superscriptOffset/1.5, -superscriptOffset/1.5), Qt::AlignTop|Qt::AlignRight, chargeId);
     }
-
+    */
 
     // Draw unbound electrons
     if (0) /*molScene->chargeVisible()*/ {
@@ -244,8 +362,6 @@ namespace Molsketch {
         painter->restore();
     }
 
-    // Restore the original painter state
-//     painter->restore();
   }
 
   QVariant Atom::itemChange(GraphicsItemChange change, const QVariant &value)
