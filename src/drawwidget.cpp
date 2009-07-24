@@ -409,7 +409,7 @@ namespace Molsketch {
   {
     uncheckAllButtons();
     ui.buttonRing5Arom->setChecked(true);
-    m_scene->setHintRing(5);
+    m_scene->setHintRing(5, true);
     m_scene->setEditMode(MolScene::DrawMode);
   }
 
@@ -417,7 +417,7 @@ namespace Molsketch {
   {
     uncheckAllButtons();
     ui.buttonRing6Arom->setChecked(true);
-    m_scene->setHintRing(6);
+    m_scene->setHintRing(6, true);
     m_scene->setEditMode(MolScene::DrawMode);
   }
 

@@ -225,7 +225,7 @@ public slots:
    * slot is meant to be connected to a widget specifying the ring size (e.g.
    * buttons with icons, a QComboBox, ...).
    */
-  void setHintRing(int ringSize);
+  void setHintRing(int ringSize, bool aromatic = false);
 
 protected:
   /** Generic event handler. Reimplementation for sceneChanged signals. */
@@ -320,10 +320,7 @@ private:
   /** Stores whether hydrogens are to be added automaticly.*/
   bool m_autoAddHydrogen;
 	
-	
-	
-
-
+      
   // Internal clipboard
   /** Internal clipboard for scene items.*/
   QList<Molecule*> m_clipItems;
@@ -394,6 +391,7 @@ private:
   Molecule *m_hintMolecule;
   QGraphicsItemGroup *m_hintMoleculeItems;
   QList<QPointF> m_hintRingPoints;
+  bool m_aromaticHintRing;
 
 	//selects item inside lassopolygon
 	void lassoSelect ();

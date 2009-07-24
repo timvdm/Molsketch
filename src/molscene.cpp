@@ -385,8 +385,8 @@ namespace Molsketch {
 
   void MolScene::insertRing(const QPointF &pos)
   {
-    QList<Atom*> atoms;
-    QList<Bond*> bonds;
+    qDebug() << "insertRing @ " << pos;
+
     QList<Molecule*> molecules;
     // check if there are already atoms at the corners
     foreach (const QPointF &p, m_hintRingPoints) {
@@ -394,22 +394,9 @@ namespace Molsketch {
       if (atom) 
         if (atom->molecule() && !molecules.contains(atom->molecule()))
           molecules.append(atom->molecule());
-      /*
-         if (!atom) {
-      // create a new atom if there isn't any for this position
-      atom = new Atom(m_hintMoleculeItems->mapToScene(p), "C", m_autoAddHydrogen);
-      } else {
-      // store the molecules which will be merged by the ring
-      if (atom->molecule())
-      if (!molecules.contains(atom->molecule()))
-      molecules.append(atom->molecule());
-      }
-       */
-      // 
-      //atoms.append(atom);
     }
-
     m_stack->beginMacro("Add Molecule");
+    // create a new molecule or merge extisting molecules
     if (molecules.isEmpty()) {
       // Adding a totally new ring
       molecules.append(new Molecule);
@@ -424,6 +411,9 @@ namespace Molsketch {
       m_stack->push(new AddItem(mergedMol,this));
       molecules[0] = mergedMol;
     }
+    // add the atoms and bonds
+    QList<Bond*> bonds;
+    int indexOfFirstDoubleBond = -1;
     for (int i = 0; i < m_hintRingPoints.size(); ++i) {
       int next = i + 1;
       if (next == m_hintRingPoints.size())
@@ -447,21 +437,47 @@ namespace Molsketch {
         bond = new Bond(begin, end);
         m_stack->push(new AddBond(bond));
       }
-      //bonds.append(bond);
+      bonds.append(bond);
+
+      if (m_aromaticHintRing && (indexOfFirstDoubleBond < 0)) {
+
+        bool beginHasDoubleBond = false;
+        bool endHasDoubleBond = false;
+        foreach (Atom *nbr, begin->neighbors()) {
+          Bond *possibleDoubleBond = molecules[0]->bondBetween(begin, nbr);
+          if (possibleDoubleBond && possibleDoubleBond->bondOrder() == 2)
+            beginHasDoubleBond = true;
+        }
+        foreach (Atom *nbr, end->neighbors()) {
+          Bond *possibleDoubleBond = molecules[0]->bondBetween(end, nbr);
+          if (possibleDoubleBond && possibleDoubleBond->bondOrder() == 2)
+            endHasDoubleBond = true;
+        }
+
+        if (beginHasDoubleBond && endHasDoubleBond)
+          indexOfFirstDoubleBond = i;
+      }
     }
+    if (m_aromaticHintRing) {
+      int numBonds;
+      if (m_hintRingPoints.size() == 5) {
+        if (indexOfFirstDoubleBond == -1) {
+          indexOfFirstDoubleBond = 1;
+          numBonds = 5;
+        } else {
+          indexOfFirstDoubleBond = indexOfFirstDoubleBond % 2 + 2;
+          numBonds = 4;
+        }
+      } else {
+        indexOfFirstDoubleBond = (indexOfFirstDoubleBond == -1) ? 0 : indexOfFirstDoubleBond % 2 + 2;
+        numBonds = 6;
+      }
+      for (int i = indexOfFirstDoubleBond; i < numBonds; i+=2)
+        if (bonds.at(i)->bondOrder() == 1)
+	  m_stack->push(new IncOrder(bonds.at(i)));
+    }
+
     molecules[0]->setFocus();
-    /*
-       foreach(Atom *atom, atoms)
-       if (!atom->molecule()) {
-    //molecules[0]->addAtom(atom);
-    m_stack->push(new AddAtom(atom, molecules[0]));
-    }
-    foreach(Bond *bond, bonds)
-    if (!bond->molecule()) {
-    //molecules[0]->addBond(bond);
-    m_stack->push(new AddBond(bond));
-    }
-     */
     m_stack->endMacro();
   }
 
@@ -558,10 +574,15 @@ namespace Molsketch {
   }
 
   // create a QGraphicsItem for regular polygon rings
-  void MolScene::setHintRing(int ringSize)
+  void MolScene::setHintRing(int ringSize, bool aromatic)
   {
     if (ringSize < 3)
       return;
+
+    if (aromatic && ((ringSize == 5) || (ringSize == 6)))
+      m_aromaticHintRing = true;
+    else
+      m_aromaticHintRing = false;
 
     // delete previous hint molecule
     if (m_hintMoleculeItems)
@@ -1305,6 +1326,8 @@ void MolScene::minimiseMolecule (Molecule *mol) {
 
 void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
 	QPointF downPos = event->buttonDownScenePos(event->button());
+
+        qDebug() << "downPos = " << downPos;
 
 	//clicking on an atom spawns a new bond from that atom
 	if (atomAt (downPos)) {
