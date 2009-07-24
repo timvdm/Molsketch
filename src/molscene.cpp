@@ -340,7 +340,8 @@ namespace Molsketch {
     // Adding the bonds and atoms of the first two molecules
     foreach (Atom* a, molA->atoms())
     {
-      Atom* a2 = new Atom(a->scenePos(),a->element(),a->hasImplicitHydrogens(), a->getColor ());
+      Atom* a2 = new Atom(a->scenePos(),a->element(),a->hasImplicitHydrogens());
+		a2 ->setColor( a->getColor ());
       molC->addAtom(a2);
     }
     foreach (Bond* b, molA->bonds())
