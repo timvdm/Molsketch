@@ -29,6 +29,7 @@
 
 #include "element.h"
 #include "molscene.h"
+#include "iostream.h"
 
 namespace Molsketch {
 
@@ -263,6 +264,7 @@ namespace Molsketch {
 
   void Atom::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
   {
+	 // std::cerr << "paint" << std::endl;
 	  painter ->setPen (m_color);
     Q_UNUSED(option)
     Q_UNUSED(widget)

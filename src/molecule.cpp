@@ -320,6 +320,14 @@ QList<Molecule*> Molecule::split()
 
 // Query methods
 
+	
+	Atom* Molecule::atomN (const int n) const {
+		if (n>= 1 && n <= m_atomList.size ()) {
+			return m_atomList[n - 1];
+		}
+		return NULL;
+	}	
+	
 Atom* Molecule::atomAt(const QPointF &pos) const
   {
     //pre: pos is a valid position on the canvas in scene coordinates

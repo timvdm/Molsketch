@@ -71,7 +71,11 @@ public:
 	void minimiseAllMolecules ();
 	void minimiseMolecule (Molecule *mol);
 	void mirrorBondInMolecule (Molecule *mol, Bond *bo);
-
+	
+	
+	
+	void addAndMinimise (OpenBabel::OBMol *obmol);
+	Molecule *toMol (OpenBabel::OBMol *obmol);
 	
   // Queries
   /** Returns the EditMode of the scene. */

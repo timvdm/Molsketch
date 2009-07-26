@@ -30,6 +30,10 @@
 #include "fileio.h"
 #include "mollibitem.h"
 
+#include <openbabel/mol.h>
+
+using namespace OpenBabel;
+
 // widgets
 #include "settings.h"
 #include "drawwidget.h"
@@ -280,6 +284,8 @@ bool MainWindow::saveAs()
     }
 }
 
+
+
   bool MainWindow::importDoc()
   {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Import - molsKetch"), m_lastAccessedPath, tr(OSRA_GRAPHIC_FILE_FORMATS));
@@ -378,8 +384,19 @@ void MainWindow::changeColor () {
 	
 }
 
+
+void MainWindow::paintSceneOn (QPrinter *printer) {
+	Molsketch::printFile(*printer,m_scene);
+}
+
 bool MainWindow::print()
 {
+	QPrintPreviewDialog printPreview;
+	connect(&printPreview, SIGNAL(paintRequested(QPrinter * )), this, SLOT(paintSceneOn(QPrinter *)));
+
+	printPreview.exec ();
+	
+	/*
   // Creating a new printerobject
   QPrinter printer(QPrinter::HighResolution);
 
@@ -403,6 +420,9 @@ bool MainWindow::print()
     {
       return false;
     }
+	 
+	 */
+	return true;
 }
 
 void MainWindow::zoomIn()

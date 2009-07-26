@@ -43,6 +43,7 @@ class QTableWidgetItem;
 class QAssistantClient;
 class QSettings;
 class QTimer;
+class OBMol;
 
 namespace Molsketch {
   class Molecule;
@@ -50,7 +51,9 @@ namespace Molsketch {
   class MolView;
 }
 
-
+namespace OpenBabel {
+	class OBMol;
+}
 
 
 /**
@@ -69,6 +72,10 @@ public:
 protected:
   /** Reimplements the close event to asked for a save on exit. */
   void closeEvent(QCloseEvent *event);
+	
+	
+	void addAndMinimise (OpenBabel::OBMol *obmol);
+	Molsketch::Molecule *toMol (OpenBabel::OBMol *obmol);
 
 private slots:
   /** Opens a new empty file. */
@@ -88,6 +95,8 @@ private slots:
   /** Prints the current document. */
   bool print();
 
+	//used for print preview
+	void paintSceneOn (QPrinter *);
 
 	void changeColor ();
 
@@ -137,7 +146,7 @@ private slots:
 //   */
 //   Molecule* newMolecule(const QPointF& position = QPointF(0,0), const QString& element = "C");
 
-private:
+protected:
   /** Creates the QActions of the MainWindow. */
   void createActions();
   /** Creates the menus of the MainWindow. */

@@ -67,9 +67,27 @@ namespace Molsketch {
 		
 		for (unsigned int i = 0; i < ats.size (); i++) {
 			for (unsigned int j = i; j < ats.size (); j++) {
-				if (i==j) continue;
-				interactions.push_back (new FFclash (atoms[i], atoms[j], bondLength));
-
+				bool add = true;
+				if (i==j) add = false;
+				if (add) {
+					Atom *a1 = atoms[i] ->atom;
+					Atom *a2 = atoms[j] ->atom;
+					foreach (Atom *n, a1 ->neighbours()) {
+						if (n == a2) {
+							add = false;
+							break;
+						}
+						foreach (Atom *n2, n ->neighbours ()) {
+							if (n2 == a2) {
+								add = false;
+								break;
+							}
+						}
+						if (!add) break;
+					}
+				}
+				if (add) interactions.push_back (new FFclash (atoms[i], atoms[j], bondLength));
+	
 			}
 		}
 	}	
@@ -329,6 +347,7 @@ namespace Molsketch {
 	
 	void Minimise::score_interactions () {
 		for (unsigned int i = 0; i < interactions.size (); i++) {
+		//	std::cerr << "applying interaction "<<i<<std::endl;
 			interactions[i] ->apply ();
 		}
 	}
