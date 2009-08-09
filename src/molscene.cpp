@@ -401,7 +401,6 @@ namespace Molsketch {
       // Adding a totally new ring
       molecules.append(new Molecule);
       m_stack->push(new AddItem(molecules[0],this));
-      molecules[0]->setPos(pos);
     } else if (molecules.size() > 1) {
       // the ring merges several molecules (i.e. it does not only extend a single molecule)
       Molecule *mergedMol = molecules[0];
