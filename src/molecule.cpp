@@ -58,12 +58,18 @@ Molecule::Molecule(QSet<Atom*> atomSet, QSet<Bond*> bondSet,
   if (scene) setFlag(QGraphicsItem::ItemIsSelectable, scene->editMode()==MolScene::MoveMode);
 
   // Add the new atoms
-  foreach(Atom* atom, atomSet)
-    addAtom(new Atom(atom->scenePos(), atom->element(), atom->hasImplicitHydrogens()));
+	foreach(Atom* atom, atomSet) {
+		Atom *a = new Atom(atom->scenePos(), atom->element(), atom->hasImplicitHydrogens());
+		a ->setColor (atom ->getColor ());
+    addAtom(a);
+	}
 
   // ...and bonds
-  foreach(Bond* bond, bondSet)
-    addBond(new Bond(atomAt(bond->beginAtom()->scenePos()),atomAt(bond->endAtom()->scenePos()),bond->bondOrder(),bond->bondType()));
+	foreach(Bond* bond, bondSet) {
+	Bond *b = new Bond(atomAt(bond->beginAtom()->scenePos()),atomAt(bond->endAtom()->scenePos()),bond->bondOrder(),bond->bondType()); 
+	b ->setColor (bond ->getColor ());
+    addBond(b);
+	}
 }
 
 Molecule::Molecule(Molecule* mol, QGraphicsItem* parent, MolScene* scene) : QGraphicsItemGroup(parent,scene)
@@ -79,12 +85,16 @@ Molecule::Molecule(Molecule* mol, QGraphicsItem* parent, MolScene* scene) : QGra
   // Add the new atoms
   foreach(Atom* atom, mol->atoms())
   {
-    addAtom(new Atom(atom->pos(),atom->element(), atom->hasImplicitHydrogens()));
+	  Atom *a = new Atom(atom->pos(),atom->element(), atom->hasImplicitHydrogens());
+	  a ->setColor(atom ->getColor ());
+    addAtom(a);
   }
   // ...and bonds
   foreach(Bond* bond, mol->bonds())
   {
-    addBond(new Bond(atomAt(bond->beginAtom()->pos()),atomAt(bond->endAtom()->pos()),bond->bondOrder(),bond->bondType()));
+	  Bond *b = new Bond(atomAt(bond->beginAtom()->pos()),atomAt(bond->endAtom()->pos()),bond->bondOrder(),bond->bondType());
+	  b ->setColor (bond ->getColor ());
+	  addBond(b);
   }
   
   // Set the position
@@ -310,6 +320,14 @@ QList<Molecule*> Molecule::split()
 
 // Query methods
 
+	
+	Atom* Molecule::atomN (const int n) const {
+		if (n>= 1 && n <= m_atomList.size ()) {
+			return m_atomList[n - 1];
+		}
+		return NULL;
+	}	
+	
 Atom* Molecule::atomAt(const QPointF &pos) const
   {
     //pre: pos is a valid position on the canvas in scene coordinates

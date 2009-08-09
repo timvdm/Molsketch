@@ -35,6 +35,7 @@
 
 #include "molscene.h"
 
+#include "element.h"
 #include "atom.h"
 #include "bond.h"
 #include "molecule.h"
@@ -46,6 +47,14 @@
 
 //#include "filio.h"
 #include "osra.h"
+#include <openbabel/mol.h>
+#include <openbabel/atom.h>
+#include <openbabel/bond.h>
+#include <openbabel/obiter.h>
+
+using namespace OpenBabel;
+
+
 
 
 namespace Molsketch {
@@ -340,7 +349,8 @@ namespace Molsketch {
     // Adding the bonds and atoms of the first two molecules
     foreach (Atom* a, molA->atoms())
     {
-      Atom* a2 = new Atom(a->scenePos(),a->element(),a->hasImplicitHydrogens(), a->getColor ());
+      Atom* a2 = new Atom(a->scenePos(),a->element(),a->hasImplicitHydrogens());
+		a2 ->setColor( a->getColor ());
       molC->addAtom(a2);
     }
     foreach (Bond* b, molA->bonds())
@@ -1190,7 +1200,6 @@ void MolScene::moveModeMove(QGraphicsSceneMouseEvent* event)
 	{
 		clearSelection();
 		QList<QGraphicsItem *> its = items (lassoPolygon ->polygon (), Qt::ContainsItemShape);
-		std::cerr << its.size () << std::endl;
 		for (unsigned int i = 0; i < its.size (); i++) {
 			its[i] ->setSelected (true);
 		}
@@ -1810,6 +1819,119 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
     // execute default behaviour (needed for text tool)
     QGraphicsScene::keyPressEvent(keyEvent);
   }
+	
+	
+	Molecule *MolScene::toMol (OpenBabel::OBMol *obmol) {
+		qreal k = bondLength() / 1.5;
+		Molecule *mol = new Molecule ();
+		mol->setPos(QPointF(0,0));
+		qreal x = 0;
+		qreal y = 0;
+		OpenBabel::OBAtom *first_atom = obmol ->GetAtom (1);
+		if (first_atom) {
+			x = first_atom ->x ();
+			y = -first_atom ->y ();
+		}
+		std::vector <Atom *>ats;
+		std::vector <Bond *>bonds;
+
+		//	for (unsigned int i = 0; i <= obmol ->NumAtoms();i++)
+		FOR_ATOMS_OF_MOL(obatom,obmol)
+		{
+			//	OpenBabel::OBAtom *obatom = obmol ->GetAtom(i);
+			//  			scene->addRect(QRectF(atom->GetX(),atom->GetY(),5,5));
+			//           Atom* atom =
+			ats.push_back (new Atom (QPointF((obatom->x() - x)*k,(-obatom->y()-y)*k),number2symbol(obatom->GetAtomicNum()), autoAddHydrogen ()));
+			//mol->addAtom();
+		}
+		
+		// Add bonds one-by-one
+		/// Mind the numbering!
+		//	for (unsigned int i = 0; i < obmol ->NumBonds();i++)
+		FOR_BONDS_OF_MOL(obbond,obmol)
+		{
+			// Loading the OpenBabel objects
+			//	OpenBabel::OBBond *obbond = obmol ->GetBond(i);
+			OpenBabel::OBAtom *a1 = obbond->GetBeginAtom();
+			OpenBabel::OBAtom *a2 = obbond->GetEndAtom();
+			if (a1 ->IsHydrogen()) continue;
+			if (a2 ->IsHydrogen()) continue;
+			
+			Atom* atomA = 0;
+			Atom* atomB = 0;
+			
+			if ((a1 ->GetIdx() -1) >=0 && (a1 ->GetIdx() -1) <ats.size ()) 
+			atomA = ats [a1 ->GetIdx() -1];
+			if ((a2 ->GetIdx() -1) >=0 && (a2 ->GetIdx() -1) <ats.size ()) 
+			atomB = ats [a2 ->GetIdx() -1];
+			std::cerr<< a2 ->GetIdx() -1<<"  "<<a1 ->GetIdx() -1<<std::endl;
+
+			if (atomA && atomB)	{
+				Bond* bond  = new Bond (atomA,atomB,obbond->GetBondOrder());
+				// Set special bond types
+				if (obbond->IsWedge())
+					bond->setType( Bond::Wedge );
+				if (obbond->IsHash()) 
+					bond->setType( Bond::Hash );
+				
+				bonds.push_back(bond);
+
+			}
+			// Normalizing
+			//             factor = scene->getBondLength()/obbond->GetLength();
+		}
+		
+		// // Normalizing molecule
+		// mol->scale(factor,factor);
+		// mol->setAtomSize(LABEL_SIZE/factor);
+		for (unsigned int i=0; i < ats.size (); i++) {
+			if (ats[i] ->element () == "H") continue;
+			mol ->addAtom (ats[i]);
+		}
+		for (unsigned int i=0; i < bonds.size (); i++) {
+
+			Atom *a1 = bonds[i] ->beginAtom ();
+			Atom *a2 = bonds[i] ->endAtom ();
+			if (a1 ->element () == "H") continue;
+			if (a2 ->element () == "H") continue;
+			mol ->addBond (bonds[i]);
+		}		
+		int nu = 0;
+		QList <Atom *> atts = mol ->atoms ();
+		for (unsigned int i = 0; i < atts.size () ; i++) {
+			atts[i] ->n = i; 
+		}
+		return mol;
+		
+	}
+	
+	void MolScene::addAndMinimise (OpenBabel::OBMol *obmol) {
+		Molecule *mol = toMol (obmol);
+		minimiseMolecule (mol);
+		
+		Molecule *m1 = new Molecule;
+		m_stack->beginMacro("Add Molecule");
+		m_stack->push(new AddItem(mol, this));
+		
+		
+		
+	/*	
+		foreach (Atom* a1, m1 ->atoms ())
+				 {
+				 m_stack->push(new AddAtom(a1,m1));
+				 }
+		foreach (Bond* b, m1 ->bonds ())
+		{
+			m_stack->push(new AddBond(b));
+		}	
+		m_stack->endMacro();
+	 */
+	//	delete mol;
+				 //	std::cerr << mol ->atoms ().size () <<std::endl;
+	}
+	
+	
+	
 
   QUndoStack * MolScene::stack()
   {

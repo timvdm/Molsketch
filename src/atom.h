@@ -45,7 +45,7 @@ namespace Molsketch {
        * @param invisible makes the atom invisible if @c true
        */
       Atom(const QPointF & position, const QString & element, 
-          bool implicitHydrogens, QColor c = QColor (0, 0, 0), QGraphicsItem* parent = 0, QGraphicsScene* scene = 0);
+          bool implicitHydrogens, QGraphicsItem* parent = 0, QGraphicsScene* scene = 0);
 
       //@name Inherited drawing methods
       //@{

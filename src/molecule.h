@@ -144,6 +144,8 @@ class Molecule : public QGraphicsItemGroup
     Atom* atomAt(const QPointF &pos) const;
 //    /** Returns a pointer to the atom with @p id. */
 //     Atom* atom(int id) const;
+	  
+	  Atom* atomN (const int n) const;
 
     /** Returns a pointer to the bond at position @p pos or NULL id none. */
     Bond* bondAt(const QPointF &pos) const;

@@ -29,6 +29,7 @@
 
 #include "element.h"
 #include "molscene.h"
+#include "iostream.h"
 
 namespace Molsketch {
 
@@ -47,9 +48,8 @@ namespace Molsketch {
   };
 
   Atom::Atom(const QPointF &position, const QString &element, bool implicitHydrogens, 
-     QColor c, QGraphicsItem* parent, QGraphicsScene* scene) : QGraphicsItem (parent,scene)
+     QGraphicsItem* parent, QGraphicsScene* scene) : QGraphicsItem (parent,scene)
   {
-	  setColor(c);
     //pre: position is a valid position in scene coordinates
     setPos(position);
     setZValue(3);
@@ -264,6 +264,7 @@ namespace Molsketch {
 
   void Atom::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
   {
+	 // std::cerr << "paint" << std::endl;
 	  painter ->setPen (m_color);
     Q_UNUSED(option)
     Q_UNUSED(widget)
