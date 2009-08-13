@@ -31,6 +31,8 @@
 #include <QKeyEvent>
 #include <QUndoStack>
 #include <QProcess>
+#include <QDir>
+#include <QDesktopServices>
 #include <QDebug>
 
 #include "molscene.h"
@@ -290,12 +292,12 @@ namespace Molsketch {
 
     if (!img.isNull()) {
       m_stack->beginMacro(tr("converting image using OSRA"));
-      QString tmpimg = tmpnam(NULL);
+      QString tmpimg = QDesktopServices::storageLocation(QDesktopServices::TempLocation) + QDir::separator() + "osra.png";
       img.save(tmpimg, "PNG", 100);
       Molecule* mol = call_osra(tmpimg);
       if (mol) 
         m_stack->push(new AddItem(new Molecule(mol), this));
-      remove(tmpimg.toAscii());
+      QFile::remove(tmpimg);
       m_stack->endMacro();
     }
   }
