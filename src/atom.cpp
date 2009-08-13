@@ -29,7 +29,6 @@
 
 #include "element.h"
 #include "molscene.h"
-#include "iostream.h"
 
 namespace Molsketch {
 
@@ -333,15 +332,15 @@ namespace Molsketch {
     painter->drawRect(m_shape);
     painter->restore();
 
-    /*
     // Draw charge
     if (molScene->chargeVisible()) {
         QString chargeId = chargeString();
-        painter->setFont( QFont("",molScene->atomSymbolFont().pointSizeF()/1.5) );
-        int superscriptOffset = fmSymbol.width("H");
-        painter->drawText(m_shape.translated(superscriptOffset/1.5, -superscriptOffset/1.5), Qt::AlignTop|Qt::AlignRight, chargeId);
+        QFont superscriptFont = molScene->atomSymbolFont();
+        superscriptFont.setPointSize(0.5 * superscriptFont.pointSize());
+        QFontMetrics fmSymbol(superscriptFont);
+        int offset = 0.5 * fmSymbol.width("+");
+        painter->drawText(m_shape.right() - offset, m_shape.top() + offset, chargeId);
     }
-    */
 
     // Draw unbound electrons
     if (0) /*molScene->chargeVisible()*/ {
