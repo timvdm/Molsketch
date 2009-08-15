@@ -947,8 +947,9 @@ namespace Molsketch {
             break;
 	  case MolScene::TextMode:
 	    textModePress (event);
-			case MolScene::MinimiseMode:
-				minimiseModePress (event);
+            break;
+          case MolScene::MinimiseMode:
+            minimiseModePress (event);
 	    break;
           default:
             break;
@@ -1151,11 +1152,14 @@ void MolScene::moveModeMove(QGraphicsSceneMouseEvent* event)
 			}
 	}
 	
-	void MolScene::textModeRelease(QGraphicsSceneMouseEvent* event) {
-			
+	void MolScene::textModeRelease(QGraphicsSceneMouseEvent* event) 
+        {
+          Q_UNUSED(event)
 	}
-	void MolScene::minimiseModeRelease(QGraphicsSceneMouseEvent* event) {
-		
+	
+        void MolScene::minimiseModeRelease(QGraphicsSceneMouseEvent* event) 
+        {
+          Q_UNUSED(event)
 	}
 
 	
@@ -1188,6 +1192,7 @@ void MolScene::moveModeMove(QGraphicsSceneMouseEvent* event)
 	
 	void MolScene::lassoModeRelease(QGraphicsSceneMouseEvent* event)
 	{
+          Q_UNUSED(event)
 		
 		lassoTrail.clear ();
 		lassoSelect ();
@@ -1202,7 +1207,7 @@ void MolScene::moveModeMove(QGraphicsSceneMouseEvent* event)
 	{
 		clearSelection();
 		QList<QGraphicsItem *> its = items (lassoPolygon ->polygon (), Qt::ContainsItemShape);
-		for (unsigned int i = 0; i < its.size (); i++) {
+		for (int i = 0; i < its.size (); i++) {
 			its[i] ->setSelected (true);
 		}
 
@@ -1281,6 +1286,7 @@ void MolScene::moveModeMove(QGraphicsSceneMouseEvent* event)
 
   void MolScene::rotateModeRelease(QGraphicsSceneMouseEvent* event)
   {
+    Q_UNUSED(event)
     rotationItem = NULL;
     /*
 
@@ -1862,9 +1868,9 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
 			Atom* atomA = 0;
 			Atom* atomB = 0;
 			
-			if ((a1 ->GetIdx() -1) >=0 && (a1 ->GetIdx() -1) <ats.size ()) 
+			if (a1 ->GetIdx() > 0 && (a1 ->GetIdx() -1) <ats.size ()) 
 			atomA = ats [a1 ->GetIdx() -1];
-			if ((a2 ->GetIdx() -1) >=0 && (a2 ->GetIdx() -1) <ats.size ()) 
+			if (a2 ->GetIdx() > 0 && (a2 ->GetIdx() -1) <ats.size ()) 
 			atomB = ats [a2 ->GetIdx() -1];
 			std::cerr<< a2 ->GetIdx() -1<<"  "<<a1 ->GetIdx() -1<<std::endl;
 
@@ -1898,9 +1904,9 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
 			if (a2 ->element () == "H") continue;
 			mol ->addBond (bonds[i]);
 		}		
-		int nu = 0;
+		//int nu = 0;
 		QList <Atom *> atts = mol ->atoms ();
-		for (unsigned int i = 0; i < atts.size () ; i++) {
+		for (int i = 0; i < atts.size () ; i++) {
 			atts[i] ->n = i; 
 		}
 		return mol;
@@ -1911,7 +1917,7 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
 		Molecule *mol = toMol (obmol);
 		minimiseMolecule (mol);
 		
-		Molecule *m1 = new Molecule;
+		//Molecule *m1 = new Molecule;
 		m_stack->beginMacro("Add Molecule");
 		m_stack->push(new AddItem(mol, this));
 		

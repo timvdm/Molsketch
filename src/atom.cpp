@@ -32,13 +32,13 @@
 
 namespace Molsketch {
 
-  //
-  //     /    \      \   /      H
-  //   HN      NH      N        N
-  //     \    /        H      /   \
-  //
-  //   Left   Right   Down     Up
-  //
+  //                                        //
+  //     /    \      \   /      H           //
+  //   HN      NH      N        N           //
+  //     \    /        H      /   \         //
+  //                                        //
+  //   Left   Right   Down     Up           //
+  //                                        //
   enum {
     Left,
     Right,
@@ -527,9 +527,10 @@ namespace Molsketch {
       - bondOrderSum() - (8 - 2 * bondOrderSum()) + m_userCharge;
   }
 
-  void Atom::setCharge(int charge)
+  void Atom::setCharge(int requiredCharge)
   {
-  
+    int computedCharge = charge() - m_userCharge;
+    m_userCharge = requiredCharge - computedCharge;
   }
 
   QString Atom::chargeString() const

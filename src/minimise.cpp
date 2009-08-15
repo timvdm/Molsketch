@@ -35,11 +35,11 @@ namespace Molsketch {
 		clear ();
 		molecule ->numberAtoms ();
 		QList <Atom *> ats = molecule ->atoms ();
-		for (unsigned int i = 0; i < ats.size (); i++) {
+		for (int i = 0; i < ats.size (); i++) {
 			atoms.push_back (new FFAtom (ats[i]));
 		}
 		QList <Bond *> bds = molecule ->bonds ();
-		for (unsigned int i = 0; i < bds.size (); i++) {
+		for (int i = 0; i < bds.size (); i++) {
 			FFBond *b = new FFBond (bds[i]);
 			b ->at1 = atoms[bds[i]->beginAtom ()->n];
 			b ->at2 = atoms[bds[i]->endAtom ()->n];
@@ -49,11 +49,11 @@ namespace Molsketch {
 
 		}	
 		
-		for (unsigned int i = 0; i < ats.size (); i++) {
+		for (int i = 0; i < ats.size (); i++) {
 			Atom *at = ats[i];
 			QList <Atom *> nbr = at ->neighbours ();
-			for (unsigned int j = 0; j < nbr.size (); j++) {
-				for (unsigned int k = j; k < nbr.size (); k++) {
+			for (int j = 0; j < nbr.size (); j++) {
+				for (int k = j; k < nbr.size (); k++) {
 
 					if (j == k) continue;
 					Atom *at2 = nbr [j];
@@ -65,8 +65,8 @@ namespace Molsketch {
 			}
 		}
 		
-		for (unsigned int i = 0; i < ats.size (); i++) {
-			for (unsigned int j = i; j < ats.size (); j++) {
+		for (int i = 0; i < ats.size (); i++) {
+			for (int j = i; j < ats.size (); j++) {
 				bool add = true;
 				if (i==j) add = false;
 				if (add) {
@@ -93,13 +93,13 @@ namespace Molsketch {
 	}	
 	
 	void Minimise::run (int n) {
-		for (unsigned int i = 0; i < n; i++) {
+		for (int i = 0; i < n; i++) {
 			score_interactions ();
 			//	std::cerr << "interactions  " <<total_score()<<std::endl;
 			
 			if (!move_atoms ()) break;
 		}
-		for (unsigned int j = 0; j < 5; j++) {
+		for (int j = 0; j < 5; j++) {
 			for (unsigned int i = 0; i < 500; i++) {
 				score_rotations ();
 				//	std::cerr << total_score()<<std::endl;
@@ -114,7 +114,7 @@ namespace Molsketch {
 				//		if (!move_atoms ()) break;
 			}
 		}
-		for (unsigned int i = 0; i < 500; i++) {
+		for (int i = 0; i < 500; i++) {
 			
 			//	score_rotations ();
 			score_interactions ();
@@ -152,7 +152,7 @@ namespace Molsketch {
 		for (unsigned int i = 0; i < atoms.size (); i++) {
 			atoms[i] ->visited = false;
 		}
-		int nvisited = 1;
+		unsigned int nvisited = 1;
 		std::queue <FFAtom *> queue;
 		Atom *a1 = at1 ->atom;
 		Atom *a2 = at2 ->atom;		
@@ -207,10 +207,10 @@ namespace Molsketch {
 			qreal angle = ang * M_PI / 6;
 			if (atoms.size ()) rotate (angle, atoms[0] ->qpoint ());
 		}
-		for (unsigned int i = 0; i < numberofMutations; i++) {
+		for (int i = 0; i < numberofMutations; i++) {
 			qreal r2 = (((qreal) rand()) / RAND_MAX);
 
-			int bond = r2 * bonds.size ();
+			//int bond = r2 * bonds.size ();
 
 			int n = r2 *bonds.size ();
 		//	std::cerr << "mutate bond" <<n<<"  ";
@@ -226,7 +226,7 @@ namespace Molsketch {
 			QList <Atom *> ats = r->atoms ();
 			QPointF c = r ->center ();
 			
-			for (unsigned int i = 0; i < ats.size(); i++) { 
+			for (int i = 0; i < ats.size(); i++) { 
 				Atom *a = ats[i];
 				QPointF rad= a ->pos () - c;
 				normalise (rad);

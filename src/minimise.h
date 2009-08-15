@@ -150,6 +150,7 @@ namespace Molsketch {
 	class FFInteraction {
 	public:
 		FFInteraction (FFAtom *at1, FFAtom *at2) :p1 (at1), p2 (at2) {}
+                virtual ~FFInteraction() {}
 
 	//	FFInteraction (): p1 (NULL), p2 (NULL) {};
 		virtual void apply () = 0;
