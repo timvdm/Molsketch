@@ -149,8 +149,14 @@ class Bond : public QGraphicsItem
      * @return the shifted vector
      */
     static QLineF shiftVector(const QLineF & vector, qreal shift);
-	
-	Ring* ring() const { return m_ring; }
+
+    /**
+     * Get the ring for this bond. If the bond is part of multiple rings,
+     * this method returns the ring that contains the most number of double 
+     * bonds. This ensures that double bonds are drawn inside the correct 
+     * ring.
+     */
+    Ring* ring() const { return m_ring; }
 
 
   protected:

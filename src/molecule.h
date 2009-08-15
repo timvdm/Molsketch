@@ -185,6 +185,7 @@ class Molecule : public QGraphicsItemGroup
 	  
 
     OpenBabel::OBMol* OBMol() const;
+    void perceiveRings();
   protected:
 	  
 	  
@@ -202,7 +203,6 @@ class Molecule : public QGraphicsItemGroup
     /** A list of pointers to the bonds of the molecule. Used as internal representation. */
     QList<Bond*> m_bondList;
     
-    void perceiveRings();
     QList<Ring*> m_rings;
   };
 

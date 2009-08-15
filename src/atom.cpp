@@ -72,8 +72,6 @@ namespace Molsketch {
     m_hidden = true;
     m_drawn = false;
 
-    m_ring = 0;
-
     m_userCharge = 0; // The initial additional charge is zero
     m_userImplicitHydrogens =  0;
     enableImplicitHydrogens(implicitHydrogens);

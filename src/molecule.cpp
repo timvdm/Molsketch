@@ -684,23 +684,41 @@ void Molecule::paint(QPainter * painter, const QStyleOptionGraphicsItem * option
     return obmol;
   }
 
+  int numDoubleBondsInRing(const Molecule *molecule, Ring *ring)
+  {
+    int count = 0;
+    QList<Atom*> atoms = ring->atoms();
+    for (int i = 0; i < atoms.size(); ++i) {
+      Atom *ringAtom = atoms.at(i);
+
+      Bond *ringBond; 
+      if (i+1 < atoms.size()) {
+        ringBond = molecule->bondBetween(ringAtom, atoms.at(i+1));
+      } else {
+        ringBond = molecule->bondBetween(ringAtom, atoms.at(0));
+      }
+
+      if (ringBond->bondOrder() == 2)
+        count++;
+    }
+  
+    return count;
+  }
+
   using OpenBabel::OBRing;
 
   void Molecule::perceiveRings()
   {
     OpenBabel::OBMol *obmol = OBMol();
 
-    qDebug() << "Molecule::perceiveRings";
-
     // clear ring info
-    foreach (Atom *atom, m_atomList)
-      atom->setRing(0);
     foreach (Bond *bond, m_bondList)
       bond->setRing(0);
     foreach (Ring *ring, m_rings)
       delete ring;
     m_rings.clear();
 
+    QHash<Bond*, QList<Ring*> > ringBonds;
 
     std::vector<OBRing*> rings = obmol->GetSSSR();
     for (std::vector<OBRing*>::iterator r = rings.begin(); r != rings.end(); ++r) {
@@ -709,20 +727,45 @@ void Molecule::paint(QPainter * painter, const QStyleOptionGraphicsItem * option
       QList<Atom*> atoms;
       for (unsigned int i = 0; i < ringSize; ++i) {
         Atom *ringAtom = m_atomList.at((*r)->_path[i] - 1);
-        ringAtom->setRing(ring);
 
+        Bond *ringBond; 
         if (i+1 < ringSize) {
-          bondBetween(ringAtom, m_atomList.at((*r)->_path[i+1] - 1))->setRing(ring);
+          ringBond = bondBetween(ringAtom, m_atomList.at((*r)->_path[i+1] - 1));
         } else {
-          bondBetween(ringAtom, m_atomList.at((*r)->_path[0] - 1))->setRing(ring);
+          ringBond = bondBetween(ringAtom, m_atomList.at((*r)->_path[0] - 1));
         }
         
+        if (!ringBonds.contains(ringBond))
+          ringBonds[ringBond] = QList<Ring*>();
+        if (!ringBonds[ringBond].contains(ring))
+          ringBonds[ringBond].append(ring);
+        
         atoms.append(ringAtom);
+
+
       }
 
       ring->setAtoms(atoms);
       m_rings.append(ring);
     }
+
+    foreach (Bond *bond, ringBonds.keys()) {
+      QList<Ring*> rings = ringBonds.value(bond);
+
+      if (rings.size() == 1) {
+        bond->setRing(rings.at(0));
+      } else {
+        int numDoubleBonds = 0;
+        foreach (Ring *r, rings) {
+          int n = numDoubleBondsInRing(this, r);
+          if (n > numDoubleBonds) {
+            numDoubleBonds = n;
+            bond->setRing(r);
+          }
+        }
+      }
+    }
+
   }
 
 

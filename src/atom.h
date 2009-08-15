@@ -162,8 +162,6 @@ namespace Molsketch {
 	  //returns a list of atoms connected to atom
 	  QList<Atom*> neighbours () {return m_neighbors;};
 
-      Ring* ring() const { return m_ring; }
-
 	  void hoverOut () {m_hidden = true;}
     protected:
       // Event handlers
@@ -175,8 +173,6 @@ namespace Molsketch {
       void mousePressEvent(QGraphicsSceneMouseEvent* event);
       /** Event handler to handle element changes. */
       QVariant itemChange(GraphicsItemChange change, const QVariant & value);
-
-      void setRing(Ring *ring) { m_ring = ring; }
 
     private:
       void drawAtomLabel(QPainter *painter, const QString &lbl, int alignment);
@@ -196,7 +192,6 @@ namespace Molsketch {
 	  
 	  //identifies the atom in a molecule. set with molecule::numberAtoms ()
 
-      Ring *m_ring;      
       /**
        * Stores the list of atoms connected to this atom by a bond
        *
