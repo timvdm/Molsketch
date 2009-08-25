@@ -40,6 +40,8 @@
 #include "element.h"
 #include "atom.h"
 #include "bond.h"
+#include "residue.h"
+
 #include "molecule.h"
 #include "mollibitem.h"
 #include "commands.h"
@@ -131,6 +133,9 @@ namespace Molsketch {
     //delete m_hoverRect;
   }
 
+	void MolScene::addResidue (QPointF pos, QString name) {		
+		m_stack ->push (new AddResidue (new Residue (pos, name, 0, this)));
+	}
   // Commands
 	
 	void MolScene::setColor (QColor c) {
@@ -139,7 +144,9 @@ namespace Molsketch {
 			if (item->type() == Atom::Type) {
 				dynamic_cast<Atom*>(item) ->setColor(c);
 			}
-
+			else if (item->type() == Residue::Type) {
+				dynamic_cast<Residue*>(item) ->setColor(c);
+			}
 		}
 		foreach (QGraphicsItem* item, items()) {
 			if (item->type() == Bond::Type) {
@@ -321,7 +328,21 @@ namespace Molsketch {
     setEditMode(MolScene::DrawMode);
   }
 
-
+	QImage MolScene::renderMolToImage (Molecule *mol) {
+		QRectF rect = mol ->boundingRect();
+		QImage image(int(rect.width()),int(rect.height()),QImage::Format_RGB32);
+		image.fill(QColor("white").rgb());
+		
+		// Creating and setting the painter
+		QPainter painter(&image);
+		painter.setRenderHint(QPainter::Antialiasing);
+		
+		// Rendering in the image and saving to file
+		render(&painter,QRectF(0,0,rect.width(),rect.height()),QRectF (mol ->mapToScene (rect.topLeft ()), mol ->mapToScene (rect.bottomRight ())));
+		return image;
+	}
+	
+	
   QImage MolScene::renderImage(const QRectF &rect)
   {
     // Creating an image
@@ -1827,7 +1848,15 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
     // execute default behaviour (needed for text tool)
     QGraphicsScene::keyPressEvent(keyEvent);
   }
-	
+
+	QImage MolScene::toImage (OpenBabel::OBMol *obmol) {
+		Molecule *mol = addAndMinimise (obmol);
+		QImage im = renderMolToImage (mol);
+		removeItem (mol);
+		delete mol;
+		return im;
+	}
+
 	
 	Molecule *MolScene::toMol (OpenBabel::OBMol *obmol) {
 		qreal k = bondLength() / 1.5;
@@ -1913,13 +1942,12 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
 		
 	}
 	
-	void MolScene::addAndMinimise (OpenBabel::OBMol *obmol) {
+	Molecule *MolScene::addAndMinimise (OpenBabel::OBMol *obmol) {
 		Molecule *mol = toMol (obmol);
 		minimiseMolecule (mol);
-		
-		//Molecule *m1 = new Molecule;
-		m_stack->beginMacro("Add Molecule");
+				m_stack->beginMacro("Add Molecule");
 		m_stack->push(new AddItem(mol, this));
+		return mol;
 		
 		
 		

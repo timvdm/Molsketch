@@ -44,6 +44,7 @@ namespace Molsketch {
 class Molecule;
 class Bond;
 class MolScene;
+	class Residue;
 
 namespace Commands {
 
@@ -85,6 +86,35 @@ class AddAtom : public QUndoCommand
   };
 
 
+	class AddResidue : public QUndoCommand
+		{
+		public:
+			/** 
+			 * Creates a new AddResidue command.
+			 *
+
+			 */
+			AddResidue(Residue* newResidue, const QString & text = "");
+			/**
+			 * Destructor 
+			 *
+
+			 */
+			~AddResidue();
+			/** Undo this command. */
+			virtual void undo();
+			/** Redo this command. */
+			virtual void redo();
+		private:
+			/** Undo state of the command. */
+			bool m_undone;
+			/** Residue of this command. */
+			Residue* m_residue;
+			/** Molecule of this command. */
+			QGraphicsScene* m_scene;
+		};
+	
+	
 /**
  * Command to change the element of an atom
  *

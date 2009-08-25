@@ -74,8 +74,7 @@ protected:
   void closeEvent(QCloseEvent *event);
 	
 	
-	void addAndMinimise (OpenBabel::OBMol *obmol);
-	Molsketch::Molecule *toMol (OpenBabel::OBMol *obmol);
+
 
 private slots:
   /** Opens a new empty file. */

@@ -67,14 +67,17 @@ public:
   /** Cleans up the UndoStack and deletes the molscene. */
   ~MolScene();
 
+	
+	void addResidue (QPointF pos = QPointF (0, 0), QString name = "");	
+
 	//adjust geometry
 	void minimiseAllMolecules ();
 	void minimiseMolecule (Molecule *mol);
 	void mirrorBondInMolecule (Molecule *mol, Bond *bo);
 	
 	
-	
-	void addAndMinimise (OpenBabel::OBMol *obmol);
+	QImage toImage (OpenBabel::OBMol *obmol);
+	Molecule *addAndMinimise (OpenBabel::OBMol *obmol);
 	Molecule *toMol (OpenBabel::OBMol *obmol);
 	
   // Queries
@@ -108,6 +111,10 @@ public:
   // Commands  
   /** Renders the @p rect on the scene in a image. */
   QImage renderImage(const QRectF &rect);
+	
+	QImage renderMolToImage (Molecule *mol);
+	
+	
   /** Sets whether neutral carbons are drawn. */
   void setCarbonVisible(bool value);
   /** Sets whether hydrogens are drawn. */
