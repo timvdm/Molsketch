@@ -18,12 +18,14 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#define ATOM_SIZE 30
-
-#include <QPainter>
-#include <QDebug>
+#define ATOM_SIZE 5
 
 #include "atom.h"
+
+#include <QPainter>
+#include <QSettings>
+#include <QDebug>
+
 #include "bond.h"
 #include "molecule.h"
 
@@ -45,6 +47,30 @@ namespace Molsketch {
     Up,
     Down
   };
+
+  int labelAlignment(Atom *atom)
+  {
+    // compute the sum of the bond vectors, this gives
+    QPointF direction(0.0, 0.0);
+    foreach (Atom *nbr, atom->neighbors())
+      direction += atom->pos() - nbr->pos();
+
+    int alignment = 0;
+    if ((atom->numBonds() == 2) && (abs(direction.y()) > abs(direction.x()))) {
+      if (direction.y() <= 0.0)
+        alignment = Up;
+      else
+        alignment = Down;
+    } else {
+      if (direction.x() < 0.0)
+        alignment = Left;
+      else
+        alignment = Right;
+    }
+
+    return alignment;
+  }
+
 
   Atom::Atom(const QPointF &position, const QString &element, bool implicitHydrogens, 
      QGraphicsItem* parent, QGraphicsScene* scene) : QGraphicsItem (parent,scene)
@@ -75,6 +101,7 @@ namespace Molsketch {
     m_userCharge = 0; // The initial additional charge is zero
     m_userImplicitHydrogens =  0;
     enableImplicitHydrogens(implicitHydrogens);
+    computeBoundingRect();
   }
 
 
@@ -82,14 +109,104 @@ namespace Molsketch {
   // Inherited painting methods
   //////////////////////////////////////////////////////////////////////////////
 
+  void Atom::computeBoundingRect()
+  {
+    //qDebug() << "Atom::computeBoundingRect";
+    int alignment = labelAlignment(this);
+    bool leftAligned = false;
+    switch (alignment) {
+      case Left:
+        leftAligned = true;
+      default:
+        break;
+    }
+
+    int hCount = numberOfImplicitHydrogens();
+
+    QString lbl;
+    if (hCount && leftAligned)
+      lbl += "H";
+    if ((hCount > 1) && leftAligned)
+      lbl += QString::number(hCount);
+
+    lbl += m_elementSymbol;
+    
+    if (hCount && !leftAligned)
+      lbl += "H";
+    if ((hCount > 1) && !leftAligned)
+      lbl += QString::number(hCount);
+
+    // get the font & metrics
+    QSettings settings;
+    QFont symbolFont = settings.value("atom-symbol-font").value<QFont>();
+    QFont subscriptFont = symbolFont;
+    subscriptFont.setPointSize(0.75 * symbolFont.pointSize());
+    QFontMetrics fmSymbol(symbolFont);
+    QFontMetrics fmScript(subscriptFont);
+
+    // compute the total width
+    qreal totalWidth = 0.0;
+    if ((alignment == Right) || (alignment == Left) || !lbl.contains("H")) {
+      for (int i = 0; i < lbl.size(); ++i) {
+        if (lbl[i].isDigit())
+          totalWidth += fmScript.width(lbl[i]);
+        else
+          totalWidth += fmSymbol.width(lbl[i]);
+      }
+    } else {
+      totalWidth = fmSymbol.width(lbl.left(lbl.indexOf("H")));
+      qreal width = 0.0; 
+      for (int i = lbl.indexOf("H"); i < lbl.size(); ++i) {
+        if (lbl[i].isDigit())
+          width += fmScript.width(lbl[i]);
+        else
+          width += fmSymbol.width(lbl[i]);
+      }
+
+      if (width > totalWidth)
+        totalWidth = width; 
+    }
+
+    QString str, subscript;
+    // compute the horizontal starting position
+    qreal xOffset, yOffset, yOffsetSubscript;
+    switch (alignment) {
+      case Right:
+        xOffset = - 0.5 * fmSymbol.width(lbl.left(1));
+        break;
+      case Left:
+        xOffset = 0.5 * fmSymbol.width(lbl.right(1)) - totalWidth;
+        break;
+      case Up:
+      case Down:
+        if (lbl.contains("H"))
+          xOffset = - 0.5 * fmSymbol.width(lbl.left(lbl.indexOf("H")));
+        else
+          xOffset = - 0.5 * totalWidth;
+        break;
+      default:
+        xOffset = - 0.5 * totalWidth;
+        break;
+    }
+    // compute the vertical starting position
+    yOffset = 0.5 * (fmSymbol.ascent() - fmSymbol.descent());
+    yOffsetSubscript = yOffset + fmSymbol.descent();
+
+    // compute the shape
+    if ((alignment == Right) || (alignment == Left) || !lbl.contains("H"))
+      m_shape = QRectF(xOffset, yOffsetSubscript - fmSymbol.height(), totalWidth, fmSymbol.height());
+    else {
+      if (alignment == Down)
+        m_shape = QRectF(xOffset, yOffsetSubscript - fmSymbol.height(), totalWidth, fmSymbol.ascent() + fmSymbol.height());
+      else
+        m_shape = QRectF(xOffset, yOffsetSubscript - fmSymbol.ascent() - fmSymbol.height(), totalWidth, fmSymbol.ascent() + fmSymbol.height());
+    }
+
+  }
+
   QRectF Atom::boundingRect() const
   {
-    /* FIXME The implicit hydrogens don't seem te be included */
-    if (m_shape.width() && m_shape.height())
-      return m_shape;
-    else
-      return QRectF(-ATOM_SIZE/2, -ATOM_SIZE/2, ATOM_SIZE, ATOM_SIZE);
-
+    return m_shape;
   }
 
   bool Atom::hasLabel() const
@@ -101,29 +218,6 @@ namespace Molsketch {
       return false;
 
     return true;
-  }
-
-  int labelAlignment(Atom *atom)
-  {
-    // compute the sum of the bond vectors, this gives
-    QPointF direction(0.0, 0.0);
-    foreach (Atom *nbr, atom->neighbors())
-      direction += atom->pos() - nbr->pos();
-
-    int alignment = 0;
-    if ((atom->numBonds() == 2) && (abs(direction.y()) > abs(direction.x()))) {
-      if (direction.y() <= 0.0)
-        alignment = Up;
-      else
-        alignment = Down;
-    } else {
-      if (direction.x() < 0.0)
-        alignment = Left;
-      else
-        alignment = Right;
-    }
-
-    return alignment;
   }
 
   void Atom::drawAtomLabel(QPainter *painter, const QString &lbl, int alignment)
@@ -419,7 +513,8 @@ namespace Molsketch {
   void Atom::setElement(const QString &element)
   {
     m_elementSymbol = element;
-    update();
+    prepareGeometryChange();
+    computeBoundingRect();
   }
 
   void Atom::setNumberOfImplicitHydrogens(int number)
@@ -458,6 +553,34 @@ namespace Molsketch {
     sum += numberOfImplicitHydrogens();
 
     return sum;
+  }
+      
+  int Atom::numNonBondingElectrons() const
+  {
+    int boSum = bondOrderSum();
+    switch (elementGroup(symbol2number(m_elementSymbol))) {
+      case 1:
+      case 2:
+      case 13:
+      case 14:
+        return 0;
+      case 15:
+        if (boSum > 3)
+          return 0;
+        else
+          return 2 + 3 - boSum;
+      case 16:
+        return 4;
+      case 17:
+        if (boSum == 1)
+          return 6;
+        else
+          return 8;
+      case 18:
+        return 8;
+
+    
+    }
   }
 
 	QString Atom::string () const {
@@ -594,6 +717,8 @@ namespace Molsketch {
     Q_CHECK_PTR(atom);
     if (!m_neighbors.contains(atom))
       m_neighbors.append(atom);
+    prepareGeometryChange();
+    computeBoundingRect();
   }
 
   void Atom::removeNeighbor(Atom *atom)

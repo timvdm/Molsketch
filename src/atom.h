@@ -21,7 +21,7 @@
 #ifndef MSK_ATOM_H
 #define MSK_ATOM_H
 
- #include <QGraphicsItem>
+#include <QGraphicsItem>
 #include <QList>
 
 namespace Molsketch {
@@ -125,6 +125,10 @@ namespace Molsketch {
        * Get the sum of the bond orders of all bonds to this atom.
        */
       int bondOrderSum() const;
+      /**
+       * Get the number of non-bonding electrons (e.g. 4 for O=, 2 for NH3, 1 for radicals).
+       */
+      int numNonBondingElectrons() const;
       /** 
        * Returns whether the atom uses implicit hydrogens 
        */
@@ -176,6 +180,12 @@ namespace Molsketch {
 
     private:
       void drawAtomLabel(QPainter *painter, const QString &lbl, int alignment);
+
+      /**
+       * Compute the boudning rect for this atom. This function needs to be called after changing
+       * the elelement symbol, adding bonds, ...
+       */
+      void computeBoundingRect();
 
       // Internal representation
       /** Represents the atom's element symbol. */
