@@ -210,7 +210,7 @@ public slots:
   /** Sets the bond type. */
   void setBondType(int type);
   /** Slot to add a copy of molecule @p mol. */
-  void addMolecule(QListWidgetItem* mol);
+//  void addMolecule(QListWidgetItem* mol);
   /** Slot to add a copy of molecule @p mol. */
   void addMolecule(Molecule* mol);
   /** Slot to align the molecules of the scene to the grid. */

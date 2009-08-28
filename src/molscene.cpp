@@ -394,6 +394,7 @@ namespace Molsketch {
     return molC;
   }
 
+  /** obsolete
   void MolScene::addMolecule(QListWidgetItem* mol )
   {
     // Extract the molecule and add it to the sceneMolecule* m
@@ -405,6 +406,7 @@ namespace Molsketch {
 
     addMolecule(m);
   }
+  */
 
   void MolScene::addMolecule(Molecule* mol)
   {
@@ -517,12 +519,13 @@ namespace Molsketch {
   {
     Q_ASSERT (angle > 0 and angle <= 360);
 
+    // delete previous hint items
+    foreach (QGraphicsItem* item, m_hintPoints) 
+      delete item;
+    m_hintPoints.clear();
+    
     // Set the new hintPointCount and reinitialize
     m_bondAngle = angle;
-
-    // Reinitialize hintitems
-    foreach (QGraphicsItem* item, m_hintPoints) delete item;
-    m_hintPoints.clear();
     initHintItems();
   }
 
@@ -931,20 +934,8 @@ namespace Molsketch {
 
   void MolScene::mousePressEvent(QGraphicsSceneMouseEvent* event)
   {
-	  
-	  
-	  // Execute default behavior
-	  QGraphicsScene::mousePressEvent(event);
-	  
-	  
-	  
-	  
-    //   // Execute default behavior
-    //   QGraphicsScene::mousePressEvent(event);
-
     // Execute extended behavior depending on edit mode and mouse button
-    switch (event->button())
-    {
+    switch (event->button()) {
       case Qt::RightButton:
         delModePress( event );
         break;
@@ -952,8 +943,7 @@ namespace Molsketch {
         moveModePress( event );
         break;
       case Qt::LeftButton:
-        switch (m_editMode)
-        {
+        switch (m_editMode) {
           case MolScene::DrawMode:
             addModePress( event );
             break;
@@ -978,7 +968,9 @@ namespace Molsketch {
       default:
         break;
     }
-
+	  
+    // Execute default behavior
+    QGraphicsScene::mousePressEvent(event);	
   }
 
   void MolScene::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
@@ -998,30 +990,18 @@ namespace Molsketch {
       Bond *bond = bondAt(downPos);
       if (bond)
         alignRingWithBond(bond, downPos);
-
     } 
 
-    switch (event->buttons())
-    {
-      //     case Qt::MidButton:
-      //       moveModeMove(event);
-      //       break;
-      default:
-        switch (m_editMode)
-        {
-          case MolScene::DrawMode:
-            addModeMove(event);
-            break;
-            //         case MolScene::MoveMode:
-            //           moveModeMove(event);
-            //           break;
-          case MolScene::RotateMode:
-            rotateModeMove(event);
-            break;
-          case MolScene::LassoMode:
-            lassoModeMove(event);
-            break;
-        }	
+    switch (m_editMode) {
+      case MolScene::DrawMode:
+        addModeMove(event);
+        break;
+      case MolScene::RotateMode:
+        rotateModeMove(event);
+        break;
+      case MolScene::LassoMode:
+        lassoModeMove(event);
+        break;
     }
 
     // Execute default behavior
@@ -1029,44 +1009,41 @@ namespace Molsketch {
   }
 
 
-void MolScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
-{
-
-  // Determin the right action
-  switch (event->button())
+  void MolScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
   {
-    case Qt::RightButton:
-      break;
-    case Qt::MidButton:
-      moveModeRelease(event);
-      break;
-    default:
-      switch (m_editMode)
-      {
-        case MolScene::DrawMode:
+    // Determin the right action
+    switch (event->button()) {
+      case Qt::RightButton:
+        break;
+      case Qt::MidButton:
+        moveModeRelease(event);
+        break;
+      default:
+        switch (m_editMode) {
+          case MolScene::DrawMode:
             addModeRelease(event);
             clearSelection();
             break;
-        case MolScene::MoveMode:
+          case MolScene::MoveMode:
             moveModeRelease(event);
             break;
-        case MolScene::LassoMode:
+          case MolScene::LassoMode:
             lassoModeRelease(event);
             break;
-        case MolScene::RotateMode:
-          rotateModeRelease(event);
-          break;
-	case MolScene::TextMode:
-	  textModeRelease (event);
-		  case MolScene::MinimiseMode:
-			  minimiseModeRelease (event);
-	  break;
+          case MolScene::RotateMode:
+            rotateModeRelease(event);
+            break;
+          case MolScene::TextMode:
+            textModeRelease (event);
+          case MolScene::MinimiseMode:
+            minimiseModeRelease (event);
+            break;
         }
     }
 
-  // Execute the normal behavior
-  QGraphicsScene::mouseReleaseEvent(event);
-}
+    // Execute the normal behavior
+    QGraphicsScene::mouseReleaseEvent(event);
+  }
 
 
 void MolScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * event )
@@ -1094,46 +1071,53 @@ void MolScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * event )
   QGraphicsScene::mouseDoubleClickEvent( event );
 }
 
-void MolScene::moveModePress(QGraphicsSceneMouseEvent* event)
-{
-  // Check whether to select an item
-  QGraphicsItem * item = itemAt(event->scenePos());
-  if (item && !item->isSelected()) {
-    clearSelection();
-    item->setSelected(true);
+  //////////////////////////////////////////////////////////
+  // Move Mode
+  //////////////////////////////////////////////////////////
+
+  void MolScene::moveModePress(QGraphicsSceneMouseEvent* event)
+  {
+    // Check whether to select an item
+    QGraphicsItem * item = itemAt(event->scenePos());
+    if (item && !item->isSelected()) {
+      clearSelection();
+      item->setSelected(true);
+      event->accept();
+    }
+
+    // Flag the selected items as moveable
+    clearFocus();
+    foreach(QGraphicsItem* item, selectedItems()) 
+      item->setFlag(QGraphicsItem::ItemIsMovable, true);
+    emit copyAvailable(!selectedItems().isEmpty());
   }
 
-  // Flag the selected items as moveable
-  clearFocus();
-  foreach(QGraphicsItem* item,selectedItems()) item->setFlag(QGraphicsItem::ItemIsMovable,true);
-  emit copyAvailable(!selectedItems().isEmpty());
-}
+  void MolScene::moveModeMove(QGraphicsSceneMouseEvent* event)
+  {
+    event->accept();
+  }
 
-void MolScene::moveModeMove(QGraphicsSceneMouseEvent* event)
-{
-  event->accept();
-}
+  void MolScene::moveModeRelease(QGraphicsSceneMouseEvent* event)
+  {
+    QPointF moveVector = event->scenePos() - event->buttonDownScenePos(event->button());
+    if (moveVector.isNull()) {
+      clearFocus();
+      return;
+    }
+    
+    m_stack->beginMacro(tr("moving item(s)"));
+    foreach(QGraphicsItem* item, selectedItems()) {
+      // reset the movement
+      item->moveBy(-moveVector.x(), -moveVector.y());
+      // perform the movement as undoable command
+      if (!moveVector.isNull()) 
+        m_stack->push(new MoveItem(item, moveVector, tr("moving item(s)")));
+      item->setFlag(QGraphicsItem::ItemIsMovable, false);
+    }
+    m_stack->endMacro();
 
-      void MolScene::moveModeRelease(QGraphicsSceneMouseEvent* event)
-      {
-        QPointF moveVector = event->scenePos() - event->buttonDownScenePos(event->button());
-        if(moveVector.isNull()) 
-          {
-            clearFocus();
-            return;
-          }
-
-          m_stack->beginMacro(tr("moving item(s)"));
-
-        foreach(QGraphicsItem* item,selectedItems())
-        {
-          item->moveBy(-moveVector.x(), -moveVector.y());
-          if (!moveVector.isNull()) m_stack->push(new MoveItem(item,moveVector,tr("moving item(s)")));
-          item->setFlag(QGraphicsItem::ItemIsMovable,false);
-        }
-        m_stack->endMacro();
-        clearFocus();
-      }
+    clearFocus();
+  }
 
 	void MolScene::minimiseModePress (QGraphicsSceneMouseEvent* event) {
 		Bond *bond = bondAt (event ->scenePos());
@@ -1184,19 +1168,23 @@ void MolScene::moveModeMove(QGraphicsSceneMouseEvent* event)
 	}
 
 	
-	void MolScene::lassoModePress(QGraphicsSceneMouseEvent* event)
-	{
-		foreach(QGraphicsItem* item, items())
-		if (item->type() == Molecule::Type || item->type() == Atom::Type) 
-			item->setFlag(QGraphicsItem::ItemIsSelectable,true);
-	
-		
-		
-		lassoPolygon ->show ();
-		lassoTrail.clear ();
-		lassoTrail.push_back (event->scenePos());
+  void MolScene::lassoModePress(QGraphicsSceneMouseEvent* event)
+  {
+    foreach(QGraphicsItem* item, items())
+    switch (item->type()) {
+      case Molecule::Type:
+      case Atom::Type:
+      case Bond::Type:
+        item->setFlag(QGraphicsItem::ItemIsSelectable, true);
+        break;
+      default:
+        break;
+    }
 
-	}
+    lassoPolygon->show();
+    lassoTrail.clear();
+    lassoTrail.push_back(event->scenePos());
+  }
 	
 	void MolScene::lassoModeMove(QGraphicsSceneMouseEvent* event)
 	{
@@ -1492,7 +1480,7 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
 
           Q_CHECK_PTR(m_hintMolecule);
           foreach (Atom *hintAtom, m_hintMolecule->atoms())
-            m_stack->push(new AddAtom(new Atom( hintAtom->scenePos(), hintAtom->element(), m_autoAddHydrogen ), mol));
+            m_stack->push(new AddAtom(new Atom( hintAtom->scenePos(), hintAtom->element(), m_autoAddHydrogen), mol));
           m_stack->endMacro();
         }
 
@@ -1505,7 +1493,7 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
           //m_stack->push(new AddItem(mol,this));
           //m_stack->push(new AddAtom(new Atom( downPos, m_currentElementSymbol, m_autoAddHydrogen ), mol));
           //m_stack->endMacro();
-          addItem(new Atom( downPos, m_currentElementSymbol, m_autoAddHydrogen ));
+          addItem(new Atom( downPos, m_currentElementSymbol, m_autoAddHydrogen));
         }
       }
     }
@@ -1583,8 +1571,6 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
     qDebug() << "    m2 =" << m2;
     */
 
-
-
     if (!a1 && !b) return;
     if (b && !a1) return;
 
@@ -1634,8 +1620,8 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
       // Check for merge
       if (m1 && m2 && (m1 != m2)) {
         m_stack->push(new MergeMol(m1, m2, m1));
-        a1 = m1->atomAt(downPos);
-        a2 = m1->atomAt(upPos);
+        a1 = m1->atomAt(a1->scenePos());
+        a2 = m1->atomAt(a2->scenePos());
         m1->setFocus();
       } 
 
@@ -1712,7 +1698,8 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
   void MolScene::delModeDoubleClick( QGraphicsSceneMouseEvent * event )
   {
     Molecule* item = moleculeAt(event->scenePos());
-    if (item) m_stack->push(new DelItem(item,tr("removing molecule")));
+    if (item) 
+      m_stack->push(new DelItem(item,tr("removing molecule")));
   }
 
   void MolScene::keyPressEvent(QKeyEvent* keyEvent)
@@ -1878,7 +1865,7 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
 			//	OpenBabel::OBAtom *obatom = obmol ->GetAtom(i);
 			//  			scene->addRect(QRectF(atom->GetX(),atom->GetY(),5,5));
 			//           Atom* atom =
-			ats.push_back (new Atom (QPointF((obatom->x() - x)*k,(-obatom->y()-y)*k),number2symbol(obatom->GetAtomicNum()), autoAddHydrogen ()));
+			ats.push_back (new Atom (QPointF((obatom->x() - x)*k,(-obatom->y()-y)*k),number2symbol(obatom->GetAtomicNum()), autoAddHydrogen (), mol));
 			//mol->addAtom();
 		}
 		
