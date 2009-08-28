@@ -51,11 +51,11 @@ namespace Molsketch {
     atomB->addNeighbor(atomA);
   
     setPos(m_beginAtom->scenePos());
-	  MolScene* molScene = dynamic_cast<MolScene*>(scene);
-	  if (molScene) setColor (molScene ->color);
-	  else {
-		  setColor (QColor (0, 0, 0));
-	  }
+    MolScene* molScene = dynamic_cast<MolScene*>(scene);
+    if (molScene) 
+      setColor(molScene->color);
+    else 
+      setColor(QColor(0, 0, 0));
 
   //   setFlag(QGraphicsItem::ItemIsSelectable);
   //   setAcceptedMouseButtons(Qt::LeftButton);
@@ -259,7 +259,7 @@ namespace Molsketch {
     painter->save();
     QPen pen;
     pen.setWidthF(molScene->bondWidth());
-	pen.setColor (m_color);
+    pen.setColor (m_color);
     painter->setPen(pen);
 
 
@@ -290,6 +290,25 @@ namespace Molsketch {
       default:
         drawSimpleBond(painter);
     }
+
+    if (isSelected()) {
+      // draw square brackets around bond when selected
+      painter->setPen(Qt::blue);
+      QPointF begin = mapFromParent(m_beginAtom->pos());
+      QPointF end = mapFromParent(m_endAtom->pos());
+      QPointF vb = end - begin;
+      QPointF uvb = vb / sqrt(vb.x()*vb.x() + vb.y()*vb.y());
+      QPointF orthogonal(uvb.y(), -uvb.x());
+
+      painter->drawLine(QLineF(begin + 10.0 * orthogonal, begin + 10.0 * orthogonal + 10.0 * uvb));
+      painter->drawLine(QLineF(begin - 10.0 * orthogonal, begin - 10.0 * orthogonal + 10.0 * uvb));
+      painter->drawLine(QLineF(begin + 10.0 * orthogonal, begin - 10.0 * orthogonal));
+      painter->drawLine(QLineF(end + 10.0 * orthogonal, end + 10.0 * orthogonal - 10.0 * uvb));
+      painter->drawLine(QLineF(end - 10.0 * orthogonal, end - 10.0 * orthogonal - 10.0 * uvb));
+      painter->drawLine(QLineF(end + 10.0 * orthogonal, end - 10.0 * orthogonal));
+    }
+
+
 
     // Restore old painter
     painter->restore();
