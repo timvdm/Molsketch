@@ -29,6 +29,11 @@ int main(int argc, char *argv[])
 {
   QApplication app(argc, argv);
 
+  QCoreApplication::setOrganizationName("SourceForge");
+  QCoreApplication::setOrganizationDomain("sourceforge.com");
+  QCoreApplication::setApplicationName("Molsetch");
+
+
   // Add support for i18n
   QString locale = QLocale::system().name();
   QTranslator translator;
