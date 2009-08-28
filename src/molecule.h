@@ -72,6 +72,10 @@ class Molecule : public QGraphicsItemGroup
       {
         return Type;
       };
+
+
+    QRectF boundingRect() const;
+
     /** Paint method to draw the atom onto a QPainter. Needed for Qt painting.*/
     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget);
 

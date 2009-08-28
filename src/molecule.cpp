@@ -59,7 +59,7 @@ Molecule::Molecule(QSet<Atom*> atomSet, QSet<Bond*> bondSet,
 
   // Add the new atoms
 	foreach(Atom* atom, atomSet) {
-		Atom *a = new Atom(atom->scenePos(), atom->element(), atom->hasImplicitHydrogens());
+		Atom *a = new Atom(atom->scenePos(), atom->element(), atom->hasImplicitHydrogens(), this);
 		a ->setColor (atom ->getColor ());
     addAtom(a);
 	}
@@ -85,7 +85,7 @@ Molecule::Molecule(Molecule* mol, QGraphicsItem* parent, MolScene* scene) : QGra
   // Add the new atoms
   foreach(Atom* atom, mol->atoms())
   {
-	  Atom *a = new Atom(atom->pos(),atom->element(), atom->hasImplicitHydrogens());
+	  Atom *a = new Atom(atom->pos(),atom->element(), atom->hasImplicitHydrogens(), this);
 	  a ->setColor(atom ->getColor ());
     addAtom(a);
   }
@@ -116,7 +116,7 @@ Atom* Molecule::addAtom(const QString &element, const QPointF &point, bool impli
   Q_ASSERT(!element.isEmpty());
   //post: an atom of element has been added to the molecule
 //   Atom* atom = new Atom(point,element,((element == "C") && !(scene()->getShowCarbon() ) || ((element == "H") && !(scene()->getShowHydrogen()))),this);
-  Atom* atom = new Atom(point,element,implicitHydrogen);
+  Atom* atom = new Atom(point,element,implicitHydrogen, this);
 	atom ->setColor (c);
   return addAtom(atom);
 }
@@ -544,11 +544,19 @@ void Molecule::rebuild()
 
   // Remove and then readd all elements
   prepareGeometryChange();
-  foreach(Bond* bond, m_bondList) removeFromGroup(bond);
-  foreach(Atom* atom, m_atomList) removeFromGroup(atom);
+  /*
+  foreach(Bond* bond, m_bondList) 
+    removeFromGroup(bond);
+  foreach(Atom* atom, m_atomList) 
+    removeFromGroup(atom);
   resetTransform();
-  foreach(Atom* atom, m_atomList) addToGroup(atom);
-  foreach(Bond* bond, m_bondList) addToGroup(bond);
+  foreach(Atom* atom, m_atomList) 
+    addToGroup(atom);
+  foreach(Bond* bond, m_bondList) 
+    addToGroup(bond);
+    */
+  update();
+  
 }
 
 
@@ -611,18 +619,24 @@ void Molecule::paint(QPainter * painter, const QStyleOptionGraphicsItem * option
   Q_UNUSED(widget)
 
   if(isSelected()) {
-//     painter->setBrush(Qt::blue);
-    painter->setPen(QPen(Qt::black, 2));
-//     painter->setOpacity(0.5);
+    painter->setBrush(Qt::yellow);
+    painter->setOpacity(0.2);
     painter->drawRect(boundingRect());
   }
+  /*
   if(hasFocus()) {
-    painter->setBrush(Qt::blue);
+    painter->setBrush(Qt::yellow);
     painter->setPen(Qt::NoPen);
-    painter->setOpacity(0.04);
+    painter->setOpacity(0.3);
     painter->drawRect(boundingRect());
   }
+  */
 }
+  
+  QRectF Molecule::boundingRect() const
+  {
+    return childrenBoundingRect();
+  }
 
   MolScene* Molecule::scene() const
   {
