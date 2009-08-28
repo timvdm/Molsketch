@@ -22,6 +22,8 @@ set(libmolsketch_SRCS
     minimise.cpp
     TextInputItem.cpp
     osra.cpp
+    electronsystem.cpp
+    residue.cpp
 )
 set(molsketch_SRCS 
     main.cpp 

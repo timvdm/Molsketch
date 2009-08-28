@@ -27,163 +27,200 @@
 
 OpenBabel::OBElementTable eTable;
 
-QString Molsketch::number2symbol( int number )
-{
-  return eTable.GetSymbol(number);
-}
+namespace Molsketch {
 
-QString Molsketch::position2symbol( int row, int column )
-{
-  switch (row)
+  QString number2symbol( int number )
   {
-    case 1 :
-      if (column == 1) return eTable.GetSymbol(1);
-      if (column == 18) return eTable.GetSymbol(2);
-      return "";
-    case 2 :
-      if (column <= 2) return eTable.GetSymbol(2 + column);
-      if (column >= 13) return eTable.GetSymbol(4 + column - 12);
-      return "";
-    case 3 :
-      if (column <= 2) return eTable.GetSymbol(10 + column);
-      if (column >= 13) return eTable.GetSymbol(12 + column - 12);
-      return "";
-    case 4 :
-      return eTable.GetSymbol(18 + column);
-    case 5 :
-      return eTable.GetSymbol(36 + column);
-    case 6 :
-      if (column <= 2) return eTable.GetSymbol(54 + column);
-      if (column >= 4) return eTable.GetSymbol(71 + column - 3);
-      return "";
-    case 7 :
-      if (column <= 2) return eTable.GetSymbol(86 + column);
-      if (column >= 4 and column <= 16) return eTable.GetSymbol(103 + column - 3);
-      return "";
-    case 8 :
-      return "";
-    case 9 :
-      if (column <= 2) return "";
-      if (column >= 3 and column < 18) return eTable.GetSymbol(57 + column - 3);
-      return "";
-    case 10:
-      if (column <= 2) return "";
-      if (column >= 3 and column < 18) return eTable.GetSymbol(89 + column - 3);
-      return "";
-    default:
-      return "";
-  }
-}
-
-int Molsketch::symbol2number( const QString &symbol )
-{
-  return eTable.GetAtomicNum(symbol.toAscii());;
-//   for( int i = 0; i < m_size; i++) if (symbols()[i]==symbol) return i+1;
-//   return -1;
-}
-
-double Molsketch::weightOfElement( int number )
-{
-  return  eTable.GetMass(number);
-}
-
-int Molsketch::numValenceElectrons(int element)
-{
-  // @todo implement other elements
-  switch (element) {
-    case 1: // H
-    case 11: // Na
-    case 19: // K
-    case 37: // Rb
-    case 87: // Fr
-      return 1;
-    case 4: // Be
-    case 12: // Mg
-    case 20: // Ca
-    case 38: // Sr
-    case 56: // Ba
-    case 88: // Ra
-      return 2;
-    case 5: // B
-    case 13: // Al
-    case 31: // Ga
-    case 49: // In
-    case 81: // Tl
-    case 113: // Uut 
-      return 3;
-    case 6: // C
-    case 14: // Si
-    case 32: // Ge
-    case 50: // Sn
-    case 82: // Pb
-    case 114: // Uuq
-      return 4;
-    case 7: // N
-    case 15: // P
-    case 33: // As
-    case 51: // Sb
-    case 83: // Bi
-    case 115: // Uup
-      return 5;
-    case 8: // O
-    case 16: // S
-    case 34: // Se
-    case 52: // Te
-    case 84: // Po
-    case 116: // Uuh
-      return 6; 
-    case 9: // F
-    case 17: // Cl
-    case 35: // Br
-    case 53: // I
-    case 85: // At
-    case 117: // Uus
-      return 7;
-    default:
-      return 8; // makes charge 0
+    return eTable.GetSymbol(number);
   }
 
-}
-
-int Molsketch::expectedValence(int element)
-{
-  // @todo implement other elements
-  switch (element) {
-    case 1: // H
-    case 11: // Na
-    case 19: // K
-      return 1;
-    case 4: // Be
-    case 12: // Mg
-    case 20: // Ca
-      return 2;
-    case 5: // B
-    case 13: // Al
-    case 31: // Ga
-      return 3;
-    case 6: // C
-    case 14: // Si
-    case 32: // Ge
-      return 4;
-    case 7: // N
-    case 15: // P
-    case 33: // As
-      return 3;
-    case 8: // O
-    case 16: // S
-    case 34: // Se
-      return 2; 
-    case 9: // F
-    case 17: // Cl
-    case 35: // Br
-    case 53: // I
-      return 1;
-    default:
-      return 0;  
+  int symbol2number( const QString &symbol )
+  {
+    return eTable.GetAtomicNum(symbol.toAscii());;
   }
-}
 
-int Molsketch::getSize()
-{
-  return 111;
+  double weightOfElement( int number )
+  {
+    return  eTable.GetMass(number);
+  }
+
+  int elementGroup(int element)
+  {
+    switch (element) {
+      case Element::H: 
+      case Element::Li:
+      case Element::Na:
+      case Element::K: 
+      case Element::Rb: 
+      case Element::Cs: 
+      case Element::Fr: 
+        return 1;
+      case Element::Be: 
+      case Element::Mg: 
+      case Element::Ca: 
+      case Element::Sr: 
+      case Element::Ba: 
+      case Element::Ra: 
+        return 2;
+      case Element::Ti: 
+      case Element::Zr: 
+      case Element::Hf: 
+      case Element::Rf: 
+        return 4;
+      case Element::V:
+      case Element::Nb:
+      case Element::Ta:
+      case Element::Db:
+        return 5;
+      case Element::Cr:
+      case Element::Mo:
+      case Element::W:
+      case Element::Sg:
+        return 6;
+      case Element::Mn:
+      case Element::Tc:
+      case Element::Re:
+      case Element::Bh:
+        return 7;
+      case Element::Fe:
+      case Element::Ru:
+      case Element::Os:
+      case Element::Hs:
+        return 8;
+      case Element::Co:
+      case Element::Rh:
+      case Element::Ir:
+      case Element::Mt:
+        return 9;
+      case Element::Ni:
+      case Element::Pd:
+      case Element::Pt:
+      case Element::Ds:
+        return 10;
+      case Element::Cu:
+      case Element::Ag:
+      case Element::Au:
+      case Element::Rg:
+        return 11;
+      case Element::Zn:
+      case Element::Cd:
+      case Element::Hg:
+      case Element::Uub:
+        return 12;
+      case Element::B: 
+      case Element::Al: 
+      case Element::Ga: 
+      case Element::In: 
+      case Element::Tl: 
+      case Element::Uut:
+        return 13;
+      case Element::C: 
+      case Element::Si: 
+      case Element::Ge: 
+      case Element::Sn: 
+      case Element::Pb: 
+        return 14;
+      case Element::N: 
+      case Element::P: 
+      case Element::As: 
+      case Element::Sb: 
+      case Element::Bi: 
+        return 15;
+      case Element::O: 
+      case Element::S: 
+      case Element::Se: 
+      case Element::Te: 
+      case Element::Po: 
+        return 16; 
+      case Element::F: 
+      case Element::Cl: 
+      case Element::Br: 
+      case Element::I: 
+      case Element::At: 
+        return 17;
+      case Element::He:
+      case Element::Ne:
+      case Element::Ar:
+      case Element::Kr:
+      case Element::Xe:
+      case Element::Rn:
+        return 18;
+      default:
+        return 3; // Lanthanides & Actinides
+    }
+
+  }
+
+  int numValenceElectrons(int element)
+  {
+    // @todo implement other elements
+    switch (elementGroup(element)) {
+      case 1:
+        return 1;
+      case 2:
+        return 2;
+      case 3:
+        return 1;
+      case 4:
+        return 2;
+      case 5:
+        return 3;
+      case 6:
+        return 4;
+      case 7:
+        return 5;
+      case 8:
+        return 6;
+      case 9:
+        return 7;
+      case 10:
+        return 8;
+      case 11:
+        return 9;
+      case 12:
+        return 10;
+      case 13:
+        return 3;
+      case 14:
+        return 4;
+      case 15:
+        return 5;
+      case 16:
+        return 6;
+      case 17:
+        return 7;
+      case 18:
+        // special case
+        if (element == Element::He)
+          return 2;
+        return 8;
+      default:
+        return 8; // makes charge 0
+    }
+
+  }
+
+  int expectedValence(int element)
+  {
+    switch (elementGroup(element)) {
+      case 1:
+        return 1;
+      case 2:
+        return 2;
+      case 13:
+        return 3;  
+      case 14:
+        return 4;
+      case 15:
+        return 3;
+      case 16:
+        return 2;
+      case 17:
+        return 1; 
+      default:
+        return 0; // trasition metals + noble gases 
+    }
+  }
+
+
 }
