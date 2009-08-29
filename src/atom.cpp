@@ -86,7 +86,7 @@ namespace Molsketch {
       setFlag(QGraphicsItem::ItemIsSelectable, molScene->editMode() == MolScene::MoveMode);
 	  
 	  if (molScene) {
-		  setColor (molScene ->color);    // Setting initial parameters
+		  setColor (molScene ->color());    // Setting initial parameters
 	  }
 	  else setColor (QColor (0, 0, 0));
     // Enabling hovereffects
@@ -121,7 +121,7 @@ namespace Molsketch {
         break;
     }
 
-    int hCount = numberOfImplicitHydrogens();
+    int hCount = numImplicitHydrogens();
 
     QString lbl;
     if (hCount && leftAligned)
@@ -380,8 +380,8 @@ namespace Molsketch {
             return;
         }
   //      qDebug() << "bondOrderSum = " << bondOrderSum();
-    //    qDebug() << "# implicit H = " << numberOfImplicitHydrogens();
-        //if (m_elementSymbol == "C" && !molScene->carbonVisible() && ((bondOrderSum() - numberOfImplicitHydrogens()) > 2 && charge() == 0 || !molScene->chargeVisible())) {
+    //    qDebug() << "# implicit H = " << numImplicitHydrogens();
+        //if (m_elementSymbol == "C" && !molScene->carbonVisible() && ((bondOrderSum() - numOfImplicitHydrogens()) > 2 && charge() == 0 || !molScene->chargeVisible())) {
         if ((m_elementSymbol == "C") && !molScene->carbonVisible() && (numBonds() > 1) && ((charge() == 0) || !molScene->chargeVisible())) {
             m_drawn = false;
             return;
@@ -399,7 +399,7 @@ namespace Molsketch {
         break;
     }
 
-    int hCount = numberOfImplicitHydrogens();
+    int hCount = numImplicitHydrogens();
 
     QString lbl;
     if (hCount && leftAligned)
@@ -435,8 +435,8 @@ namespace Molsketch {
     }
 
     // Draw unbound electrons
-    if (0) /*molScene->chargeVisible()*/ {
-        int unboundElectrons = 8;
+//    if (0) /*molScene->chargeVisible()*/ {
+        int unboundElectrons = numNonBondingElectrons();
         QList<QRectF> layoutList;
 
         // Loading different layouts
@@ -456,7 +456,7 @@ namespace Molsketch {
             painter->drawEllipse(layoutList[i]);
 
         painter->restore();
-    }
+   // }
 
   }
 
@@ -517,15 +517,15 @@ namespace Molsketch {
     computeBoundingRect();
   }
 
-  void Atom::setNumberOfImplicitHydrogens(int number)
+  void Atom::setNumImplicitHydrogens(int number)
   {
     Q_ASSERT (number >= 0);
 
     m_implicitHydrogens = true;
 
-//  int deltaNoIH = number - m_numberOfImplicitHydrogens;
-//  int newNoB = m_numberOfBonds - deltaNoIH;
-  //m_numberOfBonds = (newNoB < 0) ? 0 : newNoB;
+//  int deltaNoIH = number - m_numImplicitHydrogens;
+//  int newNoB = m_numBonds - deltaNoIH;
+  //m_numBonds = (newNoB < 0) ? 0 : newNoB;
 
   m_userImplicitHydrogens = number;
 }
@@ -550,7 +550,7 @@ namespace Molsketch {
       sum += bond->bondOrder();
 
     // take implicit hydrogens into account 
-    sum += numberOfImplicitHydrogens();
+    sum += numImplicitHydrogens();
 
     return sum;
   }
@@ -570,7 +570,18 @@ namespace Molsketch {
         else
           return 2 + 3 - boSum;
       case 16:
-        return 4;
+        switch (boSum) {
+          case 0:
+            return 6;
+          case 1:
+            return 5;
+          case 2:
+            return 4;
+          case 3:
+            return 2;
+          default:
+            return 0;
+        }
       case 17:
         if (boSum == 1)
           return 6;
@@ -578,14 +589,14 @@ namespace Molsketch {
           return 8;
       case 18:
         return 8;
-
-    
+      default:
+        return 0;    
     }
   }
 
 	QString Atom::string () const {
 		QString el = element ();
-		int n = numberOfImplicitHydrogens();
+		int n = numImplicitHydrogens();
 		QString hs;
 		QString num = "";
 		if (n) {
@@ -597,11 +608,23 @@ namespace Molsketch {
 		return el+hs+q;
 	}
 	
-  int Atom::numberOfImplicitHydrogens() const
+  int Atom::numImplicitHydrogens() const
   {
     Molecule *mol = molecule();
     if (!mol) 
       return 0;
+    
+    switch (symbol2number(m_elementSymbol)) {
+      case Element::B:
+      case Element::C:
+      case Element::N:
+      case Element::O:
+      case Element::P:
+      case Element::S:
+        break;
+      default:
+        return 0;
+    }
 
     // count explicit bonds
     int bosum = 0;
@@ -624,28 +647,12 @@ namespace Molsketch {
     int atomicNumber = symbol2number(m_elementSymbol);
     if (!atomicNumber)
       return m_userCharge;
-
-    int bosum = bondOrderSum();
-
-    if (m_elementSymbol == "H") {
-      if (bosum == 0) {
-        if (m_implicitHydrogens)
-          return 0 + m_userCharge;
-        else
-          return 1 + m_userCharge;
-      } else
-        return 1 - bosum + m_userCharge;
-    }
-    /*
-    qDebug() << "Atom::charge()";
-    qDebug() << "    element = " << m_elementSymbol;
-    qDebug() << "    numValenceElectrons = " << Molsketch::numValenceElectrons(Molsketch::symbol2number(m_elementSymbol));
-    qDebug() << "    bondOrderSum() = " << bondOrderSum();
-    qDebug() << "    charge = " << Molsketch::numValenceElectrons(Molsketch::symbol2number(m_elementSymbol)) 
-      - bondOrderSum() - (8 - 2 * bondOrderSum()) + m_userCharge;
-    */
-    return Molsketch::numValenceElectrons(Molsketch::symbol2number(m_elementSymbol)) 
-      - bondOrderSum() - (8 - 2 * bondOrderSum()) + m_userCharge;
+    
+    // special case: He uses duet rule (<-> octet rule)
+    if (atomicNumber == Element::He)
+      return m_userCharge;
+    
+    return Molsketch::numValenceElectrons(atomicNumber) - bondOrderSum() - numNonBondingElectrons() + m_userCharge;
   }
 
   void Atom::setCharge(int requiredCharge)
@@ -679,7 +686,7 @@ namespace Molsketch {
 
   qreal Atom::weight( ) const
   {
-    return Molsketch::weightOfElement(Molsketch::symbol2number(m_elementSymbol)) + numberOfImplicitHydrogens() * Molsketch::weightOfElement(1);
+    return Molsketch::weightOfElement(Molsketch::symbol2number(m_elementSymbol)) + numImplicitHydrogens() * Molsketch::weightOfElement(1);
   }
 
   Molecule * Atom::molecule() const
@@ -709,7 +716,7 @@ namespace Molsketch {
 
   void Atom::enableImplicitHydrogens(bool enabled)
   {
-    m_implicitHydrogens = enabled && (m_elementSymbol == "C" || m_elementSymbol == "N" || m_elementSymbol == "O");
+    m_implicitHydrogens = enabled/* && (m_elementSymbol == "C" || m_elementSymbol == "N" || m_elementSymbol == "O")*/;
   }
 
   void Atom::addNeighbor(Atom *atom)

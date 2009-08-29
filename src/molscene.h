@@ -48,24 +48,32 @@ class Molecule;
 class Atom;
 class Bond;
 
+  class MolSceneOptions
+  {
+    public:
+  
+  };
 
-/**
- * This class is a subclassed version of QGraphicsScene with addition of some extra methods and
- * event handling for molecules. In can be used in the same fashion as QGraphicsScene.
- *
- * @author Harm van Eersel
- * @since Hydrogen
- */
-class MolScene : public QGraphicsScene
-{
-  Q_OBJECT
 
-public:
-  // Constructor & destructor
-  /** Creates a new MolScene with @p parent */
-  MolScene(QObject* parent = 0);
-  /** Cleans up the UndoStack and deletes the molscene. */
-  ~MolScene();
+  /**
+   * This class is a subclassed version of QGraphicsScene with addition of some extra methods and
+   * event handling for molecules. In can be used in the same fashion as QGraphicsScene.
+   *
+   */
+  class MolScene : public QGraphicsScene
+  {
+    Q_OBJECT
+
+  public:
+    // Constructor & destructor
+    /**
+     * Creates a new MolScene with @p parent 
+     */
+    MolScene(QObject* parent = 0);
+    /** 
+     * Cleans up the UndoStack and deletes the molscene. 
+     */
+    ~MolScene();
 
 	
 	void addResidue (QPointF pos = QPointF (0, 0), QString name = "");	
@@ -264,17 +272,17 @@ protected:
 	
 
 	//lasso polygon
-	QVector <QPointF> lassoTrail;
-	QGraphicsPolygonItem *lassoPolygon;
+	QVector <QPointF> m_lassoTrail;
+	QGraphicsPolygonItem *m_lassoPolygon;
 	
 	//Item that is being rotated
-	QGraphicsItem *rotationItem;
+	QGraphicsItem *m_rotationItem;
 
 public:
 	//item to accept input for text tool
-	TextInputItem *inputTextItem;
+	TextInputItem *m_inputTextItem;
 	void setColor (QColor);
-	QColor color;
+        QColor color() const;
 
 
 private:
@@ -330,6 +338,8 @@ private:
   bool m_chargeVisible;
   /** Stores whether hydrogens are to be added automaticly.*/
   bool m_autoAddHydrogen;
+ 	
+  QColor m_color;
 	
       
   // Internal clipboard
@@ -359,22 +369,22 @@ private:
   /** Event handler for mouse releases in move mode.*/
   void moveModeRelease(QGraphicsSceneMouseEvent* event);
 	
-	/** Event handler for mouse presses in text mode. */
-	void textModePress(QGraphicsSceneMouseEvent* event);	
-	/** Event handler for mouse releases in text mode. */
-	void textModeRelease(QGraphicsSceneMouseEvent* event);
-	
-	/** Event handler for mouse presses in minimise mode. */
-	void minimiseModePress(QGraphicsSceneMouseEvent* event);	
-	/** Event handler for mouse releases in minimise mode. */
-	void minimiseModeRelease(QGraphicsSceneMouseEvent* event);
-	
-	/** Event handler for mouse presses in lasso mode. */
-	void lassoModePress(QGraphicsSceneMouseEvent* event);
-	/** Event handler for mouse moves in lasso mode.*/
-	void lassoModeMove(QGraphicsSceneMouseEvent* event);
-	/** Event handler for mouse releases in lasso mode.*/
-	void lassoModeRelease(QGraphicsSceneMouseEvent* event);
+  /** Event handler for mouse presses in text mode. */
+  void textModePress(QGraphicsSceneMouseEvent* event);	
+  /** Event handler for mouse releases in text mode. */
+  void textModeRelease(QGraphicsSceneMouseEvent* event);
+
+  /** Event handler for mouse presses in minimise mode. */
+  void minimiseModePress(QGraphicsSceneMouseEvent* event);	
+  /** Event handler for mouse releases in minimise mode. */
+  void minimiseModeRelease(QGraphicsSceneMouseEvent* event);
+
+  /** Event handler for mouse presses in lasso mode. */
+  void lassoModePress(QGraphicsSceneMouseEvent* event);
+  /** Event handler for mouse moves in lasso mode.*/
+  void lassoModeMove(QGraphicsSceneMouseEvent* event);
+  /** Event handler for mouse releases in lasso mode.*/
+  void lassoModeRelease(QGraphicsSceneMouseEvent* event);
 
   /** Event handler for mouse presses in rotate mode. */
   void rotateModePress(QGraphicsSceneMouseEvent* event);

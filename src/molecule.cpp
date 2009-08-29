@@ -130,7 +130,7 @@ Atom* Molecule::addAtom(Atom* atom)
   m_atomList.append(atom);
   addToGroup(atom);
 	if (scene ()) {
-		atom ->setColor (dynamic_cast<MolScene *> (scene ()) ->color);
+		atom ->setColor (dynamic_cast<MolScene *> (scene ()) ->color());
 	}
 
 //  /// Work-around qt-bug
@@ -161,12 +161,12 @@ Bond* Molecule::addBond(Bond* bond)
   Q_ASSERT(m_atomList.contains(bond->beginAtom()));
   Q_ASSERT(m_atomList.contains(bond->endAtom()));
 
-	if (scene ())	bond ->setColor (dynamic_cast<MolScene *> (scene ()) ->color);
+	if (scene ())	bond ->setColor (dynamic_cast<MolScene *> (scene ()) ->color());
   // Checking if and altering when a bond exists
   Bond* bondX = bondBetween(bond->beginAtom(), bond->endAtom());
 	if (bondX) {
 		delete bond;
-		if (scene ())	bondX ->setColor (dynamic_cast<MolScene *> (scene ()) ->color);
+		if (scene ())	bondX ->setColor (dynamic_cast<MolScene *> (scene ()) ->color());
 		return bondX;
 	}
 //   {
@@ -421,7 +421,7 @@ QString Molecule::formula( ) const
       hash.insert(element, hash.value(element,0) + 1 );
 
       // Add implicit hydrogens?
-      int hydrogens = atom->numberOfImplicitHydrogens();
+      int hydrogens = atom->numImplicitHydrogens();
       if ( hydrogens > 0 ) hash.insert("H", hash.value("H",0) + hydrogens );
     }
 

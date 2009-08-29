@@ -192,8 +192,8 @@ namespace Molsketch
             // Draw the element
             out << "<text x=\"" << atom->scenePos().x() << "\" y=\"" << atom->scenePos().y() + 5 << "\" font-family=\"Helvetica\" font-size=\"12\" fill=\"#000000\">";
             out << "<tspan text-anchor=\"middle\">" << atom->element();
-            if (atom->numberOfImplicitHydrogens()>0) out << "H";
-            if (atom->numberOfImplicitHydrogens()>1) out << "<tspan dy=\"4\" font-size=\"8\" >" << atom->numberOfImplicitHydrogens() << "</tspan>"; // baseline-shift=\"sub\"
+            if (atom->numImplicitHydrogens()>0) out << "H";
+            if (atom->numImplicitHydrogens()>1) out << "<tspan dy=\"4\" font-size=\"8\" >" << atom->numImplicitHydrogens() << "</tspan>"; // baseline-shift=\"sub\"
             out << "<tspan font-size=\"8\" dy=\"-10\" >" << atom->chargeString() << "</tspan>";
             out << "</tspan>"; //baseline-shift=\"super\"
             out << "</text>" << endl;

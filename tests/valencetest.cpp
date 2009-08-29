@@ -2,6 +2,8 @@
 #include <QtTest>
 
 #include <molsketch/element.h>
+#include <molsketch/molecule.h>
+#include <molsketch/atom.h>
 
 using namespace Molsketch;
 
@@ -33,6 +35,7 @@ class ValenceTest : public QObject
     void elementGroups();
     void expectedValences();
     void valenceElectrons();
+    void implicitHydrogensAndCharge();
 
 };
 
@@ -160,6 +163,139 @@ void ValenceTest::valenceElectrons()
   
   QCOMPARE( numValenceElectrons(Element::He), 2 );
   QCOMPARE( numValenceElectrons(Element::Ne), 8 );
+
+
+}
+    
+void ValenceTest::implicitHydrogensAndCharge()
+{
+  Molecule *mol = new Molecule;
+  Atom *atom = new Atom(QPointF(0.0, 0.0), "R", true);
+  mol->addAtom(atom);
+
+  // group 1
+  atom->setElement("H");
+  QCOMPARE( atom->numImplicitHydrogens(), 0 );
+  QCOMPARE( atom->charge(), 1 );
+
+  atom->setElement("Na");
+  QCOMPARE( atom->numImplicitHydrogens(), 0 );
+  QCOMPARE( atom->charge(), 1 );
+
+  atom->setElement("K");
+  QCOMPARE( atom->numImplicitHydrogens(), 0 );
+  QCOMPARE( atom->charge(), 1 );
+
+  atom->setElement("Rb");
+  QCOMPARE( atom->numImplicitHydrogens(), 0 );
+  QCOMPARE( atom->charge(), 1 );
+
+  // group 2
+  atom->setElement("Be");
+  QCOMPARE( atom->numImplicitHydrogens(), 0 );
+  QCOMPARE( atom->charge(), 2 );
+
+  atom->setElement("Mg");
+  QCOMPARE( atom->numImplicitHydrogens(), 0 );
+  QCOMPARE( atom->charge(), 2 );
+
+  atom->setElement("Ca");
+  QCOMPARE( atom->numImplicitHydrogens(), 0 );
+  QCOMPARE( atom->charge(), 2 );
+
+  atom->setElement("Sr");
+  QCOMPARE( atom->numImplicitHydrogens(), 0 );
+  QCOMPARE( atom->charge(), 2 );
+
+  // group 3-12
+  /*
+  atom->setElement("Sc");
+  QCOMPARE( atom->numImplicitHydrogens(), 0 );
+  QCOMPARE( atom->charge(), 0 );
+
+  atom->setElement("Fe");
+  QCOMPARE( atom->numImplicitHydrogens(), 0 );
+  QCOMPARE( atom->charge(), 0 );
+
+  atom->setElement("Pd");
+  QCOMPARE( atom->numImplicitHydrogens(), 0 );
+  QCOMPARE( atom->charge(), 0 );
+  */
+
+  // group 13
+  atom->setElement("B");
+  QCOMPARE( atom->numImplicitHydrogens(), 3 );
+  QCOMPARE( atom->charge(), 0 );
+
+  atom->setElement("Al");
+  QCOMPARE( atom->numImplicitHydrogens(), 0 );
+  QCOMPARE( atom->charge(), 3 );
+
+  atom->setElement("Ga");
+  QCOMPARE( atom->numImplicitHydrogens(), 0 );
+  QCOMPARE( atom->charge(), 3 );
+
+  // group 14
+  atom->setElement("C");
+  QCOMPARE( atom->numImplicitHydrogens(), 4 );
+  QCOMPARE( atom->charge(), 0 );
+
+  atom->setElement("Si");
+  QCOMPARE( atom->numImplicitHydrogens(), 0 );
+  QCOMPARE( atom->charge(), 4 );
+
+  atom->setElement("Ge");
+  QCOMPARE( atom->numImplicitHydrogens(), 0 );
+  QCOMPARE( atom->charge(), 4 );
+
+  // group 15
+  atom->setElement("N");
+  QCOMPARE( atom->numImplicitHydrogens(), 3 );
+  QCOMPARE( atom->charge(), 0 );
+
+  atom->setElement("P");
+  QCOMPARE( atom->numImplicitHydrogens(), 3 );
+  QCOMPARE( atom->charge(), 0 );
+
+  // group 16
+  atom->setElement("O");
+  QCOMPARE( atom->numImplicitHydrogens(), 2 );
+  QCOMPARE( atom->charge(), 0 );
+
+  atom->setElement("S");
+  QCOMPARE( atom->numImplicitHydrogens(), 2 );
+  QCOMPARE( atom->charge(), 0 );
+
+  // group 17
+  atom->setElement("F");
+  QCOMPARE( atom->numImplicitHydrogens(), 0 );
+  QCOMPARE( atom->charge(), -1 );
+
+  atom->setElement("Br");
+  QCOMPARE( atom->numImplicitHydrogens(), 0 );
+  QCOMPARE( atom->charge(), -1 );
+
+  // group 18
+  atom->setElement("He");
+  QCOMPARE( atom->numImplicitHydrogens(), 0 );
+  QCOMPARE( atom->charge(), 0 );
+
+  atom->setElement("Ne");
+  QCOMPARE( atom->numImplicitHydrogens(), 0 );
+  QCOMPARE( atom->charge(), 0 );
+
+  atom->setElement("Ar");
+  QCOMPARE( atom->numImplicitHydrogens(), 0 );
+  QCOMPARE( atom->charge(), 0 );
+
+  atom->setElement("Xe");
+  QCOMPARE( atom->numImplicitHydrogens(), 0 );
+  QCOMPARE( atom->charge(), 0 );
+
+
+
+
+
 
 
 }

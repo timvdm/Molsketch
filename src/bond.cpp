@@ -53,7 +53,7 @@ namespace Molsketch {
     setPos(m_beginAtom->scenePos());
     MolScene* molScene = dynamic_cast<MolScene*>(scene);
     if (molScene) 
-      setColor(molScene->color);
+      setColor(molScene->color());
     else 
       setColor(QColor(0, 0, 0));
 

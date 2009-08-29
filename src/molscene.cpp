@@ -66,31 +66,28 @@ namespace Molsketch {
   using namespace Commands;
 
 
+  //////////////////////////////////////////////////////////////////////////////
+  //
   // Constructor & destructor
+  //
+  //////////////////////////////////////////////////////////////////////////////
 
   MolScene::MolScene(QObject* parent) : QGraphicsScene(parent)
   {
-	  color = QColor (0, 0, 0);
-	  rotationItem = NULL;  
-	  inputTextItem = new TextInputItem ();
-	  addItem (inputTextItem);
+    // Set the default color to black
+    m_color = QColor(0, 0, 0);
+    // Set the current rotation item to none
+    m_rotationItem = NULL;
 
+    // Create the TextInputItem that will be shown to edit text in the scene
+    m_inputTextItem = new TextInputItem();
+    addItem(m_inputTextItem);
+    // hide it for now...
+    m_inputTextItem->hide();
 
-	  inputTextItem ->hide ();
-
-	  
-
-
-	 
-	  
-	  lassoPolygon = addPolygon (QPolygon ());
-	  lassoPolygon ->hide ();
-
-    rotationItem = NULL;  
-
-    lassoPolygon = addPolygon (QPolygon ());
-    lassoPolygon ->hide ();
-
+    // Create the lasso and hide it for now
+    m_lassoPolygon = addPolygon(QPolygon());
+    m_lassoPolygon->hide();
 
     //Initializing properties
     m_currentElementSymbol = "C";
@@ -105,7 +102,6 @@ namespace Molsketch {
     m_hydrogenVisible = true;
     m_chargeVisible = true;
     m_autoAddHydrogen = true;
-
 
     // Prepare undo m_stack
     m_stack = new QUndoStack(this);
@@ -138,8 +134,13 @@ namespace Molsketch {
 	}
   // Commands
 	
+  QColor MolScene::color() const
+  {
+    return m_color;
+  }
+
 	void MolScene::setColor (QColor c) {
-		color = c;
+		m_color = c;
 		foreach (QGraphicsItem* item, selectedItems()) {
 			if (item->type() == Atom::Type) {
 				dynamic_cast<Atom*>(item) ->setColor(c);
@@ -1134,12 +1135,12 @@ void MolScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * event )
 
 	void MolScene::textModePress(QGraphicsSceneMouseEvent* event) {
 		if (textEditItemAt (event ->scenePos())) {
-			inputTextItem ->setFocus();
+			m_inputTextItem ->setFocus();
 		}
 		else {
 		Atom * atom = atomAt(event->scenePos());
 		if (atom) {
-			inputTextItem ->clickedOn (atom);
+			m_inputTextItem ->clickedOn (atom);
 
 				}
 /*		
@@ -1181,18 +1182,18 @@ void MolScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * event )
         break;
     }
 
-    lassoPolygon->show();
-    lassoTrail.clear();
-    lassoTrail.push_back(event->scenePos());
+    m_lassoPolygon->show();
+    m_lassoTrail.clear();
+    m_lassoTrail.push_back(event->scenePos());
   }
 	
 	void MolScene::lassoModeMove(QGraphicsSceneMouseEvent* event)
 	{
 		if (!(event->buttons() & Qt::LeftButton)) return;
 		
-		lassoTrail.push_back (event->scenePos());
-		if (lassoTrail.size () > 4) {
-			lassoPolygon ->setPolygon (QPolygonF (lassoTrail));
+		m_lassoTrail.push_back (event->scenePos());
+		if (m_lassoTrail.size () > 4) {
+			m_lassoPolygon ->setPolygon (QPolygonF (m_lassoTrail));
 			lassoSelect ();
 
 		}
@@ -1203,10 +1204,10 @@ void MolScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * event )
 	{
           Q_UNUSED(event)
 		
-		lassoTrail.clear ();
+		m_lassoTrail.clear ();
 		lassoSelect ();
-		lassoPolygon ->setPolygon(QPolygonF ());
-		lassoPolygon ->hide ();
+		m_lassoPolygon ->setPolygon(QPolygonF ());
+		m_lassoPolygon ->hide ();
 
 	
 		
@@ -1215,7 +1216,7 @@ void MolScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * event )
 	void MolScene::lassoSelect()
 	{
 		clearSelection();
-		QList<QGraphicsItem *> its = items (lassoPolygon ->polygon (), Qt::ContainsItemShape);
+		QList<QGraphicsItem *> its = items (m_lassoPolygon ->polygon (), Qt::ContainsItemShape);
 		for (int i = 0; i < its.size (); i++) {
 			its[i] ->setSelected (true);
 		}
@@ -1228,7 +1229,7 @@ void MolScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * event )
   void MolScene::rotateModeMove(QGraphicsSceneMouseEvent* event)
   {
     // Do nothing if no buttons are pressed or no item has been selected
-    if (!rotationItem) return;
+    if (!m_rotationItem) return;
     if (!(event->buttons() & Qt::LeftButton)) return;
     /*
     // Find the item to rotate and it's rotation point
@@ -1240,8 +1241,8 @@ void MolScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * event )
     QPointF rotatePointAbs = item->mapToScene(rotatePoint);
      */
 
-  //  QPointF rotatePoint = rotationItem->boundingRect().center();
- //   QPointF rotatePointAbs = rotationItem->mapToScene(rotatePoint);
+  //  QPointF rotatePoint = m_rotationItem->boundingRect().center();
+ //   QPointF rotatePointAbs = m_rotationItem->mapToScene(rotatePoint);
 
 
     // Calculate the rotation angle
@@ -1266,7 +1267,7 @@ void MolScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * event )
       default: transform.rotate(rotateAngle, Qt::ZAxis);
     };
     transform.translate(-rotationCenter.x(), -rotationCenter.y());
-    rotationItem->setTransform(transform, true);
+    m_rotationItem->setTransform(transform, true);
     lastRotationVect = vec2;
     //   item->rotate(rotateAngle);
   }
@@ -1286,7 +1287,7 @@ void MolScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * event )
     QPointF rotatePointAbs = item->mapToScene(rotatePoint);
 
 	rotationCenter = rotatePointAbs;
-    rotationItem = item;
+    m_rotationItem = item;
     lastRotationVect = event->buttonDownScenePos(Qt::LeftButton) - rotatePointAbs ; //save vector for relative rotation step
 
     // Execute default behavior
@@ -1296,7 +1297,7 @@ void MolScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * event )
   void MolScene::rotateModeRelease(QGraphicsSceneMouseEvent* event)
   {
     Q_UNUSED(event)
-    rotationItem = NULL;
+    m_rotationItem = NULL;
     /*
 
     // Find the item to rotate find the rotate point
@@ -1592,7 +1593,7 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
     }
     if (m_currentElementSymbol=="H-")
     {
-      if (a1->numberOfImplicitHydrogens() > 0) m_stack->push(new RemoveImplicitHydrogen(a1,tr("remove implicit hydrogen")));
+      if (a1->numImplicitHydrogens() > 0) m_stack->push(new RemoveImplicitHydrogen(a1,tr("remove implicit hydrogen")));
       return;
     }
 
@@ -1704,7 +1705,7 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
 
   void MolScene::keyPressEvent(QKeyEvent* keyEvent)
   {
-	  if ( !inputTextItem ->hasFocus ()) {
+	  if ( !m_inputTextItem ->hasFocus ()) {
     // Declare item
     QGraphicsItem* item;
     Atom* atom;

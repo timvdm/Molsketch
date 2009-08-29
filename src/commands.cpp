@@ -169,13 +169,13 @@ AddImplicitHydrogen::AddImplicitHydrogen(Atom* atom, const QString & text) : QUn
 {};
 void AddImplicitHydrogen::undo()
 {
-  m_atom->setNumberOfImplicitHydrogens(m_atom->numberOfImplicitHydrogens() - 1);
+  m_atom->setNumImplicitHydrogens(m_atom->numImplicitHydrogens() - 1);
   if (m_atom->scene()) m_atom->scene()->update();
   m_undone = true;
 }
 void AddImplicitHydrogen::redo()
 {
-  m_atom->setNumberOfImplicitHydrogens(m_atom->numberOfImplicitHydrogens() + 1);
+  m_atom->setNumImplicitHydrogens(m_atom->numImplicitHydrogens() + 1);
   if (m_atom->scene()) m_atom->scene()->update();
   m_undone = false;
 }
@@ -185,13 +185,13 @@ RemoveImplicitHydrogen::RemoveImplicitHydrogen(Atom* atom, const QString & text)
 {};
 void RemoveImplicitHydrogen::undo()
 {
-  m_atom->setNumberOfImplicitHydrogens(m_atom->numberOfImplicitHydrogens() + 1);
+  m_atom->setNumImplicitHydrogens(m_atom->numImplicitHydrogens() + 1);
   if (m_atom->scene()) m_atom->scene()->update();
   m_undone = true;
 }
 void RemoveImplicitHydrogen::redo()
 {
-  m_atom->setNumberOfImplicitHydrogens(m_atom->numberOfImplicitHydrogens() - 1);
+  m_atom->setNumImplicitHydrogens(m_atom->numImplicitHydrogens() - 1);
   if (m_atom->scene()) m_atom->scene()->update();
   m_undone = false;
 }

@@ -136,7 +136,7 @@ namespace Molsketch {
       /** 
        * Returns the number of implicit hydrogens currently associated with the atom. 
        */
-      int numberOfImplicitHydrogens() const;
+      int numImplicitHydrogens() const;
       // Manupilation methods
 
 
@@ -152,7 +152,7 @@ namespace Molsketch {
        * Changing the number of implicit hydrogens will also effect the number
        * of free valency electrons and hence the charge of the atom.
        */
-      void setNumberOfImplicitHydrogens(int number);
+      void setNumImplicitHydrogens(int number);
       /** Sets whether implicit hydrogens should be used */
       void enableImplicitHydrogens(bool enabled);
 

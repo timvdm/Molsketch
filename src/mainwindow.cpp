@@ -374,7 +374,7 @@ bool MainWindow::exportDoc()
 }
 
 void MainWindow::changeColor () {
-	QColor new_color = QColorDialog::getColor(m_scene ->color, this );
+	QColor new_color = QColorDialog::getColor(m_scene ->color(), this );
 	if ( new_color.isValid () ) {
 		m_scene ->setColor (new_color);
 	}
@@ -588,7 +588,7 @@ void MainWindow::createActions()
 
     colorAct = new QAction (tr("Color"), this);;
 	QPixmap pix(24, 24);
-    pix.fill(m_scene ->color);
+    pix.fill(m_scene ->color());
     colorAct->setIcon(pix);
 	connect (colorAct, SIGNAL (triggered ()), this, SLOT (changeColor ()));
 
