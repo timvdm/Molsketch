@@ -354,7 +354,7 @@ namespace Molsketch {
 		void score (qreal &tot) {
 			qreal ang = angle (*p1, *p2, *p3);
 			if (ang < 0) ang = -ang;
-			qreal a = (2* M_PI / 3) - ang;
+      //qreal a = (2* M_PI / 3) - ang;
 		}
 		FFAtom *p3;
 

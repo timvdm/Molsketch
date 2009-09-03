@@ -41,8 +41,8 @@ namespace Molsketch {
 		QList <Bond *> bds = molecule ->bonds ();
 		for (int i = 0; i < bds.size (); i++) {
 			FFBond *b = new FFBond (bds[i]);
-			b ->at1 = atoms[bds[i]->beginAtom ()->n];
-			b ->at2 = atoms[bds[i]->endAtom ()->n];
+			b ->at1 = atoms[bds[i]->beginAtom ()->number()];
+			b ->at2 = atoms[bds[i]->endAtom ()->number()];
 			bonds.push_back (b);
 			interactions.push_back (new FFBondstretch (b->at1, b->at2, bondLength));
 			rotations.push_back (new FFBondorient (b->at1, b->at2));
@@ -60,7 +60,7 @@ namespace Molsketch {
 					Atom *at3 = nbr [k];
 					if (at2 == at) continue;
 					if (at3 == at) continue;
-					interactions.push_back (new FFAngleBend (atoms [at2 ->n], atoms [at ->n], atoms [at3 ->n]));
+					interactions.push_back (new FFAngleBend (atoms [at2 ->number()], atoms [at ->number()], atoms [at3 ->number()]));
 				}
 			}
 		}
@@ -167,7 +167,7 @@ namespace Molsketch {
 			queue.pop ();
 			Atom *at = a ->atom;
 			foreach (Atom *na, at ->neighbours()) {
-				FFAtom *ffna = atoms [na ->n];
+				FFAtom *ffna = atoms [na ->number()];
 				if (!ffna ->visited) {
 					nvisited++;
 					ffna ->visited = true;
@@ -231,8 +231,8 @@ namespace Molsketch {
 				QPointF rad= a ->pos () - c;
 				normalise (rad);
 				rad *= bondLength;
-				atoms [a ->n] ->x() = rad.x() + c.x();
-				atoms [a ->n] ->y() = rad.y() + c.y();
+				atoms [a ->number()] ->x() = rad.x() + c.x();
+				atoms [a ->number()] ->y() = rad.y() + c.y();
 			}
 		}
 	}
