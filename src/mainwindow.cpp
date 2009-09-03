@@ -910,13 +910,10 @@ void MainWindow::createToolBoxes()
 
 
   // Connecting signals and slots
-  connect(genericLib, SIGNAL(itemClicked(QListWidgetItem*)), m_scene, SLOT(setHintMolecule(QListWidgetItem*)));
   connect(genericLib,SIGNAL(itemDoubleClicked(QListWidgetItem*)),m_scene,SLOT(addMolecule(QListWidgetItem*)));
-//   connect(genericLib,SIGNAL(itemClicked(QTableWidgetItem*)),this,SLOT(updateRecentList(QTableWidgetItem*)));
   connect(customLib,SIGNAL(itemDoubleClicked(QListWidgetItem*)),m_scene,SLOT(addMolecule(QListWidgetItem*)));
-//     connect(customLib,SIGNAL(itemClicked(QTableWidgetItem*)),this,SLOT(updateRecentList(QTableWidgetItem*)));
-  connect(addButton,SIGNAL(released()),this,SLOT(addCustomMol()));
-  connect(delButton,SIGNAL(released()),this,SLOT(delCustomMol()));
+  connect(addButton, SIGNAL(released()), this, SLOT(addCustomMol()));
+  connect(delButton, SIGNAL(released()), this, SLOT(delCustomMol()));
 }
 
 void MainWindow::addCustomMol()
