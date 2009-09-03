@@ -123,6 +123,8 @@ namespace Molsketch {
       int numBonds() const;
       /**
        * Get the sum of the bond orders of all bonds to this atom.
+       *
+       * @note Requires molecule() to be set.
        */
       int bondOrderSum() const;
       /**
@@ -135,6 +137,8 @@ namespace Molsketch {
       bool hasImplicitHydrogens() const;
       /** 
        * Returns the number of implicit hydrogens currently associated with the atom. 
+       *
+       * @note Requires molecule() to be set.
        */
       int numImplicitHydrogens() const;
       // Manupilation methods
@@ -161,10 +165,16 @@ namespace Molsketch {
       enum { Type = UserType + 8 };
       /** Returns the type of the class. Needed fro Qt typecasting. */
       virtual int type() const {return Atom::Type;};
-	  int n;
 	  
 	  //returns a list of atoms connected to atom
 	  QList<Atom*> neighbours () {return m_neighbors;};
+
+      /**
+       * Get the number for this atom.
+       *
+       * @sa Molecule::numberAtoms Atom::setNumber
+       */       
+      int number() const { return m_number; }
 
 	  void hoverOut () {m_hidden = true;}
     protected:
@@ -177,6 +187,13 @@ namespace Molsketch {
       void mousePressEvent(QGraphicsSceneMouseEvent* event);
       /** Event handler to handle element changes. */
       QVariant itemChange(GraphicsItemChange change, const QVariant & value);
+
+      /**
+       * Set the number for this atom.
+       *
+       * @sa Molecule::numberAtoms Atom::setNumber
+       */
+      void setNumber(int number) { m_number = number; }
 
     private:
       void drawAtomLabel(QPainter *painter, const QString &lbl, int alignment);
@@ -196,6 +213,8 @@ namespace Molsketch {
       bool m_drawn;
       /** Stores the charge of the atom. */
       int m_userCharge;
+
+      int m_number;
 	  
 	  //color of the atom
 	  QColor m_color;

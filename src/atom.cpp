@@ -435,9 +435,9 @@ namespace Molsketch {
     }
 
     // Draw unbound electrons
-//    if (0) /*molScene->chargeVisible()*/ {
-        int unboundElectrons = numNonBondingElectrons();
-        QList<QRectF> layoutList;
+    if (0) /*molScene->chargeVisible()*/ {
+      int unboundElectrons = numNonBondingElectrons();
+      QList<QRectF> layoutList;
 
         // Loading different layouts
         layoutList << QRectF(-3,-10,2,2);
@@ -456,7 +456,7 @@ namespace Molsketch {
             painter->drawEllipse(layoutList[i]);
 
         painter->restore();
-   // }
+    }
 
   }
 
