@@ -70,6 +70,7 @@ namespace Molsketch {
       void lassoClicked();
       void rotateClicked();
       void minimizeClicked();
+      void connectClicked();
 
     private:
       Ui::DrawWidget ui;

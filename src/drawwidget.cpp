@@ -74,6 +74,7 @@ namespace Molsketch {
     connect(ui.buttonLasso, SIGNAL(clicked()), this, SLOT(lassoClicked()));
     connect(ui.buttonRotate, SIGNAL(clicked()), this, SLOT(rotateClicked()));
     connect(ui.buttonMinimize, SIGNAL(clicked()), this, SLOT(minimizeClicked()));
+    connect(ui.buttonConnect, SIGNAL(clicked()), this, SLOT(connectClicked()));
   }
 
 
@@ -131,6 +132,7 @@ namespace Molsketch {
     ui.buttonLasso->setChecked(false);
     ui.buttonRotate->setChecked(false);
     ui.buttonMinimize->setChecked(false);
+    ui.buttonConnect->setChecked(false);
   }
 
   QPushButton* DrawWidget::checkedBondButton()
@@ -444,9 +446,16 @@ namespace Molsketch {
   
   void DrawWidget::minimizeClicked()
   {
-	  uncheckAllButtons();
-	  ui.buttonMinimize->setChecked(true);
-	  m_scene->setEditMode(MolScene::MinimiseMode);
+    uncheckAllButtons();
+    ui.buttonMinimize->setChecked(true);
+    m_scene->setEditMode(MolScene::MinimiseMode);
+  }
+ 
+  void DrawWidget::connectClicked()
+  {  
+    uncheckAllButtons();
+    ui.buttonConnect->setChecked(true);
+    m_scene->setEditMode(MolScene::ConnectMode);
   }
 
 
