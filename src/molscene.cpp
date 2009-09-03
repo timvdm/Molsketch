@@ -45,6 +45,9 @@
 #include "molecule.h"
 #include "mollibitem.h"
 #include "commands.h"
+#include "smilesitem.h"
+#include "mimemolecule.h"
+
 
 #include "minimise.h"
 #include "math2d.h"
@@ -102,6 +105,9 @@ namespace Molsketch {
     m_hydrogenVisible = true;
     m_chargeVisible = true;
     m_autoAddHydrogen = true;
+
+    SmilesItem *smiItem = new SmilesItem;
+    addItem(smiItem);
 
     // Prepare undo m_stack
     m_stack = new QUndoStack(this);
@@ -960,6 +966,9 @@ namespace Molsketch {
 	  case MolScene::TextMode:
 	    textModePress (event);
             break;
+          case MolScene::ConnectMode:
+            connectModePress(event);
+            break;
           case MolScene::MinimiseMode:
             minimiseModePress (event);
 	    break;
@@ -1072,9 +1081,11 @@ void MolScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * event )
   QGraphicsScene::mouseDoubleClickEvent( event );
 }
 
-  //////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+  //
   // Move Mode
-  //////////////////////////////////////////////////////////
+  //
+  //////////////////////////////////////////////////////////////////////////////
 
   void MolScene::moveModePress(QGraphicsSceneMouseEvent* event)
   {
@@ -1091,6 +1102,7 @@ void MolScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * event )
     foreach(QGraphicsItem* item, selectedItems()) 
       item->setFlag(QGraphicsItem::ItemIsMovable, true);
     emit copyAvailable(!selectedItems().isEmpty());
+
   }
 
   void MolScene::moveModeMove(QGraphicsSceneMouseEvent* event)
@@ -1119,6 +1131,12 @@ void MolScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * event )
 
     clearFocus();
   }
+  
+  //////////////////////////////////////////////////////////////////////////////
+  //
+  // Minimize Mode
+  //
+  //////////////////////////////////////////////////////////////////////////////
 
 	void MolScene::minimiseModePress (QGraphicsSceneMouseEvent* event) {
 		Bond *bond = bondAt (event ->scenePos());
@@ -1132,6 +1150,12 @@ void MolScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * event )
 
 	}
 
+
+  //////////////////////////////////////////////////////////////////////////////
+  //
+  // Text Mode
+  //
+  //////////////////////////////////////////////////////////////////////////////
 
 	void MolScene::textModePress(QGraphicsSceneMouseEvent* event) {
 		if (textEditItemAt (event ->scenePos())) {
@@ -1168,6 +1192,11 @@ void MolScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * event )
           Q_UNUSED(event)
 	}
 
+  //////////////////////////////////////////////////////////////////////////////
+  //
+  // Lasso Mode
+  //
+  //////////////////////////////////////////////////////////////////////////////
 	
   void MolScene::lassoModePress(QGraphicsSceneMouseEvent* event)
   {
@@ -1224,7 +1253,11 @@ void MolScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * event )
 		
 	}	
 	
-	
+  //////////////////////////////////////////////////////////////////////////////
+  //
+  // Rotate Mode
+  //
+  //////////////////////////////////////////////////////////////////////////////
 	
   void MolScene::rotateModeMove(QGraphicsSceneMouseEvent* event)
   {
@@ -1415,8 +1448,8 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
 			m_stack->push(new AddBond(bond));
 			for (int i = 0; i < m_bondOrder - 1; i++) 
 				m_stack->push(new IncOrder(bond));
-			for (int i = 0; i < m_bondType; i++) 
-				m_stack->push(new IncType(bond));
+
+      m_stack->push(new SetBondType(bond, m_bondType));
 			m_stack->endMacro();
 		}
 	}
@@ -1433,23 +1466,81 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
       }
     }	
   }
+  
+  void MolScene::connectModePress(QGraphicsSceneMouseEvent* event)
+  {
+    QPointF downPos = event->buttonDownScenePos(event->button());
+    Molecule *mol = moleculeAt(downPos);
+    if (mol) {
+      QImage molImg = renderMolToImage(mol);
 
+      MimeMolecule *data = new MimeMolecule;
+      data->setMolecule(mol);
+      data->setImageData(molImg);
 
+      QDrag *drag = new QDrag(event->widget());
+      drag->setMimeData(data);
+      drag->setPixmap(QPixmap::fromImage(molImg));
+      drag->start();
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  //
+  // Add Mode
+  //
+  //////////////////////////////////////////////////////////////////////////////
 
   void MolScene::addModePress(QGraphicsSceneMouseEvent* event)
   {
     // Get the position
     QPointF downPos = event->buttonDownScenePos(event->button());
 
+    Bond *clickedBond = bondAt(downPos);
+    Atom *clickedAtom = atomAt(downPos);
+
     // Check for bond click
-    if (bondAt(downPos) && !atomAt(downPos)) {
+    if (clickedBond && !clickedAtom) {
       if (m_hintMoleculeItems)
         return;
 
+      switch (m_bondType) {
+        case Bond::InPlane:
+          if (clickedBond->bondType() == Bond::InPlane)
+            m_stack->push(new IncOrder(bondAt(downPos),tr("Change Bond Order")));
+          else
+            m_stack->push(new SetBondType(clickedBond, Bond::InPlane));
+          break;
+        case Bond::Wedge:
+          if (clickedBond->bondType() == Bond::Wedge)
+            m_stack->push(new SetBondType(clickedBond, Bond::InvertedWedge, tr("Change Wedge Bond")));
+          else
+            m_stack->push(new SetBondType(clickedBond, Bond::Wedge, tr("Change Wedge Bond")));
+          break;
+        case Bond::Hash:
+          if (clickedBond->bondType() == Bond::Hash)
+            m_stack->push(new SetBondType(clickedBond, Bond::InvertedHash, tr("Change Hash Bond")));
+          else
+            m_stack->push(new SetBondType(clickedBond, Bond::Hash, tr("Change Hash Bond")));
+          break;
+        case Bond::CisOrTrans:
+          m_stack->push(new SetBondType(clickedBond, Bond::CisOrTrans, tr("Change Hash Bond")));
+          break;
+        case Bond::WedgeOrHash:
+          m_stack->push(new SetBondType(clickedBond, Bond::WedgeOrHash, tr("Change Hash Bond")));
+          break;
+
+
+
+      };
+
+
+      /*
       if (event->modifiers() == Qt::SHIFT)
-        m_stack->push(new IncType(bondAt(downPos),tr("change of bondtype")));
+        m_stack->push(new SetBondType(bondAt(downPos), tr("change of bondtype")));
       else
         m_stack->push(new IncOrder(bondAt(downPos),tr("change of bondorder")));
+        */
       return;
     }
 
@@ -1462,10 +1553,7 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
       m_hintLine->setVisible(true);
     }
 
-    // Check which molecule has been clicked on
-    Atom* atom = atomAt(downPos);
-
-    if (!atom) {
+    if (!clickedAtom) {
       //
       // mousePress in empty space
       //
@@ -1631,8 +1719,7 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
       m_stack->push(new AddBond(bond));
       for (int i = 0; i < m_bondOrder - 1; i++) 
         m_stack->push(new IncOrder(bond));
-      for (int i = 0; i < m_bondType; i++) 
-        m_stack->push(new IncType(bond));
+      m_stack->push(new SetBondType(bond, m_bondType));
 
       // End adding macro
       m_stack->endMacro();
@@ -1653,8 +1740,8 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
     m_stack->push(new AddBond(bond));
     for (int i = 0; i < m_bondOrder - 1; i++) 
       m_stack->push(new IncOrder(bond));
-    for (int i = 0; i < m_bondType; i++) 
-      m_stack->push(new IncType(bond));
+    m_stack->push(new SetBondType(bond, m_bondType));
+
     m_stack->endMacro();
 
     update();
@@ -1922,10 +2009,14 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
 			mol ->addBond (bonds[i]);
 		}		
 		//int nu = 0;
-		QList <Atom *> atts = mol ->atoms ();
+		//QList <Atom *> atts = mol ->atoms ();
+
+                /*
 		for (int i = 0; i < atts.size () ; i++) {
-			atts[i] ->n = i; 
+			atts[i] ->setNumber(i); 
 		}
+                */
+                mol->numberAtoms();
 		return mol;
 		
 	}
@@ -1967,7 +2058,7 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
     return angle - angle % m_bondAngle;
   }
 
-  void MolScene::setBondType(int type)
+  void MolScene::setBondType(Bond::BondType type)
   {
     Q_ASSERT( type >= Bond::InPlane and type < Bond::NoType );
     m_bondType = type;

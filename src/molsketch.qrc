@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="/" >
+    <file>images/connect.png</file>
+    <file>images/hand.png</file>
     <file>images/move.png</file>
     <file>images/lasso.png</file>
     <file>images/rotate.png</file>

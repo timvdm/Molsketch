@@ -36,7 +36,7 @@
 
 namespace Molsketch {
 
-  Bond::Bond(Atom* atomA, Atom* atomB, int order, int type, QGraphicsItem* parent,QGraphicsScene* scene) : QGraphicsItem(parent,scene)
+  Bond::Bond(Atom* atomA, Atom* atomB, int order, Bond::BondType type, QGraphicsItem* parent,QGraphicsScene* scene) : QGraphicsItem(parent,scene)
   {
     Q_CHECK_PTR(atomA);
     Q_CHECK_PTR(atomB);
@@ -366,16 +366,33 @@ namespace Molsketch {
     setOrder( (m_bondOrder + 1) % 3 + 1 );
   }
 
-  void Bond::setType(int t)
+  void Bond::setType(Bond::BondType t)
   {
-    //pre: 0 <= t < 6
-    //post: bondType = t
-    Q_ASSERT(0 <= t && t < NoType);
+    Q_ASSERT(0 <= t && t < Bond::NoType);
 
     m_bondType = t;
+    // adjust the order if needed
+    /*
+    switch (t) {
+      case Wedge:
+      case InvertedWedge:
+      case Hash:
+      case InvertedHash:
+      case WedgeOrHash:
+        setOrder(1);
+        break;
+      case CisOrTrans:
+        setOrder(2);
+        break;
+      default:
+        break;
+    }
+*/
+
     update();
   }
 
+  /*
   void Bond::incType()
   {
     //pre: true
@@ -389,6 +406,7 @@ namespace Molsketch {
     //post: bondType = (bondType + 5) % 6
     setType( (m_bondType + NoType - 1) % NoType);
   }
+  */
 
   // Query methods
 
@@ -397,7 +415,7 @@ namespace Molsketch {
     return m_bondOrder;
   }
 
-  int Bond::bondType() const
+  Bond::BondType Bond::bondType() const
   {
     return m_bondType;
   }

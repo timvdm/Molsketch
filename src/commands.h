@@ -38,6 +38,8 @@ class QGraphicsItem;
 class QGraphicsScene;
 class QTransform;
 
+#include "bond.h"
+
 namespace Molsketch {
 
   class Atom;
@@ -360,29 +362,27 @@ class DelBond : public  QUndoCommand
 
 
 /**
- * Command to increase the bond type
- *
- * @author Harm van Eersel
+ * Command to set the bond type.
  */
-class IncType : public  QUndoCommand
+class SetBondType : public  QUndoCommand
   {
   public:
     /**
      * Constructor
      *
-     * @param incBond bond of which the type should be changed
+     * @param bond bond of which the type should be changed
+     * @param newType The new Bond::BondType
      * @param text a description of the command
      */
-    IncType(Bond* incBond, const QString & text = "");
+    SetBondType(Bond* incBond, Bond::BondType newType, const QString & text = "");
     /** Undo this command. */
     virtual void undo();
     /** Redo this command. */
     virtual void redo();
   private:
-    /** Undo state of the command. */
-    bool m_undone;
-    /** The bond of this command. */
-    Bond* m_bond;
+    Bond* m_bond; //!< The bond of this command.
+    Bond::BondType m_newType, m_oldType;
+    int m_oldOrder;
   };
 
 

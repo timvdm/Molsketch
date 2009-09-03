@@ -29,7 +29,10 @@
 #include "molscene.h"
 #include "element.h"
 
+//#include "electronsystem.h"
+
 #include <openbabel/mol.h>
+#include <openbabel/obconversion.h>
 #include <openbabel/obiter.h>
 
 namespace Molsketch {
@@ -104,7 +107,7 @@ Molecule::Molecule(Molecule* mol, QGraphicsItem* parent, MolScene* scene) : QGra
 	void Molecule::numberAtoms () {
 		QList <Atom *> ats = atoms ();
 		for (int i = 0; i < ats.size (); i++) {
-			ats[i] ->n = i;
+			ats[i] ->setNumber(i);
 		}
 	}
 
@@ -148,7 +151,7 @@ Bond* Molecule::addBond(Atom* atomA, Atom* atomB, int order, int type, QColor c)
   //post: a bond of type has been added between atomA and atomB
 
   // Creating a new bond
-  Bond* bond = new Bond(atomA,atomB,order,type);
+  Bond* bond = new Bond(atomA,atomB,order,static_cast<Bond::BondType>(type));
 	bond ->setColor(c);
   return addBond(bond);
 }
@@ -618,6 +621,7 @@ void Molecule::paint(QPainter * painter, const QStyleOptionGraphicsItem * option
   Q_UNUSED(option)
   Q_UNUSED(widget)
 
+  // draw a yellow rectangle if this molecule is selected
   if(isSelected()) {
     painter->setBrush(Qt::yellow);
     painter->setOpacity(0.2);
@@ -631,6 +635,29 @@ void Molecule::paint(QPainter * painter, const QStyleOptionGraphicsItem * option
     painter->drawRect(boundingRect());
   }
   */
+
+
+  // draw the electron systems
+  /*
+  updateElectronSystems();
+  QPen pen = painter->pen();
+  pen.setWidth(10);
+  pen.setCapStyle(Qt::RoundCap);
+  pen.setColor(Qt::green);
+  painter->setPen(pen);
+//  painter->setOpacity(0.3);
+  foreach (ElectronSystem *es, m_electronSystems) {
+    foreach (Atom *a, es->atoms()) {
+      foreach (Atom *b, es->atoms()) {
+        if (bondBetween(a, b))
+          painter->drawLine(a->scenePos(), b->scenePos());
+//          painter->drawEllipse(atom->scenePos(), 5, 5);
+      }
+    }
+  }
+  */
+
+
 }
   
   QRectF Molecule::boundingRect() const
@@ -698,6 +725,10 @@ void Molecule::paint(QPainter * painter, const QStyleOptionGraphicsItem * option
     return obmol;
   }
 
+  /**
+   * Helper function to make sure double bonds are drawn in the ring with the 
+   * most double bonds. Looks nicer!
+   */
   int numDoubleBondsInRing(const Molecule *molecule, Ring *ring)
   {
     int count = 0;
@@ -781,6 +812,121 @@ void Molecule::paint(QPainter * painter, const QStyleOptionGraphicsItem * option
     }
 
   }
+   
+  QString Molecule::smiles() const
+  {
+    OpenBabel::OBConversion conv;
+    if (!conv.SetOutFormat("smi"))
+      return QString();
 
+    OpenBabel::OBMol *mol = OBMol();
+    QString smiles = conv.WriteString(mol).c_str();
+    return smiles;
+  }
+
+/*
+
+  bool NumAtomsLessThan(const ElectronSystem *es1, const ElectronSystem *es2)
+  {
+    return es1->numAtoms() < es2->numAtoms();
+  }
+
+  bool canMerge(const Molecule *mol, const ElectronSystem *es1, const ElectronSystem *es2)
+  {
+    bool result = false;
+
+    foreach (Atom *a1, es1->atoms()) {
+      foreach (Atom *a2, es2->atoms()) {
+        if (a1 == a2)
+          return false; // may not share an atom
+        if (mol->bondBetween(a1, a2)) {
+          result = true; // can be merged if two atoms in the electron system are next to each other
+        }
+      }
+    }
+
+    return result;
+  }
+
+  bool merge(QList<ElectronSystem*> &electronSystems, ElectronSystem *es1, ElectronSystem *es2)
+  {
+    es1->setAtoms(es1->atoms() + es2->atoms());
+    es1->setNumElectrons(es1->numElectrons() + es2->numElectrons());
+    electronSystems.removeAll(es2);
+    delete es2; 
+  }
+  
+  void Molecule::updateElectronSystems()
+  {
+    foreach (ElectronSystem *es, m_electronSystems)
+      delete es;
+    m_electronSystems.clear();
+
+    foreach (Bond *bond, m_bondList) {
+      int order = bond->bondOrder();
+      QList<Atom*> atoms;
+      atoms.append(bond->beginAtom());
+      atoms.append(bond->endAtom());
+
+      if (order >= 2) {
+        PiElectrons *piEle = new PiElectrons;
+        piEle->setAtoms(atoms);
+        piEle->setNumElectrons(2);
+        m_electronSystems.append(piEle);
+      }
+
+      if (order == 3) {
+        PiElectrons *piEle = new PiElectrons;
+        piEle->setAtoms(atoms);
+        piEle->setNumElectrons(2);
+        m_electronSystems.append(piEle);
+      }
+    }
+    
+    foreach (Atom *atom, m_atomList) {
+      int unboundElectrons = atom->numNonBondingElectrons();
+      QList<Atom*> atoms;
+      atoms.append(atom);
+ 
+      for (int i = 2; i <= unboundElectrons; i+=2) {
+        PiElectrons *piEle = new PiElectrons;
+        piEle->setAtoms(atoms);
+        piEle->setNumElectrons(2);
+        m_electronSystems.append(piEle);
+        qDebug() << "adding lone pair";
+      }
+
+      if (unboundElectrons % 2 == 1) {
+        PiElectrons *piEle = new PiElectrons;
+        piEle->setAtoms(atoms);
+        piEle->setNumElectrons(1);
+        m_electronSystems.append(piEle);
+        qDebug() << "adding radical";
+      }
+    }
+
+    qSort(m_electronSystems.begin(), m_electronSystems.end(), NumAtomsLessThan);
+
+    for (int i = 0; i < 1000; ++i) {
+      bool restart = false;
+      foreach (ElectronSystem *es1, m_electronSystems) {
+        foreach (ElectronSystem *es2, m_electronSystems) {
+          if (canMerge(this, es1, es2)) {
+            merge(m_electronSystems, es1, es2);
+            restart = true;
+            break;
+          }
+        }
+
+        if (restart)
+          break;
+      }
+    }
+
+
+    qDebug() << "# ElectronSystem =" << m_electronSystems.size();
+  
+  }
+*/
 
 } // namespace

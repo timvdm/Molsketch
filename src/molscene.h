@@ -160,7 +160,8 @@ class Bond;
     HydrogenMode, //<! increase/decrease implicit hydrogen count
 	LassoMode, //lasso selection tool
 	TextMode, //add / edit text
-	  MinimiseMode //gemoetry optimise
+	  MinimiseMode, //gemoetry optimise
+    ConnectMode //<! mode to drag/drop items
   };
 
 signals:
@@ -216,7 +217,7 @@ public slots:
   /** Sets the bond order. */
   void setBondOrder(int order);
   /** Sets the bond type. */
-  void setBondType(int type);
+  void setBondType(Bond::BondType type);
   /** Slot to add a copy of molecule @p mol. */
 //  void addMolecule(QListWidgetItem* mol);
   /** Slot to add a copy of molecule @p mol. */
@@ -323,7 +324,7 @@ private:
   /** Stores the current bond order. */
   int m_bondOrder;
   /** Stores the current bond type. */
-  int m_bondType;
+  Bond::BondType m_bondType;
   /** Strores the bond angle. */
   int m_bondAngle;
   /** Stores the current atom size. */
@@ -397,6 +398,8 @@ private:
   void delModePress(QGraphicsSceneMouseEvent* event);
   /** Event handler for mouse double clicks in delete mode.*/
   void delModeDoubleClick(QGraphicsSceneMouseEvent* event);
+
+  void connectModePress(QGraphicsSceneMouseEvent* event);
 
 
   // Auxillary feedback items

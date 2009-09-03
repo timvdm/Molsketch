@@ -24,6 +24,8 @@ set(libmolsketch_SRCS
     osra.cpp
     electronsystem.cpp
     residue.cpp
+    smilesitem.cpp
+    mimemolecule.cpp
 )
 set(molsketch_SRCS 
     main.cpp 

@@ -50,7 +50,7 @@ class Bond : public QGraphicsItem
      * Enum for the different bond types 
      */
     enum BondType { 
-      InPlane,
+      InPlane = 0,
       Wedge,
       InvertedWedge,
       Hash,
@@ -76,7 +76,7 @@ class Bond : public QGraphicsItem
      * @param order the bond order (@c Bond::Single for single, @c Bond::Double for double, @c Bond::Triple for tripple)
      * @param type the bond type (@c Bond::Normal, @c Bond::Up, @c Bond::Down, e.g.)
      */
-    Bond(Atom* atomA, Atom* atomB, int order = 1, int type = 0, QGraphicsItem* parent = 0, QGraphicsScene* scene = 0);
+    Bond(Atom* atomA, Atom* atomB, int order = 1, Bond::BondType type = InPlane, QGraphicsItem* parent = 0, QGraphicsScene* scene = 0);
     /**
      * Destructor. 
      */
@@ -99,15 +99,15 @@ class Bond : public QGraphicsItem
     /** Returns the bounding rectangle of the bond. Needed for Qt painting. */
     virtual QRectF boundingRect() const;
     /** Returns the type of the class. Needed for Qt type casting. */
-    virtual int type() const {return Bond::Type;};
+    virtual int type() const {return Bond::Type;}
 
     // Manipulation methods
     /** Sets the bond type to @p type. */
-    void setType(int type);
+    void setType(Bond::BondType type);
     /** Cycle forward through the bond types. */
-    void incType();
+    //void incType();
     /** Cycle backward through the bond types. */
-    void decType();
+    //void decType();
 
     /** Sets the bond order to @p order. */
     void setOrder(int order);
@@ -123,7 +123,7 @@ class Bond : public QGraphicsItem
     /** Returns the bond order. */
     int bondOrder() const;
     /** Returns the bond type. */
-    int bondType() const;
+    Bond::BondType bondType() const;
 
     /** Returns the origin atom of the bond. */
     Atom* beginAtom() const;
@@ -170,7 +170,7 @@ class Bond : public QGraphicsItem
 
     // Internal representation
     /** Stores the bond type as integer. */
-    int m_bondType;
+    Bond::BondType m_bondType;
     /** Stores the bond order as integer. */
     int m_bondOrder;
 	//color of the bond

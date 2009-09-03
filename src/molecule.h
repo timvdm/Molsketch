@@ -45,6 +45,7 @@ namespace Molsketch {
   class Bond;
   class Ring;
   class MolScene;
+  //class ElectronSystem; under construction
 
 /**
  * Represents a molecule on the scene. It can be created either as an empty molecule, 
@@ -54,7 +55,7 @@ namespace Molsketch {
  * @since Hydrogen
  */
 class Molecule : public QGraphicsItemGroup
-  {
+{
   public:
     // Constructors and destructor
     /** Creates a molecule with @p parent on MolScene @p scene. */
@@ -187,6 +188,10 @@ class Molecule : public QGraphicsItemGroup
     /** Returns the charge as a string with an appropiate + or - sign. */
     QString chargeID() const;
 	  
+    /**
+     * Get the SMILES for this molecule.
+     */
+    QString smiles() const;
 
     OpenBabel::OBMol* OBMol() const;
     void perceiveRings();
@@ -199,6 +204,18 @@ class Molecule : public QGraphicsItemGroup
 //    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent* event);
    /** Event handler for changes of the molecule. Needed for rotation handling.*/
    QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+
+   /**
+    * Update the internal ElectronSystem representation based on the current
+    * bond orders.
+    *
+    * 1. create a SigmaElectrons instance for each bond
+    * 2. create a PiElectrons instance for each 
+    */
+   //void updateElectronSystems();
+   //void invalidateElectronSystems();
+   //QList<ElectronSystem*> m_electronSystems;
+
 
   private:
     // Internal representation

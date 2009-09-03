@@ -277,18 +277,35 @@ void DelBond::redo()
   m_undone = false;
 }
 
-IncType::IncType(Bond* incBond, const QString & text) : QUndoCommand(text), m_bond(incBond)
-{}
-void IncType::undo()
+////////////////////////////////////////////////////////////
+// Set Bond Type Command
+////////////////////////////////////////////////////////////
+
+SetBondType::SetBondType(Bond* bond, Bond::BondType newType, const QString & text) : QUndoCommand(text), m_bond(bond)
 {
-  m_bond->decType();
-  m_undone = true;
+  m_newType = newType;
+  m_oldType = bond->bondType();
+  m_oldOrder = bond->bondOrder();
 }
-void IncType::redo()
+
+void SetBondType::undo()
 {
-  m_bond->incType();
-  m_undone = false;
+  m_bond->setType(m_oldType);
+  m_bond->setOrder(m_oldOrder);
+  m_bond->update();
 }
+
+void SetBondType::redo()
+{
+  if (m_newType == Bond::CisOrTrans)
+    m_bond->setOrder(2);
+  m_bond->setType(m_newType);
+  m_bond->update();
+}
+
+////////////////////////////////////////////////////////////
+// Increment bond Type
+////////////////////////////////////////////////////////////
 
 IncOrder::IncOrder(Bond* incBond, const QString & text) : QUndoCommand(text), m_bond(incBond)
 {}
