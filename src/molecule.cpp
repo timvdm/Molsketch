@@ -674,9 +674,9 @@ void Molecule::paint(QPainter * painter, const QStyleOptionGraphicsItem * option
   {
     // Create the output molecule
     OpenBabel::OBMol* obmol = new OpenBabel::OBMol;
-    QHash<Atom*,OpenBabel::OBAtom*> hash;
+    obmol->SetDimension(2);
 
-    hash.clear();
+    QHash<Atom*,OpenBabel::OBAtom*> hash;
 
     obmol->BeginModify();
     foreach (Atom* atom, m_atomList) {
@@ -689,36 +689,34 @@ void Molecule::paint(QPainter * painter, const QStyleOptionGraphicsItem * option
     foreach (Bond* bond, m_bondList) {
       Atom* a1 = bond->beginAtom();
       Atom* a2 = bond->endAtom();
-      OpenBabel::OBAtom* oba1 = hash.value(a1);
-      OpenBabel::OBAtom* oba2 = hash.value(a2);
 
-      OpenBabel::OBBond* obbond = new OpenBabel::OBBond();
-      obbond->SetBO(bond->bondOrder());
+      unsigned int beginIdx = hash.value(a1)->GetIdx();
+      unsigned int endIdx = hash.value(a2)->GetIdx();
+      unsigned int swapIdx = beginIdx;
+      int flags = 0;
+
       // Setting bondtype
       switch (bond->bondType()) {
         case Bond::Wedge:
-          obbond->SetWedge();
+          flags |= OB_WEDGE_BOND;
           break;
         case Bond::InvertedWedge:
-          obbond->SetBegin(oba2);
-          obbond->SetEnd(oba1);
-          obbond->SetWedge();
+          flags |= OB_WEDGE_BOND;
+          beginIdx = endIdx;
+          endIdx = swapIdx;
           break;
         case Bond::Hash:
-          obbond->SetHash();
+          flags |= OB_HASH_BOND;
           break;
         case Bond::InvertedHash:
-          obbond->SetBegin(oba2);
-          obbond->SetEnd(oba1);
-          obbond->SetHash();
+          flags |= OB_HASH_BOND;
+          beginIdx = endIdx;
+          endIdx = swapIdx;
           break;
         default:
-          obbond->SetBegin(oba1);
-          obbond->SetEnd(oba2);
           break;
       }
-
-      obmol->AddBond(*obbond);
+      obmol->AddBond(beginIdx, endIdx, bond->bondOrder(), flags);
     }
     obmol->EndModify();
 
@@ -816,7 +814,7 @@ void Molecule::paint(QPainter * painter, const QStyleOptionGraphicsItem * option
   QString Molecule::smiles() const
   {
     OpenBabel::OBConversion conv;
-    if (!conv.SetOutFormat("smi"))
+    if (!conv.SetOutFormat("can"))
       return QString();
 
     OpenBabel::OBMol *mol = OBMol();
