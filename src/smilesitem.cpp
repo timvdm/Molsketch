@@ -54,12 +54,10 @@ namespace Molsketch {
       return;
 
     m_molecule = mimeMol->molecule();
+    QRectF rect = m_molecule->boundingRect();
+    setPos(rect.bottomLeft());
 
     m_molecule->addToGroup(this);
-
-    //QRectF rect = m_molecule->boundingRect();
-    //m_rect = QRectF(0, 0, rect.width(), 30);
-    //setPos(rect.bottomLeft());
 
     if (scene())
       scene()->update();

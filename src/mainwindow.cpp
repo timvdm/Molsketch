@@ -29,6 +29,7 @@
 #include "element.h"
 #include "fileio.h"
 #include "mollibitem.h"
+#include "smilesitem.h"
 
 #include <openbabel/mol.h>
 
@@ -592,6 +593,10 @@ void MainWindow::createActions()
     colorAct->setIcon(pix);
 	connect (colorAct, SIGNAL (triggered ()), this, SLOT (changeColor ()));
 
+  insertSmilesAct = new QAction(tr("Insert SMILES Container..."),this);
+  insertSmilesAct->setStatusTip(tr("Insert a new graphics item that can receive a molecule drop"));
+  connect(insertSmilesAct, SIGNAL(triggered()), this, SLOT(insertSmilesItem()));
+	
   // Zoom actions
   zoomInAct = new QAction(QIcon(":/images/zoom-in.png"),tr("Zoom &In"), this);
   zoomInAct->setShortcut(tr("Ctrl++"));
@@ -671,6 +676,8 @@ void MainWindow::createMenus()
   editMenu->addSeparator();
   editMenu->addAction(prefAct);
 
+  toolsMenu = menuBar()->addMenu(tr("&Tools"));
+  toolsMenu->addAction(insertSmilesAct);
 
   viewMenu = menuBar()->addMenu(tr("&View"));
   viewMenu->addAction(zoomInAct);
@@ -940,6 +947,14 @@ void MainWindow::delCustomMol()
       QFile::remove(item->getFileName().filePath());
       delete item;
     }
+}
+  
+void MainWindow::insertSmilesItem()
+{
+  Q_CHECK_PTR(m_scene);
+
+  SmilesItem *smiItem = new SmilesItem;
+  m_scene->addItem(smiItem);
 }
 
 void MainWindow::createView()

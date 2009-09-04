@@ -106,9 +106,6 @@ namespace Molsketch {
     m_chargeVisible = true;
     m_autoAddHydrogen = true;
 
-    SmilesItem *smiItem = new SmilesItem;
-    addItem(smiItem);
-
     // Prepare undo m_stack
     m_stack = new QUndoStack(this);
     connect(m_stack, SIGNAL(indexChanged(int)), this, SIGNAL(documentChange()));
@@ -1529,9 +1526,6 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
         case Bond::WedgeOrHash:
           m_stack->push(new SetBondType(clickedBond, Bond::WedgeOrHash, tr("Change Hash Bond")));
           break;
-
-
-
       };
 
 

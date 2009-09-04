@@ -136,6 +136,8 @@ private slots:
   void updateRecentList(QTableWidgetItem* element);
   /** Updated the info box with info on the selected item. */
   void updateInfoBox( );
+  
+  void insertSmilesItem();
 
 //  /** 
 //   * Adds a new molecule with one atom to the scene.
@@ -228,6 +230,8 @@ protected:
   QMenu* fileMenu;
   /** The edit menu. */
   QMenu* editMenu;
+  /** The tools menu. */
+  QMenu* toolsMenu;
   /** The view menu. */
   QMenu* viewMenu;
   /** The window menu. */
@@ -284,11 +288,13 @@ protected:
   QAction* alignAct;
   /** Open the settings dialog action. */
   QAction* prefAct;
-	/** Minimiser **/
-	QAction *minimiseModeAct;
-	
-	//change color
-	QAction *colorAct;
+  /** Minimiser **/
+  QAction *minimiseModeAct;	
+  //change color
+  QAction *colorAct;
+
+  // Tools actions
+  QAction *insertSmilesAct;
 
   // View actions
   /** Zoom in on the view action. */
