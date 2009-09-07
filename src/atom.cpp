@@ -53,7 +53,7 @@ namespace Molsketch {
   {
     // compute the sum of the bond vectors, this gives
     QPointF direction(0.0, 0.0);
-    foreach (Atom *nbr, atom->neighbors())
+    foreach (Atom *nbr, atom->neighbours())
       direction += atom->pos() - nbr->pos();
 
     int alignment = 0;
@@ -372,6 +372,8 @@ namespace Molsketch {
     // Check the scene
     MolScene* molScene = dynamic_cast<MolScene*>(scene());
     Q_CHECK_PTR(molScene);
+
+    qDebug() << "numBonds =" << numBonds();
 
     // If element is m_hidden, don't draw the atoms
     // Always draw the atom when there are no bonds

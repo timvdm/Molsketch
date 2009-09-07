@@ -207,6 +207,12 @@ QList<Bond*> Molecule::delAtom(Atom* atom)
     Q_ASSERT(m_bondList.contains(bond));
     m_bondList.removeAll(bond);
     removeFromGroup(bond);
+    Atom *begin = bond->beginAtom();
+    Atom *end = bond->beginAtom();
+    if (begin)
+      begin->removeBond(bond);
+    if (end)
+      end->removeBond(bond);
     if (scene()) 
       scene()->removeItem(bond);
   }

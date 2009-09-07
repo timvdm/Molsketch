@@ -410,7 +410,7 @@ namespace Molsketch
 
     // Try to load a file
     if (!conversion->ReadFile(&obmol, fileName.toStdString())) {
-      return false;
+      return 0;
     }
 
     // Create a new molecule
@@ -461,9 +461,6 @@ namespace Molsketch
     return mol;
   }
   
-  return 0;
-}
-
   Molecule* loadFile3D(const QString &fileName)
   {
     // Creating and setting conversion classes
