@@ -57,6 +57,13 @@ find_package(Qt4 REQUIRED)
 # and OpenBabel2
 find_package(PkgConfig)
 find_package(OpenBabel2 REQUIRED)
+# Check if we are using openbabel trunk... (graphsym.h is not in 2.2.x)
+if (EXISTS ${OPENBABEL2_INCLUDE_DIR}/openbabel/graphsym.h)
+  message(STATUS "Found OpenBabel Trunk with graphsym.h")
+  set(OPENBABEL2_TRUNK TRUE) # for use in cmake
+  add_definitions(-DOPENBABEL2_TRUNK) # for use in code
+endif (EXISTS ${OPENBABEL2_INCLUDE_DIR}/openbabel/graphsym.h)
+
 
 # Optional KDE4 for "KDE Part"
 find_package(KDE4)

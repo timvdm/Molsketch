@@ -14,7 +14,6 @@ set(libmolsketch_HDRS
 
 # Source files
 set(libmolsketch_SRCS 
-    smilesitem.cpp
     molecule.cpp	
     atom.cpp 
     mollibitem.cpp
@@ -32,9 +31,17 @@ set(libmolsketch_SRCS
     # connect tool items
     itemplugin.cpp
     mimemolecule.cpp
-    graphsymitem.cpp
+    smilesitem.cpp
 
 )
+
+if (OPENBABEL2_TRUNK)
+  set(libmolsketch_SRCS 
+      ${libmolsketch_SRCS}
+      graphsymitem.cpp)
+endif (OPENBABEL2_TRUNK)
+
+    
 set(molsketch_SRCS 
     main.cpp 
     mainwindow.cpp 
