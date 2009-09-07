@@ -26,6 +26,7 @@
 
 namespace Molsketch {
 
+  class Bond;
   class Ring;
   class Molecule;
 
@@ -145,11 +146,12 @@ namespace Molsketch {
 
 
       /** Adds an external bond to the bondlist of the atom */
-      void addNeighbor(Atom * atom);
+      void addBond(Bond *bond);
       /** Removes an external bond from the bondlist of the atom */
-      void removeNeighbor(Atom * atom);
+      void removeBond(Bond *bond);
+      QList<Bond*> bonds() const;
       /** Returns the list of connected atom */
-      const QList<Atom*>& neighbors() const;
+      QList<Atom*> neighbours() const;
       /**
        * Sets the number of implicit hydrogens of the current atom to @p number.
        *
@@ -166,8 +168,8 @@ namespace Molsketch {
       /** Returns the type of the class. Needed fro Qt typecasting. */
       virtual int type() const {return Atom::Type;};
 	  
-	  //returns a list of atoms connected to atom
-	  QList<Atom*> neighbours () {return m_neighbors;};
+
+
 
       /**
        * Get the number for this atom.
@@ -227,7 +229,7 @@ namespace Molsketch {
        * Used to determine the position of the implicit H's. The implicit hydrogens
        * are not included.
        */
-      QList<Atom*> m_neighbors;
+      QList<Bond*> m_bonds;
       /**
        * Stores the number of implicit hydrogens
        *

@@ -132,6 +132,8 @@ class Bond : public QGraphicsItem
     /** Return @c true if @p atom takes part in this bond and @c false otherwise. */
     bool hasAtom(const Atom* atom) const;
 
+    Atom* otherAtom(const Atom *atom) const;
+
     /** Returns the molecule this bond is part of. */
     Molecule* molecule() const;
 

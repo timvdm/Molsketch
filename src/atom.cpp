@@ -31,6 +31,7 @@
 
 #include "element.h"
 #include "molscene.h"
+#include <iostream>
 
 namespace Molsketch {
 
@@ -535,7 +536,7 @@ namespace Molsketch {
 
   int Atom::numBonds() const
   {
-    return m_neighbors.size();
+    return m_bonds.size();
   }
 
   int Atom::bondOrderSum() const
@@ -719,24 +720,34 @@ namespace Molsketch {
     m_implicitHydrogens = enabled/* && (m_elementSymbol == "C" || m_elementSymbol == "N" || m_elementSymbol == "O")*/;
   }
 
-  void Atom::addNeighbor(Atom *atom)
+  void Atom::addBond(Bond *bond)
   {
-    Q_CHECK_PTR(atom);
-    if (!m_neighbors.contains(atom))
-      m_neighbors.append(atom);
-    prepareGeometryChange();
-    computeBoundingRect();
+    Q_CHECK_PTR(bond);
+    Q_CHECK_PTR(bond->beginAtom());
+    Q_CHECK_PTR(bond->endAtom());
+
+    if (!m_bonds.contains(bond))
+      m_bonds.append(bond);
   }
 
-  void Atom::removeNeighbor(Atom *atom)
+  void Atom::removeBond(Bond *bond)
   {
-    Q_CHECK_PTR(atom);
-    m_neighbors.removeAll(atom);
+    Q_CHECK_PTR(bond);
+    m_bonds.removeAll(bond);
   }
 
-  const QList<Atom*>& Atom::neighbors() const
+  QList<Bond*> Atom::bonds() const
   {
-    return m_neighbors;
+    return m_bonds;
+  }
+
+
+  QList<Atom*> Atom::neighbours() const
+  {
+    QList<Atom*> nbrs;
+    foreach (Bond *bond, m_bonds)
+      nbrs.append(bond->otherAtom(this));
+    return nbrs;
   }
 
 } // namespace

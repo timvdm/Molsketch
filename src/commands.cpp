@@ -239,9 +239,9 @@ void AddBond::undo()
   Atom *begin = m_bond->beginAtom();
   Atom *end = m_bond->endAtom();
   if (begin)
-    begin->removeNeighbor(end);
+    begin->removeBond(m_bond);
   if (end)
-    end->removeNeighbor(begin);
+    end->removeBond(m_bond);
   m_undone = true;
 }
 
@@ -251,11 +251,11 @@ void AddBond::redo()
   Atom *begin = m_bond->beginAtom();
   Atom *end = m_bond->endAtom(); 
   if (begin)
-    if (!begin->neighbors().contains(end))
-      begin->addNeighbor(end);
+    if (!begin->neighbours().contains(end))
+      begin->addBond(m_bond);
   if (end)
-    if (!end->neighbors().contains(begin))
-      end->addNeighbor(begin);
+    if (!end->neighbours().contains(begin))
+      end->addBond(m_bond);
   m_undone = false;
 }
 

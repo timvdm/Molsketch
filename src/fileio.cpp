@@ -460,6 +460,9 @@ namespace Molsketch
 
     return mol;
   }
+  
+  return 0;
+}
 
   Molecule* loadFile3D(const QString &fileName)
   {

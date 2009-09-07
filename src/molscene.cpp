@@ -482,12 +482,12 @@ namespace Molsketch {
 
         bool beginHasDoubleBond = false;
         bool endHasDoubleBond = false;
-        foreach (Atom *nbr, begin->neighbors()) {
+        foreach (Atom *nbr, begin->neighbours()) {
           Bond *possibleDoubleBond = molecules[0]->bondBetween(begin, nbr);
           if (possibleDoubleBond && possibleDoubleBond->bondOrder() == 2)
             beginHasDoubleBond = true;
         }
-        foreach (Atom *nbr, end->neighbors()) {
+        foreach (Atom *nbr, end->neighbours()) {
           Bond *possibleDoubleBond = molecules[0]->bondBetween(end, nbr);
           if (possibleDoubleBond && possibleDoubleBond->bondOrder() == 2)
             endHasDoubleBond = true;
@@ -875,7 +875,7 @@ namespace Molsketch {
       m_hintMoleculeItems->setTransform(QTransform().rotate(ang+180.0).translate(-rp.x(), -rp.y()));
     } else if (atom->numBonds() == 1) {
       // rotate/translate ring to align with the bond
-      QPointF moleculeNormal = atom->scenePos() - atom->neighbors()[0]->scenePos();
+      QPointF moleculeNormal = atom->scenePos() - atom->neighbours()[0]->scenePos();
       moleculeNormal = normalized(moleculeNormal);
       QPointF ringNormal = normalized(m_hintRingPoints[0]);
       QPointF rp = m_hintRingPoints[0];
@@ -889,8 +889,8 @@ namespace Molsketch {
 
     } else if (atom->numBonds() == 2) {
       // rotate/translate ring to align with the bond
-      QPointF moleculeNormal = atom->scenePos() - atom->neighbors()[0]->scenePos();
-      moleculeNormal += atom->scenePos() - atom->neighbors()[1]->scenePos();
+      QPointF moleculeNormal = atom->scenePos() - atom->neighbours()[0]->scenePos();
+      moleculeNormal += atom->scenePos() - atom->neighbours()[1]->scenePos();
       moleculeNormal = normalized(moleculeNormal);
       QPointF ringNormal = normalized(m_hintRingPoints[0]);
       QPointF rp = m_hintRingPoints[0];
@@ -1399,9 +1399,9 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
                           }
 			case 1:
 			{
-				Atom *at2 = at1 ->neighbors()[0];
-				if (at2 ->neighbors() .size ()< 2) {
-				QPointF v = downPos - at1 ->neighbors()[0] ->pos ();
+				Atom *at2 = at1 ->neighbours()[0];
+				if (at2 ->neighbours() .size ()< 2) {
+				QPointF v = downPos - at1 ->neighbours()[0] ->pos ();
 
 				QPointF rotated_v (v.x()*0.5 - v.y()*sqrt(3)*0.5, v.x()*0.5*sqrt(3) + v.y () *0.5);
 				qreal mod = sqrt (rotated_v.x()*rotated_v.x() + rotated_v.y()*rotated_v.y());
@@ -1409,8 +1409,8 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
 				new_atom_pos = rotated_v + downPos;
 				}
 				else {
-					Atom *at3 = at2 ->neighbors()[0];
-					if (at3 == at1) at3 = at2 ->neighbors()[1];
+					Atom *at3 = at2 ->neighbours()[0];
+					if (at3 == at1) at3 = at2 ->neighbours()[1];
 					QPointF rotated_v = at2 ->pos () - at3 ->pos ();
 					qreal mod = sqrt (rotated_v.x()*rotated_v.x() + rotated_v.y()*rotated_v.y());
 					rotated_v *= m_bondLength/mod;
@@ -1423,8 +1423,8 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
 				break;
 			case 2:
 			{
-				Atom *n1 = at1 ->neighbors()[0];
-				Atom * n2 = at1 ->neighbors()[1];
+				Atom *n1 = at1 ->neighbours()[0];
+				Atom * n2 = at1 ->neighbours()[1];
 				QPointF v1 = n1 ->pos ();
 				QPointF v2 = n2 ->pos ();
 				QPointF v3 = v1 + v2;

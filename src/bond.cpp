@@ -47,8 +47,8 @@ namespace Molsketch {
     m_endAtom = atomB;
     m_ring = 0;
 
-    atomA->addNeighbor(atomB);
-    atomB->addNeighbor(atomA);
+    atomA->addBond(this);
+    atomB->addBond(this);
   
     setPos(m_beginAtom->scenePos());
     MolScene* molScene = dynamic_cast<MolScene*>(scene);
@@ -433,6 +433,11 @@ namespace Molsketch {
   bool Bond::hasAtom(const Atom* atom) const
   {
     return m_beginAtom == atom || m_endAtom == atom;
+  }
+    
+  Atom* Bond::otherAtom(const Atom *atom) const
+  {
+    return (atom == m_beginAtom) ? m_endAtom : m_beginAtom;
   }
   
   Molecule* Bond::molecule() const

@@ -232,9 +232,9 @@ QList<Bond*> Molecule::delAtom(Atom* atom)
     Atom *begin = bond->beginAtom();
     Atom *end = bond->beginAtom();
     if (begin)
-      begin->removeNeighbor(end);
+      begin->removeBond(bond);
     if (end)
-      end->removeNeighbor(begin);
+      end->removeBond(bond);
  
     // Removing the bond
     m_bondList.removeAll(bond);
@@ -242,7 +242,7 @@ QList<Bond*> Molecule::delAtom(Atom* atom)
     if (scene()) 
       scene()->removeItem(bond);
 
-  perceiveRings();
+    perceiveRings();
 //  bond->undoValency();
 //  /// Superseded by undo
      //delete bond;
