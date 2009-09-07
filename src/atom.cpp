@@ -373,8 +373,6 @@ namespace Molsketch {
     MolScene* molScene = dynamic_cast<MolScene*>(scene());
     Q_CHECK_PTR(molScene);
 
-    qDebug() << "numBonds =" << numBonds();
-
     // If element is m_hidden, don't draw the atoms
     // Always draw the atom when there are no bonds
     if (m_hidden && !isSelected() && numBonds()) {
@@ -522,16 +520,15 @@ namespace Molsketch {
 
   void Atom::setNumImplicitHydrogens(int number)
   {
-    Q_ASSERT (number >= 0);
-
     m_implicitHydrogens = true;
 
-//  int deltaNoIH = number - m_numImplicitHydrogens;
+    m_userImplicitHydrogens = 0;
+    int deltaH = number - numImplicitHydrogens();
 //  int newNoB = m_numBonds - deltaNoIH;
   //m_numBonds = (newNoB < 0) ? 0 : newNoB;
 
-  m_userImplicitHydrogens = number;
-}
+    m_userImplicitHydrogens = deltaH;
+  }
 
 
 // Query methods

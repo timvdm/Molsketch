@@ -835,23 +835,6 @@ void MainWindow::createToolBoxes()
 
 
   // Composing draw options toolbox
-  QHBoxLayout* hLayoutAS = new QHBoxLayout();
-  QPushButton * pushButtonIncCharge = new QPushButton("+");
-  connect(pushButtonIncCharge, SIGNAL(clicked()), m_scene, SLOT(setIncChargeMode()));
-  hLayoutAS->addWidget(pushButtonIncCharge);
-  QPushButton * pushButtonDecCharge = new QPushButton("-");
-  connect(pushButtonDecCharge, SIGNAL(clicked()), m_scene, SLOT(setDecChargeMode()));
-  hLayoutAS->addWidget(pushButtonDecCharge);
-  QPushButton * pushButtonIncHydrogen = new QPushButton("H+");
-  connect(pushButtonIncHydrogen, SIGNAL(clicked()), m_scene, SLOT(setIncHydrogenMode()));
-  hLayoutAS->addWidget(pushButtonIncHydrogen);
-  QPushButton * pushButtonDecHydrogen = new QPushButton("H-");
-  connect(pushButtonDecHydrogen, SIGNAL(clicked()), m_scene, SLOT(setDecHydrogenMode()));
-  hLayoutAS->addWidget(pushButtonDecHydrogen);
-
-  QGroupBox* groupBoxAtomOptions = new QGroupBox("Atom options");
-  groupBoxAtomOptions->setLayout(hLayoutAS);
-
   QHBoxLayout* hLayoutBS3 = new QHBoxLayout();
   hLayoutBS3->addWidget(new QLabel("Bond angle"));
   QSpinBox * spinBoxBondAngle = new QSpinBox;
@@ -881,7 +864,6 @@ void MainWindow::createToolBoxes()
   groupBoxBondOptions->setLayout(vLayoutBS);
 
   QVBoxLayout* vLayoutDS = new QVBoxLayout;
-  vLayoutDS->addWidget(groupBoxAtomOptions);
   vLayoutDS->addWidget(groupBoxBondOptions);
 
   QFrame * frameDrawOptions = new QFrame;

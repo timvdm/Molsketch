@@ -70,6 +70,8 @@ namespace Molsketch {
     connect(ui.buttonRotate, SIGNAL(clicked()), this, SLOT(rotateClicked()));
     connect(ui.buttonMinimize, SIGNAL(clicked()), this, SLOT(minimizeClicked()));
     connect(ui.buttonConnect, SIGNAL(clicked()), this, SLOT(connectClicked()));
+    connect(ui.buttonCharges, SIGNAL(clicked()), this, SLOT(chargesClicked()));
+    connect(ui.buttonHydrogens, SIGNAL(clicked()), this, SLOT(hydrogensClicked()));
   }
 
 
@@ -128,6 +130,8 @@ namespace Molsketch {
     ui.buttonRotate->setChecked(false);
     ui.buttonMinimize->setChecked(false);
     ui.buttonConnect->setChecked(false);
+    ui.buttonCharges->setChecked(false);
+    ui.buttonHydrogens->setChecked(false);
   }
 
   QPushButton* DrawWidget::checkedBondButton()
@@ -453,6 +457,19 @@ namespace Molsketch {
     m_scene->setEditMode(MolScene::ConnectMode);
   }
 
+  void DrawWidget::chargesClicked()
+  {
+    uncheckAllButtons();
+    ui.buttonCharges->setChecked(true);
+    m_scene->setEditMode(MolScene::ChargeMode);
+  }
+
+  void DrawWidget::hydrogensClicked()
+  {
+    uncheckAllButtons();
+    ui.buttonHydrogens->setChecked(true);
+    m_scene->setEditMode(MolScene::HydrogenMode);
+  }
 
 } // end namespace Molsketch
 

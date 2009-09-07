@@ -942,8 +942,19 @@ namespace Molsketch {
     // Execute extended behavior depending on edit mode and mouse button
     switch (event->button()) {
       case Qt::RightButton:
-        delModePress( event );
-        break;
+        switch (m_editMode) {
+          case MolScene::DrawMode:
+            delModePress( event );
+            break;
+          case MolScene::ChargeMode:
+            chargeModePress(event);
+            break;
+          case MolScene::HydrogenMode:
+            hydrogenModePress(event);
+            break;
+          default:
+            break;
+        }
       case Qt::MidButton:
         moveModePress( event );
         break;
@@ -951,6 +962,12 @@ namespace Molsketch {
         switch (m_editMode) {
           case MolScene::DrawMode:
             addModePress( event );
+            break;
+          case MolScene::ChargeMode:
+            chargeModePress(event);
+            break;
+          case MolScene::HydrogenMode:
+            hydrogenModePress(event);
             break;
           case MolScene::MoveMode:
             moveModePress( event );
@@ -1061,15 +1078,20 @@ void MolScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * event )
   switch (event->button())
   {
     case Qt::RightButton:
-      delModeDoubleClick(event);
-      break;
+      switch (m_editMode) {
+        case DrawMode:
+          delModeDoubleClick(event);
+          break;
+        default:
+          break;
+      }
     default:
       switch (m_editMode)
       {
         case MolScene::DrawMode:
-				addModeDoubleClick (event);
-
+          addModeDoubleClick (event);
           break;
+        default:
         case MolScene::MoveMode:
           break;
       }
@@ -1528,21 +1550,11 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
           m_stack->push(new SetBondType(clickedBond, Bond::WedgeOrHash, tr("Change Hash Bond")));
           break;
       };
-
-
-      /*
-      if (event->modifiers() == Qt::SHIFT)
-        m_stack->push(new SetBondType(bondAt(downPos), tr("change of bondtype")));
-      else
-        m_stack->push(new IncOrder(bondAt(downPos),tr("change of bondorder")));
-        */
       return;
     }
 
     // Show hinting
-    if (!m_hintMoleculeItems)
-    if (m_currentElementSymbol != "+" && m_currentElementSymbol != "-" && m_currentElementSymbol != "H+" && m_currentElementSymbol != "H-")
-    {
+    if (!m_hintMoleculeItems) {
       drawHintPoints(downPos);
       setHintLine(downPos,event->scenePos());
       m_hintLine->setVisible(true);
@@ -1569,16 +1581,14 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
         }
 
       } else {
-        if (m_currentElementSymbol!="+" && m_currentElementSymbol!="-" && m_currentElementSymbol != "H+" && m_currentElementSymbol != "H-") {
-          // insert a new atom
-          //Molecule* mol = new Molecule;
-          //mol->setPos(downPos);
-          //m_stack->beginMacro("Add Molecule");
-          //m_stack->push(new AddItem(mol,this));
-          //m_stack->push(new AddAtom(new Atom( downPos, m_currentElementSymbol, m_autoAddHydrogen ), mol));
-          //m_stack->endMacro();
-          addItem(new Atom( downPos, m_currentElementSymbol, m_autoAddHydrogen));
-        }
+        // insert a new atom
+        //Molecule* mol = new Molecule;
+        //mol->setPos(downPos);
+        //m_stack->beginMacro("Add Molecule");
+        //m_stack->push(new AddItem(mol,this));
+        //m_stack->push(new AddAtom(new Atom( downPos, m_currentElementSymbol, m_autoAddHydrogen ), mol));
+        //m_stack->endMacro();
+        addItem(new Atom( downPos, m_currentElementSymbol, m_autoAddHydrogen));
       }
     }
   }
@@ -1595,10 +1605,11 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
     //   Atom* atom = atomAt(event->scenePos());
 
     // Check hinting conditions
-    if (!(event->buttons() & Qt::LeftButton)) return;
+    if (!(event->buttons() & Qt::LeftButton))
+      return;
     //   if (nearestPoint(event->buttonDownScenePos(Qt::LeftButton))==QPointF(0,0)) return;
-    if (m_currentElementSymbol == "+" || m_currentElementSymbol == "-" || m_currentElementSymbol == "H+" || m_currentElementSymbol == "H-") return;
-    if (!atomAt(event->buttonDownScenePos(Qt::LeftButton))) return;
+    if (!atomAt(event->buttonDownScenePos(Qt::LeftButton)))
+      return;
 
     // Set hinting
     setHintLine(nearestPoint(event->buttonDownScenePos(Qt::LeftButton)), nearestPoint(event->scenePos()));
@@ -1657,28 +1668,6 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
 
     if (!a1 && !b) return;
     if (b && !a1) return;
-
-
-    if (m_currentElementSymbol=="+")
-    {
-      m_stack->push(new IncCharge(a1, tr("increasing charge")));
-      return;
-    }
-    if (m_currentElementSymbol=="-")
-    {
-      m_stack->push(new DecCharge(a1,tr("decreasing charge")));
-      return;
-    }
-    if (m_currentElementSymbol=="H+")
-    {
-      m_stack->push(new AddImplicitHydrogen(a1, tr("add implicit hydrogen")));
-      return;
-    }
-    if (m_currentElementSymbol=="H-")
-    {
-      if (a1->numImplicitHydrogens() > 0) m_stack->push(new RemoveImplicitHydrogen(a1,tr("remove implicit hydrogen")));
-      return;
-    }
 
     // Check for atom release
     if (a2) {
@@ -1783,6 +1772,45 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
     Molecule* item = moleculeAt(event->scenePos());
     if (item) 
       m_stack->push(new DelItem(item,tr("removing molecule")));
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  //
+  // Charge Mode
+  //
+  //////////////////////////////////////////////////////////////////////////////
+
+  void MolScene::chargeModePress(QGraphicsSceneMouseEvent * event)
+  {
+    QPointF downPos = event->buttonDownScenePos(event->button());
+
+    // Check possible targets
+    Atom* atom = atomAt(downPos);
+    if (!atom)
+      return;
+
+    if (event->button() == Qt::RightButton) {
+      m_stack->push(new DecCharge(atom, tr("decreasing charge")));
+    } else {
+      m_stack->push(new IncCharge(atom, tr("increasing charge")));
+    }
+  }
+
+  void MolScene::hydrogenModePress(QGraphicsSceneMouseEvent * event)
+  {
+    QPointF downPos = event->buttonDownScenePos(event->button());
+
+    // Check possible targets
+    Atom* atom = atomAt(downPos);
+    if (!atom)
+      return;
+
+    if (event->button() == Qt::RightButton) {
+      if (atom->numImplicitHydrogens() > 0)
+        m_stack->push(new RemoveImplicitHydrogen(atom, tr("remove implicit hydrogen")));
+    } else {
+      m_stack->push(new AddImplicitHydrogen(atom, tr("add implicit hydrogen")));
+    }
   }
 
   void MolScene::keyPressEvent(QKeyEvent* keyEvent)
@@ -2099,24 +2127,14 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
     setEditMode(MolScene::DrawMode);
   }
 
-  void MolScene::setIncChargeMode()
+  void MolScene::setChargeMode()
   {
-    m_currentElementSymbol = "+";
+    m_editMode = ChargeMode;
   }
 
-  void MolScene::setDecChargeMode()
+  void MolScene::setHydrogenMode()
   {
-    m_currentElementSymbol = "-";
-  }
-
-  void MolScene::setIncHydrogenMode()
-  {
-    m_currentElementSymbol = "H+";
-  }
-
-  void MolScene::setDecHydrogenMode()
-  {
-    m_currentElementSymbol = "H-";
+    m_editMode = HydrogenMode;
   }
 
   QFont MolScene::atomSymbolFont() const

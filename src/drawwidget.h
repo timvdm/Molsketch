@@ -66,6 +66,8 @@ namespace Molsketch {
       void rotateClicked();
       void minimizeClicked();
       void connectClicked();
+      void chargesClicked();
+      void hydrogensClicked();
 
     private:
       Ui::DrawWidget ui;

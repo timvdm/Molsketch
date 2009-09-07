@@ -193,14 +193,10 @@ public slots:
   void clear();
   /** Slot to set the edit mode to @p mode. */
   void setEditMode(int mode);
-  /** Slot to set the edit mode to increase charge mode */
-  void setIncChargeMode();
-  /** Slot to set the edit mode to decrease charge mode */
-  void setDecChargeMode();
-  /** Slot to set the edit mode to increase hydrogen mode */
-  void setIncHydrogenMode();
-  /** Slot to set the edit mode to decrease hydrogen mode */
-  void setDecHydrogenMode();
+  /** Slot to set the edit mode to increase/decrease charge mode */
+  void setChargeMode();
+  /** Slot to set the edit mode to increase/decrease hydrogen mode */
+  void setHydrogenMode();
   /** Slot to select all contents of the scene. */
   void selectAll();
   /** 
@@ -362,6 +358,11 @@ private:
   void addModeRelease(QGraphicsSceneMouseEvent* event);
   /** Event handler for mouse doubleclicks in add mode.*/
   void addModeDoubleRelease(QGraphicsSceneMouseEvent* event);
+  /** Event handler for mouse presses in charge mode. */
+  void chargeModePress(QGraphicsSceneMouseEvent* event);
+  /** Event handler for mouse presses in hydrogen mode. */
+  void hydrogenModePress(QGraphicsSceneMouseEvent* event);
+
 
   /** Event handler for mouse presses in move mode. */
   void moveModePress(QGraphicsSceneMouseEvent* event);

@@ -164,15 +164,21 @@ void DecCharge::redo()
   m_undone = false;
 }
 
+////////////////////////////////////////
 // AddImplicitHydrogen
+////////////////////////////////////////
+
 AddImplicitHydrogen::AddImplicitHydrogen(Atom* atom, const QString & text) : QUndoCommand(text), m_atom(atom)
-{};
+{
+}
+
 void AddImplicitHydrogen::undo()
 {
   m_atom->setNumImplicitHydrogens(m_atom->numImplicitHydrogens() - 1);
   if (m_atom->scene()) m_atom->scene()->update();
   m_undone = true;
 }
+
 void AddImplicitHydrogen::redo()
 {
   m_atom->setNumImplicitHydrogens(m_atom->numImplicitHydrogens() + 1);
