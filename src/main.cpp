@@ -24,6 +24,12 @@
 #include <QLocale>
 
 #include "mainwindow.h"
+  
+// @todo make this real plugins
+#include "smilesitem.h"
+const static Molsketch::SmilesItemFactory *smilesItemFactory = new Molsketch::SmilesItemFactory;
+#include "graphsymitem.h"
+const static Molsketch::GraphSymItemFactory *graphSymItemFactory = new Molsketch::GraphSymItemFactory;
 
 int main(int argc, char *argv[])
 {

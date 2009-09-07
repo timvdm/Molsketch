@@ -8,43 +8,35 @@
 
 namespace Molsketch {
 
-  SmilesItem::SmilesItem() : m_molecule(0), m_rect(QRectF(0, 0, 150, 100))
+  SmilesItem::SmilesItem() : ItemPlugin(), m_molecule(0), m_rect(QRectF(0, 0, 150, 100))
   {
-    setAcceptDrops(true);
-    setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable);
+  }
+
+  SmilesItem::~SmilesItem()
+  {
   }
 
   QRectF SmilesItem::boundingRect() const
   {
-    return m_rect;
+    if (m_molecule)
+      return m_rect;
+    else
+      return defaultBoundingRect();
   }
 
   void SmilesItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
   {
+    Q_UNUSED(option);
+    Q_UNUSED(widget);
+
     if (m_molecule) {
       QFontMetrics fm = painter->fontMetrics();
       QString smiles = m_molecule->smiles();
       m_rect = QRectF(0, 0, fm.width(smiles), fm.height());
       painter->drawText(m_rect, Qt::AlignCenter | Qt::TextDontClip, smiles);
     } else {
-      painter->drawRect(boundingRect());
-      painter->drawText(boundingRect(), Qt::AlignCenter, "drag molecule here...");
+      paintDefault(painter);
     }
-  }
-
-  void SmilesItem::dragEnterEvent(QGraphicsSceneDragDropEvent *event)
-  {
-    qDebug() << "dragEnterEvent";
-  }
-
-  void SmilesItem::dragMoveEvent(QGraphicsSceneDragDropEvent *event)
-  {
-    qDebug() << "dragMoveEvent";
-  }
-
-  void SmilesItem::dragLeaveEvent(QGraphicsSceneDragDropEvent *event)
-  {
-    qDebug() << "dragLeaveEvent";
   }
 
   void SmilesItem::dropEvent(QGraphicsSceneDragDropEvent *event)
@@ -63,5 +55,11 @@ namespace Molsketch {
       scene()->update();
   }
 
+  SmilesItemFactory::SmilesItemFactory()
+  {
+    instanceList().append(this);
+    qDebug() << instanceList().size();
+  }
 
 }
+

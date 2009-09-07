@@ -137,7 +137,7 @@ private slots:
   /** Updated the info box with info on the selected item. */
   void updateInfoBox( );
   
-  void insertSmilesItem();
+  void pluginActionTriggered();
 
 //  /** 
 //   * Adds a new molecule with one atom to the scene.
@@ -295,6 +295,7 @@ protected:
 
   // Tools actions
   QAction *insertSmilesAct;
+  QAction *insertGraphSymAct;
 
   // View actions
   /** Zoom in on the view action. */

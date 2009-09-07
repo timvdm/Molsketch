@@ -29,7 +29,8 @@
 #include "element.h"
 #include "fileio.h"
 #include "mollibitem.h"
-#include "smilesitem.h"
+
+#include <Molsketch/ItemPlugin>
 
 #include <openbabel/mol.h>
 
@@ -49,9 +50,9 @@ using namespace OpenBabel;
 #define ALT_CUSTOM_LIB_PATH ""
 
 #define OB_FILE_FORMATS "All supported types (*.*);;SMILES (*.smi);;MDL Molfile (*.mdl *.mol *.sd *.sdf);;XYZ (*.xyz);;ChemDraw Connection Table (*.ct);;Ghemical (*.gpr)"
-#define OB_DEFAULT_FORMAT "MDL Molfile (*.mdl *.mol *.sd *.sdf)"
+#define OB_DEFAULT_FORMAT "CML (*.cml)"
 #define GRAPHIC_FILE_FORMATS "Scalable Vector Graphics (*.svg);;Portable Network Graphics (*.png);;Windows Bitmap (*.bmp);;Joint Photo Expert Group (*.jpeg)"
-#define GRAPHIC_DEFAULT_FORMAT "Scalable Vector Graphics (*.svg)"
+#define GRAPHIC_DEFAULT_FORMAT "Portable Network Graphics (*.png)"
 #define OSRA_GRAPHIC_FILE_FORMATS "All supported types (*.*);;Images (*.png *.bmp *.jpg *.jpeg *.gif *.tif *.tiff);;Documents (*.pdf *.ps)"
 
 // Constructor
@@ -593,10 +594,7 @@ void MainWindow::createActions()
     colorAct->setIcon(pix);
 	connect (colorAct, SIGNAL (triggered ()), this, SLOT (changeColor ()));
 
-  insertSmilesAct = new QAction(tr("Insert SMILES Container..."),this);
-  insertSmilesAct->setStatusTip(tr("Insert a new graphics item that can receive a molecule drop"));
-  connect(insertSmilesAct, SIGNAL(triggered()), this, SLOT(insertSmilesItem()));
-	
+
   // Zoom actions
   zoomInAct = new QAction(QIcon(":/images/zoom-in.png"),tr("Zoom &In"), this);
   zoomInAct->setShortcut(tr("Ctrl++"));
@@ -676,9 +674,14 @@ void MainWindow::createMenus()
   editMenu->addSeparator();
   editMenu->addAction(prefAct);
 
-  toolsMenu = menuBar()->addMenu(tr("&Tools"));
-  toolsMenu->addAction(insertSmilesAct);
-
+  toolsMenu = menuBar()->addMenu(tr("&Insert Items"));
+  foreach (ItemPluginFactory *factory, ItemPluginFactory::factories()) {
+    QAction *pluginAct = new QAction(factory->input() + " -> " + factory->output(), this);
+    pluginAct->setData(factory->output());
+    connect(pluginAct, SIGNAL(triggered()), this, SLOT(pluginActionTriggered()));
+    toolsMenu->addAction(pluginAct);
+  }
+	
   viewMenu = menuBar()->addMenu(tr("&View"));
   viewMenu->addAction(zoomInAct);
   viewMenu->addAction(zoomOutAct);
@@ -949,13 +952,18 @@ void MainWindow::delCustomMol()
     }
 }
   
-void MainWindow::insertSmilesItem()
+void MainWindow::pluginActionTriggered()
 {
   Q_CHECK_PTR(m_scene);
 
-  SmilesItem *smiItem = new SmilesItem;
-  m_scene->addItem(smiItem);
+  QAction *action = qobject_cast<QAction*>(sender());
+  Q_CHECK_PTR(action);
+
+  QString output = action->data().toString();
+  ItemPlugin *item = ItemPluginFactory::createInstance(output);
+  m_scene->addItem(item);
 }
+
 
 void MainWindow::createView()
 {
