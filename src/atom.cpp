@@ -756,12 +756,15 @@ namespace Molsketch {
 
     if (!m_bonds.contains(bond))
       m_bonds.append(bond);
+    
+    computeBoundingRect();
   }
 
   void Atom::removeBond(Bond *bond)
   {
     Q_CHECK_PTR(bond);
     m_bonds.removeAll(bond);
+    computeBoundingRect();
   }
 
   QList<Bond*> Atom::bonds() const
