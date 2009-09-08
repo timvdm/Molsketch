@@ -27,6 +27,7 @@
 #ifdef OPENBABEL2_TRUNK
 #include <openbabel/graphsym.h>
 #else
+#include <openbabel/mol.h>
 #include <openbabel/canon.h>
 #endif
 
@@ -60,13 +61,15 @@ namespace Molsketch {
       OpenBabel::OBGraphSym graphsym(obmol);
       graphsym.GetSymmetry(symmetry_classes);
 #else
-      OBBitVec fragatoms(obmol->NumAtoms());
-      FOR_ATOMS_OF_MOL(a, mol)
+      OpenBabel::OBBitVec fragatoms(obmol->NumAtoms());
+
+      using OpenBabel::OBMolAtomIter;
+      FOR_ATOMS_OF_MOL(a, obmol)
         fragatoms.SetBitOn(a->GetIdx());
 
 
       std::vector<unsigned int> canonical_labels;
-      CanonicalLabels(omol, fragatoms, symmetry_classes, canonical_labels);
+      OpenBabel::CanonicalLabels(obmol, fragatoms, symmetry_classes, canonical_labels);
 #endif
 
       for (int i = 0; i < atoms.size(); ++i) {

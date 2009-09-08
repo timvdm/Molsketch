@@ -32,14 +32,15 @@ set(libmolsketch_SRCS
     itemplugin.cpp
     mimemolecule.cpp
     smilesitem.cpp
+    atomnumberitem.cpp
+    graphsymitem.cpp)
 
 )
 
-if (OPENBABEL2_TRUNK)
-  set(libmolsketch_SRCS 
-      ${libmolsketch_SRCS}
-      graphsymitem.cpp)
-endif (OPENBABEL2_TRUNK)
+#if (OPENBABEL2_TRUNK)
+#  set(libmolsketch_SRCS 
+#      ${libmolsketch_SRCS}
+#endif (OPENBABEL2_TRUNK)
 
     
 set(molsketch_SRCS 
