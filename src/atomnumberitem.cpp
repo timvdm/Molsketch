@@ -49,8 +49,9 @@ namespace Molsketch {
       const QList<Atom*> &atoms = m_molecule->atoms();
       QFontMetrics fm = painter->fontMetrics();
 
+      QPointF offset(0.0, fm.height() - fm.descent());
       for (int i = 0; i < atoms.size(); ++i) {
-        painter->drawText(mapFromItem(m_molecule, atoms[i]->pos()), QString::number(i+1));
+        painter->drawText(mapFromItem(m_molecule, atoms[i]->pos()) + offset, QString::number(i+1));
       }
 
       m_rect = QRectF(0, 0, fm.width(QObject::tr("Atom Numbers")), fm.height());
