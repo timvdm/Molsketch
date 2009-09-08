@@ -24,7 +24,11 @@
 #include <QGraphicsSceneDragDropEvent>
 #include <QDebug>
 
+#ifdef OPENBABEL2_TRUNK
 #include <openbabel/graphsym.h>
+#else
+#include <openbabel/canon.h>
+#endif
 
 namespace Molsketch {
 
@@ -51,8 +55,19 @@ namespace Molsketch {
 
       OpenBabel::OBMol *obmol = m_molecule->OBMol();
       std::vector<unsigned int> symmetry_classes;
+
+#ifdef OPENBABEL2_TRUNK      
       OpenBabel::OBGraphSym graphsym(obmol);
       graphsym.GetSymmetry(symmetry_classes);
+#else
+      OBBitVec fragatoms(obmol->NumAtoms());
+      FOR_ATOMS_OF_MOL(a, mol)
+        fragatoms.SetBitOn(a->GetIdx());
+
+
+      std::vector<unsigned int> canonical_labels;
+      CanonicalLabels(omol, fragatoms, symmetry_classes, canonical_labels);
+#endif
 
       for (int i = 0; i < atoms.size(); ++i) {
         painter->drawText(mapFromItem(m_molecule, atoms[i]->pos()), QString::number(symmetry_classes.at(i)));
