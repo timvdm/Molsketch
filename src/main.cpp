@@ -28,11 +28,10 @@
 // @todo make this real plugins
 #include "smilesitem.h"
 const static Molsketch::SmilesItemFactory *smilesItemFactory = new Molsketch::SmilesItemFactory;
-
-#ifdef OPENBABEL2_TRUNK
 #include "graphsymitem.h"
 const static Molsketch::GraphSymItemFactory *graphSymItemFactory = new Molsketch::GraphSymItemFactory;
-#endif // OPENBABEL2_TRUNK
+#include "atomnumberitem.h"
+const static Molsketch::AtomNumberItemFactory *atomNumberItemFactory = new Molsketch::AtomNumberItemFactory;
 
 int main(int argc, char *argv[])
 {

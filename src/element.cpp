@@ -29,6 +29,23 @@ OpenBabel::OBElementTable eTable;
 
 namespace Molsketch {
 
+  QColor elementColor(int element)
+  {
+    //@todo: Add more colors....
+    switch (element) {
+      case Element::H:
+        return QColor(200,200,200);
+      case Element::C:
+        return QColor(0, 0, 0);
+      case Element::N:
+        return QColor(0, 0, 255);
+      case Element::O:
+        return QColor(255, 0, 0);
+      default:
+        return QColor(0, 0, 0);    
+    }  
+  }
+
   QString number2symbol( int number )
   {
     return eTable.GetSymbol(number);

@@ -106,6 +106,7 @@ namespace Molsketch {
     m_hydrogenVisible = true;
     m_chargeVisible = true;
     m_autoAddHydrogen = true;
+    m_renderMode = RenderLabels;
 
     // Prepare undo m_stack
     m_stack = new QUndoStack(this);
@@ -746,6 +747,15 @@ namespace Molsketch {
     return m_editMode;
   }
 
+  MolScene::RenderMode MolScene::renderMode() const
+  {
+    return m_renderMode;
+  }
+
+  void MolScene::setRenderMode(MolScene::RenderMode mode)
+  {
+    m_renderMode = mode;
+  }
 
   // Advanced queries
   QPointF MolScene::nearestPoint(const QPointF &curPos)

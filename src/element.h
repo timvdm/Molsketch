@@ -30,6 +30,8 @@
 #ifndef ELEMENT_H
 #define ELEMENT_H
 
+#include <QColor>
+
 class QString;
 
 /**
@@ -159,6 +161,11 @@ namespace Molsketch {
     };
   };
 
+  /**
+   * Color for elements. These colors are used by some of the MolScene's render modes.
+   */
+  QColor elementColor(int element);
+  
 /** Returns whether @p symbol is a proper element symbol. */
 bool isElementSymbol(const QString &symbol);
 /** Returns whether @p name is a proper element name. */

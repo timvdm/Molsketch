@@ -356,22 +356,51 @@ namespace Molsketch {
 
   void Atom::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
   {
-	 // std::cerr << "paint" << std::endl;
-	  painter ->setPen (m_color);
     Q_UNUSED(option)
     Q_UNUSED(widget)
+    
+    painter->setPen(m_color);
     // Save the original painter state
     //painter->save();
     
-/*    
-    qDebug() << "Atom::paint()";
-    qDebug() << "m_hidden" << m_hidden;
-    qDebug() << "isSelected" << isSelected();
-    qDebug() << "numBonds" << numBonds();
-*/
+    /*    
+          qDebug() << "Atom::paint()";
+          qDebug() << "m_hidden" << m_hidden;
+          qDebug() << "isSelected" << isSelected();
+          qDebug() << "numBonds" << numBonds();
+    */
     // Check the scene
     MolScene* molScene = dynamic_cast<MolScene*>(scene());
     Q_CHECK_PTR(molScene);
+
+    int element = symbol2number(m_elementSymbol);
+    
+    switch (molScene->renderMode()) {
+      case MolScene::RenderColoredSquares:
+        if (element != Element::C) {
+          QColor color = elementColor(element);
+          painter->setPen(color);
+          painter->setBrush(color);
+          qreal half = molScene->bondLength() / 2.0;
+          painter->drawRect(-half, -half, 2.0 * half, 2.0 * half);
+        }
+        return;
+      case MolScene::RenderColoredCircles:
+        if (element != Element::C) {
+          QColor color = elementColor(element);
+          painter->setPen(color);
+          painter->setBrush(color);
+          qreal half = molScene->bondLength() / 4.0;
+          painter->drawEllipse(-half, -half, 2.0 * half, 2.0 * half);
+        }
+        return;
+      case MolScene::RenderColoredWireframe:
+        return;
+      default:
+      case MolScene::RenderLabels:
+        break;
+    }
+
 
     // If element is m_hidden, don't draw the atoms
     // Always draw the atom when there are no bonds

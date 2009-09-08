@@ -114,6 +114,7 @@ private slots:
   void addCustomMol();
   /** Removes the selected item from the custom library. */
   void delCustomMol();
+  void addMolecule(QListWidgetItem *item);
   
   /** Mark the current document as modified. */
   void documentWasModified( );

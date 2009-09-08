@@ -769,7 +769,7 @@ void MainWindow::createToolBoxes()
   genericLib->setIconSize(QSize(64,64));
 
   customLib->setAlternatingRowColors(true);
-  customLib->setIconSize(QSize(64,64));
+  customLib->setIconSize(QSize(128,128));
 
   // Declaring variables
   QDir dir;
@@ -902,12 +902,21 @@ void MainWindow::createToolBoxes()
 
 
   // Connecting signals and slots
-  connect(genericLib,SIGNAL(itemDoubleClicked(QListWidgetItem*)),m_scene,SLOT(addMolecule(QListWidgetItem*)));
-  connect(customLib,SIGNAL(itemDoubleClicked(QListWidgetItem*)),m_scene,SLOT(addMolecule(QListWidgetItem*)));
+  connect(genericLib,SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(addMolecule(QListWidgetItem*)));
+  connect(customLib,SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(addMolecule(QListWidgetItem*)));
   connect(addButton, SIGNAL(released()), this, SLOT(addCustomMol()));
   connect(delButton, SIGNAL(released()), this, SLOT(delCustomMol()));
 }
 
+void MainWindow::addMolecule(QListWidgetItem *item)
+{
+  // Extract the molecule and add it to the sceneMolecule* m
+  MolLibItem *libItem = dynamic_cast<MolLibItem*>(item);
+  if (!libItem)
+    return;
+  m_scene->addMolecule(libItem->getMolecule());
+}
+ 
 void MainWindow::addCustomMol()
 {
   foreach(QGraphicsItem* item, m_scene->selectedItems())
