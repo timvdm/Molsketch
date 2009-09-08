@@ -35,7 +35,6 @@ set(libmolsketch_SRCS
     atomnumberitem.cpp
     graphsymitem.cpp)
 
-)
 
 #if (OPENBABEL2_TRUNK)
 #  set(libmolsketch_SRCS 
