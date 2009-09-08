@@ -41,15 +41,29 @@ namespace Molsketch {
 
   QRectF GraphSymItem::boundingRect() const
   {
-    if (m_molecule)
-      return m_rect;
-    else
+    if (m_molecule) {
+      QRectF molRect = m_molecule->boundingRect();
+      return QRectF(mapFromItem(m_molecule, molRect.topLeft()), mapFromItem(m_molecule, molRect.bottomRight())) | m_rect;
+    } else
       return defaultBoundingRect();
+  }
+
+  QPainterPath GraphSymItem::shape() const
+  {
+    QPainterPath path;
+    if (m_molecule)
+      path.addRect(m_rect);
+    else
+      path.addRect(defaultBoundingRect());
+    return path;
   }
 
   void GraphSymItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
   {
     painter->save();
+//    painter->drawRect(boundingRect());
+ //   painter->setPen(Qt::green);
+   // painter->drawPath(shape());
     painter->setPen(Qt::red);
     if (m_molecule) {
       const QList<Atom*> &atoms = m_molecule->atoms();
@@ -95,7 +109,7 @@ namespace Molsketch {
     QRectF rect = m_molecule->boundingRect();
     setPos(rect.bottomLeft());
 
-    m_molecule->addToGroup(this);
+//    m_molecule->addToGroup(this);
 
     if (scene())
       scene()->update();

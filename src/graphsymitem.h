@@ -34,6 +34,7 @@ namespace Molsketch {
       QString output() const { return "Symmetry Classes"; }
 
       QRectF boundingRect() const;
+      QPainterPath shape() const;
       void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
       void dropEvent(QGraphicsSceneDragDropEvent *event);
     private:
