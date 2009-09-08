@@ -1,5 +1,4 @@
 /***************************************************************************
- *   Copyright (C) 2007-2008 by Harm van Eersel                            *
  *   Copyright (C) 2009 Tim Vandermeersch                                  *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,43 +16,29 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#ifndef STEREOCENTERITEM_H
+#define STEREOCENTERITEM_H
 
+#include <Molsketch/MolInputItem>
 
-#include <QApplication>
-#include <QTranslator>
-#include <QLocale>
+namespace Molsketch {
 
-#include "mainwindow.h"
-  
-// @todo make this real plugins
-#include "smilesitem.h"
-const static Molsketch::SmilesItemFactory *smilesItemFactory = new Molsketch::SmilesItemFactory;
-#include "graphsymitem.h"
-const static Molsketch::GraphSymItemFactory *graphSymItemFactory = new Molsketch::GraphSymItemFactory;
-#include "atomnumberitem.h"
-const static Molsketch::AtomNumberItemFactory *atomNumberItemFactory = new Molsketch::AtomNumberItemFactory;
-#include "stereocenteritem.h"
-const static Molsketch::StereoCenterItemFactory *stereoCenterItemFactory = new Molsketch::StereoCenterItemFactory;
+  class Molecule;
 
+  class StereoCenterItem : public MolInputItem
+  {
+    public:
+      StereoCenterItem();
 
-int main(int argc, char *argv[])
-{
-  QApplication app(argc, argv);
+      QString input() const { return "Molecule"; }
+      QString output() const { return "Tetrahedral Atoms"; }
+      QString label() const { return output(); }
+      void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    private:
+  };
 
-  QCoreApplication::setOrganizationName("SourceForge");
-  QCoreApplication::setOrganizationDomain("sourceforge.com");
-  QCoreApplication::setApplicationName("Molsetch");
+  ITEM_PLUGIN_FACTORY(StereoCenterItem, "Molecule", "Tetrahedral Atoms")
 
-
-  // Add support for i18n
-  QString locale = QLocale::system().name();
-  QTranslator translator;
-  translator.load(QString("molsketch_") + locale);
-  app.installTranslator(&translator);
-
-  MainWindow window;
-  window.show();
-
-  return app.exec();
 }
 
+#endif // SMILESITEM_H

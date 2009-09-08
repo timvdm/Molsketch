@@ -30,9 +30,11 @@ set(libmolsketch_SRCS
     residue.cpp
     # connect tool items
     itemplugin.cpp
+    molinputitem.cpp
     mimemolecule.cpp
     smilesitem.cpp
     atomnumberitem.cpp
+    stereocenteritem.cpp
     graphsymitem.cpp)
 
 

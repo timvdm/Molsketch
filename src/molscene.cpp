@@ -320,18 +320,18 @@ namespace Molsketch {
     // Purge the undom_stack
     m_stack->clear();
 
-    // Removing all objects from the scene
-    while (!items().isEmpty()) delete items()[0];
-    //   foreach (QGraphicsItem* item,items()) /// Why doesn't this work?
-    //   {
-    //     removeItem(item);
-    //     delete item;
-    //   }
+    QGraphicsScene::clear();
 
     // Reinitialize the scene
     m_hintPoints.clear();
     initHintItems();
     setEditMode(MolScene::DrawMode);
+
+    m_inputTextItem = new TextInputItem();
+    addItem(m_inputTextItem);
+    // hide it for now...
+    m_inputTextItem->hide();
+
   }
 
 	QImage MolScene::renderMolToImage (Molecule *mol) {

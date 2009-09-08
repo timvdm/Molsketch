@@ -19,26 +19,22 @@
 #ifndef ATOMNUMBERITEM_H
 #define ATOMNUMBERITEM_H
 
-#include <Molsketch/ItemPlugin>
+#include <Molsketch/MolInputItem>
 
 namespace Molsketch {
 
   class Molecule;
 
-  class AtomNumberItem : public ItemPlugin
+  class AtomNumberItem : public MolInputItem
   {
     public:
       AtomNumberItem();
 
       QString input() const { return "Molecule"; }
       QString output() const { return "Atom Numbers"; }
+      QString label() const { return output(); }
 
-      QRectF boundingRect() const;
       void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-      void dropEvent(QGraphicsSceneDragDropEvent *event);
-    private:
-      Molecule *m_molecule;
-      QRectF m_rect;
   };
 
   ITEM_PLUGIN_FACTORY(AtomNumberItem, "Molecule", "Atom Numbers")

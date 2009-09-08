@@ -16,8 +16,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-
-#include "atomnumberitem.h"
+#include "graphsymitem.h"
 #include "molscene.h"
 #include "mimemolecule.h"
 
@@ -25,35 +24,61 @@
 #include <QGraphicsSceneDragDropEvent>
 #include <QDebug>
 
+
 namespace Molsketch {
 
-  AtomNumberItem::AtomNumberItem() : MolInputItem(MoleculeOutput)
+  MolInputItem::MolInputItem(OutputType output) : m_output(output), m_molecule(0), m_rect(QRectF(0, 0, 150, 100))
   {
+    setAcceptDrops(true);
+    setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable);
   }
 
-  void AtomNumberItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+  QRectF MolInputItem::boundingRect() const
   {
-    Molecule *mol = molecule();
+    if (m_molecule) {
+      QRectF molRect = m_molecule->boundingRect();
+      return QRectF(mapFromItem(m_molecule, molRect.topLeft()), mapFromItem(m_molecule, molRect.bottomRight())) | m_rect;
+    } else
+      return defaultBoundingRect();
+  }
 
-    painter->save();
-    painter->setPen(Qt::blue);
+  QPainterPath MolInputItem::shape() const
+  {
+    QPainterPath path;
+    if (m_molecule)
+      path.addRect(m_rect);
+    else
+      path.addRect(defaultBoundingRect());
+    return path;
+  }
 
-    if (!mol) {
-      MolInputItem::paint(painter, option, widget);
+  void MolInputItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+  {
+    if (m_molecule) {
+
+      QFontMetrics fm = painter->fontMetrics();
+      m_rect = QRectF(0, 0, fm.width(label()), fm.height());
+      painter->drawText(m_rect, Qt::AlignCenter | Qt::TextDontClip, label());
+    } else {
+      paintDefault(painter);
+    }
+  }
+
+  void MolInputItem::dropEvent(QGraphicsSceneDragDropEvent *event)
+  {
+    const MimeMolecule *mimeMol = dynamic_cast<const MimeMolecule*>(event->mimeData());
+    if (!mimeMol)
       return;
-    }
-    
-    const QList<Atom*> &atoms = mol->atoms();
-    QFontMetrics fm = painter->fontMetrics();
 
-    QPointF offset(0.0, fm.height() - fm.descent());
-    for (int i = 0; i < atoms.size(); ++i) {
-      painter->drawText(mapFromItem(mol, atoms[i]->pos()) + offset, QString::number(i+1));
-    }
+    m_molecule = mimeMol->molecule();
+    QRectF rect = m_molecule->boundingRect();
+    setPos(rect.bottomLeft());
 
-    
-    MolInputItem::paint(painter, option, widget);
-    painter->restore();
+//    m_molecule->addToGroup(this);
+
+    if (scene())
+      scene()->update();
   }
+
 
 }

@@ -33,86 +33,51 @@
 
 namespace Molsketch {
 
-  GraphSymItem::GraphSymItem() : m_molecule(0), m_rect(QRectF(0, 0, 150, 100))
+  GraphSymItem::GraphSymItem() : MolInputItem(MoleculeOutput)
   {
-    setAcceptDrops(true);
-    setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable);
-  }
-
-  QRectF GraphSymItem::boundingRect() const
-  {
-    if (m_molecule) {
-      QRectF molRect = m_molecule->boundingRect();
-      return QRectF(mapFromItem(m_molecule, molRect.topLeft()), mapFromItem(m_molecule, molRect.bottomRight())) | m_rect;
-    } else
-      return defaultBoundingRect();
-  }
-
-  QPainterPath GraphSymItem::shape() const
-  {
-    QPainterPath path;
-    if (m_molecule)
-      path.addRect(m_rect);
-    else
-      path.addRect(defaultBoundingRect());
-    return path;
   }
 
   void GraphSymItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
   {
+    Molecule *mol = molecule();
+    
     painter->save();
-//    painter->drawRect(boundingRect());
- //   painter->setPen(Qt::green);
-   // painter->drawPath(shape());
     painter->setPen(Qt::red);
-    if (m_molecule) {
-      const QList<Atom*> &atoms = m_molecule->atoms();
 
-      OpenBabel::OBMol *obmol = m_molecule->OBMol();
-      std::vector<unsigned int> symmetry_classes;
+    if (!mol) {
+      // not connected: default behaviour (draw connectable box)
+      MolInputItem::paint(painter, option, widget);
+      painter->restore();
+      return;
+    }
+
+    const QList<Atom*> &atoms = mol->atoms();
+
+    OpenBabel::OBMol *obmol = mol->OBMol();
+    std::vector<unsigned int> symmetry_classes;
 
 #ifdef OPENBABEL2_TRUNK      
-      OpenBabel::OBGraphSym graphsym(obmol);
-      graphsym.GetSymmetry(symmetry_classes);
+    OpenBabel::OBGraphSym graphsym(obmol);
+    graphsym.GetSymmetry(symmetry_classes);
 #else
-      OpenBabel::OBBitVec fragatoms(obmol->NumAtoms());
+    OpenBabel::OBBitVec fragatoms(obmol->NumAtoms());
 
-      using OpenBabel::OBMolAtomIter;
-      FOR_ATOMS_OF_MOL(a, obmol)
-        fragatoms.SetBitOn(a->GetIdx());
+    using OpenBabel::OBMolAtomIter;
+    FOR_ATOMS_OF_MOL(a, obmol)
+      fragatoms.SetBitOn(a->GetIdx());
 
 
-      std::vector<unsigned int> canonical_labels;
-      OpenBabel::CanonicalLabels(obmol, fragatoms, symmetry_classes, canonical_labels);
+    std::vector<unsigned int> canonical_labels;
+    OpenBabel::CanonicalLabels(obmol, fragatoms, symmetry_classes, canonical_labels);
 #endif
 
-      for (int i = 0; i < atoms.size(); ++i) {
-        painter->drawText(mapFromItem(m_molecule, atoms[i]->pos()), QString::number(symmetry_classes.at(i)));
-      }
-
-      QFontMetrics fm = painter->fontMetrics();
-      m_rect = QRectF(0, 0, fm.width(QObject::tr("Symmetry Classes")), fm.height());
-      painter->drawText(m_rect, Qt::AlignCenter | Qt::TextDontClip, QObject::tr("Symmetry Classes"));
-    } else {
-      paintDefault(painter);
+    for (int i = 0; i < atoms.size(); ++i) {
+      painter->drawText(mapFromItem(mol, atoms[i]->pos()), QString::number(symmetry_classes.at(i)));
     }
+
+    // default behavious (draw the label())
+    MolInputItem::paint(painter, option, widget);
     painter->restore();
-  }
-
-  void GraphSymItem::dropEvent(QGraphicsSceneDragDropEvent *event)
-  {
-    const MimeMolecule *mimeMol = dynamic_cast<const MimeMolecule*>(event->mimeData());
-    if (!mimeMol)
-      return;
-
-    m_molecule = mimeMol->molecule();
-    QRectF rect = m_molecule->boundingRect();
-    setPos(rect.bottomLeft());
-
-//    m_molecule->addToGroup(this);
-
-    if (scene())
-      scene()->update();
   }
 
 

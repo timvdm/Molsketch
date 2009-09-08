@@ -102,7 +102,8 @@ void AddResidue::redo()
 // Change element
 ////////////////////////////////////////
 ChangeElement::ChangeElement(Atom* changeAtom, const QString &newEl, const QString & text) : QUndoCommand(text), m_oldName(changeAtom->element()), m_newName(newEl), m_atom(changeAtom)
-{}
+{
+}
 
 void ChangeElement::undo()
 {
@@ -202,17 +203,24 @@ void RemoveImplicitHydrogen::redo()
   m_undone = false;
 }
 
-// DelAtom
+////////////////////////////////////////
+// DeleteAtom
+////////////////////////////////////////
+
 DelAtom::DelAtom(Atom* delAtom, const QString & text) : QUndoCommand(text), m_atom(delAtom), m_molecule(delAtom->molecule())
-{};
+{
+};
+
 DelAtom::~DelAtom()
 {
   if (!m_undone)
   {
-    foreach(Bond* bond, m_bondList) delete bond;
+    foreach(Bond* bond, m_bondList) 
+      delete bond;
     delete m_atom;
   }
 }
+
 void DelAtom::undo()
 {
   m_molecule->addAtom(m_atom);
@@ -220,6 +228,7 @@ void DelAtom::undo()
   for (int i = 0; i < m_bondList.size(); i++) m_molecule->addBond(m_bondList.at(i));
   m_undone = true;
 }
+
 void DelAtom::redo()
 {
   m_bondList = m_molecule->delAtom(m_atom);

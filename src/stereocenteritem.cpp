@@ -16,8 +16,7 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-
-#include "atomnumberitem.h"
+#include "stereocenteritem.h"
 #include "molscene.h"
 #include "mimemolecule.h"
 
@@ -25,35 +24,60 @@
 #include <QGraphicsSceneDragDropEvent>
 #include <QDebug>
 
+#ifdef OPENBABEL2_TRUNK
+#include <openbabel/stereo/stereo.h>
+#include <openbabel/graphsym.h>
+#include <openbabel/mol.h>
+#else
+#include <openbabel/mol.h>
+#endif
+
 namespace Molsketch {
 
-  AtomNumberItem::AtomNumberItem() : MolInputItem(MoleculeOutput)
+  StereoCenterItem::StereoCenterItem() : MolInputItem(MoleculeOutput)
   {
   }
 
-  void AtomNumberItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+  void StereoCenterItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
   {
     Molecule *mol = molecule();
-
+    
     painter->save();
-    painter->setPen(Qt::blue);
+    painter->setPen(Qt::green);
 
     if (!mol) {
+      // not connected: default behaviour (draw connectable box)
       MolInputItem::paint(painter, option, widget);
+      painter->restore();
       return;
     }
-    
+
     const QList<Atom*> &atoms = mol->atoms();
-    QFontMetrics fm = painter->fontMetrics();
+    OpenBabel::OBMol *obmol = mol->OBMol();
+    QPointF offset(-5.0, 5.0);
 
-    QPointF offset(0.0, fm.height() - fm.descent());
-    for (int i = 0; i < atoms.size(); ++i) {
-      painter->drawText(mapFromItem(mol, atoms[i]->pos()) + offset, QString::number(i+1));
+#ifdef OPENBABEL2_TRUNK
+    // need to calculate symmetry first
+    std::vector<unsigned int> symmetry_classes;
+    OpenBabel::OBGraphSym graphsym(obmol);
+    graphsym.GetSymmetry(symmetry_classes);
+
+    std::vector<unsigned long> atomIds = FindTetrahedralAtoms(obmol, symmetry_classes);
+    for (unsigned int i = 0; i < atomIds.size(); ++i) {
+      OpenBabel::OBAtom *obatom = obmol->GetAtomById(atomIds.at(i));
+      painter->drawEllipse(mapFromItem(mol, atoms[obatom->GetIndex()]->pos()), 10, 10);
     }
+#else
+    using OpenBabel::OBMolAtomIter;
+    FOR_ATOMS_OF_MOL(atom, obmol)
+      if (atom->IsChiral())
+        painter->drawEllipse(mapFromItem(mol, atoms[atom->GetIdx()-1]->pos()), 10, 10);
+#endif
 
-    
+    // default behavious (draw the label())
     MolInputItem::paint(painter, option, widget);
     painter->restore();
   }
+
 
 }

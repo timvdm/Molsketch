@@ -19,27 +19,22 @@
 #ifndef GRAPHSYMITEM_H
 #define GRAPHSYMITEM_H
 
-#include <Molsketch/ItemPlugin>
+#include <Molsketch/MolInputItem>
 
 namespace Molsketch {
 
   class Molecule;
 
-  class GraphSymItem : public ItemPlugin
+  class GraphSymItem : public MolInputItem
   {
     public:
       GraphSymItem();
 
       QString input() const { return "Molecule"; }
       QString output() const { return "Symmetry Classes"; }
-
-      QRectF boundingRect() const;
-      QPainterPath shape() const;
+      QString label() const { return output(); }
       void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-      void dropEvent(QGraphicsSceneDragDropEvent *event);
     private:
-      Molecule *m_molecule;
-      QRectF m_rect;
   };
 
   ITEM_PLUGIN_FACTORY(GraphSymItem, "Molecule", "Symmetry Classes")
