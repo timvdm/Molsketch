@@ -73,6 +73,8 @@ bool printFile(QPrinter &printer, MolScene * scene);
  */
 bool saveToSVG(const QString &fileName, MolScene * scene);
 
-// Molecule* smiles(QString formula);
+void readMskFile(const QString &fileName, MolScene *scene);
+void writeMskFile(const QString &fileName, MolScene *scene);
+  // Molecule* smiles(QString formula);
 
 }

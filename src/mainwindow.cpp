@@ -176,7 +176,14 @@ void MainWindow::open()
           // Start a new document
           m_scene->clear();
 
-          Molecule* mol = saveAs3DAct->isChecked() ? Molsketch::loadFile3D(fileName) : Molsketch::loadFile(fileName);
+          Molecule* mol;
+          if (fileName.endsWith(".msk")) {
+             readMskFile(fileName, m_scene);
+             return;
+          } else {
+
+            mol = saveAs3DAct->isChecked() ? Molsketch::loadFile3D(fileName) : Molsketch::loadFile(fileName);
+          }
 
           if (mol)
             {
@@ -205,18 +212,15 @@ void MainWindow::open()
 
 bool MainWindow::save()
 {
-  if (m_curFile.isEmpty())
-    {
+  if (m_curFile.isEmpty()) {
       return saveAs();
-    }
-  else
-    {
-      if (saveAs3DAct->isChecked()?Molsketch::saveFile3D(m_curFile, m_scene):Molsketch::saveFile(m_curFile, m_scene))
-      	{
-      	  m_scene->stack()->setClean();
-      	}
-      else
-      	return false;
+  } else {
+    if (m_curFile.endsWith(".msk"))
+      writeMskFile(m_curFile, m_scene);
+    else if (saveAs3DAct->isChecked() ? Molsketch::saveFile3D(m_curFile, m_scene) : Molsketch::saveFile(m_curFile, m_scene))	{
+      m_scene->stack()->setClean();
+    } else
+      return false;
     }
 //   setWindowModified(false);
   return false;
@@ -271,8 +275,13 @@ bool MainWindow::saveAs()
   }
   qDebug() << "Trying to save as " << fileName << "\n";
 
+  if (fileName.endsWith(".msk")) {
+    writeMskFile(fileName, m_scene);
+    setCurrentFile(fileName);
+
+
   // Try to save the document
-  if (Molsketch::saveFile(fileName,m_scene))
+  } else if (Molsketch::saveFile(fileName,m_scene))
     {
       setCurrentFile(fileName);
       m_scene->stack()->setClean();

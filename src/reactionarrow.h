@@ -23,6 +23,9 @@
 
 #include <QGraphicsItemGroup>
 
+class QXmlStreamReader;
+class QXmlStreamWriter;
+
 namespace Molsketch {
 
   class ReactionArrowDialog;
@@ -65,6 +68,15 @@ namespace Molsketch {
       void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
       void setArrowType(ArrowType type);
+
+      /**
+       * Read arrow data from the specified XML stream.
+       */
+      void readXML(QXmlStreamReader &xml);
+      /**
+       * Write this arrow the the specified XML stream.
+       */
+      void writeXML(QXmlStreamWriter &xml);
 
     private:
       ArrowType m_arrowType;

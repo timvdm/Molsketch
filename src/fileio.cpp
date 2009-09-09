@@ -26,6 +26,7 @@
 #include <openbabel/obconversion.h>
 
 #include "fileio.h"
+#include "reactionarrow.h"
 
 #include "atom.h"
 #include "bond.h"
@@ -532,6 +533,190 @@ namespace Molsketch
     {
       return 0;
     }
+
+  }
+
+  void writeMskFile(const QString &fileName, MolScene *scene)
+  {
+    QFile file(fileName);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+      return;
+
+    int moleculeCount = 0;
+
+    QXmlStreamWriter xml(&file);
+    xml.setAutoFormatting(true);
+    xml.writeStartDocument();
+    xml.writeStartElement("div");
+    foreach (QGraphicsItem *item, scene->items()) {
+      if (item->type() == Molecule::Type) {
+        moleculeCount++;
+        Molecule *molecule = static_cast<Molecule*>(item);
+        xml.writeStartElement("molecule");
+        // write the atoms
+        xml.writeStartElement("atomArray");
+        //xml.writeAttribute("id", "aa" + QString::number(moleculeCount));
+        int atomCount = 0;
+        QHash<Atom*,QString> atomHash;
+        foreach (Atom *atom, molecule->atoms()) {
+          atomCount++;
+          xml.writeStartElement("atom");
+          QString id = "a" + QString::number(atomCount);
+          atomHash[atom] = id;
+          xml.writeAttribute("id", id);
+          xml.writeAttribute("elementType", atom->element());
+          xml.writeAttribute("x2", QString::number(atom->pos().x()));
+          xml.writeAttribute("y2", QString::number(atom->pos().y()));
+          xml.writeAttribute("hydrogenCount", QString::number(atom->numImplicitHydrogens()));
+          xml.writeEndElement();
+        }
+        xml.writeEndElement(); // atomArray
+        // write the bonds
+        xml.writeStartElement("bondArray");
+        //xml.writeAttribute("id", "ab" + QString::number(moleculeCount));
+        int bondCount = 0;
+        foreach (Bond *bond, molecule->bonds()) {
+          bondCount++;
+          xml.writeStartElement("bond");
+          QString atomRefs2 = atomHash[bond->beginAtom()] + " " + atomHash[bond->endAtom()];
+          xml.writeAttribute("atomRefs2", atomRefs2);
+          xml.writeAttribute("order", QString::number(bond->bondOrder()));
+          xml.writeEndElement();
+        }
+        xml.writeEndElement(); // bondArray
+
+        xml.writeEndElement(); // molecule
+      } else if (item->type() == ReactionArrow::Type) {
+        ReactionArrow *arrow = static_cast<ReactionArrow*>(item);
+        xml.writeStartElement("object");
+        arrow->writeXML(xml);
+        xml.writeEndElement();
+
+      }
+    }
+
+    xml.writeEndElement(); // div
+    xml.writeEndDocument();
+  
+  }
+
+  void readMskFile(const QString &fileName, MolScene *scene)
+  {
+    QFile file(fileName);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+      return;
+
+    QXmlStreamReader xml(&file);
+
+    Molecule *currentMolecule = 0;
+    QHash<QString, Atom*> atomHash;
+    while (!xml.atEnd()) {
+      xml.readNext();
+
+      if (xml.isStartElement()) {
+        if (xml.name() == "molecule") {
+          /*
+           * New molecule
+           */
+          currentMolecule = new Molecule;
+          scene->addItem(currentMolecule);
+        } else if (xml.name() == "atomArray") {
+          /*
+           * The atom array
+           */
+          while (!xml.atEnd()) {
+            xml.readNext();
+            if (xml.isStartElement()) {
+              if (xml.name() == "atom") {
+                QXmlStreamAttributes attr = xml.attributes();
+                QPointF pos;
+                QString element;
+
+                if (attr.hasAttribute("elementType"))
+                  element = attr.value("elementType").toString();
+                if (attr.hasAttribute("x2") && attr.hasAttribute("y2"))
+                  pos = QPointF(attr.value("x2").toString().toFloat(),
+                                attr.value("y2").toString().toFloat());
+
+                //Atom *atom = new Atom(pos, element, true);
+                Atom *atom = currentMolecule->addAtom(element, pos, true);
+
+                if (attr.hasAttribute("id"))
+                  atomHash[attr.value("id").toString()] = atom;
+              }
+            } else if (xml.isEndElement())
+              if (xml.name() == "atomArray")
+                break;
+          }
+        } else if (xml.name() == "bondArray") {
+          /*
+           * The bond array
+           */
+          Bond *currentBond = 0;
+          while (!xml.atEnd()) {
+            xml.readNext();
+            if (xml.isStartElement()) {
+              if (xml.name() == "bond") {
+                QXmlStreamAttributes attr = xml.attributes();
+                Atom *begin, *end;
+                int order;
+
+                if (attr.hasAttribute("atomRefs2")) {
+                  QString atomRefs2 = attr.value("atomRefs2").toString();
+                  QStringList arefs = atomRefs2.split(" ");
+                  if (arefs.size() != 2)
+                    continue;
+                  qDebug() << "ref1 = " << arefs[0];
+                  qDebug() << "ref2 = " << arefs[1];
+                  begin = atomHash.value(arefs[0]);
+                  end = atomHash.value(arefs[1]);
+
+                }
+                if (attr.hasAttribute("order"))
+                  order = attr.value("order").toString().toInt();
+
+                currentBond = currentMolecule->addBond(begin, end, order);
+
+
+              } else if (xml.name() == "bondStereo") {
+                QString bondStereo = xml.readElementText();
+                if (bondStereo == "W")
+                  currentBond->setType(Bond::Wedge);
+                if (bondStereo == "H")
+                  currentBond->setType(Bond::Hash);
+
+
+              }
+            } else if (xml.isEndElement())
+              if (xml.name() == "bondArray")
+                break;
+          }
+
+        } else if (xml.name() == "object") {
+          QXmlStreamAttributes attr = xml.attributes();
+          if (attr.hasAttribute("type")) {
+            if (attr.value("type") == "ReactionArrow") {
+              ReactionArrow *arrow = new ReactionArrow;
+              arrow->readXML(xml);
+              scene->addItem(arrow);
+            }
+          }
+        }
+
+        qDebug() << "text = " << xml.name();
+      }
+
+      //if (xml.name()
+
+    }
+    if (xml.hasError()) {
+      qDebug() << "ERROR while reading " << fileName;
+      qDebug() << xml.errorString();
+    }
+
+
+
+
 
   }
 

@@ -26,6 +26,7 @@
 #include <QGraphicsEllipseItem>
 #include <QGraphicsScene>
 #include <QGraphicsSceneHoverEvent>
+#include <QXmlStreamWriter>
 #include <QDebug>
 
 namespace Molsketch {
@@ -261,5 +262,31 @@ namespace Molsketch {
 
     m_dialog->show();      
   }
+
+  void ReactionArrow::readXML(QXmlStreamReader &xml)
+  {
+    QXmlStreamAttributes attr = xml.attributes();
+    if (attr.hasAttribute("arrowType"))
+      m_arrowType = static_cast<ReactionArrow::ArrowType>(attr.value("arrowType").toString().toInt());
+    if (attr.hasAttribute("posx") && attr.hasAttribute("posy"))
+      setPos(QPointF(attr.value("posx").toString().toFloat(),
+                          attr.value("posy").toString().toFloat()));
+    if (attr.hasAttribute("endx") && attr.hasAttribute("endy"))
+      m_end = QPointF(attr.value("endx").toString().toFloat(),
+                      attr.value("endy").toString().toFloat());
+  }
+
+  void ReactionArrow::writeXML(QXmlStreamWriter &xml)
+  {
+    xml.writeAttribute("type", "ReactionArrow");
+    xml.writeAttribute("arrowType", QString::number(m_arrowType));
+    xml.writeAttribute("posx", QString::number(scenePos().x()));
+    xml.writeAttribute("posy", QString::number(scenePos().y()));
+    xml.writeAttribute("endx", QString::number(m_end.x()));
+    xml.writeAttribute("endy", QString::number(m_end.y()));
+
+
+  }
+
 
 }
