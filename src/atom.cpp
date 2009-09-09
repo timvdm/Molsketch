@@ -381,7 +381,7 @@ namespace Molsketch {
           QColor color = elementColor(element);
           painter->setPen(color);
           painter->setBrush(color);
-          qreal half = molScene->bondLength() / 2.0;
+          qreal half = molScene->bondLength() / 4.0;
           painter->drawRect(-half, -half, 2.0 * half, 2.0 * half);
         }
         return;
