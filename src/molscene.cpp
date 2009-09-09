@@ -50,6 +50,7 @@
 #include "mimemolecule.h"
 
 #include "reactionarrow.h"
+#include "mechanismarrow.h"
 
 
 #include "minimise.h"
@@ -1002,6 +1003,9 @@ namespace Molsketch {
           case MolScene::ReactionMode:
             insertReactionArrow(event);
             break;
+          case MolScene::MechanismMode:
+            insertMechanismArrow(event);
+            break;
           default:
             break;
         };
@@ -1834,8 +1838,16 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
     ReactionArrow *arrow = new ReactionArrow;
     m_stack->push(new AddItem(arrow, this));
     arrow->setPos(downPos);
-  
   }
+
+  void MolScene::insertMechanismArrow(QGraphicsSceneMouseEvent *event)
+  {
+    QPointF downPos = event->buttonDownScenePos(event->button());
+    MechanismArrow *arrow = new MechanismArrow;
+    m_stack->push(new AddItem(arrow, this));
+    arrow->setPos(downPos);
+  }
+
 
   void MolScene::keyPressEvent(QKeyEvent* keyEvent)
   {

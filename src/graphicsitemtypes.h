@@ -13,7 +13,8 @@ namespace Molsketch {
       BondType = QGraphicsItem::UserType + 3,
       ResidueType = QGraphicsItem::UserType + 4,
       TextInputType = QGraphicsItem::UserType + 5,
-      ReactionArrowType = QGraphicsItem::UserType + 6
+      ReactionArrowType = QGraphicsItem::UserType + 6,
+      MechanismArrowType = QGraphicsItem::UserType + 7
     };
 
   };

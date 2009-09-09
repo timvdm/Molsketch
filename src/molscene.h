@@ -424,6 +424,7 @@ namespace Molsketch {
 
       void connectModePress(QGraphicsSceneMouseEvent* event);
       void insertReactionArrow(QGraphicsSceneMouseEvent* event);
+      void insertMechanismArrow(QGraphicsSceneMouseEvent* event);
 
 
       // Auxillary feedback items

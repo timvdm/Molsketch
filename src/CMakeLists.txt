@@ -13,6 +13,9 @@ set(libmolsketch_HDRS
     reactionarrowdialog.h
     smilesitem.h)
 
+set (libmolsketch_UIS)
+qt4_wrap_ui(libmolsketch_UIS_H ${libmolsketch_UIS})
+
 # Source files
 set(libmolsketch_SRCS 
     molecule.cpp	
@@ -34,6 +37,7 @@ set(libmolsketch_SRCS
     molinputitem.cpp
     mimemolecule.cpp
     reactionarrow.cpp
+    mechanismarrow.cpp
     smilesitem.cpp
     atomnumberitem.cpp
     stereocenteritem.cpp
@@ -56,6 +60,7 @@ set(molsketch_SRCS
 # Including the resources
 file(GLOB molsketch_RCS "*.qrc")
 file(GLOB molsketch_UIS "*.ui")
+message("UIS = ${molsketch_UIS}")
 qt4_automoc(${molsketch_SRCS} ${libmolsketch_HDRS})
 qt4_add_resources(molsketch_SRCS ${molsketch_RCS})
 qt4_wrap_ui(molsketch_UIS_H ${molsketch_UIS})
@@ -67,8 +72,8 @@ if(WIN32)
 endif(WIN32)
 
 # MOC-ing headers
-set(molsketch_LIB_MOC_HDRS molscene.h molview.h ${libmolsketch_HDRS})
-set(molsketch_MOC_HDRS mainwindow.h settings.h drawwidget.h)
+set(molsketch_LIB_MOC_HDRS molscene.h molview.h reactionarrowdialog.h ${libmolsketch_HDRS})
+set(molsketch_MOC_HDRS mainwindow.h settings.h drawwidget.h reactionarrowdialog.h)
 qt4_wrap_cpp(libmolsketch_SRCS ${molsketch_LIB_MOC_HDRS})
 qt4_wrap_cpp(molsketch_SRCS ${molsketch_MOC_HDRS})
 
@@ -84,7 +89,7 @@ qt4_automoc(${molsketch_SRCS})
 
 
 # Create the molsKetch libraries
-add_library(molsketch_LIB ${libmolsketch_SRCS})
+add_library(molsketch_LIB ${libmolsketch_SRCS} ${molsketch_UIS_H})
 set_target_properties(molsketch_LIB PROPERTIES OUTPUT_NAME "molsketch")
 target_link_libraries(molsketch_LIB ${QT_LIBRARIES} ${OPENBABEL2_LIBRARIES})
 
