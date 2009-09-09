@@ -10,6 +10,7 @@ include_directories(${OPENBABEL2_INCLUDE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
 set(libmolsketch_HDRS
     itemplugin.h
+    reactionarrowdialog.h
     smilesitem.h)
 
 # Source files
@@ -36,6 +37,7 @@ set(libmolsketch_SRCS
     smilesitem.cpp
     atomnumberitem.cpp
     stereocenteritem.cpp
+    reactionarrowdialog.cpp
     graphsymitem.cpp)
 
 

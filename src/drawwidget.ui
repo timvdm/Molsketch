@@ -118,7 +118,7 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="2">
+   <item row="1" column="3">
     <widget class="QPushButton" name="buttonN">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -158,7 +158,7 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="3">
+   <item row="1" column="4">
     <widget class="QPushButton" name="buttonO">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -272,7 +272,7 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="2">
+   <item row="2" column="3">
     <widget class="QPushButton" name="buttonF">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -312,7 +312,7 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="3">
+   <item row="2" column="4">
     <widget class="QPushButton" name="buttonCl">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -423,7 +423,7 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="2">
+   <item row="3" column="3">
     <widget class="QPushButton" name="buttonX">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -460,7 +460,7 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="3">
+   <item row="3" column="4">
     <widget class="QPushButton" name="buttonR">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -575,7 +575,7 @@
      </property>
     </widget>
    </item>
-   <item row="4" column="2">
+   <item row="4" column="3">
     <widget class="QPushButton" name="buttonDoubleBond">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -613,7 +613,7 @@
      </property>
     </widget>
    </item>
-   <item row="4" column="3">
+   <item row="4" column="4">
     <widget class="QPushButton" name="buttonWedge">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -651,7 +651,7 @@
      </property>
     </widget>
    </item>
-   <item row="4" column="4" rowspan="2">
+   <item row="4" column="5">
     <spacer name="horizontalSpacer">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -740,7 +740,7 @@
      </property>
     </widget>
    </item>
-   <item row="5" column="2">
+   <item row="5" column="3">
     <widget class="QPushButton" name="buttonCisOrTrans">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -778,7 +778,7 @@
      </property>
     </widget>
    </item>
-   <item row="5" column="3">
+   <item row="5" column="4">
     <widget class="QPushButton" name="buttonTripleBond">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -892,7 +892,7 @@
      </property>
     </widget>
    </item>
-   <item row="6" column="2">
+   <item row="6" column="3">
     <widget class="QPushButton" name="buttonRing5">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -930,7 +930,7 @@
      </property>
     </widget>
    </item>
-   <item row="6" column="3">
+   <item row="6" column="4">
     <widget class="QPushButton" name="buttonRing6">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -1044,7 +1044,7 @@
      </property>
     </widget>
    </item>
-   <item row="7" column="2">
+   <item row="7" column="3">
     <widget class="QPushButton" name="buttonRing5Arom">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -1082,7 +1082,7 @@
      </property>
     </widget>
    </item>
-   <item row="7" column="3">
+   <item row="7" column="4">
     <widget class="QPushButton" name="buttonRing6Arom">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -1123,7 +1123,114 @@
      </property>
     </widget>
    </item>
-   <item row="8" column="0">
+   <item row="8" column="0" colspan="2">
+    <widget class="QLabel" name="label_3">
+     <property name="font">
+      <font>
+       <family>Sans Serif</family>
+       <pointsize>12</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Reactions</string>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="0">
+    <widget class="QPushButton" name="buttonReactionArrow">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>40</width>
+       <height>40</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>50</width>
+       <height>50</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="toolTip">
+      <string>Hydrogen</string>
+     </property>
+     <property name="text">
+      <string>arrow</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="autoExclusive">
+      <bool>false</bool>
+     </property>
+     <property name="autoDefault">
+      <bool>false</bool>
+     </property>
+     <property name="default">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="1" colspan="2">
+    <widget class="QPushButton" name="buttonMechanismArrow">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>40</width>
+       <height>40</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>50</width>
+       <height>50</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="toolTip">
+      <string>Hydrogen</string>
+     </property>
+     <property name="text">
+      <string>mech</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="autoExclusive">
+      <bool>false</bool>
+     </property>
+     <property name="autoDefault">
+      <bool>false</bool>
+     </property>
+     <property name="default">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="10" column="0">
     <widget class="QLabel" name="label">
      <property name="font">
       <font>
@@ -1138,7 +1245,7 @@
      </property>
     </widget>
    </item>
-   <item row="9" column="0">
+   <item row="11" column="0">
     <widget class="QPushButton" name="buttonMove">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -1176,7 +1283,7 @@
      </property>
     </widget>
    </item>
-   <item row="9" column="1">
+   <item row="11" column="1">
     <widget class="QPushButton" name="buttonLasso">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -1214,7 +1321,7 @@
      </property>
     </widget>
    </item>
-   <item row="9" column="2">
+   <item row="11" column="2" colspan="2">
     <widget class="QPushButton" name="buttonRotate">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -1252,7 +1359,7 @@
      </property>
     </widget>
    </item>
-   <item row="9" column="3">
+   <item row="11" column="4">
     <widget class="QPushButton" name="buttonMinimize">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -1298,7 +1405,7 @@
      </property>
     </widget>
    </item>
-   <item row="10" column="0">
+   <item row="12" column="0">
     <widget class="QPushButton" name="buttonConnect">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -1333,7 +1440,7 @@
      </property>
     </widget>
    </item>
-   <item row="10" column="1">
+   <item row="12" column="1">
     <widget class="QPushButton" name="buttonCharges">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -1368,7 +1475,7 @@
      </property>
     </widget>
    </item>
-   <item row="10" column="2">
+   <item row="12" column="2" colspan="2">
     <widget class="QPushButton" name="buttonHydrogens">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -1403,7 +1510,7 @@
      </property>
     </widget>
    </item>
-   <item row="11" column="1">
+   <item row="13" column="1">
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>

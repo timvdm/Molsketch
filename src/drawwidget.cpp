@@ -64,6 +64,11 @@ namespace Molsketch {
     connect(ui.buttonRing5Arom, SIGNAL(clicked()), this, SLOT(aromaticRing5Clicked()));
     connect(ui.buttonRing6Arom, SIGNAL(clicked()), this, SLOT(aromaticRing6Clicked()));
 
+    // reaction
+    connect(ui.buttonReactionArrow, SIGNAL(clicked()), this, SLOT(reactionArrowClicked()));
+    connect(ui.buttonMechanismArrow, SIGNAL(clicked()), this, SLOT(mechanismArrowClicked()));
+
+
     // tools
     connect(ui.buttonMove, SIGNAL(clicked()), this, SLOT(moveClicked()));
     connect(ui.buttonLasso, SIGNAL(clicked()), this, SLOT(lassoClicked()));
@@ -125,6 +130,8 @@ namespace Molsketch {
   
   void DrawWidget::uncheckToolButtons()
   {
+    ui.buttonReactionArrow->setChecked(false);
+    ui.buttonMechanismArrow->setChecked(false);
     ui.buttonMove->setChecked(false);
     ui.buttonLasso->setChecked(false);
     ui.buttonRotate->setChecked(false);
@@ -420,6 +427,20 @@ namespace Molsketch {
     ui.buttonRing6Arom->setChecked(true);
     m_scene->setHintRing(6, true);
     m_scene->setEditMode(MolScene::DrawMode);
+  }
+  
+  void DrawWidget::reactionArrowClicked()
+  {
+    uncheckAllButtons();
+    ui.buttonReactionArrow->setChecked(true);
+    m_scene->setEditMode(MolScene::ReactionMode);
+  }
+
+  void DrawWidget::mechanismArrowClicked()
+  {
+    uncheckAllButtons();
+    ui.buttonMechanismArrow->setChecked(true);
+    m_scene->setEditMode(MolScene::MechanismMode);
   }
 
   void DrawWidget::moveClicked()

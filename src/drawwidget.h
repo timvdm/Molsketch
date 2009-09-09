@@ -61,6 +61,9 @@ namespace Molsketch {
       void aromaticRing5Clicked();
       void aromaticRing6Clicked();
 
+      void reactionArrowClicked();
+      void mechanismArrowClicked();
+
       void moveClicked();
       void lassoClicked();
       void rotateClicked();

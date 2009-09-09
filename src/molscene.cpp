@@ -49,6 +49,8 @@
 #include "smilesitem.h"
 #include "mimemolecule.h"
 
+#include "reactionarrow.h"
+
 
 #include "minimise.h"
 #include "math2d.h"
@@ -997,6 +999,9 @@ namespace Molsketch {
           case MolScene::MinimiseMode:
             minimiseModePress (event);
 	    break;
+          case MolScene::ReactionMode:
+            insertReactionArrow(event);
+            break;
           default:
             break;
         };
@@ -1821,6 +1826,15 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
     } else {
       m_stack->push(new AddImplicitHydrogen(atom, tr("add implicit hydrogen")));
     }
+  }
+
+  void MolScene::insertReactionArrow(QGraphicsSceneMouseEvent *event)
+  {
+    QPointF downPos = event->buttonDownScenePos(event->button());
+    ReactionArrow *arrow = new ReactionArrow;
+    m_stack->push(new AddItem(arrow, this));
+    arrow->setPos(downPos);
+  
   }
 
   void MolScene::keyPressEvent(QKeyEvent* keyEvent)

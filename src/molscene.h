@@ -71,7 +71,9 @@ namespace Molsketch {
         LassoMode,    //!< lasso selection tool
         TextMode,     //!< add / edit text
         MinimiseMode, //!< gemoetry optimise
-        ConnectMode   //!< mode to drag/drop items
+        ConnectMode,  //!< mode to drag/drop items
+        ReactionMode, //! mode to insert reaction arrows
+        MechanismMode, //!< mode for inserting mechanism arrows
       };
 
       enum RenderMode
@@ -421,6 +423,7 @@ namespace Molsketch {
       void delModeDoubleClick(QGraphicsSceneMouseEvent* event);
 
       void connectModePress(QGraphicsSceneMouseEvent* event);
+      void insertReactionArrow(QGraphicsSceneMouseEvent* event);
 
 
       // Auxillary feedback items
