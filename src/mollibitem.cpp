@@ -41,7 +41,7 @@ MolLibItem::MolLibItem( Molecule* molecule, const QString & name )
   /* FIXME This doesn't show yet methane & consorts */
   /* TODO Perhaps we should resize the bond width and font based on the scale */
   MolScene renderScene;
-  renderScene.setRenderMode(MolScene::RenderColoredCircles);
+  renderScene.setRenderMode(MolScene::RenderColoredSquares);
   renderScene.addItem(m_molecule);
   renderScene.setChargeVisible(false);
   renderScene.setAtomSymbolFont(QFont("Helvetica", 40));
