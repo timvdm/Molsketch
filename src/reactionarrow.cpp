@@ -49,7 +49,7 @@ namespace Molsketch {
   void ReactionArrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
   {
     // draw the bounding rect if the arrow is selected
-    if (isSelected()) {
+    if (isSelected() && !m_hoverBegin && !m_hoverEnd) {
       painter->save();
       painter->setPen(Qt::blue);
       painter->drawRect(boundingRect());
@@ -208,21 +208,31 @@ namespace Molsketch {
   {
     //qDebug() << "mousePressEvent";
 
+    QGraphicsItem::mousePressEvent(event);
+
   }
 
   void ReactionArrow::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
   {
     //qDebug() << "mouseMoveEvent";
-    if (m_hoverBegin)
+    if (m_hoverBegin) {
+      m_end = m_end + scenePos() - event->scenePos() ;
       setPos(event->scenePos());
-    if (m_hoverEnd)
+      update();
+      return;
+    } 
+    if (m_hoverEnd) {
       m_end = - scenePos() + event->scenePos();
+      update();
+      return;
+    }
 
-    update();
+    QGraphicsItem::mouseMoveEvent(event);
   }
 
   void ReactionArrow::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
   {
+    QGraphicsItem::mouseReleaseEvent(event);
   }
       
   void ReactionArrow::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)

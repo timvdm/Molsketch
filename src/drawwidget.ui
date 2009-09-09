@@ -1168,7 +1168,11 @@
       <string>Hydrogen</string>
      </property>
      <property name="text">
-      <string>arrow</string>
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="molsketch.qrc">
+       <normaloff>:/images/reactionarrow.png</normaloff>:/images/reactionarrow.png</iconset>
      </property>
      <property name="checkable">
       <bool>true</bool>
@@ -1214,7 +1218,11 @@
       <string>Hydrogen</string>
      </property>
      <property name="text">
-      <string>mech</string>
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="molsketch.qrc">
+       <normaloff>:/images/mechanismarrow.png</normaloff>:/images/mechanismarrow.png</iconset>
      </property>
      <property name="checkable">
       <bool>true</bool>
