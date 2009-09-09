@@ -28,6 +28,8 @@
 #ifndef MOLECULE_H
 #define MOLECULE_H
 
+#include "graphicsitemtypes.h"
+
 #include <QList>
 #include <QGraphicsItemGroup>
 
@@ -57,6 +59,15 @@ namespace Molsketch {
 class Molecule : public QGraphicsItemGroup
 {
   public:
+    // Enabling typecasting
+    enum { Type = GraphicsItemTypes::MoleculeType };
+    /**
+     * @return The QGraphicsItem type of the class. Needed for Qt typecasting.
+     */
+    int type() const { return Type; }
+
+
+
     // Constructors and destructor
     /** Creates a molecule with @p parent on MolScene @p scene. */
     Molecule(QGraphicsItem* parent = 0, MolScene* scene = 0);
@@ -65,14 +76,6 @@ class Molecule : public QGraphicsItemGroup
     /** Creates a copy of molecule @p mol with @p parent on MolScene @p scene. */
     Molecule(Molecule* mol, QGraphicsItem* parent = 0, MolScene* scene = 0);
 
-    // Enabling typecasting
-    /** Enum with the type of the class. Needed for Qt typecasting. */
-    enum { Type = UserType + 1 };
-    /** Returns the type of the class. Needed for Qt typecasting. */
-    int type() const
-      {
-        return Type;
-      };
 
 
     QRectF boundingRect() const;

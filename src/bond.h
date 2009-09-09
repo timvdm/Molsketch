@@ -28,6 +28,8 @@
 #ifndef BOND_H
 #define BOND_H
 
+#include "graphicsitemtypes.h"
+
 #include <QGraphicsItem>
 
 #include "atom.h"
@@ -45,6 +47,12 @@ class Bond : public QGraphicsItem
     friend class Molecule;
 
   public:
+    // Public enums
+    enum { Type = GraphicsItemTypes::BondType };
+    /**
+     * @return the type of the class. Needed for Qt type casting.
+     */
+    int type() const {return Type; }
 
     /** 
      * Enum for the different bond types 
@@ -98,8 +106,7 @@ class Bond : public QGraphicsItem
     virtual QPainterPath shape() const;
     /** Returns the bounding rectangle of the bond. Needed for Qt painting. */
     virtual QRectF boundingRect() const;
-    /** Returns the type of the class. Needed for Qt type casting. */
-    virtual int type() const {return Bond::Type;}
+
 
     // Manipulation methods
     /** Sets the bond type to @p type. */
@@ -137,9 +144,6 @@ class Bond : public QGraphicsItem
     /** Returns the molecule this bond is part of. */
     Molecule* molecule() const;
 
-    // Public enums
-    /** Defines the class type. Needed for Qt typecasting. */
-    enum { Type = UserType + 4 };
     // Static auxillary methods
     /** 
      * Auxillary method for shifting a bond perpendicular to the original bond.

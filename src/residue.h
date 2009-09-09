@@ -20,6 +20,7 @@
 #ifndef RESIDUE_H
 #define RESIDUE_H
 
+#include "graphicsitemtypes.h"
 
 #include <QGraphicsItem>
 #include <QList>
@@ -50,7 +51,7 @@ namespace Molsketch {
 				void setColor (QColor col) {m_color = col;}
 				QColor getColor () {return m_color;}
 				
-				enum { Type = UserType + 9 };
+        enum { Type = GraphicsItemTypes::ResidueType };
 				/** Returns the type of the class. Needed fro Qt typecasting. */
 				virtual int type() const {return Residue::Type;};
 				

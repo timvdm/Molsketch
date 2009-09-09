@@ -32,7 +32,7 @@ public:
 	void clickedOn (Atom *at);
 	// Methods needed for qt typecasting
 	/** Defines the type of the class. Needed for Qt typecasting.*/
-	enum { Type = UserType + 12 };
+  enum { Type = GraphicsItemTypes::TextInputType };
 	/** Returns the type of the class. Needed fro Qt typecasting. */
 	virtual int type() const {return Atom::Type;};
 	

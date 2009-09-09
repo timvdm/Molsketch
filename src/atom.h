@@ -21,6 +21,8 @@
 #ifndef MSK_ATOM_H
 #define MSK_ATOM_H
 
+#include "graphicsitemtypes.h"
+
 #include <QGraphicsItem>
 #include <QList>
 
@@ -38,6 +40,13 @@ namespace Molsketch {
     friend class Molecule;
 
     public:
+      // Methods needed for qt typecasting
+      enum { Type = GraphicsItemTypes::AtomType };
+      /**
+       * @return The QGraphicsItem type of the class. Needed fro Qt typecasting. */
+      int type() const { return Type; }
+
+
       /**
        * Creates a new atom.
        *
@@ -162,12 +171,7 @@ namespace Molsketch {
       /** Sets whether implicit hydrogens should be used */
       void enableImplicitHydrogens(bool enabled);
 
-      // Methods needed for qt typecasting
-      /** Defines the type of the class. Needed for Qt typecasting.*/
-      enum { Type = UserType + 8 };
-      /** Returns the type of the class. Needed fro Qt typecasting. */
-      virtual int type() const {return Atom::Type;};
-	  
+
 
 
 
