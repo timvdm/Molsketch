@@ -7,6 +7,8 @@
 
 namespace Molsketch {
 
+  class ReactionArrowDialog;
+
   class ReactionArrow : public QGraphicsItem
   {
     public:
@@ -18,7 +20,8 @@ namespace Molsketch {
       int type() const {return Type; }
 
       enum ArrowType {
-        FilledArrow = 0,
+        SingleArrow = 0,
+        DoubleArrow,
         Equilibrium,
         EqRightShifted,
         EqLeftShifted
@@ -28,9 +31,9 @@ namespace Molsketch {
        * Default constructor.
        */
       ReactionArrow();
+      virtual ~ReactionArrow();
 
       QRectF boundingRect() const;
-
       void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
       void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
@@ -41,10 +44,15 @@ namespace Molsketch {
       void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
       void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
+      void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+
+      void setArrowType(ArrowType type);
+
     private:
       ArrowType m_arrowType;
       QPointF m_end;
       bool m_hoverBegin, m_hoverEnd;
+      ReactionArrowDialog *m_dialog;
   };
 
 }

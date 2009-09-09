@@ -1,4 +1,6 @@
 #include "reactionarrow.h"
+#include "reactionarrowdialog.h"
+
 #include "math2d.h"
 #include <cmath>
 
@@ -11,23 +13,36 @@
 namespace Molsketch {
 
   ReactionArrow::ReactionArrow() : m_end(QPointF(50.0, 0.0)), m_hoverBegin(false), m_hoverEnd(false),
-      m_arrowType(FilledArrow)
+      m_arrowType(SingleArrow), m_dialog(0)
   {
     setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable);
     setAcceptsHoverEvents(true);
   }
+  
+  ReactionArrow::~ReactionArrow()
+  {
+    if (m_dialog)
+      m_dialog->deleteLater();
+  }
+      
+  void ReactionArrow::setArrowType(ArrowType t)
+  {
+    m_arrowType = t;  
+  }
 
   QRectF ReactionArrow::boundingRect() const
   {
+    QRectF rect;
     if (m_end.x() < 0 && m_end.y() < 0)
-      return QRectF(m_end.x() - 10.0, m_end.y() - 10.0, - m_end.x() + 20.0, - m_end.y() +  20.0);
+      rect = QRectF(m_end.x() - 10.0, m_end.y() - 10.0, - m_end.x() + 20.0, - m_end.y() +  20.0);
     else if (m_end.x() < 0)
-      return QRectF(m_end.x() - 10.0, -10.0, - m_end.x() + 20.0, m_end.y() +  20.0);
+      rect = QRectF(m_end.x() - 10.0, -10.0, - m_end.x() + 20.0, m_end.y() +  20.0);
     else if (m_end.y() < 0)
-      return QRectF(-10.0, m_end.y() - 10.0, m_end.x() + 20.0, - m_end.y() +  20.0);
+      rect = QRectF(-10.0, m_end.y() - 10.0, m_end.x() + 20.0, - m_end.y() +  20.0);
+    else
+      rect = QRectF(-10.0, -10.0, m_end.x() + 20.0, m_end.y() +  20.0);
 
-    //qDebug() << "m_end =" << m_end;
-    return QRectF(-10.0, -10.0, m_end.x() + 20.0, m_end.y() +  20.0);
+    return rect.adjusted(-2, -2, 2, 2);
   }
 
 
@@ -55,7 +70,7 @@ namespace Molsketch {
     // draw the arrow
     switch (m_arrowType) {
       default:
-      case FilledArrow:
+      case SingleArrow:
         {
         painter->drawLine(QPointF(0.0, 0.0), m_end);
         QPolygonF polygon;
@@ -66,6 +81,78 @@ namespace Molsketch {
         painter->drawPolygon(polygon);
         }
         break;
+      case DoubleArrow:
+        {
+        painter->drawLine(QPointF(0.0, 0.0), m_end);
+        QPolygonF polygon;
+        polygon << m_end;
+        polygon << m_end - 15 * end + 5 * orthogonal;
+        polygon << m_end - 12 * end;
+        polygon << m_end - 15 * end - 5 * orthogonal;
+        painter->drawPolygon(polygon);
+        polygon.clear();
+        polygon << QPointF(0.0, 0.0);
+        polygon << 15 * end + 5 * orthogonal;
+        polygon << 12 * end;
+        polygon << 15 * end - 5 * orthogonal;
+        painter->drawPolygon(polygon);
+        }
+        break;
+      case Equilibrium:
+        {
+        QPointF offset(-orthogonal * 2);
+        painter->drawLine(-offset, m_end - offset);
+        painter->drawLine(offset, m_end + offset);
+        QPolygonF polygon;
+        polygon << m_end - offset;
+        polygon << m_end - 12 * end - offset;
+        polygon << m_end - 15 * end + 7 * orthogonal + offset;
+        painter->drawPolygon(polygon);
+        polygon.clear();
+        polygon << offset;
+        polygon << 12 * end + offset;
+        polygon << 15 * end - 7 * orthogonal - offset;
+        painter->drawPolygon(polygon);
+        }
+        break;
+      case EqRightShifted:
+        {
+        QPointF offset(-orthogonal * 2);
+        QPointF offset2(end * 15);
+        painter->drawLine(-offset, m_end - offset);
+        painter->drawLine(offset + offset2, m_end + offset - offset2);
+        QPolygonF polygon;
+        polygon << m_end - offset;
+        polygon << m_end - 12 * end - offset;
+        polygon << m_end - 15 * end + 7 * orthogonal + offset;
+        painter->drawPolygon(polygon); // upper polygon
+        polygon.clear();
+        polygon << offset + offset2;
+        polygon << 12 * end + offset + offset2;
+        polygon << 15 * end - 7 * orthogonal - offset + offset2;
+        painter->drawPolygon(polygon); // lower polygon
+        }
+        break;
+      case EqLeftShifted:
+        {
+        QPointF offset(-orthogonal * 2);
+        QPointF offset2(end * 15);
+        painter->drawLine(-offset + offset2, m_end - offset - offset2);
+        painter->drawLine(offset, m_end + offset);
+        QPolygonF polygon;
+        polygon << m_end - offset - offset2;
+        polygon << m_end - 12 * end - offset - offset2;
+        polygon << m_end - 15 * end + 7 * orthogonal + offset - offset2;
+        painter->drawPolygon(polygon); // upper polygon
+        polygon.clear();
+        polygon << offset;
+        polygon << 12 * end + offset;
+        polygon << 15 * end - 7 * orthogonal - offset;
+        painter->drawPolygon(polygon); // lower polygon
+        }
+        break;
+
+
     }
 
     // draw red circles when hovering above begin/end
@@ -136,6 +223,15 @@ namespace Molsketch {
 
   void ReactionArrow::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
   {
+  }
+      
+  void ReactionArrow::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+  {
+    if (!m_dialog) {
+      m_dialog = new ReactionArrowDialog(this);
+    }
+
+    m_dialog->show();      
   }
 
 }
