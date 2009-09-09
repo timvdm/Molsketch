@@ -2,6 +2,8 @@
 #ifndef MSK_MATH2D_H
 #define MSK_MATH2D_H
 
+#include <cmath>
+
 namespace Molsketch {
 
   inline qreal length(const QPointF &v)
