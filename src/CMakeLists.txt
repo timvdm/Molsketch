@@ -32,6 +32,7 @@ set(libmolsketch_SRCS
     itemplugin.cpp
     molinputitem.cpp
     mimemolecule.cpp
+    reactionarrow.cpp
     smilesitem.cpp
     atomnumberitem.cpp
     stereocenteritem.cpp
