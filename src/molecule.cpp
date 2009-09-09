@@ -629,8 +629,9 @@ void Molecule::paint(QPainter * painter, const QStyleOptionGraphicsItem * option
 
   // draw a yellow rectangle if this molecule is selected
   if(isSelected()) {
-    painter->setBrush(Qt::yellow);
-    painter->setOpacity(0.2);
+    painter->setPen(Qt::blue);
+    //painter->setBrush(Qt::yellow);
+    //painter->setOpacity(0.2);
     painter->drawRect(boundingRect());
   }
   /*
