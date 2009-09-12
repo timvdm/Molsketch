@@ -23,6 +23,9 @@
 
 #include <QGraphicsItemGroup>
 
+class QXmlStreamReader;
+class QXmlStreamWriter;
+
 namespace Molsketch {
 
   class MechanismArrowDialog;
@@ -38,9 +41,11 @@ namespace Molsketch {
       int type() const {return Type; }
 
       enum ArrowType {
-        SingleArrow = 0,
+        SingleArrowRight = 0,
+        SingleArrowLeft,
         DoubleArrow,
-        SingleHook,
+        SingleHookRight,
+        SingleHookLeft,
         DoubleHook
       };
 
@@ -64,6 +69,16 @@ namespace Molsketch {
       void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
       void setArrowType(ArrowType type);
+
+      /**
+       * Read arrow data from the specified XML stream.
+       */
+      void readXML(QXmlStreamReader &xml);
+      /**
+       * Write this arrow the the specified XML stream.
+       */
+      void writeXML(QXmlStreamWriter &xml);
+
 
     private:
       ArrowType m_arrowType;

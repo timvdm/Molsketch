@@ -11,6 +11,7 @@ include_directories(${OPENBABEL2_INCLUDE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 set(libmolsketch_HDRS
     itemplugin.h
     reactionarrowdialog.h
+    mechanismarrowdialog.h
     smilesitem.h)
 
 set (libmolsketch_UIS)
@@ -42,6 +43,7 @@ set(libmolsketch_SRCS
     atomnumberitem.cpp
     stereocenteritem.cpp
     reactionarrowdialog.cpp
+    mechanismarrowdialog.cpp
     graphsymitem.cpp)
 
 
@@ -72,8 +74,8 @@ if(WIN32)
 endif(WIN32)
 
 # MOC-ing headers
-set(molsketch_LIB_MOC_HDRS molscene.h molview.h reactionarrowdialog.h ${libmolsketch_HDRS})
-set(molsketch_MOC_HDRS mainwindow.h settings.h drawwidget.h reactionarrowdialog.h)
+set(molsketch_LIB_MOC_HDRS molscene.h molview.h ${libmolsketch_HDRS})
+set(molsketch_MOC_HDRS mainwindow.h settings.h drawwidget.h reactionarrowdialog.h mechanismarrowdialog.h)
 qt4_wrap_cpp(libmolsketch_SRCS ${molsketch_LIB_MOC_HDRS})
 qt4_wrap_cpp(molsketch_SRCS ${molsketch_MOC_HDRS})
 

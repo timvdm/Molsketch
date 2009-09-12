@@ -17,7 +17,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "mechanismarrow.h"
-//#include "reactionarrowdialog.h"
+#include "mechanismarrowdialog.h"
 
 #include "math2d.h"
 #include <cmath>
@@ -26,13 +26,14 @@
 #include <QGraphicsEllipseItem>
 #include <QGraphicsScene>
 #include <QGraphicsSceneHoverEvent>
+#include <QXmlStreamWriter>
 #include <QDebug>
 
 namespace Molsketch {
 
   MechanismArrow::MechanismArrow() : m_p1(QPointF(0.0, 0.0)), m_p2(QPointF(0.0, -50.0)),
       m_p3(QPointF(50.0, -50.0)), m_p4(QPointF(50.0, 0.0)), m_hoverP1(false), 
-      m_hoverP2(false), m_hoverP3(false), m_hoverP4(false), m_arrowType(SingleArrow), m_dialog(0)
+      m_hoverP2(false), m_hoverP3(false), m_hoverP4(false), m_arrowType(SingleArrowRight), m_dialog(0)
   {
     setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable);
     setAcceptsHoverEvents(true);
@@ -40,8 +41,8 @@ namespace Molsketch {
   
   MechanismArrow::~MechanismArrow()
   {
-//    if (m_dialog)
-  //    m_dialog->deleteLater();
+    if (m_dialog)
+      m_dialog->deleteLater();
   }
       
   void MechanismArrow::setArrowType(ArrowType t)
@@ -52,20 +53,7 @@ namespace Molsketch {
   QRectF MechanismArrow::boundingRect() const
   {
     QRectF rect(-200,-200,400,400);
-
     rect = QRectF(m_p1, m_p3).normalized() | QRectF(m_p2, m_p4).normalized();
-
-    /*
-    if (m_end.x() < 0 && m_end.y() < 0)
-      rect = QRectF(m_end.x() - 10.0, m_end.y() - 10.0, - m_end.x() + 20.0, - m_end.y() +  20.0);
-    else if (m_end.x() < 0)
-      rect = QRectF(m_end.x() - 10.0, -10.0, - m_end.x() + 20.0, m_end.y() +  20.0);
-    else if (m_end.y() < 0)
-      rect = QRectF(-10.0, m_end.y() - 10.0, m_end.x() + 20.0, - m_end.y() +  20.0);
-    else
-      rect = QRectF(-10.0, -10.0, m_end.x() + 20.0, m_end.y() +  20.0);
-    */
-
     return rect.adjusted(-10,-10,10,10);
   }
 
@@ -80,9 +68,6 @@ namespace Molsketch {
       painter->restore();
     }
 
-    //QPointF end = normalized(m_end);
-    //QPointF orthogonal(end.y(), -end.x());
-
     painter->save();
     QPen pen;
     pen.setWidthF(1.5);
@@ -91,106 +76,104 @@ namespace Molsketch {
     painter->setPen(pen);
     //painter->setBrush(Qt::black);
         
+    // draw the bezier curve
     QPainterPath path;
     path.moveTo(m_p1);
     path.cubicTo(m_p2, m_p3, m_p4);
     painter->drawPath(path);
 
+    // if selected, draw the curve hint lines
     if (isSelected()) {
       painter->setPen(Qt::gray);
       painter->drawLine(m_p1, m_p2);
       painter->drawLine(m_p3, m_p4);
     }
 
+    QPointF line1 = normalized(m_p1 - m_p2);
+    QPointF line2 = normalized(m_p4 - m_p3);
+    QPointF orthogonal1(line1.y(), -line1.x());
+    QPointF orthogonal2(line2.y(), -line2.x());
 
-/*
+    painter->setPen(pen);
+    painter->setBrush(Qt::black);
+
     // draw the arrow
     switch (m_arrowType) {
       default:
-      case SingleArrow:
+      case SingleArrowRight:
         {
-        painter->drawLine(QPointF(0.0, 0.0), m_end);
         QPolygonF polygon;
-        polygon << m_end;
-        polygon << m_end - 15 * end + 5 * orthogonal;
-        polygon << m_end - 12 * end;
-        polygon << m_end - 15 * end - 5 * orthogonal;
+        polygon << m_p4;
+        polygon << m_p4 - 15 * line2 + 5 * orthogonal2;
+        polygon << m_p4 - 12 * line2;
+        polygon << m_p4 - 15 * line2 - 5 * orthogonal2;
+        painter->drawPolygon(polygon);
+        }
+        break;
+      case SingleArrowLeft:
+        {
+        QPolygonF polygon;
+        polygon << m_p1;
+        polygon << m_p1 - 15 * line1 + 5 * orthogonal1;
+        polygon << m_p1 - 12 * line1;
+        polygon << m_p1 - 15 * line1 - 5 * orthogonal1;
         painter->drawPolygon(polygon);
         }
         break;
       case DoubleArrow:
         {
-        painter->drawLine(QPointF(0.0, 0.0), m_end);
         QPolygonF polygon;
-        polygon << m_end;
-        polygon << m_end - 15 * end + 5 * orthogonal;
-        polygon << m_end - 12 * end;
-        polygon << m_end - 15 * end - 5 * orthogonal;
+        polygon << m_p4;
+        polygon << m_p4 - 15 * line2 + 5 * orthogonal2;
+        polygon << m_p4 - 12 * line2;
+        polygon << m_p4 - 15 * line2 - 5 * orthogonal2;
         painter->drawPolygon(polygon);
         polygon.clear();
-        polygon << QPointF(0.0, 0.0);
-        polygon << 15 * end + 5 * orthogonal;
-        polygon << 12 * end;
-        polygon << 15 * end - 5 * orthogonal;
+        polygon << m_p1;
+        polygon << m_p1 - 15 * line1 + 5 * orthogonal1;
+        polygon << m_p1 - 12 * line1;
+        polygon << m_p1 - 15 * line1 - 5 * orthogonal1;
         painter->drawPolygon(polygon);
         }
         break;
-      case Equilibrium:
+      case SingleHookRight:
         {
-        QPointF offset(-orthogonal * 2);
-        painter->drawLine(-offset, m_end - offset);
-        painter->drawLine(offset, m_end + offset);
         QPolygonF polygon;
-        polygon << m_end - offset;
-        polygon << m_end - 12 * end - offset;
-        polygon << m_end - 15 * end + 7 * orthogonal + offset;
-        painter->drawPolygon(polygon);
-        polygon.clear();
-        polygon << offset;
-        polygon << 12 * end + offset;
-        polygon << 15 * end - 7 * orthogonal - offset;
+        polygon << m_p4;
+        polygon << m_p4 - 15 * line2 + 5 * orthogonal2;
+        polygon << m_p4 - 12 * line2;
+        //polygon << m_p4 - 15 * line2 - 5 * orthogonal2;
         painter->drawPolygon(polygon);
         }
         break;
-      case EqRightShifted:
+      case SingleHookLeft:
         {
-        QPointF offset(-orthogonal * 2);
-        QPointF offset2(end * 15);
-        painter->drawLine(-offset, m_end - offset);
-        painter->drawLine(offset + offset2, m_end + offset - offset2);
         QPolygonF polygon;
-        polygon << m_end - offset;
-        polygon << m_end - 12 * end - offset;
-        polygon << m_end - 15 * end + 7 * orthogonal + offset;
-        painter->drawPolygon(polygon); // upper polygon
-        polygon.clear();
-        polygon << offset + offset2;
-        polygon << 12 * end + offset + offset2;
-        polygon << 15 * end - 7 * orthogonal - offset + offset2;
-        painter->drawPolygon(polygon); // lower polygon
+        polygon << m_p1;
+        //polygon << m_p1 - 15 * line1 + 5 * orthogonal1;
+        polygon << m_p1 - 12 * line1;
+        polygon << m_p1 - 15 * line1 - 5 * orthogonal1;
+        painter->drawPolygon(polygon);
         }
         break;
-      case EqLeftShifted:
+      case DoubleHook:
         {
-        QPointF offset(-orthogonal * 2);
-        QPointF offset2(end * 15);
-        painter->drawLine(-offset + offset2, m_end - offset - offset2);
-        painter->drawLine(offset, m_end + offset);
         QPolygonF polygon;
-        polygon << m_end - offset - offset2;
-        polygon << m_end - 12 * end - offset - offset2;
-        polygon << m_end - 15 * end + 7 * orthogonal + offset - offset2;
-        painter->drawPolygon(polygon); // upper polygon
+        polygon << m_p4;
+        polygon << m_p4 - 15 * line2 + 5 * orthogonal2;
+        polygon << m_p4 - 12 * line2;
+        //polygon << m_p4 - 15 * line2 - 5 * orthogonal2;
+        painter->drawPolygon(polygon);
         polygon.clear();
-        polygon << offset;
-        polygon << 12 * end + offset;
-        polygon << 15 * end - 7 * orthogonal - offset;
-        painter->drawPolygon(polygon); // lower polygon
+        polygon << m_p1;
+        //polygon << m_p1 - 15 * line1 + 5 * orthogonal1;
+        polygon << m_p1 - 12 * line1;
+        polygon << m_p1 - 15 * line1 - 5 * orthogonal1;
+        painter->drawPolygon(polygon);
         }
         break;
-
-
-    }*/
+ 
+    }
 
     // draw red circles when hovering above points
     painter->setPen(Qt::red);
@@ -304,13 +287,50 @@ namespace Molsketch {
       
   void MechanismArrow::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
   {
-    /*
     if (!m_dialog) {
       m_dialog = new MechanismArrowDialog(this);
     }
 
     m_dialog->show();
-    */
   }
 
+  void MechanismArrow::readXML(QXmlStreamReader &xml)
+  {
+    QXmlStreamAttributes attr = xml.attributes();
+    if (attr.hasAttribute("arrowType"))
+      m_arrowType = static_cast<MechanismArrow::ArrowType>(attr.value("arrowType").toString().toInt());
+    if (attr.hasAttribute("posx") && attr.hasAttribute("posy"))
+      setPos(QPointF(attr.value("posx").toString().toFloat(),
+                          attr.value("posy").toString().toFloat()));
+    if (attr.hasAttribute("p1x") && attr.hasAttribute("p1y"))
+      m_p1 = QPointF(attr.value("p1x").toString().toFloat(),
+                     attr.value("p1y").toString().toFloat());
+    if (attr.hasAttribute("p2x") && attr.hasAttribute("p2y"))
+      m_p2 = QPointF(attr.value("p2x").toString().toFloat(),
+                     attr.value("p2y").toString().toFloat());
+    if (attr.hasAttribute("p3x") && attr.hasAttribute("p3y"))
+      m_p3 = QPointF(attr.value("p3x").toString().toFloat(),
+                     attr.value("p3y").toString().toFloat());
+    if (attr.hasAttribute("p4x") && attr.hasAttribute("p4y"))
+      m_p4 = QPointF(attr.value("p4x").toString().toFloat(),
+                     attr.value("p4y").toString().toFloat());
+  }
+
+  void MechanismArrow::writeXML(QXmlStreamWriter &xml)
+  {
+    xml.writeStartElement("object");
+    xml.writeAttribute("type", "MechanismArrow");
+    xml.writeAttribute("arrowType", QString::number(m_arrowType));
+    xml.writeAttribute("posx", QString::number(scenePos().x()));
+    xml.writeAttribute("posy", QString::number(scenePos().y()));
+    xml.writeAttribute("p1x", QString::number(m_p1.x()));
+    xml.writeAttribute("p1y", QString::number(m_p1.y()));
+    xml.writeAttribute("p2x", QString::number(m_p2.x()));
+    xml.writeAttribute("p2y", QString::number(m_p2.y()));
+    xml.writeAttribute("p3x", QString::number(m_p3.x()));
+    xml.writeAttribute("p3y", QString::number(m_p3.y()));
+    xml.writeAttribute("p4x", QString::number(m_p4.x()));
+    xml.writeAttribute("p4y", QString::number(m_p4.y()));
+    xml.writeEndElement();
+  }
 }

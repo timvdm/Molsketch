@@ -36,6 +36,8 @@
 class QString;
 class QPoint;
 class QPainter;
+class QXmlStreamReader;
+class QXmlStreamWriter;
 
 namespace OpenBabel {
   class OBMol;
@@ -198,6 +200,17 @@ class Molecule : public QGraphicsItemGroup
 
     OpenBabel::OBMol* OBMol() const;
     void perceiveRings();
+
+    /**
+     * Read Molecule data from the specified XML stream.
+     */
+    void readXML(QXmlStreamReader &xml);
+    /**
+     * Write this Molecule to the specified XML stream.
+     */
+    void writeXML(QXmlStreamWriter &xml);
+
+
   protected:
 	  
 	  

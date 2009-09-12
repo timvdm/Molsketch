@@ -278,14 +278,14 @@ namespace Molsketch {
 
   void ReactionArrow::writeXML(QXmlStreamWriter &xml)
   {
+    xml.writeStartElement("object");
     xml.writeAttribute("type", "ReactionArrow");
     xml.writeAttribute("arrowType", QString::number(m_arrowType));
     xml.writeAttribute("posx", QString::number(scenePos().x()));
     xml.writeAttribute("posy", QString::number(scenePos().y()));
     xml.writeAttribute("endx", QString::number(m_end.x()));
     xml.writeAttribute("endy", QString::number(m_end.y()));
-
-
+    xml.writeEndElement();
   }
 
 

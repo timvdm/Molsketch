@@ -85,17 +85,19 @@ MainWindow::MainWindow()
   QStringList loadedFiles;
 
   foreach(QString fileName, args.filter(rx)) {
-    Molecule* mol = Molsketch::loadFile(fileName);
-      if (mol)
-        {
-          m_scene->addMolecule(mol);
-          loadedFiles << fileName;
-        }
-      else
-        {
-          // Display error message if load fails
-          QMessageBox::critical(this,tr(PROGRAM_NAME),tr("Error while loading file"),QMessageBox::Ok,QMessageBox::Ok);
-        }
+    if (fileName.endsWith(".msk")) {
+      readMskFile(fileName, m_scene);
+      loadedFiles << fileName;
+    } else {
+      Molecule *mol = Molsketch::loadFile(fileName);
+      if (mol) {
+        m_scene->addMolecule(mol);
+        loadedFiles << fileName;
+      } else {
+        // Display error message if load fails
+        QMessageBox::critical(this,tr(PROGRAM_NAME),tr("Error while loading file"),QMessageBox::Ok,QMessageBox::Ok);
+      }
+    }
   }
   setCurrentFile("");
   if (loadedFiles.count() == 1) setCurrentFile(loadedFiles.first());
