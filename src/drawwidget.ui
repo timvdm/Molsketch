@@ -1165,7 +1165,7 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>Hydrogen</string>
+      <string>Reaction arrows</string>
      </property>
      <property name="text">
       <string/>
@@ -1215,7 +1215,7 @@
       </font>
      </property>
      <property name="toolTip">
-      <string>Hydrogen</string>
+      <string>Mechanism arrows</string>
      </property>
      <property name="text">
       <string/>
@@ -1468,6 +1468,9 @@
        <height>50</height>
       </size>
      </property>
+     <property name="toolTip">
+      <string>Increment/decrement charges</string>
+     </property>
      <property name="text">
       <string/>
      </property>
@@ -1502,6 +1505,9 @@
        <width>50</width>
        <height>50</height>
       </size>
+     </property>
+     <property name="toolTip">
+      <string>Increment/decrement hydrogen count</string>
      </property>
      <property name="text">
       <string/>
