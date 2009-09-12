@@ -31,13 +31,13 @@ namespace Molsketch {
       StereoCenterItem();
 
       QString input() const { return "Molecule"; }
-      QString output() const { return "Tetrahedral Atoms"; }
+      QString output() const { return "Stereogenic Atoms"; }
       QString label() const { return output(); }
       void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     private:
   };
 
-  ITEM_PLUGIN_FACTORY(StereoCenterItem, "Molecule", "Tetrahedral Atoms")
+  ITEM_PLUGIN_FACTORY(StereoCenterItem, "Molecule", "Stereogenic Atoms")
 
 }
 

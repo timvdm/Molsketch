@@ -62,10 +62,22 @@ namespace Molsketch {
     OpenBabel::OBGraphSym graphsym(obmol);
     graphsym.GetSymmetry(symmetry_classes);
 
-    std::vector<unsigned long> atomIds = FindTetrahedralAtoms(obmol, symmetry_classes);
-    for (unsigned int i = 0; i < atomIds.size(); ++i) {
-      OpenBabel::OBAtom *obatom = obmol->GetAtomById(atomIds.at(i));
-      painter->drawEllipse(mapFromItem(mol, atoms[obatom->GetIndex()]->pos()), 10, 10);
+    //std::vector<unsigned long> atomIds = FindTetrahedralAtoms(obmol, symmetry_classes);
+    std::vector<OpenBabel::StereogenicUnit> units = FindStereogenicUnits(obmol, symmetry_classes);
+    
+    for (unsigned int i = 0; i < units.size(); ++i) {
+      if (units.at(i).type == OpenBabel::OBStereo::Tetrahedral) {
+        OpenBabel::OBAtom *obatom = obmol->GetAtomById(units.at(i).id);
+        painter->drawEllipse(mapFromItem(mol, atoms[obatom->GetIndex()]->pos()), 10, 10);
+      } else 
+      if (units.at(i).type == OpenBabel::OBStereo::CisTrans) {
+        OpenBabel::OBBond *obbond = obmol->GetBondById(units.at(i).id);
+        OpenBabel::OBAtom *obatom1 = obbond->GetBeginAtom();
+        OpenBabel::OBAtom *obatom2 = obbond->GetEndAtom();
+        painter->drawEllipse(mapFromItem(mol, atoms[obatom1->GetIndex()]->pos()), 10, 10);
+        painter->drawEllipse(mapFromItem(mol, atoms[obatom2->GetIndex()]->pos()), 10, 10);
+      } 
+ 
     }
 #else
     using OpenBabel::OBMolAtomIter;
