@@ -757,6 +757,11 @@ void Molecule::paint(QPainter * painter, const QStyleOptionGraphicsItem * option
               //Atom *atom = new Atom(pos, element, true);
               Atom *atom = addAtom(element, pos, true);
 
+              if (attr.hasAttribute("colorR") && attr.hasAttribute("colorG") && attr.hasAttribute("colorB"))
+                atom->setColor(QColor(attr.value("colorR").toString().toInt(),
+                                      attr.value("colorG").toString().toInt(),
+                                      attr.value("colorB").toString().toInt()));
+
               if (attr.hasAttribute("id"))
                 atomHash[attr.value("id").toString()] = atom;
             }
@@ -792,6 +797,12 @@ void Molecule::paint(QPainter * painter, const QStyleOptionGraphicsItem * option
                 order = attr.value("order").toString().toInt();
 
               currentBond = addBond(begin, end, order);
+
+              if (attr.hasAttribute("colorR") && attr.hasAttribute("colorG") && attr.hasAttribute("colorB"))
+                currentBond->setColor(QColor(attr.value("colorR").toString().toInt(),
+                                             attr.value("colorG").toString().toInt(),
+                                             attr.value("colorB").toString().toInt()));
+
 
             } else if (xml.name() == "bondStereo") {
               QString bondStereo = xml.readElementText();
@@ -835,6 +846,9 @@ void Molecule::paint(QPainter * painter, const QStyleOptionGraphicsItem * option
       xml.writeAttribute("x2", QString::number(atom->pos().x()));
       xml.writeAttribute("y2", QString::number(atom->pos().y()));
       xml.writeAttribute("hydrogenCount", QString::number(atom->numImplicitHydrogens()));
+      xml.writeAttribute("colorR", QString::number(atom->getColor().red()));
+      xml.writeAttribute("colorG", QString::number(atom->getColor().green()));
+      xml.writeAttribute("colorB", QString::number(atom->getColor().blue()));
       xml.writeEndElement(); // atom
     }
     xml.writeEndElement(); // atomArray
@@ -852,6 +866,9 @@ void Molecule::paint(QPainter * painter, const QStyleOptionGraphicsItem * option
         atomRefs2 = atomHash[bond->beginAtom()] + " " + atomHash[bond->endAtom()];
       xml.writeAttribute("atomRefs2", atomRefs2);
       xml.writeAttribute("order", QString::number(bond->bondOrder()));
+      xml.writeAttribute("colorR", QString::number(bond->getColor().red()));
+      xml.writeAttribute("colorG", QString::number(bond->getColor().green()));
+      xml.writeAttribute("colorB", QString::number(bond->getColor().blue()));
       switch (bond->bondType()) {
         case Bond::InvertedWedge:
         case Bond::Wedge:
