@@ -49,6 +49,7 @@
 #include "smilesitem.h"
 #include "mimemolecule.h"
 
+#include "TextInputItem.h"
 #include "reactionarrow.h"
 #include "mechanismarrow.h"
 

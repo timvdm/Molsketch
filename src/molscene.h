@@ -25,10 +25,7 @@
 #include <QGraphicsScene>
 #include <QUndoCommand>
 
-#include "mollibitem.h"
-#include "bond.h"
-#include "TextInputItem.h"
-
+#include <Molsketch/Bond>
 
 class QString;
 class QImage;
@@ -36,11 +33,17 @@ class QListWidgetItem;
 class QTableWidgetItem;
 class QUndoStack;
 
+namespace OpenBabel {
+  class OBMol;
+}
+
 namespace Molsketch {
 
   class Molecule;
   class Atom;
   class Bond;
+  class TextInputItem;
+  class MolLibItem;;
 
   class MolSceneOptions
   {

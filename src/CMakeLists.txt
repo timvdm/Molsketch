@@ -86,12 +86,8 @@ qt4_automoc(${molsketch_SRCS})
 
 
 
-
-
-
-
 # Create the molsKetch libraries
-add_library(molsketch_LIB ${libmolsketch_SRCS} ${molsketch_UIS_H})
+add_library(molsketch_LIB SHARED ${libmolsketch_SRCS} ${molsketch_UIS_H})
 set_target_properties(molsketch_LIB PROPERTIES OUTPUT_NAME "molsketch")
 target_link_libraries(molsketch_LIB ${QT_LIBRARIES} ${OPENBABEL2_LIBRARIES})
 
@@ -110,6 +106,14 @@ install(TARGETS molsketch_LIB
 	RUNTIME DESTINATION bin
 	LIBRARY DESTINATION lib
 	ARCHIVE DESTINATION lib/static)
+
+#install headers
+install(FILES graphicsitemtypes.h DESTINATION include/Molsketch RENAME GraphicsItemTypes)
+install(FILES molecule.h DESTINATION include/Molsketch RENAME Molecule)
+install(FILES atom.h DESTINATION include/Molsketch RENAME Atom)
+install(FILES bond.h DESTINATION include/Molsketch RENAME Bond)
+install(FILES fileio.h DESTINATION include/Molsketch RENAME FileIO)
+install(FILES molscene.h DESTINATION include/Molsketch RENAME MolScene)
 
 # Install the molcules library
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/library DESTINATION share/molsketch)

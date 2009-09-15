@@ -147,7 +147,10 @@ Bond* Molecule::addBond(Atom* atomA, Atom* atomB, int order, int type, QColor c)
   //pre: atomA and atomB are existing different atoms in the molecule
   Q_ASSERT (m_atomList.contains(atomA));
   Q_ASSERT (m_atomList.contains(atomB));
-  Q_ASSERT (atomA != atomB);
+  //Q_ASSERT (atomA != atomB);
+  if (atomA == atomB)
+    return 0;
+
   //post: a bond of type has been added between atomA and atomB
 
   // Creating a new bond

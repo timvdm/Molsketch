@@ -28,12 +28,12 @@
 #ifndef BOND_H
 #define BOND_H
 
-#include "graphicsitemtypes.h"
+#include <Molsketch/GraphicsItemTypes>
+#include <Molsketch/Molecule>
+#include <Molsketch/Atom>
 
 #include <QGraphicsItem>
 
-#include "atom.h"
-#include "molecule.h"
 
 namespace Molsketch {
 
