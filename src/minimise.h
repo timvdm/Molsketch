@@ -37,7 +37,13 @@
 #include <cmath>
 #include <iostream>
 #include <assert.h>
-#include <math.h>
+#include <cmath>
+#include <cfloat>
+
+
+#ifndef M_PI
+  #define M_PI 3.14159265358979323846
+#endif
 
 //contains both a forcefield and a minimisation algorithm. 
 
@@ -165,10 +171,10 @@ namespace Molsketch {
 	public:
 		FFBondstretch (FFAtom *at1, FFAtom *at2, qreal length = 40) : FFInteraction(at1, at2), len (length) {}
 		void apply () {
-			assert (!std::isnan (p1 ->force_x()));
-			assert (!std::isnan (p1 ->force_y()));
-			assert (!std::isnan (p2 ->force_x()));
-			assert (!std::isnan (p2 ->force_y()));
+			assert (!isnan (p1 ->force_x()));
+			assert (!isnan (p1 ->force_y()));
+			assert (!isnan (p2 ->force_x()));
+			assert (!isnan (p2 ->force_y()));
 			qreal dist = distance (*p1, *p2);
 			qreal d = dist - len;
 			QPointF v = vect (*p1, *p2);
@@ -181,10 +187,10 @@ namespace Molsketch {
 			
 			p2 ->force_x () += v2.x();
 			p2 ->force_y () += v2.y();
-			assert (!std::isnan (p1 ->force_x()));
-			assert (!std::isnan (p1 ->force_y()));
-			assert (!std::isnan (p2 ->force_x()));
-			assert (!std::isnan (p2 ->force_y()));
+			assert (!isnan (p1 ->force_x()));
+			assert (!isnan (p1 ->force_y()));
+			assert (!isnan (p2 ->force_x()));
+			assert (!isnan (p2 ->force_y()));
 		}
 		qreal len;
 
@@ -202,9 +208,9 @@ namespace Molsketch {
 	public:
 		FFclash (FFAtom *at1, FFAtom *at2, qreal length = 40) : FFInteraction(at1, at2), len (length) {}
 		void apply () {
-			assert (!std::isnan (p1 ->force_x()));
-			assert (!std::isnan (p1 ->force_y()));
-			assert (!std::isnan (p2 ->force_x()));
+			assert (!isnan (p1 ->force_x()));
+			assert (!isnan (p1 ->force_y()));
+			assert (!isnan (p2 ->force_x()));
 			assert (!std::isnan (p2 ->force_y()));
 			qreal dist = distance (*p1, *p2);
 			qreal d = len - dist;
@@ -219,10 +225,10 @@ namespace Molsketch {
 			
 			p1 ->force_x () += v2.x();
 			p1 ->force_y () += v2.y();
-			assert (!std::isnan (p1 ->force_x()));
-			assert (!std::isnan (p1 ->force_y()));
-			assert (!std::isnan (p2 ->force_x()));
-			assert (!std::isnan (p2 ->force_y()));
+			assert (!isnan (p1 ->force_x()));
+			assert (!isnan (p1 ->force_y()));
+			assert (!isnan (p2 ->force_x()));
+			assert (!isnan (p2 ->force_y()));
 			
 		}
 		void score (qreal &tot) {
@@ -240,10 +246,10 @@ namespace Molsketch {
 	public:
 		FFBondorient (FFAtom *at1, FFAtom *at2) : FFInteraction(at1, at2) {}
 		void apply () {
-			assert (!std::isnan (p1 ->force_x()));
-			assert (!std::isnan (p1 ->force_y()));
-			assert (!std::isnan (p2 ->force_x()));
-			assert (!std::isnan (p2 ->force_y()));
+			assert (!isnan (p1 ->force_x()));
+			assert (!isnan (p1 ->force_y()));
+			assert (!isnan (p2 ->force_x()));
+			assert (!isnan (p2 ->force_y()));
 			QPointF v = vect (*p1, *p2);
 			qreal ang = atan2 (v.y(), v.x());
 			qreal targetang;
@@ -273,10 +279,10 @@ namespace Molsketch {
 			
 			p2 ->force_x () -= n1.x();
 			p2 ->force_y () -= n1.y();		
-			assert (!std::isnan (p1 ->force_x()));
-			assert (!std::isnan (p1 ->force_y()));
-			assert (!std::isnan (p2 ->force_x()));
-			assert (!std::isnan (p2 ->force_y()));
+			assert (!isnan (p1 ->force_x()));
+			assert (!isnan (p1 ->force_y()));
+			assert (!isnan (p2 ->force_x()));
+			assert (!isnan (p2 ->force_y()));
 			
 		}
 		void score (qreal &tot) {
@@ -306,12 +312,12 @@ namespace Molsketch {
 		FFAngleBend (FFAtom *at1, FFAtom *at2, FFAtom *at3) : FFInteraction(at1, at2), p3 (at3) {}
 
 		void apply () {
-			assert (!std::isnan (p1 ->force_x()));
-			assert (!std::isnan (p1 ->force_y()));
-			assert (!std::isnan (p2 ->force_x()));
-			assert (!std::isnan (p2 ->force_y()));
-			assert (!std::isnan (p3 ->force_x()));
-			assert (!std::isnan (p3 ->force_y()));
+			assert (!isnan (p1 ->force_x()));
+			assert (!isnan (p1 ->force_y()));
+			assert (!isnan (p2 ->force_x()));
+			assert (!isnan (p2 ->force_y()));
+			assert (!isnan (p3 ->force_x()));
+			assert (!isnan (p3 ->force_y()));
 			qreal ang = angle (*p1, *p2, *p3);
 			if (ang < 0) ang = -ang;
 			qreal a = (2* M_PI / 3) - ang;
@@ -342,12 +348,12 @@ namespace Molsketch {
 			
 			p2 ->force_x () -= n2.x();
 			p2 ->force_y () -= n2.y();
-			assert (!std::isnan (p1 ->force_x()));
-			assert (!std::isnan (p1 ->force_y()));
-			assert (!std::isnan (p2 ->force_x()));
-			assert (!std::isnan (p2 ->force_y()));
-			assert (!std::isnan (p3 ->force_x()));
-			assert (!std::isnan (p3 ->force_y()));
+			assert (!isnan (p1 ->force_x()));
+			assert (!isnan (p1 ->force_y()));
+			assert (!isnan (p2 ->force_x()));
+			assert (!isnan (p2 ->force_y()));
+			assert (!isnan (p3 ->force_x()));
+			assert (!isnan (p3 ->force_y()));
 			
 			
 		}
