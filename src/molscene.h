@@ -122,7 +122,18 @@ namespace Molsketch {
        */
       bool hydrogenVisible() const;
       /** Returns @c true if atom valency is visible, return @c false otherwise. */
-      bool chargeVisible() const { return m_chargeVisible; };
+      bool chargeVisible() const
+      {
+        return m_chargeVisible;
+      }
+      bool electronSystemsVisible() const
+      {
+        return m_electronSystemsVisible;
+      }
+      bool lonePairsVisible() const
+      {
+        return false;
+      }
       /** Returns @c true if hydrogens are automaticly added, return @c false otherwise. */
       bool autoAddHydrogen() const { return m_autoAddHydrogen; };
       /** Returns the current bond length. */
@@ -164,7 +175,17 @@ namespace Molsketch {
       /** Sets whether hydrogens are drawn. */
       void setHydrogenVisible(bool value);
       /** Sets whether atom charges are drawn. */
-      void setChargeVisible(bool value) { m_chargeVisible = value; };
+      void setChargeVisible(bool value)
+      {
+        m_chargeVisible = value;
+      }
+      /**
+       * Set whether electron systems are drawn.
+       */
+      void setElectronSystemsVisible(bool value)
+      {
+        m_electronSystemsVisible = value;
+      }
       /** Sets whether hydrogens are automaticly added. */
       void setAutoAddHydrogen(bool value) { m_autoAddHydrogen = value; };
       /** Sets the atomsymbol font */
@@ -346,18 +367,14 @@ namespace Molsketch {
       Bond::BondType m_bondType;
       /** Strores the bond angle. */
       int m_bondAngle;
-      /** Stores the current atom size. */
-      qreal m_atomSize;
-      /** Stores the current atomsymbol font */
-      QFont m_atomSymbolFont;
-      /** Stores whether hydrogens should be visible.*/
-      bool m_hydrogenVisible;
-      /** Stores whether neutral carbons are to be shown.*/
-      bool m_carbonVisible;
-      /** Stores whether the charge of the atoms is to be shown.*/
-      bool m_chargeVisible;
-      /** Stores whether hydrogens are to be added automaticly.*/
-      bool m_autoAddHydrogen;
+
+      qreal m_atomSize; //!< Stores the current atom size.
+      QFont m_atomSymbolFont; //!< Stores the current atomsymbol font.
+      bool m_hydrogenVisible; //!< Stores whether hydrogens should be visible.
+      bool m_carbonVisible; //!< Stores whether neutral carbons are to be shown.
+      bool m_chargeVisible; //!< Stores whether the charge of the atoms is to be shown.
+      bool m_autoAddHydrogen; //!< Stores whether hydrogens are to be added automaticly.
+      bool m_electronSystemsVisible; //!< Stores whether electron systems should be visible.
 
       RenderMode m_renderMode;
 

@@ -998,7 +998,7 @@ void MainWindow::initializeAssistant()
 void MainWindow::readSettings()
 {
   // Reading the settings
-  QSettings settings(PROGRAM_NAME, QString(PROGRAM_NAME) + QString(PROGRAM_VERSION));
+  QSettings settings;
 
   // Setting the window position
   QPoint pos = settings.value("pos",QPoint(100,100)).toPoint();
@@ -1012,7 +1012,6 @@ void MainWindow::readSettings()
 
   // Load preferences
   readPreferences(settings);
-
 }
 
 void MainWindow::readPreferences(const QSettings & settings)
@@ -1032,6 +1031,8 @@ void MainWindow::readPreferences(const QSettings & settings)
   m_scene->setCarbonVisible(settings.value("carbon-visible",false).toBool());
   m_scene->setHydrogenVisible(settings.value("hydrogen-visible",true).toBool());
   m_scene->setChargeVisible(settings.value("charge-visible",true).toBool());
+  m_scene->setElectronSystemsVisible(settings.value("electronSystems-visible", false).toBool());
+
   m_scene->setAtomSymbolFont(settings.value("atom-symbol-font").value<QFont>());
 
   m_scene->setBondLength(settings.value("bond-length",40).toDouble());
@@ -1045,7 +1046,7 @@ void MainWindow::readPreferences(const QSettings & settings)
 void MainWindow::writeSettings()
 {
   // Saving the settings
-  QSettings settings(PROGRAM_NAME, QString(PROGRAM_NAME) + QString(PROGRAM_VERSION));
+  QSettings settings;
 
   // Saving the window position
   settings.setValue("pos",pos());
@@ -1060,12 +1061,14 @@ void MainWindow::writeSettings()
 
   // Saving preferences
 //   settings.setValue("atom-size",m_scene->atomSize());
-//   settings.setValue("auto-add-hydrogen",m_scene->autoAddHydrogen());
+   settings.setValue("auto-add-hydrogen",m_scene->autoAddHydrogen());
 //   settings.setValue("bond-length",m_scene->bondLength());
 //   settings.setValue("bond-angle",m_scene->bondAngle());
-//   settings.setValue("carbon-visible",m_scene->carbonVisible());
-//   settings.setValue("hydrogen-visible",m_scene->hydrogenVisible());
-//   settings.setValue("charge-visible",m_scene->chargeVisible());
+   settings.setValue("carbon-visible",m_scene->carbonVisible());
+   settings.setValue("hydrogen-visible",m_scene->hydrogenVisible());
+   settings.setValue("charge-visible",m_scene->chargeVisible());
+   settings.setValue("electronSystems-visible",m_scene->electronSystemsVisible());
+
 }
 
 
@@ -1203,10 +1206,10 @@ void MainWindow::updateInfoBox( )
 
 void MainWindow::editPreferences( )
 {
-  QSettings settings(PROGRAM_NAME, QString(PROGRAM_NAME) + QString(PROGRAM_VERSION));
+  QSettings settings;
 
   // Opens the settings dialog
-  SettingsDialog dialog(&settings);
+  SettingsDialog dialog;
   dialog.exec();
   readPreferences(settings);
 }

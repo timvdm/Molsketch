@@ -29,7 +29,7 @@
 #include "molscene.h"
 #include "element.h"
 
-//#include "electronsystem.h"
+#include "electronsystem.h"
 
 #include <openbabel/mol.h>
 #include <openbabel/obconversion.h>
@@ -41,6 +41,7 @@ namespace Molsketch {
 
 Molecule::Molecule(QGraphicsItem* parent, MolScene* scene) : QGraphicsItemGroup(parent,scene)
 {
+  m_electronSystemsUpdate = true;
   // Setting properties
   setFlags(QGraphicsItem::ItemIsFocusable);
   setAcceptedMouseButtons(Qt::LeftButton|Qt::MidButton);
@@ -53,6 +54,7 @@ Molecule::Molecule(QGraphicsItem* parent, MolScene* scene) : QGraphicsItemGroup(
 Molecule::Molecule(QSet<Atom*> atomSet, QSet<Bond*> bondSet, 
   QGraphicsItem* parent, MolScene* scene) : QGraphicsItemGroup(parent,scene)
 {
+  m_electronSystemsUpdate = true;
   // Setting properties
   setFlags(QGraphicsItem::ItemIsFocusable);
   setAcceptedMouseButtons(Qt::LeftButton|Qt::MidButton);
@@ -77,6 +79,7 @@ Molecule::Molecule(QSet<Atom*> atomSet, QSet<Bond*> bondSet,
 
 Molecule::Molecule(Molecule* mol, QGraphicsItem* parent, MolScene* scene) : QGraphicsItemGroup(parent,scene)
 {
+  m_electronSystemsUpdate = true;
   // Setting properties
   setFlags(QGraphicsItem::ItemIsFocusable);
   setAcceptedMouseButtons(Qt::LeftButton|Qt::MidButton);
@@ -138,6 +141,7 @@ Atom* Molecule::addAtom(Atom* atom)
 
 //  /// Work-around qt-bug
 //   if (scene()) scene()->addItem(atom);
+  m_electronSystemsUpdate = true;
 
   return atom;
 }
@@ -191,6 +195,7 @@ Bond* Molecule::addBond(Bond* bond)
 //  /// Work-around qt-bug
 //  if (scene()) scene()->addItem(bond);
 
+  m_electronSystemsUpdate = true;
   perceiveRings();
   return bond;
 }
@@ -226,6 +231,7 @@ QList<Bond*> Molecule::delAtom(Atom* atom)
   if (scene()) 
     scene()->removeItem(atom);
   
+  m_electronSystemsUpdate = true;
   // Return the list of bonds that were connected for undo
   return delList;
 }
@@ -251,6 +257,7 @@ QList<Bond*> Molecule::delAtom(Atom* atom)
     if (scene()) 
       scene()->removeItem(bond);
 
+  m_electronSystemsUpdate = true;
     perceiveRings();
 //  bond->undoValency();
 //  /// Superseded by undo
@@ -333,14 +340,15 @@ QList<Molecule*> Molecule::split()
 // Query methods
 
 	
-	Atom* Molecule::atomN (const int n) const {
+  Atom* Molecule::atomN (const int n) const
+  {
 		if (n>= 1 && n <= m_atomList.size ()) {
 			return m_atomList[n - 1];
 		}
 		return NULL;
 	}	
 	
-Atom* Molecule::atomAt(const QPointF &pos) const
+  Atom* Molecule::atomAt(const QPointF &pos) const
   {
     //pre: pos is a valid position on the canvas in scene coordinates
     //post: return the atom op position pos or nil
@@ -556,6 +564,7 @@ void Molecule::rebuild()
 
   // Remove and then readd all elements
   prepareGeometryChange();
+
   /*
   foreach(Bond* bond, m_bondList) 
     removeFromGroup(bond);
@@ -648,24 +657,48 @@ void Molecule::paint(QPainter * painter, const QStyleOptionGraphicsItem * option
 
 
   // draw the electron systems
-  /*
-  updateElectronSystems();
-  QPen pen = painter->pen();
-  pen.setWidth(10);
-  pen.setCapStyle(Qt::RoundCap);
-  pen.setColor(Qt::green);
-  painter->setPen(pen);
-//  painter->setOpacity(0.3);
-  foreach (ElectronSystem *es, m_electronSystems) {
-    foreach (Atom *a, es->atoms()) {
-      foreach (Atom *b, es->atoms()) {
-        if (bondBetween(a, b))
-          painter->drawLine(a->scenePos(), b->scenePos());
-//          painter->drawEllipse(atom->scenePos(), 5, 5);
+
+  if (scene()) {
+    if (!scene()->electronSystemsVisible())
+      return;
+
+    updateElectronSystems();
+    QPen pen = painter->pen();
+    pen.setWidth(10);
+    pen.setCapStyle(Qt::RoundCap);
+    pen.setColor(QColor(255, 200, 0));
+    painter->setPen(pen);
+    //  painter->setOpacity(0.3);
+
+    foreach (ElectronSystem *es, m_electronSystems) {
+      QPointF midPoint(0.0, 0.0);
+
+      foreach (Atom *a, es->atoms()) {
+        foreach (Atom *b, es->atoms()) {
+          if (bondBetween(a, b))
+            painter->drawLine(a->scenePos(), b->scenePos());
+          //          painter->drawEllipse(atom->scenePos(), 5, 5);
+        }
+
+        midPoint += mapToParent(a->scenePos());
       }
+
+      if (es->numAtoms() < 2)
+        continue;
+      midPoint /= es->numAtoms();
+
+      painter->save();
+      painter->setPen(Qt::black);
+      QPointF offset(20.0, 20.0);
+      painter->drawText(QRectF(midPoint - offset, midPoint + offset), Qt::AlignCenter, QString("%1pi").arg(es->numElectrons()));
+      painter->restore();
+
+
     }
   }
-  */
+
+
+
 
 
 }
@@ -991,7 +1024,7 @@ void Molecule::paint(QPainter * painter, const QStyleOptionGraphicsItem * option
     return smiles;
   }
 
-/*
+
 
   bool NumAtomsLessThan(const ElectronSystem *es1, const ElectronSystem *es2)
   {
@@ -1023,8 +1056,17 @@ void Molecule::paint(QPainter * painter, const QStyleOptionGraphicsItem * option
     delete es2; 
   }
   
+  void Molecule::invalidateElectronSystems()
+  {
+    m_electronSystemsUpdate = true;
+  }
+
   void Molecule::updateElectronSystems()
   {
+    if (!m_electronSystemsUpdate)
+      return;
+    m_electronSystemsUpdate = false;
+
     foreach (ElectronSystem *es, m_electronSystems)
       delete es;
     m_electronSystems.clear();
@@ -1094,6 +1136,6 @@ void Molecule::paint(QPainter * painter, const QStyleOptionGraphicsItem * option
     qDebug() << "# ElectronSystem =" << m_electronSystems.size();
   
   }
-*/
+
 
 } // namespace

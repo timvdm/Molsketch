@@ -23,7 +23,6 @@ namespace Molsketch {
   class Atom;
   class Molecule;
 
-
   ElectronSystem::ElectronSystem() : m_molecule(0), m_numElectrons(0)
   {
   }

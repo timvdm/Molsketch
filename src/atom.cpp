@@ -63,7 +63,8 @@ namespace Molsketch {
       else
         alignment = Down;
     } else {
-      if (direction.x() < 0.0)
+      //qDebug() << "x =" << direction.x();
+      if (direction.x() < -0.1) // hack to make almost vertical lines align Right
         alignment = Left;
       else
         alignment = Right;
@@ -447,12 +448,12 @@ namespace Molsketch {
     drawAtomLabel(painter, lbl, alignment);
 
     // Drawing background
-    painter->save();
-    painter->setPen(Qt::NoPen);
-    if (this->isSelected()) 
+    if (this->isSelected()) {
+      painter->save();
       painter->setPen(Qt::blue);
-    painter->drawRect(m_shape);
-    painter->restore();
+      painter->drawRect(m_shape);
+      painter->restore();
+    }
 
     // Draw charge
     if (molScene->chargeVisible()) {
@@ -464,30 +465,114 @@ namespace Molsketch {
         painter->drawText(m_shape.right() - offset, m_shape.top() + offset, chargeId);
     }
 
-    // Draw unbound electrons
-    if (0) /*molScene->chargeVisible()*/ {
+    if (molScene->lonePairsVisible()) {
+      // Draw unbound electrons
       int unboundElectrons = numNonBondingElectrons();
       QList<QRectF> layoutList;
 
+      if (m_bonds.size() == 0) {
+        //  ..   ..   ..     ..
+        //  NH2  OH2  CH3    N .
+        //       ''          ''
+        layoutList << QRectF(-3,-10,2,2); // top1
+        layoutList << QRectF(3,-10,2,2); // top2
+        layoutList << QRectF(-3,10,2,2); // bottom1
+        layoutList << QRectF(3,10,2,2); // bottom2
+        layoutList << QRectF(-10,-3,2,2); // left1
+        layoutList << QRectF(-10,3,2,2); // left2
+        layoutList << QRectF(10,-3,2,2); // right1
+        layoutList << QRectF(10,3,2,2); // right2
+      } else if (m_bonds.size() == 1) {
+        //   ..   ..     ..    |
+        // --OH   HO--  :OH   :OH
+        //   ''   ''     |     ''
+        QPointF direction(0.0, 0.0);
+        foreach (Atom *nbr, neighbours())
+          direction += pos() - nbr->pos();
+
+        if (abs(direction.y()) > abs(direction.x())) {
+          if (direction.y() <= 0.0) {
+            //   ..
+            //   NH2
+            //   |
+            layoutList << QRectF(-3,-10,2,2); // top1
+            layoutList << QRectF(3,-10,2,2); // top2
+            if (direction.x() < -0.1) {
+              layoutList << QRectF(10,-3,2,2); // right1
+              layoutList << QRectF(10,3,2,2); // right2
+              layoutList << QRectF(-10,-3,2,2); // left1
+              layoutList << QRectF(-10,3,2,2); // left2
+            } else {
+              layoutList << QRectF(-10,-3,2,2); // left1
+              layoutList << QRectF(-10,3,2,2); // left2
+              layoutList << QRectF(10,-3,2,2); // right1
+              layoutList << QRectF(10,3,2,2); // right2
+            }
+            layoutList << QRectF(-3,10,2,2); // bottom1
+            layoutList << QRectF(3,10,2,2); // bottom2
+          } else {
+            layoutList << QRectF(-3,10,2,2); // bottom1
+            layoutList << QRectF(3,10,2,2); // bottom2
+            if (direction.x() < -0.1) {
+              layoutList << QRectF(10,-3,2,2); // right1
+              layoutList << QRectF(10,3,2,2); // right2
+              layoutList << QRectF(-10,-3,2,2); // left1
+              layoutList << QRectF(-10,3,2,2); // left2
+            } else {
+              layoutList << QRectF(-10,-3,2,2); // left1
+              layoutList << QRectF(-10,3,2,2); // left2
+              layoutList << QRectF(10,-3,2,2); // right1
+              layoutList << QRectF(10,3,2,2); // right2
+            }
+            layoutList << QRectF(-3,-10,2,2); // top1
+            layoutList << QRectF(3,-10,2,2); // top2
+          }
+        } else {
+          if (direction.x() < 0.0) {
+            layoutList << QRectF(-3,-10,2,2); // top1
+            layoutList << QRectF(3,-10,2,2); // top2
+            layoutList << QRectF(-3,10,2,2); // bottom1
+            layoutList << QRectF(3,10,2,2); // bottom2
+            layoutList << QRectF(-10,-3,2,2); // left1
+            layoutList << QRectF(-10,3,2,2); // left2
+            layoutList << QRectF(10,-3,2,2); // right1
+            layoutList << QRectF(10,3,2,2); // right2
+
+          } else {
+            layoutList << QRectF(-3,-10,2,2); // top1
+            layoutList << QRectF(3,-10,2,2); // top2
+            layoutList << QRectF(-3,10,2,2); // bottom1
+            layoutList << QRectF(3,10,2,2); // bottom2
+            layoutList << QRectF(10,-3,2,2); // right1
+            layoutList << QRectF(10,3,2,2); // right2
+            layoutList << QRectF(-10,-3,2,2); // left1
+            layoutList << QRectF(-10,3,2,2); // left2
+          }
+        }
+
+      }
+
+      if (layoutList.isEmpty()) {
         // Loading different layouts
-        layoutList << QRectF(-3,-10,2,2);
-        layoutList << QRectF(3,-10,2,2);
-        layoutList << QRectF(-3,10,2,2);
-        layoutList << QRectF(3,10,2,2);
-        layoutList << QRectF(10,-3,2,2);
-        layoutList << QRectF(10,3,2,2);
-        layoutList << QRectF(-10,-3,2,2);
-        layoutList << QRectF(-10,3,2,2);
+        layoutList << QRectF(-3,-10,2,2); // bottom1
+        layoutList << QRectF(3,-10,2,2); // bottom2
+        layoutList << QRectF(-3,10,2,2); // top1
+        layoutList << QRectF(3,10,2,2); // top2
+        layoutList << QRectF(10,-3,2,2); // right1
+        layoutList << QRectF(10,3,2,2); // right2
+        layoutList << QRectF(-10,-3,2,2); // left1
+        layoutList << QRectF(-10,3,2,2); // left2
+      }
 
-        painter->save();
-        painter->setBrush(Qt::black);
 
-        for (int i = 0; i < unboundElectrons; i++)
-            painter->drawEllipse(layoutList[i]);
+      painter->save();
+      painter->setBrush(Qt::black);
 
-        painter->restore();
+      for (int i = 0; i < unboundElectrons; i++)
+        painter->drawEllipse(layoutList[i]);
+
+      painter->restore();
     }
-
   }
 
   QVariant Atom::itemChange(GraphicsItemChange change, const QVariant &value)
@@ -545,6 +630,7 @@ namespace Molsketch {
     m_elementSymbol = element;
     prepareGeometryChange();
     computeBoundingRect();
+    molecule()->invalidateElectronSystems();
   }
 
   void Atom::setNumImplicitHydrogens(int number)

@@ -1,5 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2007-2008 by Harm van Eersel                            *
+ *   Copyright (C) 2009 by Tim Vandermeersch                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -47,7 +48,7 @@ class SettingsDialog : public QDialog
      *
      * @param scene the scene of which the settings should be edited
      */
-    SettingsDialog(QSettings* settings, QWidget * parent = 0, Qt::WindowFlags f = 0);
+    SettingsDialog(QWidget * parent = 0, Qt::WindowFlags f = 0);
     /** Destructor of the dialog. */
     ~SettingsDialog();
 

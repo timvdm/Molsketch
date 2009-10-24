@@ -1,6 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2007 by Harm van Eersel                                 *
- *   devsciurus@xs4all.nl                                                  *
+ *   Copyright (C) 2009 by Tim Vandermeersch                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -49,7 +49,7 @@ namespace Molsketch {
   class Bond;
   class Ring;
   class MolScene;
-  //class ElectronSystem; under construction
+  class ElectronSystem; // under construction
 
 /**
  * Represents a molecule on the scene. It can be created either as an empty molecule, 
@@ -166,7 +166,9 @@ class Molecule : public QGraphicsItemGroup
     /** Returns a pointer to the bond between @p atomA and @p atomB, or a NULL if none. */
     Bond* bondBetween(Atom* atomA, Atom* atomB) const;
 
-    /** Returns @c true if the molecule exists of two seperate submolecules, and @c false otherwise. */
+    /**
+     * @return @c true if the molecule exists of two seperate submolecules, and @c false otherwise.
+     */
     bool canSplit() const;
 
     /** 
@@ -178,7 +180,13 @@ class Molecule : public QGraphicsItemGroup
      */
     const QList<Bond*>& bonds() const;
 	  
-	const QList <Ring*>& rings () const{return m_rings;};
+    /**
+     * Get a list of the rings in the molecule.
+     */
+    const QList<Ring*>& rings() const
+    {
+      return m_rings;
+    }
 
 
     /** Returns the MolScene of the molecule. */
@@ -201,6 +209,7 @@ class Molecule : public QGraphicsItemGroup
     OpenBabel::OBMol* OBMol() const;
     void perceiveRings();
 
+
     /**
      * Read Molecule data from the specified XML stream.
      */
@@ -209,6 +218,12 @@ class Molecule : public QGraphicsItemGroup
      * Write this Molecule to the specified XML stream.
      */
     void writeXML(QXmlStreamWriter &xml);
+
+    /**
+     * Invalidate the electron systems. To be called when Atom/Bond properties
+     * change.
+     */
+    void invalidateElectronSystems();
 
 
   protected:
@@ -228,9 +243,11 @@ class Molecule : public QGraphicsItemGroup
     * 1. create a SigmaElectrons instance for each bond
     * 2. create a PiElectrons instance for each 
     */
-   //void updateElectronSystems();
-   //void invalidateElectronSystems();
-   //QList<ElectronSystem*> m_electronSystems;
+   void updateElectronSystems();
+   
+   bool m_electronSystemsUpdate;
+   QList<ElectronSystem*> m_electronSystems;
+
 
 
   private:

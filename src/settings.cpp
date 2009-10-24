@@ -1,5 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2007-2008 by Harm van Eersel                            *
+ *   Copyright (C) 2009 by Tim Vandermeersch                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -31,7 +32,7 @@
 #include "settings.h"
 #include "molscene.h"
 
-SettingsDialog::SettingsDialog(QSettings* settings, QWidget * parent, Qt::WindowFlags f ) : QDialog(parent,f), m_settings(settings)
+SettingsDialog::SettingsDialog(QWidget * parent, Qt::WindowFlags f ) : QDialog(parent,f)
 {
   // Setup the user interface
   ui.setupUi(this);
@@ -54,9 +55,7 @@ SettingsDialog::SettingsDialog(QSettings* settings, QWidget * parent, Qt::Window
   ui.labelDefaultImageType->setText(tr("Default image type"));
 
   ui.groupBoxAtom->setTitle(tr("Atom settings"));
-  ui.checkBoxAutoHydrogen->setText(tr("Automaticly add hydrogens"));
   ui.checkBoxShowCarbon->setText(tr("Show neutral carbon atoms"));
-  ui.checkBoxShowHydrogen->setText(tr("Show neutral hydrogen atoms"));
   ui.checkBoxShowValency->setText(tr("Show atom charge"));
   ui.labelAtomSymbolFont->setText(tr("Atom symbol font"));
 
@@ -81,21 +80,27 @@ SettingsDialog::~ SettingsDialog( )
 
 void SettingsDialog::setInitialValues()
 {
-  ui.spinBoxAutoSave->setValue(m_settings->value("auto-save-time", 300000).toInt()/60000);
+  QSettings settings;
+  ui.spinBoxAutoSave->setValue(settings.value("auto-save-time", 300000).toInt()/60000);
 
-  if (m_settings->value("auto-add-hydrogen", true).toBool()) ui.checkBoxAutoHydrogen->setCheckState(Qt::Checked);
-  if (m_settings->value("carbon-visble", false).toBool()) ui.checkBoxShowCarbon->setCheckState(Qt::Checked);
-  if (m_settings->value("hydrogen-visible", true).toBool()) ui.checkBoxShowHydrogen->setCheckState(Qt::Checked);
-  if (m_settings->value("charge-visible", true).toBool()) ui.checkBoxShowValency->setCheckState(Qt::Checked);
-  ui.doubleSpinBoxFontSize->setValue((m_settings->value("atom-symbol-font").value<QFont>()).pointSizeF());
-  ui.fontComboBox->setCurrentFont(m_settings->value("atom-symbol-font").value<QFont>());
 
-  ui.lineEditBondLength->setText(QString::number(m_settings->value("bond-length", 40).toDouble()));
-  ui.doubleSpinBoxBondWidth->setValue(m_settings->value("bond-width", 1).toDouble());
-  ui.spinBoxBondAngle->setValue(m_settings->value("bond-angle", 30).toInt());
+  if (settings.value("carbon-visible", false).toBool())
+    ui.checkBoxShowCarbon->setCheckState(Qt::Checked);
+  if (settings.value("charge-visible", true).toBool())
+    ui.checkBoxShowValency->setCheckState(Qt::Checked);
+  if (settings.value("electronSystems-visible", true).toBool())
+    ui.checkBoxShowES->setCheckState(Qt::Checked);
 
-  ui.lineEditLibraryPath->setText(m_settings->value("library-path", "/usr/share/molsketch/library/").toString());
-  ui.lineEditCustomLibraryPath->setText(m_settings->value("custom-library-path", QDir::homePath()).toString());
+
+  ui.doubleSpinBoxFontSize->setValue((settings.value("atom-symbol-font").value<QFont>()).pointSizeF());
+  ui.fontComboBox->setCurrentFont(settings.value("atom-symbol-font").value<QFont>());
+
+  ui.lineEditBondLength->setText(QString::number(settings.value("bond-length", 40).toDouble()));
+  ui.doubleSpinBoxBondWidth->setValue(settings.value("bond-width", 1).toDouble());
+  ui.spinBoxBondAngle->setValue(settings.value("bond-angle", 30).toInt());
+
+  ui.lineEditLibraryPath->setText(settings.value("library-path", "/usr/share/molsketch/library/").toString());
+  ui.lineEditCustomLibraryPath->setText(settings.value("custom-library-path", QDir::homePath()).toString());
 }
 
 void SettingsDialog::accept()
@@ -109,27 +114,27 @@ void SettingsDialog::accept()
 
 void SettingsDialog::applyChanges()
 {
+  QSettings settings;
   // General settings
-  m_settings->setValue("auto-save-time", ui.spinBoxAutoSave->value()*60000);
+  settings.setValue("auto-save-time", ui.spinBoxAutoSave->value()*60000);
 
   // Atom settings
-  m_settings->setValue("auto-add-hydrogen", ui.checkBoxAutoHydrogen->isChecked());
-  m_settings->setValue("carbon-visible", ui.checkBoxShowCarbon->isChecked());
-  m_settings->setValue("hydrogen-visible", ui.checkBoxShowHydrogen->isChecked());
-  m_settings->setValue("charge-visible", ui.checkBoxShowValency->isChecked());
+  settings.setValue("carbon-visible", ui.checkBoxShowCarbon->isChecked());
+  settings.setValue("charge-visible", ui.checkBoxShowValency->isChecked());
+  settings.setValue("electronSystems-visible", ui.checkBoxShowES->isChecked());
   QFont font = ui.fontComboBox->currentFont();
   font.setPointSizeF(ui.doubleSpinBoxFontSize->value());
-  m_settings->setValue("atom-symbol-font", font);
+  settings.setValue("atom-symbol-font", font);
 
   // MsKBond settings
-  m_settings->setValue("bond-length", ui.lineEditBondLength->text().toDouble());
-  m_settings->setValue("bond-width", ui.doubleSpinBoxBondWidth->value());
-  m_settings->setValue("bond-angle", ui.spinBoxBondAngle->value());
+  settings.setValue("bond-length", ui.lineEditBondLength->text().toDouble());
+  settings.setValue("bond-width", ui.doubleSpinBoxBondWidth->value());
+  settings.setValue("bond-angle", ui.spinBoxBondAngle->value());
 
   // Library settings
   /* TODO check if the paths are valid */
-  m_settings->setValue("library-path", ui.lineEditLibraryPath->text());
-  m_settings->setValue("custom-library-path", ui.lineEditCustomLibraryPath->text());
+  settings.setValue("library-path", ui.lineEditLibraryPath->text());
+  settings.setValue("custom-library-path", ui.lineEditCustomLibraryPath->text());
 }
 
 void SettingsDialog::browseLibraryPath()

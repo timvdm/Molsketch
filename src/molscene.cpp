@@ -109,6 +109,7 @@ namespace Molsketch {
     m_carbonVisible = false;
     m_hydrogenVisible = true;
     m_chargeVisible = true;
+    m_electronSystemsVisible = false;
     m_autoAddHydrogen = true;
     m_renderMode = RenderLabels;
 

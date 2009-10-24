@@ -292,23 +292,24 @@ namespace Molsketch {
     }
 
     if (isSelected()) {
-      // draw square brackets around bond when selected
+      // draw square at the midpoint of the bond when selected
       painter->setPen(Qt::blue);
       QPointF begin = mapFromParent(m_beginAtom->pos());
       QPointF end = mapFromParent(m_endAtom->pos());
       QPointF vb = end - begin;
+      QPointF midPoint = begin + vb / 2;
       QPointF uvb = vb / sqrt(vb.x()*vb.x() + vb.y()*vb.y());
       QPointF orthogonal(uvb.y(), -uvb.x());
 
-      painter->drawLine(QLineF(begin + 10.0 * orthogonal, begin + 10.0 * orthogonal + 10.0 * uvb));
-      painter->drawLine(QLineF(begin - 10.0 * orthogonal, begin - 10.0 * orthogonal + 10.0 * uvb));
-      painter->drawLine(QLineF(begin + 10.0 * orthogonal, begin - 10.0 * orthogonal));
-      painter->drawLine(QLineF(end + 10.0 * orthogonal, end + 10.0 * orthogonal - 10.0 * uvb));
-      painter->drawLine(QLineF(end - 10.0 * orthogonal, end - 10.0 * orthogonal - 10.0 * uvb));
-      painter->drawLine(QLineF(end + 10.0 * orthogonal, end - 10.0 * orthogonal));
+      painter->drawLine(QLineF(midPoint + 5.0 * orthogonal - 5.0 * uvb, midPoint - 5.0 * orthogonal - 5.0 * uvb));
+      painter->drawLine(QLineF(midPoint + 5.0 * orthogonal + 5.0 * uvb, midPoint - 5.0 * orthogonal + 5.0 * uvb));
+
+      painter->drawLine(QLineF(midPoint + 5.0 * orthogonal + 5.0 * uvb, midPoint + 5.0 * orthogonal - 5.0 * uvb));
+      painter->drawLine(QLineF(midPoint - 5.0 * orthogonal + 5.0 * uvb, midPoint - 5.0 * orthogonal - 5.0 * uvb));
     }
 
 
+    //painter->drawPolygon(shape().toFillPolygon());
 
     // Restore old painter
     painter->restore();
@@ -345,6 +346,7 @@ namespace Molsketch {
     Q_ASSERT( order > 0 );
     m_bondOrder = order;
     molecule()->perceiveRings();
+    molecule()->invalidateElectronSystems();
     update();
   }
 

@@ -1,5 +1,4 @@
 # CMakeLists.txt for the main sourcecode of molsKetch
-
 cmake_policy(SET CMP0003 NEW)
 
 # Including qt4 and OpenBabel
