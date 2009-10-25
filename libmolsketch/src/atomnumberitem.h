@@ -16,28 +16,28 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef STEREOCENTERITEM_H
-#define STEREOCENTERITEM_H
+#ifndef ATOMNUMBERITEM_H
+#define ATOMNUMBERITEM_H
 
-#include <Molsketch/MolInputItem>
+#include <molsketch/molinputitem.h>
 
 namespace Molsketch {
 
   class Molecule;
 
-  class StereoCenterItem : public MolInputItem
+  class AtomNumberItem : public MolInputItem
   {
     public:
-      StereoCenterItem();
+      AtomNumberItem();
 
       QString input() const { return "Molecule"; }
-      QString output() const { return "Stereogenic Atoms"; }
+      QString output() const { return "Atom Numbers"; }
       QString label() const { return output(); }
+
       void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    private:
   };
 
-  ITEM_PLUGIN_FACTORY(StereoCenterItem, "Molecule", "Stereogenic Atoms")
+  ITEM_PLUGIN_FACTORY(AtomNumberItem, "Molecule", "Atom Numbers")
 
 }
 

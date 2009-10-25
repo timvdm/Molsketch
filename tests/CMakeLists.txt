@@ -2,7 +2,11 @@
 add_definitions(-DTESTDATADIR="\\"${CMAKE_SOURCE_DIR}/tests/files/\\"")
 include(${QT_USE_FILE})
 
-include_directories("${CMAKE_SOURCE_DIR}/include" ${CMAKE_CURRENT_BINARY_DIR})
+# Ensure the molsketch include directory is always first
+get_directory_property(tmp_include_dirs INCLUDE_DIRECTORIES)
+set_directory_properties(PROPERTIES INCLUDE_DIRECTORIES 
+    "${CMAKE_CURRENT_BINARY_DIR}/../libmolsketch/src/include;${tmp_include_dirs}")
+include_directories(${OPENBABEL2_INCLUDE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
 set(tests
     valence

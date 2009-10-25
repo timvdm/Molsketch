@@ -16,68 +16,66 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "smilesitem.h"
-#include "molscene.h"
-#include "mimemolecule.h"
+
+#include <molsketch/itemplugin.h>
 
 #include <QPainter>
-#include <QGraphicsSceneDragDropEvent>
-#include <QDebug>
+
 
 namespace Molsketch {
 
-  SmilesItem::SmilesItem() : ItemPlugin(), m_molecule(0), m_rect(QRectF(0, 0, 150, 100))
+  ItemPlugin::ItemPlugin()
   {
+    setAcceptDrops(true);
+    setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
   }
 
-  SmilesItem::~SmilesItem()
+  ItemPlugin::~ItemPlugin()
   {
   }
-
-  QRectF SmilesItem::boundingRect() const
+ 
+  void ItemPlugin::paintDefault(QPainter *painter)
   {
-    if (m_molecule)
-      return m_rect;
-    else
-      return defaultBoundingRect();
+    painter->drawRect(boundingRect());
+    QPen pen = painter->pen();
+    // draw connect symbol in the center
+    painter->drawLine(10, 0, 30, 0);
+    painter->drawEllipse(0, -5, 10, 10);
+    painter->drawLine(-30, 0, -10, 0);
+    painter->drawArc(-10, -10, 20, 20, 16 * 90, 16 * 180);
+    // draw input/output
+    painter->drawText(QRectF(-100, -50, 200, 20), Qt::AlignCenter, input());
+    painter->drawText(QRectF(-100, 30, 200, 20), Qt::AlignCenter, output());
+
   }
-
-  void SmilesItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+  
+  QRectF ItemPlugin::defaultBoundingRect() const
   {
-    Q_UNUSED(option);
-    Q_UNUSED(widget);
-
-    if (m_molecule) {
-      QFontMetrics fm = painter->fontMetrics();
-      QString smiles = m_molecule->smiles();
-      m_rect = QRectF(0, 0, fm.width(smiles), fm.height());
-      painter->drawText(m_rect, Qt::AlignCenter | Qt::TextDontClip, smiles);
-    } else {
-      paintDefault(painter);
+    return QRectF(-100, -50, 200, 100);
+  }
+      
+  ItemPlugin* ItemPluginFactory::createInstance(const QString &out)
+  {
+    foreach (ItemPluginFactory *plugin, instanceList()) {
+      if (plugin->output() == out)
+        return plugin->createInstance();    
     }
+  
+    return 0;
   }
 
-  void SmilesItem::dropEvent(QGraphicsSceneDragDropEvent *event)
+  QList<ItemPluginFactory*>& ItemPluginFactory::instanceList()
   {
-    const MimeMolecule *mimeMol = dynamic_cast<const MimeMolecule*>(event->mimeData());
-    if (!mimeMol)
-      return;
-
-    m_molecule = mimeMol->molecule();
-    QRectF rect = m_molecule->boundingRect();
-    setPos(rect.bottomLeft());
-
-    m_molecule->addToGroup(this);
-
-    if (scene())
-      scene()->update();
+    static QList<ItemPluginFactory*> list = QList<ItemPluginFactory*>();
+    return list;  
   }
 
-  SmilesItemFactory::SmilesItemFactory()
+  QStringList ItemPluginFactory::outputs()
   {
-    instanceList().append(this);
-    qDebug() << instanceList().size();
+    QStringList out;
+    foreach (ItemPluginFactory *plugin, instanceList())
+      out << plugin->output();
+    return out;        
   }
 
 }
-

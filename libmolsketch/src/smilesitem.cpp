@@ -16,29 +16,70 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef ATOMNUMBERITEM_H
-#define ATOMNUMBERITEM_H
+#include "smilesitem.h"
+#include "molscene.h"
+#include "mimemolecule.h"
 
-#include <Molsketch/MolInputItem>
+#include <QPainter>
+#include <QGraphicsSceneDragDropEvent>
+#include <QDebug>
 
 namespace Molsketch {
 
-  class Molecule;
-
-  class AtomNumberItem : public MolInputItem
+  SmilesItem::SmilesItem() : ItemPlugin(), m_molecule(0), m_rect(QRectF(0, 0, 150, 100))
   {
-    public:
-      AtomNumberItem();
+  }
 
-      QString input() const { return "Molecule"; }
-      QString output() const { return "Atom Numbers"; }
-      QString label() const { return output(); }
+  SmilesItem::~SmilesItem()
+  {
+  }
 
-      void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-  };
+  QRectF SmilesItem::boundingRect() const
+  {
+    if (m_molecule)
+      return m_rect;
+    else
+      return defaultBoundingRect();
+  }
 
-  ITEM_PLUGIN_FACTORY(AtomNumberItem, "Molecule", "Atom Numbers")
+  void SmilesItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+  {
+    Q_UNUSED(option);
+    Q_UNUSED(widget);
+
+    if (m_molecule) {
+      QFontMetrics fm = painter->fontMetrics();
+      QString smiles = m_molecule->smiles();
+      m_rect = QRectF(0, 0, fm.width(smiles), fm.height());
+      painter->drawText(m_rect, Qt::AlignCenter | Qt::TextDontClip, smiles);
+    } else {
+      paintDefault(painter);
+    }
+  }
+
+  void SmilesItem::dropEvent(QGraphicsSceneDragDropEvent *event)
+  {
+    const MimeMolecule *mimeMol = dynamic_cast<const MimeMolecule*>(event->mimeData());
+    if (!mimeMol)
+      return;
+
+    m_molecule = mimeMol->molecule();
+    QRectF rect = m_molecule->boundingRect();
+    setPos(rect.bottomLeft());
+
+    m_molecule->addToGroup(this);
+
+    if (scene())
+      scene()->update();
+  }
+
+  SmilesItemFactory::SmilesItemFactory()
+  {
+    instanceList().append(this);
+    qDebug() << instanceList().size();
+  }
+
+  SmilesItemFactory theSmilesItemFactory;
 
 }
 
-#endif // SMILESITEM_H

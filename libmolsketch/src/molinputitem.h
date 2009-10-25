@@ -19,7 +19,7 @@
 #ifndef MOLINPUTITEM_H
 #define MOLINPUTITEM_H
 
-#include <Molsketch/ItemPlugin>
+#include <molsketch/itemplugin.h>
 
 namespace Molsketch {
 

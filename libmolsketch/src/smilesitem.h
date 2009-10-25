@@ -1,5 +1,4 @@
 /***************************************************************************
- *   Copyright (C) 2007-2008 by Harm van Eersel                            *
  *   Copyright (C) 2009 Tim Vandermeersch                                  *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -17,43 +16,43 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#ifndef SMILESITEM_H
+#define SMILESITEM_H
 
+#include <molsketch/itemplugin.h>
 
-#include <QApplication>
-#include <QTranslator>
-#include <QLocale>
+namespace Molsketch {
 
-#include "mainwindow.h"
-  
-// @todo make this real plugins
-#include "smilesitem.h"
-const static Molsketch::SmilesItemFactory *smilesItemFactory = new Molsketch::SmilesItemFactory;
-#include "graphsymitem.h"
-const static Molsketch::GraphSymItemFactory *graphSymItemFactory = new Molsketch::GraphSymItemFactory;
-#include "atomnumberitem.h"
-const static Molsketch::AtomNumberItemFactory *atomNumberItemFactory = new Molsketch::AtomNumberItemFactory;
-#include "stereocenteritem.h"
-const static Molsketch::StereoCenterItemFactory *stereoCenterItemFactory = new Molsketch::StereoCenterItemFactory;
+  class Molecule;
 
+  class SmilesItem : public ItemPlugin
+  {
+    public:
+      SmilesItem();
+      virtual ~SmilesItem();
 
-int main(int argc, char *argv[])
-{
-  QApplication app(argc, argv);
+      QString input() const { return "Molecule"; }
+      QString output() const { return "SMILES"; }
 
-  QCoreApplication::setOrganizationName("SourceForge");
-  QCoreApplication::setOrganizationDomain("sourceforge.com");
-  QCoreApplication::setApplicationName("Molsetch");
+      QRectF boundingRect() const;
+      void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
+      void dropEvent(QGraphicsSceneDragDropEvent *event);
 
-  // Add support for i18n
-  QString locale = QLocale::system().name();
-  QTranslator translator;
-  translator.load(QString("molsketch_") + locale);
-  app.installTranslator(&translator);
+   private:
+      Molecule *m_molecule;
+      QRectF m_rect;
+  };
 
-  MainWindow window;
-  window.show();
+  class SmilesItemFactory : public ItemPluginFactory
+  {
+    public:
+      SmilesItemFactory();
+      QString input() const { return "Molecule"; }
+      QString output() const { return "SMILES"; }
+      ItemPlugin* createInstance() const { return new SmilesItem; }
+  };
 
-  return app.exec();
 }
 
+#endif // SMILESITEM_H

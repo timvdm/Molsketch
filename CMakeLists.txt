@@ -68,7 +68,13 @@ endif (EXISTS ${OPENBABEL2_INCLUDE_DIR}/openbabel/graphsym.h)
 # Optional KDE4 for "KDE Part"
 find_package(KDE4)
 
-add_subdirectory(src)
+add_subdirectory(libmolsketch)
+add_subdirectory(molsketch)
+#add_subdirectory(src)
+
+  
 if(ENABLE_TESTS)
   add_subdirectory(tests)
 endif(ENABLE_TESTS)
+
+

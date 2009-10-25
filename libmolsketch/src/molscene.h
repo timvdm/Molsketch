@@ -25,7 +25,7 @@
 #include <QGraphicsScene>
 #include <QUndoCommand>
 
-#include <Molsketch/Bond>
+#include <molsketch/bond.h>
 
 class QString;
 class QImage;

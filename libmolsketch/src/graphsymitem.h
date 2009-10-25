@@ -19,7 +19,7 @@
 #ifndef GRAPHSYMITEM_H
 #define GRAPHSYMITEM_H
 
-#include <Molsketch/MolInputItem>
+#include <molsketch/molinputitem.h>
 
 namespace Molsketch {
 

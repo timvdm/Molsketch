@@ -19,9 +19,9 @@
 #include <QObject>
 #include <QtTest>
 
-#include <Molsketch/Element>
-#include <Molsketch/Molecule>
-#include <Molsketch/Atom>
+#include <molsketch/element.h>
+#include <molsketch/molecule.h>
+#include <molsketch/atom.h>
 
 using namespace Molsketch;
 

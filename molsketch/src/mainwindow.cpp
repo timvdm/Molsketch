@@ -22,15 +22,16 @@
 #include <QAssistantClient>
 #include <QGridLayout>
 
-#include "molecule.h"
 #include "mainwindow.h"
-#include "molview.h"
-#include "molscene.h"
-#include "element.h"
-#include "fileio.h"
-#include "mollibitem.h"
 
-#include <Molsketch/ItemPlugin>
+#include <molsketch/molecule.h>
+#include <molsketch/molview.h>
+#include <molsketch/molscene.h>
+#include <molsketch/element.h>
+#include <molsketch/fileio.h>
+#include <molsketch/mollibitem.h>
+#include <molsketch/itemplugin.h>
+#include <molsketch/osra.h>
 
 #include <openbabel/mol.h>
 
@@ -40,7 +41,6 @@ using namespace OpenBabel;
 #include "settings.h"
 #include "drawwidget.h"
 
-#include "osra.h"
 
 #define PROGRAM_NAME "Molsketch"
 #define PROGRAM_VERSION "Helium"

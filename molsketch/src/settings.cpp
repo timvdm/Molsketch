@@ -30,7 +30,8 @@
 #include <QSettings>
 
 #include "settings.h"
-#include "molscene.h"
+
+#include <molsketch/molscene.h>
 
 SettingsDialog::SettingsDialog(QWidget * parent, Qt::WindowFlags f ) : QDialog(parent,f)
 {

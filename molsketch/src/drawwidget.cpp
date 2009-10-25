@@ -18,7 +18,8 @@
  ***************************************************************************/
 
 #include "drawwidget.h"
-#include "molscene.h"
+
+#include <molsketch/molscene.h>
 
 namespace Molsketch {
 
