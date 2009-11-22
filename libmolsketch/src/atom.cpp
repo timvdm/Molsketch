@@ -101,6 +101,7 @@ namespace Molsketch {
     m_drawn = false;
 
     m_userCharge = 0; // The initial additional charge is zero
+    m_userElectrons = 0;
     m_userImplicitHydrogens =  0;
     enableImplicitHydrogens(implicitHydrogens);
     computeBoundingRect();
@@ -678,34 +679,34 @@ namespace Molsketch {
       case 2:
       case 13:
       case 14:
-        return 0;
+        return 0 + m_userElectrons;
       case 15:
         if (boSum > 3)
-          return 0;
+          return 0 + m_userElectrons;
         else
-          return 2 + 3 - boSum;
+          return 2 + 3 - boSum + m_userElectrons;
       case 16:
         switch (boSum) {
           case 0:
-            return 6;
+            return 6 + m_userElectrons;
           case 1:
-            return 5;
+            return 5 + m_userElectrons;
           case 2:
-            return 4;
+            return 4 + m_userElectrons;
           case 3:
-            return 2;
+            return 2 + m_userElectrons;
           default:
-            return 0;
+            return 0 + m_userElectrons;
         }
       case 17:
         if (boSum == 1)
-          return 6;
+          return 6 + m_userElectrons;
         else
-          return 8;
+          return 8 + m_userElectrons;
       case 18:
-        return 8;
+        return 8 + m_userElectrons;
       default:
-        return 0;    
+        return 0 + m_userElectrons;
     }
   }
 

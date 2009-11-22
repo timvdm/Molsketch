@@ -116,6 +116,17 @@ namespace Molsketch {
        * FC = # valency electrons - 0.5 * # shared electrons - # unpaired electrons + user specified contribution
        */
       void setCharge(int charge);
+      /**
+       * @return The number of unpaired electrons (radicals).
+       */
+      int numUnpairedElectrons() const
+      {
+        return m_userElectrons;
+      }
+      void setNumUnpairedElectrons(int n)
+      {
+        m_userElectrons = n;
+      }
       /** 
        * Returns the string for the superscript charge (e.g. "3-", "2-", "-", "", "+", "2+", ...).
        */
@@ -219,6 +230,7 @@ namespace Molsketch {
       bool m_drawn;
       /** Stores the charge of the atom. */
       int m_userCharge;
+      int m_userElectrons;
 
       int m_number;
 	  
