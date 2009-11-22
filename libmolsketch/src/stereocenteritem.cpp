@@ -90,6 +90,7 @@ namespace Molsketch {
     MolInputItem::paint(painter, option, widget);
     painter->restore();
   }
-
+  
+  StereoCenterItemFactory theStereoCenterItemFactory;
 
 }

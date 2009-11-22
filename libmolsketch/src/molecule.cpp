@@ -28,6 +28,7 @@
 #include "ring.h"
 #include "molscene.h"
 #include "element.h"
+#include "math2d.h"
 
 #include "electronsystem.h"
 
@@ -37,204 +38,204 @@
 
 namespace Molsketch {
 
-// Constructors
+  // Constructors
 
-Molecule::Molecule(QGraphicsItem* parent, MolScene* scene) : QGraphicsItemGroup(parent,scene)
-{
-  m_electronSystemsUpdate = true;
-  // Setting properties
-  setFlags(QGraphicsItem::ItemIsFocusable);
-  setAcceptedMouseButtons(Qt::LeftButton|Qt::MidButton);
-  setAcceptsHoverEvents(true);
-  setHandlesChildEvents(false);
-  if (scene)
-    setFlag(QGraphicsItem::ItemIsSelectable, scene->editMode()==MolScene::MoveMode);
-}
-
-Molecule::Molecule(QSet<Atom*> atomSet, QSet<Bond*> bondSet, 
-  QGraphicsItem* parent, MolScene* scene) : QGraphicsItemGroup(parent,scene)
-{
-  m_electronSystemsUpdate = true;
-  // Setting properties
-  setFlags(QGraphicsItem::ItemIsFocusable);
-  setAcceptedMouseButtons(Qt::LeftButton|Qt::MidButton);
-  setAcceptsHoverEvents(true);
-  setHandlesChildEvents(false);
-  if (scene) setFlag(QGraphicsItem::ItemIsSelectable, scene->editMode()==MolScene::MoveMode);
-
-  // Add the new atoms
-	foreach(Atom* atom, atomSet) {
-		Atom *a = new Atom(atom->scenePos(), atom->element(), atom->hasImplicitHydrogens(), this);
-		a ->setColor (atom ->getColor ());
-    addAtom(a);
-	}
-
-  // ...and bonds
-	foreach(Bond* bond, bondSet) {
-	Bond *b = new Bond(atomAt(bond->beginAtom()->scenePos()),atomAt(bond->endAtom()->scenePos()),bond->bondOrder(),bond->bondType()); 
-	b ->setColor (bond ->getColor ());
-    addBond(b);
-	}
-}
-
-Molecule::Molecule(Molecule* mol, QGraphicsItem* parent, MolScene* scene) : QGraphicsItemGroup(parent,scene)
-{
-  m_electronSystemsUpdate = true;
-  // Setting properties
-  setFlags(QGraphicsItem::ItemIsFocusable);
-  setAcceptedMouseButtons(Qt::LeftButton|Qt::MidButton);
-  setAcceptsHoverEvents(true);
-  setHandlesChildEvents(false);
-  if (scene)
-    setFlag(QGraphicsItem::ItemIsSelectable, scene->editMode()==MolScene::MoveMode);
-
-  // Add the new atoms
-  foreach(Atom* atom, mol->atoms())
+  Molecule::Molecule(QGraphicsItem* parent, MolScene* scene) : QGraphicsItemGroup(parent,scene)
   {
-	  Atom *a = new Atom(atom->pos(),atom->element(), atom->hasImplicitHydrogens(), this);
-	  a ->setColor(atom ->getColor ());
-    addAtom(a);
+    m_electronSystemsUpdate = true;
+    // Setting properties
+    setFlags(QGraphicsItem::ItemIsFocusable);
+    setAcceptedMouseButtons(Qt::LeftButton|Qt::MidButton);
+    setAcceptsHoverEvents(true);
+    setHandlesChildEvents(false);
+    if (scene)
+      setFlag(QGraphicsItem::ItemIsSelectable, scene->editMode()==MolScene::MoveMode);
   }
-  // ...and bonds
-  foreach(Bond* bond, mol->bonds())
+
+  Molecule::Molecule(QSet<Atom*> atomSet, QSet<Bond*> bondSet,
+                     QGraphicsItem* parent, MolScene* scene) : QGraphicsItemGroup(parent,scene)
   {
-	  Bond *b = new Bond(atomAt(bond->beginAtom()->pos()),atomAt(bond->endAtom()->pos()),bond->bondOrder(),bond->bondType());
-	  b ->setColor (bond ->getColor ());
-	  addBond(b);
-  }
-  
-  // Set the position
-  setPos(mol->pos());
-}
+    m_electronSystemsUpdate = true;
+    // Setting properties
+    setFlags(QGraphicsItem::ItemIsFocusable);
+    setAcceptedMouseButtons(Qt::LeftButton|Qt::MidButton);
+    setAcceptsHoverEvents(true);
+    setHandlesChildEvents(false);
+    if (scene) setFlag(QGraphicsItem::ItemIsSelectable, scene->editMode()==MolScene::MoveMode);
 
-	void Molecule::numberAtoms () {
-		QList <Atom *> ats = atoms ();
-		for (int i = 0; i < ats.size (); i++) {
-			ats[i] ->setNumber(i);
-		}
-	}
+    // Add the new atoms
+    foreach(Atom* atom, atomSet) {
+      Atom *a = new Atom(atom->scenePos(), atom->element(), atom->hasImplicitHydrogens(), this);
+      a ->setColor (atom ->getColor ());
+      addAtom(a);
+    }
 
-// Manipulation methods
-
-Atom* Molecule::addAtom(const QString &element, const QPointF &point, bool implicitHydrogen, QColor c)
-{
-  //pre: element is a non-empty string and point is a valid position on the canvas in scene coordinates
-  Q_ASSERT(!element.isEmpty());
-  //post: an atom of element has been added to the molecule
-//   Atom* atom = new Atom(point,element,((element == "C") && !(scene()->getShowCarbon() ) || ((element == "H") && !(scene()->getShowHydrogen()))),this);
-  Atom* atom = new Atom(point,element,implicitHydrogen, this);
-	atom ->setColor (c);
-  return addAtom(atom);
-}
-
-Atom* Molecule::addAtom(Atom* atom)
-{
-  // pre: atom is a valid pointer to a atom
-  Q_CHECK_PTR(atom);
-
-  // Add the atom to the molecule
-  m_atomList.append(atom);
-  addToGroup(atom);
-	if (scene ()) {
-		atom ->setColor (dynamic_cast<MolScene *> (scene ()) ->color());
-	}
-
-//  /// Work-around qt-bug
-//   if (scene()) scene()->addItem(atom);
-  m_electronSystemsUpdate = true;
-
-  return atom;
-}
-
-Bond* Molecule::addBond(Atom* atomA, Atom* atomB, int order, int type, QColor c)
-{
-  //pre: atomA and atomB are existing different atoms in the molecule
-  Q_ASSERT (m_atomList.contains(atomA));
-  Q_ASSERT (m_atomList.contains(atomB));
-  //Q_ASSERT (atomA != atomB);
-  if (atomA == atomB)
-    return 0;
-
-  //post: a bond of type has been added between atomA and atomB
-
-  // Creating a new bond
-  Bond* bond = new Bond(atomA,atomB,order,static_cast<Bond::BondType>(type));
-	bond ->setColor(c);
-  return addBond(bond);
-}
-
-Bond* Molecule::addBond(Bond* bond)
-{
-  //pre(1): bond is a valid pointer to a bond
-  Q_CHECK_PTR(bond);
-  //pre(2): the bond is between two atoms of this molecule
-  Q_ASSERT(m_atomList.contains(bond->beginAtom()));
-  Q_ASSERT(m_atomList.contains(bond->endAtom()));
-
-	if (scene ())	bond ->setColor (dynamic_cast<MolScene *> (scene ()) ->color());
-  // Checking if and altering when a bond exists
-  Bond* bondX = bondBetween(bond->beginAtom(), bond->endAtom());
-	if (bondX) {
-		delete bond;
-		if (scene ())	bondX ->setColor (dynamic_cast<MolScene *> (scene ()) ->color());
-		return bondX;
-	}
-//   {
-//     bondX->incOrder();
-//     bondX->setType(bond->getType());
-//     return bondX;
-//   }
-
-  // Setting the valency
-  //bond->redoValency();
-
-  // Adding the bond the the molecule
-  m_bondList.append(bond);
-  addToGroup(bond);
-
-//  /// Work-around qt-bug
-//  if (scene()) scene()->addItem(bond);
-
-  m_electronSystemsUpdate = true;
-  perceiveRings();
-  return bond;
-}
-
-QList<Bond*> Molecule::delAtom(Atom* atom)
-{
-  //pre: atom is an existing atom in the molecule
-  Q_ASSERT(m_atomList.contains(atom));
-  
-  //post: atom has been removed from the molecule and all bonds to this atom have been removed
-  //ret: the former bonds of this atom
-
-  // Remove all connected bonds from the molecule
-  QList<Bond*> delList = bonds(atom);
-  foreach(Bond* bond, delList) {
-    //delBond(bond);
-    Q_ASSERT(m_bondList.contains(bond));
-    m_bondList.removeAll(bond);
-    removeFromGroup(bond);
-    Atom *begin = bond->beginAtom();
-    Atom *end = bond->beginAtom();
-    if (begin)
-      begin->removeBond(bond);
-    if (end)
-      end->removeBond(bond);
-    if (scene()) 
-      scene()->removeItem(bond);
+    // ...and bonds
+    foreach(Bond* bond, bondSet) {
+      Bond *b = new Bond(atomAt(bond->beginAtom()->scenePos()),atomAt(bond->endAtom()->scenePos()),bond->bondOrder(),bond->bondType());
+      b ->setColor (bond ->getColor ());
+      addBond(b);
+    }
   }
 
-  // Remove the atom
-  m_atomList.removeAll(atom);
-  removeFromGroup(atom);
-  if (scene()) 
-    scene()->removeItem(atom);
-  
-  m_electronSystemsUpdate = true;
-  // Return the list of bonds that were connected for undo
-  return delList;
-}
+  Molecule::Molecule(Molecule* mol, QGraphicsItem* parent, MolScene* scene) : QGraphicsItemGroup(parent,scene)
+  {
+    m_electronSystemsUpdate = true;
+    // Setting properties
+    setFlags(QGraphicsItem::ItemIsFocusable);
+    setAcceptedMouseButtons(Qt::LeftButton|Qt::MidButton);
+    setAcceptsHoverEvents(true);
+    setHandlesChildEvents(false);
+    if (scene)
+      setFlag(QGraphicsItem::ItemIsSelectable, scene->editMode()==MolScene::MoveMode);
+
+    // Add the new atoms
+    foreach(Atom* atom, mol->atoms())
+    {
+      Atom *a = new Atom(atom->pos(),atom->element(), atom->hasImplicitHydrogens(), this);
+      a ->setColor(atom ->getColor ());
+      addAtom(a);
+    }
+    // ...and bonds
+    foreach(Bond* bond, mol->bonds())
+    {
+      Bond *b = new Bond(atomAt(bond->beginAtom()->pos()),atomAt(bond->endAtom()->pos()),bond->bondOrder(),bond->bondType());
+      b ->setColor (bond ->getColor ());
+      addBond(b);
+    }
+
+    // Set the position
+    setPos(mol->pos());
+  }
+
+  void Molecule::numberAtoms () {
+    QList <Atom *> ats = atoms ();
+    for (int i = 0; i < ats.size (); i++) {
+      ats[i] ->setNumber(i);
+    }
+  }
+
+  // Manipulation methods
+
+  Atom* Molecule::addAtom(const QString &element, const QPointF &point, bool implicitHydrogen, QColor c)
+  {
+    //pre: element is a non-empty string and point is a valid position on the canvas in scene coordinates
+    Q_ASSERT(!element.isEmpty());
+    //post: an atom of element has been added to the molecule
+    //   Atom* atom = new Atom(point,element,((element == "C") && !(scene()->getShowCarbon() ) || ((element == "H") && !(scene()->getShowHydrogen()))),this);
+    Atom* atom = new Atom(point,element,implicitHydrogen, this);
+    atom ->setColor (c);
+    return addAtom(atom);
+  }
+
+  Atom* Molecule::addAtom(Atom* atom)
+  {
+    // pre: atom is a valid pointer to a atom
+    Q_CHECK_PTR(atom);
+
+    // Add the atom to the molecule
+    m_atomList.append(atom);
+    addToGroup(atom);
+    if (scene ()) {
+      atom ->setColor (dynamic_cast<MolScene *> (scene ()) ->color());
+    }
+
+    //  /// Work-around qt-bug
+    //   if (scene()) scene()->addItem(atom);
+    m_electronSystemsUpdate = true;
+
+    return atom;
+  }
+
+  Bond* Molecule::addBond(Atom* atomA, Atom* atomB, int order, int type, QColor c)
+  {
+    //pre: atomA and atomB are existing different atoms in the molecule
+    Q_ASSERT (m_atomList.contains(atomA));
+    Q_ASSERT (m_atomList.contains(atomB));
+    //Q_ASSERT (atomA != atomB);
+    if (atomA == atomB)
+      return 0;
+
+    //post: a bond of type has been added between atomA and atomB
+
+    // Creating a new bond
+    Bond* bond = new Bond(atomA,atomB,order,static_cast<Bond::BondType>(type));
+    bond ->setColor(c);
+    return addBond(bond);
+  }
+
+  Bond* Molecule::addBond(Bond* bond)
+  {
+    //pre(1): bond is a valid pointer to a bond
+    Q_CHECK_PTR(bond);
+    //pre(2): the bond is between two atoms of this molecule
+    Q_ASSERT(m_atomList.contains(bond->beginAtom()));
+    Q_ASSERT(m_atomList.contains(bond->endAtom()));
+
+    if (scene ())	bond ->setColor (dynamic_cast<MolScene *> (scene ()) ->color());
+    // Checking if and altering when a bond exists
+    Bond* bondX = bondBetween(bond->beginAtom(), bond->endAtom());
+    if (bondX) {
+      delete bond;
+      if (scene ())	bondX ->setColor (dynamic_cast<MolScene *> (scene ()) ->color());
+      return bondX;
+    }
+    //   {
+    //     bondX->incOrder();
+    //     bondX->setType(bond->getType());
+    //     return bondX;
+    //   }
+
+    // Setting the valency
+    //bond->redoValency();
+
+    // Adding the bond the the molecule
+    m_bondList.append(bond);
+    addToGroup(bond);
+
+    //  /// Work-around qt-bug
+    //  if (scene()) scene()->addItem(bond);
+
+    m_electronSystemsUpdate = true;
+    perceiveRings();
+    return bond;
+  }
+
+  QList<Bond*> Molecule::delAtom(Atom* atom)
+  {
+    //pre: atom is an existing atom in the molecule
+    Q_ASSERT(m_atomList.contains(atom));
+
+    //post: atom has been removed from the molecule and all bonds to this atom have been removed
+    //ret: the former bonds of this atom
+
+    // Remove all connected bonds from the molecule
+    QList<Bond*> delList = bonds(atom);
+    foreach(Bond* bond, delList) {
+      //delBond(bond);
+      Q_ASSERT(m_bondList.contains(bond));
+      m_bondList.removeAll(bond);
+      removeFromGroup(bond);
+      Atom *begin = bond->beginAtom();
+      Atom *end = bond->beginAtom();
+      if (begin)
+        begin->removeBond(bond);
+      if (end)
+        end->removeBond(bond);
+      if (scene())
+        scene()->removeItem(bond);
+    }
+
+    // Remove the atom
+    m_atomList.removeAll(atom);
+    removeFromGroup(atom);
+    if (scene())
+      scene()->removeItem(atom);
+
+    m_electronSystemsUpdate = true;
+    // Return the list of bonds that were connected for undo
+    return delList;
+  }
 
   void Molecule::delBond(Bond* bond)
   {
@@ -250,60 +251,43 @@ QList<Bond*> Molecule::delAtom(Atom* atom)
       begin->removeBond(bond);
     if (end)
       end->removeBond(bond);
- 
+
     // Removing the bond
     m_bondList.removeAll(bond);
     removeFromGroup(bond);
     if (scene()) 
       scene()->removeItem(bond);
 
-  m_electronSystemsUpdate = true;
+    m_electronSystemsUpdate = true;
     perceiveRings();
-//  bond->undoValency();
-//  /// Superseded by undo
-     //delete bond;
-     //bond = 0;
+    //  bond->undoValency();
+    //  /// Superseded by undo
+    //delete bond;
+    //bond = 0;
   }
 
-// void Molecule::addAutoAtom(Atom* startAtom)
-// {
-//   //pre: atom is part of the molecule
-//   //post: the molecule has a new atom with a bond to startAtom
-//   Q_ASSERT(m_atomList.contains(startAtom));
-//
-//     // Calculate a conveniant position
-//     QPointF pos;
-//     pos.setX( startAtom->pos().x() + 5 );
-//     pos.setY( startAtom->pos().y()  + 5 );
-//
-//     // Add a atom at this position
-//     Atom* endAtom = addAtom( scene()->curElement, pos);
-//     addBond( startAtom, endAtom );
-//
-// }
+  QList<Molecule*> Molecule::split()
+  {
+    //pre: CanSplit
+    //post:
+    //ret: a list with the two parts of the split molecule
 
-QList<Molecule*> Molecule::split()
-{
-  //pre: CanSplit
-  //post:
-  //ret: a list with the two parts of the split molecule
+    // Create the return list
+    QList<Molecule*> molList;
 
-  // Create the return list
-  QList<Molecule*> molList;
+    // Create sets with the bonds and molcules
+    QSet<Atom*> atomSet(m_atomList.toSet());
+    QSet<Bond*> bondSet(m_bondList.toSet());
+    QSet<Atom*> atomSubSet;
+    QSet<Bond*> bondSubSet;
 
-  // Create sets with the bonds and molcules
-  QSet<Atom*> atomSet(m_atomList.toSet());
-  QSet<Bond*> bondSet(m_bondList.toSet());
-  QSet<Atom*> atomSubSet;
-  QSet<Bond*> bondSubSet;
+    // Declarations
+    int lastSize;
+    Atom* atom;
+    Bond* bond;
 
-  // Declarations
-  int lastSize;
-  Atom* atom;
-  Bond* bond;
-
-  // Main loop
-  while (!atomSet.isEmpty())
+    // Main loop
+    while (!atomSet.isEmpty())
     {
       lastSize = 0;
       atomSubSet.clear();
@@ -313,16 +297,16 @@ QList<Molecule*> Molecule::split()
       atomSubSet << atomSet.toList().first();
 
       while (atomSubSet.size() != lastSize)
+      {
+        lastSize = atomSubSet.size();
+        foreach (atom,atomSubSet)
         {
-          lastSize = atomSubSet.size();
-          foreach (atom,atomSubSet)
-          {
-            foreach(bond,bondSet)
-              if (bond->hasAtom(atom)) bondSubSet << bond;
-            foreach(bond,bondSubSet)
-              atomSubSet << bond->beginAtom() << bond->endAtom();
-          }
+          foreach(bond,bondSet)
+            if (bond->hasAtom(atom)) bondSubSet << bond;
+          foreach(bond,bondSubSet)
+            atomSubSet << bond->beginAtom() << bond->endAtom();
         }
+      }
 
       atomSet -= atomSubSet;
       bondSet -= bondSubSet;
@@ -331,23 +315,23 @@ QList<Molecule*> Molecule::split()
 
     }
 
-  return molList;
+    return molList;
 
-}
+  }
 
 
 
-// Query methods
+  // Query methods
 
-	
+
   Atom* Molecule::atomN (const int n) const
   {
-		if (n>= 1 && n <= m_atomList.size ()) {
-			return m_atomList[n - 1];
-		}
-		return NULL;
-	}	
-	
+    if (n>= 1 && n <= m_atomList.size ()) {
+      return m_atomList[n - 1];
+    }
+    return NULL;
+  }
+
   Atom* Molecule::atomAt(const QPointF &pos) const
   {
     //pre: pos is a valid position on the canvas in scene coordinates
@@ -370,15 +354,15 @@ QList<Molecule*> Molecule::split()
     return 0;
   }
 
-// Atom* Molecule::atom(int id) const
-//   {   //pre: id does not exceed the number of atoms
-//     Q_ASSERT(id<m_atomList.size());
-//     //post: returns the i-th atom
-// 
-//     return m_atomList.at(id);
-//   }
+  // Atom* Molecule::atom(int id) const
+  //   {   //pre: id does not exceed the number of atoms
+  //     Q_ASSERT(id<m_atomList.size());
+  //     //post: returns the i-th atom
+  //
+  //     return m_atomList.at(id);
+  //   }
 
-Bond* Molecule::bondAt(const QPointF &pos) const
+  Bond* Molecule::bondAt(const QPointF &pos) const
   {
     //pre: pos is a valid position on the canvas in scene coordinates
     //post: return the first bond on position pos
@@ -390,14 +374,14 @@ Bond* Molecule::bondAt(const QPointF &pos) const
   }
 
 
-// Bond* Molecule::bond(int id) const
-// {
-//     //pre: id does not exceed the number of atoms
-//     Q_ASSERT(0 <= id && id < m_bondList.size());
-//     //post: returns the i-th atom
-//
-//     return m_bondList.at(id);
-// }
+  // Bond* Molecule::bond(int id) const
+  // {
+  //     //pre: id does not exceed the number of atoms
+  //     Q_ASSERT(0 <= id && id < m_bondList.size());
+  //     //post: returns the i-th atom
+  //
+  //     return m_bondList.at(id);
+  // }
 
   const QList<Atom*>& Molecule::atoms() const
   {
@@ -423,7 +407,7 @@ Bond* Molecule::bondAt(const QPointF &pos) const
     return totalCharge < 0 && scene()->autoAddHydrogen() ? 0 : totalCharge;
   }
 
-QString Molecule::formula( ) const
+  QString Molecule::formula( ) const
   {
     //pre: true
     //ret: formula of the molecule
@@ -434,7 +418,7 @@ QString Molecule::formula( ) const
     // Analyse the molecule and create a hash with the atoms
     QHash<QString,int> hash;
 
-//     for (int i = 0; i < countAtoms(); i++)
+    //     for (int i = 0; i < countAtoms(); i++)
     foreach(Atom* atom, m_atomList)
     {
       QString element = atom->element();
@@ -458,13 +442,13 @@ QString Molecule::formula( ) const
 
     // Then other elements
     while (i.hasNext())
+    {
+      i.next();
+      if (!(i.key() == "C" || i.key() ==  "N"  || i.key() ==  "H") )
       {
-        i.next();
-        if (!(i.key() == "C" || i.key() ==  "N"  || i.key() ==  "H") )
-          {
-            formula += i.key() + (i.value() > 1?formula.number(i.value()):"" );
-          }
+        formula += i.key() + (i.value() > 1?formula.number(i.value()):"" );
       }
+    }
 
     // Finally Hydrogen
     if (hash.contains("H"))
@@ -474,7 +458,7 @@ QString Molecule::formula( ) const
     return formula;
   }
 
-double Molecule::weight( ) const
+  double Molecule::weight( ) const
   {
     //pre: true
     //ret: weigth of the molecule
@@ -489,7 +473,7 @@ double Molecule::weight( ) const
     return weight;
   }
 
-QString Molecule::chargeID( ) const
+  QString Molecule::chargeID( ) const
   {
     //pre: true
     //ret: textual representation of the charge of the molecule
@@ -507,7 +491,7 @@ QString Molecule::chargeID( ) const
     return chargeId;
   }
 
-bool Molecule::canSplit() const
+  bool Molecule::canSplit() const
   {
     /// TODO Needs improvement
     // Create the return list
@@ -533,16 +517,16 @@ bool Molecule::canSplit() const
     atomSubSet << atomSet.toList().first();
 
     while (atomSubSet.size() != lastSize)
+    {
+      foreach (atom,atomSubSet)
       {
-        foreach (atom,atomSubSet)
-        {
-          lastSize = atomSubSet.size();
-          foreach(bond,bondSet)
-            if (bond->hasAtom(atom)) bondSubSet << bond;
-          foreach(bond,bondSubSet)
-            atomSubSet << bond->beginAtom() << bond->endAtom();
-        }
+        lastSize = atomSubSet.size();
+        foreach(bond,bondSet)
+          if (bond->hasAtom(atom)) bondSubSet << bond;
+        foreach(bond,bondSubSet)
+          atomSubSet << bond->beginAtom() << bond->endAtom();
       }
+    }
 
     atomSet -= atomSubSet;
     bondSet -= bondSubSet;
@@ -550,22 +534,22 @@ bool Molecule::canSplit() const
     return !atomSet.isEmpty();
   }
 
-QVariant Molecule::itemChange(GraphicsItemChange change, const QVariant &value)
-{
+  QVariant Molecule::itemChange(GraphicsItemChange change, const QVariant &value)
+  {
     if (change == ItemTransformHasChanged) rebuild();
 
     return QGraphicsItem::itemChange(change, value);
-}
+  }
 
-void Molecule::rebuild()
-{
-  //pre: true
-  //post: the molecule has been rebuild
+  void Molecule::rebuild()
+  {
+    //pre: true
+    //post: the molecule has been rebuild
 
-  // Remove and then readd all elements
-  prepareGeometryChange();
+    // Remove and then readd all elements
+    prepareGeometryChange();
 
-  /*
+    /*
   foreach(Bond* bond, m_bondList) 
     removeFromGroup(bond);
   foreach(Atom* atom, m_atomList) 
@@ -576,52 +560,52 @@ void Molecule::rebuild()
   foreach(Bond* bond, m_bondList) 
     addToGroup(bond);
     */
-  update();
-  
-}
+    update();
+
+  }
 
 
-Bond* Molecule::bondBetween(Atom* atomA, Atom* atomB) const
-{
-//     for (int i = 0; i < countBonds(); i++)
-  foreach(Bond* bond, m_bondList)
-    if (((bond->beginAtom() == atomA) || (bond->beginAtom() == atomB )) && ((bond->endAtom() == atomA) || (bond->endAtom() == atomB )))
-      return bond;
+  Bond* Molecule::bondBetween(Atom* atomA, Atom* atomB) const
+  {
+    //     for (int i = 0; i < countBonds(); i++)
+    foreach(Bond* bond, m_bondList)
+      if (((bond->beginAtom() == atomA) || (bond->beginAtom() == atomB )) && ((bond->endAtom() == atomA) || (bond->endAtom() == atomB )))
+        return bond;
 
-  return 0;
-}
+    return 0;
+  }
 
-// Event handlers
+  // Event handlers
 
-// void Molecule::mouseReleaseEvent(QGraphicsSceneMouseEvent * event)
-// {
-// //   if (scene() && scene()->getEditMode()==MolScene::MoveMode)
-// //   {
-// //   setFlag(QGraphicsItem::ItemIsSelectable,false);
-// //    setSelected(true);
-// //    }
-//   QGraphicsItem::mouseReleaseEvent(event);
-// }
+  // void Molecule::mouseReleaseEvent(QGraphicsSceneMouseEvent * event)
+  // {
+  // //   if (scene() && scene()->getEditMode()==MolScene::MoveMode)
+  // //   {
+  // //   setFlag(QGraphicsItem::ItemIsSelectable,false);
+  // //    setSelected(true);
+  // //    }
+  //   QGraphicsItem::mouseReleaseEvent(event);
+  // }
 
-// void Molecule::mousePressEvent(QGraphicsSceneMouseEvent * event)
-// {
-// //     if (scene() && scene()->getEditMode()==MolScene::MoveMode)
-// //     {
-// //         setFlag(QGraphicsItem::ItemIsSelectable,true);
-// //         setSelected(true);
-// //     }
-// QGraphicsItem::mousePressEvent(event);
-// }
+  // void Molecule::mousePressEvent(QGraphicsSceneMouseEvent * event)
+  // {
+  // //     if (scene() && scene()->getEditMode()==MolScene::MoveMode)
+  // //     {
+  // //         setFlag(QGraphicsItem::ItemIsSelectable,true);
+  // //         setSelected(true);
+  // //     }
+  // QGraphicsItem::mousePressEvent(event);
+  // }
 
-// QVariant Molecule::itemChange(GraphicsItemChange change, const QVariant & value)
-// {
-// //     if (change == ItemSelectedChange && isSelected())
-// //     {
-// //         setFlag(QGraphicsItem::ItemIsSelectable,false);
-// //     }
-//
-//     return QGraphicsItem::itemChange(change, value);
-// }
+  // QVariant Molecule::itemChange(GraphicsItemChange change, const QVariant & value)
+  // {
+  // //     if (change == ItemSelectedChange && isSelected())
+  // //     {
+  // //         setFlag(QGraphicsItem::ItemIsSelectable,false);
+  // //     }
+  //
+  //     return QGraphicsItem::itemChange(change, value);
+  // }
 
   QList< Bond * > Molecule::bonds(const Atom * atom)
   {
@@ -634,19 +618,19 @@ Bond* Molecule::bondBetween(Atom* atomA, Atom* atomB) const
     return bondList;
   }
 
-void Molecule::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
-{
-  Q_UNUSED(option)
-  Q_UNUSED(widget)
+  void Molecule::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
+  {
+    Q_UNUSED(option)
+        Q_UNUSED(widget)
 
-  // draw a yellow rectangle if this molecule is selected
-  if(isSelected()) {
-    painter->setPen(Qt::blue);
-    //painter->setBrush(Qt::yellow);
-    //painter->setOpacity(0.2);
-    painter->drawRect(boundingRect());
-  }
-  /*
+        // draw a yellow rectangle if this molecule is selected
+        if(isSelected()) {
+      painter->setPen(Qt::blue);
+      //painter->setBrush(Qt::yellow);
+      //painter->setOpacity(0.2);
+      painter->drawRect(boundingRect());
+    }
+    /*
   if(hasFocus()) {
     painter->setBrush(Qt::yellow);
     painter->setPen(Qt::NoPen);
@@ -656,52 +640,110 @@ void Molecule::paint(QPainter * painter, const QStyleOptionGraphicsItem * option
   */
 
 
-  // draw the electron systems
+    // draw the electron systems
 
-  if (scene()) {
-    if (!scene()->electronSystemsVisible())
-      return;
+    if (scene()) {
+      if (!scene()->electronSystemsVisible())
+        return;
 
-    updateElectronSystems();
-    QPen pen = painter->pen();
-    pen.setWidth(10);
-    pen.setCapStyle(Qt::RoundCap);
-    pen.setColor(QColor(255, 200, 0));
-    painter->setPen(pen);
-    //  painter->setOpacity(0.3);
+      updateElectronSystems();
+      QPen pen = painter->pen();
+      pen.setWidth(10);
+      pen.setCapStyle(Qt::RoundCap);
+      pen.setColor(QColor(255, 200, 0));
+      painter->setPen(pen);
+      //  painter->setOpacity(0.3);
 
-    foreach (ElectronSystem *es, m_electronSystems) {
-      QPointF midPoint(0.0, 0.0);
+      QList<Atom*> doneList;
 
-      foreach (Atom *a, es->atoms()) {
-        foreach (Atom *b, es->atoms()) {
-          if (bondBetween(a, b))
-            painter->drawLine(a->scenePos(), b->scenePos());
-          //          painter->drawEllipse(atom->scenePos(), 5, 5);
+      foreach (ElectronSystem *es, m_electronSystems) {
+        QPointF midPoint(0.0, 0.0);
+
+        if (es->atoms().size() == 1) {
+          QPointF dir(0.0, 0.0), orthogonal;
+          Atom *atom = es->atoms().at(0);
+          doneList.append(atom);
+          foreach (Atom *nbr, atom->neighbours())
+            dir += normalized(nbr->pos() - atom->pos());
+          dir /= atom->numBonds();
+          dir = normalized(dir);
+          if (!atom->numBonds()) {
+            dir = QPointF(0.0, 1.0);
+            orthogonal = QPointF(1.0, 0.0);
+          } else {
+            orthogonal = QPointF(dir.y(), -dir.x());
+          }
+          switch (doneList.count(atom)) {
+            case 1:
+              switch (atom->numBonds()) {
+                case 1:
+                  painter->drawEllipse(atom->scenePos() - 15 * orthogonal, 5, 5);
+                  break;
+                default:
+                  painter->drawEllipse(atom->scenePos() - 15 * dir, 5, 5);
+                  break;
+              }
+              break;
+            case 2:
+              switch (atom->numBonds()) {
+                case 1:
+                  painter->drawEllipse(atom->scenePos() + 15 * orthogonal, 5, 5);
+                  break;
+                default:
+                  painter->drawEllipse(atom->scenePos() + 15 * dir, 5, 5);
+                  break;
+              }
+              break;
+            case 3:
+              switch (atom->numBonds()) {
+                case 1:
+                  painter->drawEllipse(atom->scenePos() - 15 * dir, 5, 5);
+                  break;
+                default:
+                  painter->drawEllipse(atom->scenePos() - 15 * orthogonal, 5, 5);
+                  break;
+              }
+              break;
+            case 4:
+              painter->drawEllipse(atom->scenePos() - 15 * orthogonal, 5, 5);
+              break;
+            default:
+              painter->drawEllipse(atom->scenePos(), 5, 5);
+              break;
+
+          }
+
+        } else {
+          foreach (Atom *a, es->atoms()) {
+            foreach (Atom *b, es->atoms()) {
+              if (bondBetween(a, b))
+                painter->drawLine(a->scenePos(), b->scenePos());
+              //          painter->drawEllipse(atom->scenePos(), 5, 5);
+            }
+
+            midPoint += mapToParent(a->scenePos());
+          }
         }
 
-        midPoint += mapToParent(a->scenePos());
+        if (es->numAtoms() < 2)
+          continue;
+        midPoint /= es->numAtoms();
+
+        painter->save();
+        painter->setPen(Qt::black);
+        QPointF offset(20.0, 20.0);
+        painter->drawText(QRectF(midPoint - offset, midPoint + offset), Qt::AlignCenter, QString("%1pi").arg(es->numElectrons()));
+        painter->restore();
+
+
       }
-
-      if (es->numAtoms() < 2)
-        continue;
-      midPoint /= es->numAtoms();
-
-      painter->save();
-      painter->setPen(Qt::black);
-      QPointF offset(20.0, 20.0);
-      painter->drawText(QRectF(midPoint - offset, midPoint + offset), Qt::AlignCenter, QString("%1pi").arg(es->numElectrons()));
-      painter->restore();
-
-
     }
+
+
+
+
+
   }
-
-
-
-
-
-}
   
   QRectF Molecule::boundingRect() const
   {
@@ -740,24 +782,24 @@ void Molecule::paint(QPainter * painter, const QStyleOptionGraphicsItem * option
 
       // Setting bondtype
       switch (bond->bondType()) {
-        case Bond::Wedge:
-          flags |= OB_WEDGE_BOND;
-          break;
-        case Bond::InvertedWedge:
-          flags |= OB_WEDGE_BOND;
-          beginIdx = endIdx;
-          endIdx = swapIdx;
-          break;
-        case Bond::Hash:
-          flags |= OB_HASH_BOND;
-          break;
-        case Bond::InvertedHash:
-          flags |= OB_HASH_BOND;
-          beginIdx = endIdx;
-          endIdx = swapIdx;
-          break;
-        default:
-          break;
+      case Bond::Wedge:
+        flags |= OB_WEDGE_BOND;
+        break;
+      case Bond::InvertedWedge:
+        flags |= OB_WEDGE_BOND;
+        beginIdx = endIdx;
+        endIdx = swapIdx;
+        break;
+      case Bond::Hash:
+        flags |= OB_HASH_BOND;
+        break;
+      case Bond::InvertedHash:
+        flags |= OB_HASH_BOND;
+        beginIdx = endIdx;
+        endIdx = swapIdx;
+        break;
+      default:
+        break;
       }
       obmol->AddBond(beginIdx, endIdx, bond->bondOrder(), flags);
     }
@@ -863,7 +905,7 @@ void Molecule::paint(QPainter * painter, const QStyleOptionGraphicsItem * option
     }
 
   }
-    
+
   void Molecule::writeXML(QXmlStreamWriter &xml)
   {
     xml.writeStartElement("molecule");
@@ -906,17 +948,17 @@ void Molecule::paint(QPainter * painter, const QStyleOptionGraphicsItem * option
       xml.writeAttribute("colorG", QString::number(bond->getColor().green()));
       xml.writeAttribute("colorB", QString::number(bond->getColor().blue()));
       switch (bond->bondType()) {
-        case Bond::InvertedWedge:
-        case Bond::Wedge:
-          //xml.writeStartElement("bondStereo");
-          xml.writeTextElement("bondStereo", "W");
-          break;
-        case Bond::InvertedHash:
-        case Bond::Hash:
-          xml.writeTextElement("bondStereo", "H");
-          break;
-        default:
-          break;
+      case Bond::InvertedWedge:
+      case Bond::Wedge:
+        //xml.writeStartElement("bondStereo");
+        xml.writeTextElement("bondStereo", "W");
+        break;
+      case Bond::InvertedHash:
+      case Bond::Hash:
+        xml.writeTextElement("bondStereo", "H");
+        break;
+      default:
+        break;
       }
       xml.writeEndElement(); // bond
     }
@@ -946,7 +988,7 @@ void Molecule::paint(QPainter * painter, const QStyleOptionGraphicsItem * option
       if (ringBond->bondOrder() == 2)
         count++;
     }
-  
+
     return count;
   }
 
@@ -1012,7 +1054,7 @@ void Molecule::paint(QPainter * painter, const QStyleOptionGraphicsItem * option
     }
 
   }
-   
+
   QString Molecule::smiles() const
   {
     OpenBabel::OBConversion conv;
@@ -1048,12 +1090,12 @@ void Molecule::paint(QPainter * painter, const QStyleOptionGraphicsItem * option
     return result;
   }
 
-  bool merge(QList<ElectronSystem*> &electronSystems, ElectronSystem *es1, ElectronSystem *es2)
+  void merge(QList<ElectronSystem*> &electronSystems, ElectronSystem *es1, ElectronSystem *es2)
   {
     es1->setAtoms(es1->atoms() + es2->atoms());
     es1->setNumElectrons(es1->numElectrons() + es2->numElectrons());
     electronSystems.removeAll(es2);
-    delete es2; 
+    delete es2;
   }
   
   void Molecule::invalidateElectronSystems()
@@ -1096,7 +1138,7 @@ void Molecule::paint(QPainter * painter, const QStyleOptionGraphicsItem * option
       int unboundElectrons = atom->numNonBondingElectrons();
       QList<Atom*> atoms;
       atoms.append(atom);
- 
+
       for (int i = 2; i <= unboundElectrons; i+=2) {
         PiElectrons *piEle = new PiElectrons;
         piEle->setAtoms(atoms);
@@ -1134,7 +1176,7 @@ void Molecule::paint(QPainter * painter, const QStyleOptionGraphicsItem * option
 
 
     qDebug() << "# ElectronSystem =" << m_electronSystems.size();
-  
+
   }
 
 

@@ -24,6 +24,7 @@ set(libmolsketch_HDRS
     reactionarrowdialog.h
     mechanismarrowdialog.h
     molecule.h
+    mollibitem.h
     molscene.h
     molinputitem.h
     molview.h
@@ -81,12 +82,6 @@ set(libmolsketch_SRCS
     graphsymitem.cpp)
 
 
-#if (OPENBABEL2_TRUNK)
-#  set(libmolsketch_SRCS 
-#      ${libmolsketch_SRCS}
-#endif (OPENBABEL2_TRUNK)
-
-    
 file(GLOB molsketch_UIS "*.ui")
 message("UIS = ${molsketch_UIS}")
 qt4_automoc(${libmolsketch_HDRS})
@@ -95,7 +90,7 @@ qt4_wrap_ui(molsketch_UIS_H ${molsketch_UIS})
 
 
 # MOC-ing headers
-set(molsketch_LIB_MOC_HDRS molscene.h molview.h ${libmolsketch_HDRS})
+set(molsketch_LIB_MOC_HDRS ${libmolsketch_HDRS})
 set(molsketch_MOC_HDRS mainwindow.h settings.h drawwidget.h reactionarrowdialog.h mechanismarrowdialog.h)
 qt4_wrap_cpp(libmolsketch_SRCS ${molsketch_LIB_MOC_HDRS})
 

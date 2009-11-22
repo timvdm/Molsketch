@@ -993,15 +993,15 @@ namespace Molsketch {
           case MolScene::LassoMode:
             lassoModePress (event);
             break;
-	  case MolScene::TextMode:
-	    textModePress (event);
+          case MolScene::TextMode:
+            textModePress (event);
             break;
           case MolScene::ConnectMode:
             connectModePress(event);
             break;
           case MolScene::MinimiseMode:
             minimiseModePress (event);
-	    break;
+            break;
           case MolScene::ReactionMode:
             insertReactionArrow(event);
             break;

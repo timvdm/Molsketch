@@ -80,5 +80,6 @@ namespace Molsketch {
     painter->restore();
   }
 
+  GraphSymItemFactory theGraphSymItemFactory;
 
 }

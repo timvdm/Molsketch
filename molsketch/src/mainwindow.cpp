@@ -845,37 +845,8 @@ void MainWindow::createToolBoxes()
     }
 
 
-  // Composing draw options toolbox
-  QHBoxLayout* hLayoutBS3 = new QHBoxLayout();
-  hLayoutBS3->addWidget(new QLabel("Bond angle"));
-  QSpinBox * spinBoxBondAngle = new QSpinBox;
-  spinBoxBondAngle->setValue(m_scene->bondAngle());
-  spinBoxBondAngle->setMaximum(180);
-  spinBoxBondAngle->setSingleStep(6);
-  spinBoxBondAngle->setSuffix("∞");
-  connect(spinBoxBondAngle, SIGNAL(valueChanged(int)), m_scene, SLOT(setBondAngle(int)));
-  hLayoutBS3->addWidget(spinBoxBondAngle);
-
-  QHBoxLayout* hLayoutBS4 = new QHBoxLayout();
-  hLayoutBS4->addWidget(new QLabel("Bond length"));
-  QDoubleSpinBox * doubleSpinBoxBondLength = new QDoubleSpinBox;
-  doubleSpinBoxBondLength->setValue(m_scene->bondLength());
-  doubleSpinBoxBondLength->setMaximum(100);
-  doubleSpinBoxBondLength->setSingleStep(10);
-  doubleSpinBoxBondLength->setDecimals(0);
-  doubleSpinBoxBondLength->setSuffix("");
-  connect(doubleSpinBoxBondLength, SIGNAL(valueChanged(double)), m_scene, SLOT(setBondLength(double)));
-  hLayoutBS4->addWidget(doubleSpinBoxBondLength);
-
-  QVBoxLayout* vLayoutBS = new QVBoxLayout;
-  vLayoutBS->addLayout(hLayoutBS3);
-  vLayoutBS->addLayout(hLayoutBS4);
-
-  QGroupBox* groupBoxBondOptions = new QGroupBox("Bond options");
-  groupBoxBondOptions->setLayout(vLayoutBS);
 
   QVBoxLayout* vLayoutDS = new QVBoxLayout;
-  vLayoutDS->addWidget(groupBoxBondOptions);
 
   QFrame * frameDrawOptions = new QFrame;
   frameDrawOptions->setLayout(vLayoutDS);
