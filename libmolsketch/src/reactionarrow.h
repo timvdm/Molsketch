@@ -20,11 +20,12 @@
 #define REACTIONARROW_H
 
 #include "graphicsitemtypes.h"
+#include <QXmlStreamWriter>
 
 #include <QGraphicsItemGroup>
 
-class QXmlStreamReader;
-class QXmlStreamWriter;
+//class QCoreXmlStreamReader;
+//class QCoreXmlStreamWriter;
 
 namespace Molsketch {
 
