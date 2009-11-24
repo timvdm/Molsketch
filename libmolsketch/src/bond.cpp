@@ -155,11 +155,28 @@ namespace Molsketch {
     QPointF orthogonal(uvb.y(), -uvb.x());
     QPointF spacing = orthogonal * m_bondSpacing;
     QPointF offset = uvb * m_bondSpacing;
+
+    MolScene* molScene = dynamic_cast<MolScene*>(scene());
+    QPointF offset2 = 0.20 * uvb * molScene->bondLength();
+
     if (length(begin + spacing - center) > length(begin - spacing - center))
       spacing *= -1.0;
     
-    painter->drawLine(QLineF(begin, end));
-    painter->drawLine(QLineF(begin + spacing + offset, end + spacing - offset));
+    if (!m_beginAtom->hasLabel() && !m_endAtom->hasLabel()) {
+      // begin & end have no label
+      painter->drawLine(QLineF(begin, end));
+      painter->drawLine(QLineF(begin + spacing + offset, end + spacing - offset));
+    } else if (m_beginAtom->hasLabel() && m_endAtom->hasLabel()) {
+      painter->drawLine(QLineF(begin + offset2, end - offset2));
+      painter->drawLine(QLineF(begin + spacing + offset2, end + spacing - offset2));
+    } else if (m_beginAtom->hasLabel()) {
+      painter->drawLine(QLineF(begin + offset2, end));
+      painter->drawLine(QLineF(begin + spacing + offset2, end + spacing - offset));
+    } else if (m_endAtom->hasLabel()) {
+      painter->drawLine(QLineF(begin, end - offset2));
+      painter->drawLine(QLineF(begin + spacing + offset, end + spacing - offset2));
+    }
+
   }
 
   void Bond::drawHashBond(QPainter *painter, bool inverted)
