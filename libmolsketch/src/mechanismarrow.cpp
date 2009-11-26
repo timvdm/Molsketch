@@ -37,8 +37,19 @@ namespace Molsketch {
   {
     setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable);
     setAcceptsHoverEvents(true);
+    setZValue(1.0);
   }
   
+  MechanismArrow::MechanismArrow(QPointF c1, QPointF c2, QPointF endPoint) : m_p1(QPointF(0.0, 0.0)), m_p2(c1),
+      m_p3(c2), m_p4(endPoint), m_hoverP1(false), m_hoverP2(false), m_hoverP3(false), m_hoverP4(false),
+      m_arrowType(SingleArrowRight), m_dialog(0)
+  {
+    setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable);
+    setAcceptsHoverEvents(true);
+    setZValue(1.0);
+  }
+
+
   MechanismArrow::~MechanismArrow()
   {
     if (m_dialog)
@@ -55,16 +66,28 @@ namespace Molsketch {
     QRectF rect(-200,-200,400,400);
     rect = QRectF(m_p1, m_p3).normalized() | QRectF(m_p2, m_p4).normalized();
     return rect.adjusted(-10,-10,10,10);
+
+
+  }
+
+  QPainterPath MechanismArrow::shape() const
+  {
+    QPainterPath path;
+    path.addEllipse(m_p1, 5, 5);
+    path.addEllipse(m_p2, 5, 5);
+    path.addEllipse(m_p3, 5, 5);
+    path.addEllipse(m_p4, 5, 5);
+    return path;
   }
 
 
   void MechanismArrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
   {
     // draw the bounding rect if the arrow is selected
-    if (isSelected() && !m_hoverP1 && !m_hoverP2 && !m_hoverP3 && !m_hoverP4) {
+    if (isSelected()/* && !m_hoverP1 && !m_hoverP2 && !m_hoverP3 && !m_hoverP4*/) {
       painter->save();
       painter->setPen(Qt::blue);
-      painter->drawRect(boundingRect());
+      painter->drawRect(boundingRect().adjusted(1,1,-1,-1));
       painter->restore();
     }
 
@@ -238,8 +261,11 @@ namespace Molsketch {
 
   void MechanismArrow::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
   {
-
-
+    m_hoverP1 = false;
+    m_hoverP2 = false;
+    m_hoverP3 = false;
+    m_hoverP4 = false;
+    update();
   }
 
   void MechanismArrow::mousePressEvent(QGraphicsSceneMouseEvent *event)

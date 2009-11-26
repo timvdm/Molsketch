@@ -54,9 +54,14 @@ namespace Molsketch {
        * Default constructor.
        */
       MechanismArrow();
+      /**
+       * Constructor specifying @p c1, @p c2, @p endPoint.
+       */
+      MechanismArrow(QPointF c1, QPointF c2, QPointF endPoint);
       virtual ~MechanismArrow();
 
       QRectF boundingRect() const;
+      QPainterPath shape() const;
       void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
       void hoverEnterEvent(QGraphicsSceneHoverEvent *event);

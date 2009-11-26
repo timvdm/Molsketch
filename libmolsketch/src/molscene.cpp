@@ -576,6 +576,7 @@ namespace Molsketch {
     // hint molecule always starts as none
     m_hintMolecule = 0;
     m_hintMoleculeItems = 0;
+    m_mechanismArrowHint = 0;
 
     // Initialize hintline
     m_hintLine = new QGraphicsLineItem(QLineF(0,0,0,0));
@@ -1006,7 +1007,7 @@ namespace Molsketch {
             insertReactionArrow(event);
             break;
           case MolScene::MechanismMode:
-            insertMechanismArrow(event);
+            mechanismArrowPress(event);
             break;
           default:
             break;
@@ -1048,6 +1049,9 @@ namespace Molsketch {
       case MolScene::LassoMode:
         lassoModeMove(event);
         break;
+      case MolScene::MechanismMode:
+        mechanismArrowMove(event);
+        break;
     }
 
     // Execute default behavior
@@ -1083,6 +1087,9 @@ namespace Molsketch {
             textModeRelease (event);
           case MolScene::MinimiseMode:
             minimiseModeRelease (event);
+            break;
+          case MolScene::MechanismMode:
+            mechanismArrowRelease(event);
             break;
         }
     }
@@ -1834,6 +1841,96 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
     }
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+  //
+  // Mechanism Arrow Mode
+  //
+  //////////////////////////////////////////////////////////////////////////////
+
+
+  void MolScene::mechanismArrowPress(QGraphicsSceneMouseEvent *event)
+  {
+    QPointF downPos = event->buttonDownScenePos(event->button());
+
+    Atom *atom = atomAt(downPos);
+    Bond *bond = bondAt(downPos);
+
+    if (!atom && !bond) {
+      // insert a mechanism arrow in an empty space on the scene
+      MechanismArrow *arrow = new MechanismArrow;
+      m_stack->push(new AddItem(arrow, this));
+      arrow->setPos(downPos);
+    }
+
+    if (atom) {
+      // start a mechanism arrow from an atom
+      m_mechanismArrowHint = new QGraphicsLineItem(QLineF(atom->pos(), downPos));
+      m_mechanismArrowHint->setPen(QPen(Qt::gray));
+      addItem(m_mechanismArrowHint);
+    }
+
+    if (bond) {
+      // start a mechanism arrow from an atom
+      QPointF midPoint = (bond->beginAtom()->pos() + bond->endAtom()->pos()) / 2;
+      m_mechanismArrowHint = new QGraphicsLineItem(QLineF(midPoint, downPos));
+      m_mechanismArrowHint->setPen(QPen(Qt::gray));
+      addItem(m_mechanismArrowHint);
+    }
+  }
+
+  void MolScene::mechanismArrowMove(QGraphicsSceneMouseEvent *event)
+  {
+    if (!m_mechanismArrowHint)
+      return;
+
+    QPointF begin(m_mechanismArrowHint->line().x1(), m_mechanismArrowHint->line().y1());
+    QPointF end = event->scenePos();
+
+    m_mechanismArrowHint->setLine(QLineF(begin, end));
+  }
+
+  void MolScene::mechanismArrowRelease(QGraphicsSceneMouseEvent *event)
+  {
+    if (!m_mechanismArrowHint)
+      return;
+
+
+    QPointF begin(m_mechanismArrowHint->line().x1(), m_mechanismArrowHint->line().y1());
+    QPointF end = event->scenePos();
+
+    QPointF vb = end - begin;
+    QPointF uvb = vb / sqrt(vb.x()*vb.x() + vb.y()*vb.y());
+    QPointF orthogonal(uvb.y(), -uvb.x());
+
+    if (atomAt(begin) && atomAt(end)) {
+      QPointF c1 = (begin + end) / 2 + orthogonal * length(vb) / 3 - begin;
+
+      MechanismArrow *arrow = new MechanismArrow(c1 - 10 * uvb, c1 + 10 * uvb, vb - 20 * uvb);
+      m_stack->push(new AddItem(arrow, this));
+      arrow->setPos(begin + 10 * uvb + 10 * orthogonal);
+    } else if (bondAt(begin) && bondAt(end)) {
+      QPointF c1 = (begin + end) / 2 + orthogonal * length(vb) / 2 - begin;
+
+      MechanismArrow *arrow = new MechanismArrow(20 * orthogonal + vb / 2, 20 * orthogonal + vb / 2, vb);
+      m_stack->push(new AddItem(arrow, this));
+      arrow->setPos(begin + 10 * orthogonal);
+    } else {
+      QPointF c1 = (begin + end) / 2 + orthogonal * length(vb) / 2 - begin;
+
+      MechanismArrow *arrow = new MechanismArrow(35 * orthogonal, vb + 35 * orthogonal, vb);
+      m_stack->push(new AddItem(arrow, this));
+      arrow->setPos(begin + 10 * orthogonal);
+    }
+
+
+    // remove the hint line
+    removeItem(m_mechanismArrowHint);
+    delete m_mechanismArrowHint;
+    m_mechanismArrowHint = 0;
+  }
+
+
+
   void MolScene::insertReactionArrow(QGraphicsSceneMouseEvent *event)
   {
     QPointF downPos = event->buttonDownScenePos(event->button());
@@ -1842,13 +1939,26 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
     arrow->setPos(downPos);
   }
 
-  void MolScene::insertMechanismArrow(QGraphicsSceneMouseEvent *event)
-  {
-    QPointF downPos = event->buttonDownScenePos(event->button());
-    MechanismArrow *arrow = new MechanismArrow;
-    m_stack->push(new AddItem(arrow, this));
-    arrow->setPos(downPos);
-  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   void MolScene::keyPressEvent(QKeyEvent* keyEvent)
