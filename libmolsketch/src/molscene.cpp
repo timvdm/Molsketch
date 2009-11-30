@@ -53,6 +53,9 @@
 #include "reactionarrow.h"
 #include "mechanismarrow.h"
 
+#include "tool.h"
+#include "toolgroup.h"
+
 
 #include "minimise.h"
 #include "math2d.h"
@@ -82,10 +85,13 @@ namespace Molsketch {
 
   MolScene::MolScene(QObject* parent) : QGraphicsScene(parent)
   {
+    m_toolGroup = new ToolGroup(this);
+
     // Set the default color to black
     m_color = QColor(0, 0, 0);
     // Set the current rotation item to none
     m_rotationItem = NULL;
+
 
     // Create the TextInputItem that will be shown to edit text in the scene
     m_inputTextItem = new TextInputItem();
@@ -955,6 +961,10 @@ namespace Molsketch {
 
   void MolScene::mousePressEvent(QGraphicsSceneMouseEvent* event)
   {
+    m_toolGroup->activeTool()->mousePressEvent(event);
+    QGraphicsScene::mousePressEvent(event);
+    return;
+
     // Execute extended behavior depending on edit mode and mouse button
     switch (event->button()) {
       case Qt::RightButton:
@@ -1022,6 +1032,11 @@ namespace Molsketch {
 
   void MolScene::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
   {
+    m_toolGroup->activeTool()->mouseMoveEvent(event);
+    QGraphicsScene::mouseMoveEvent(event);
+    return;
+
+
     // Determine the right action
     if (m_hintMoleculeItems) {
       m_hintMoleculeItems->setPos(event->scenePos());
@@ -1061,6 +1076,10 @@ namespace Molsketch {
 
   void MolScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
   {
+    m_toolGroup->activeTool()->mouseReleaseEvent(event);
+    QGraphicsScene::mouseReleaseEvent(event);
+    return;
+
     // Determin the right action
     switch (event->button()) {
       case Qt::RightButton:

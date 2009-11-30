@@ -30,7 +30,26 @@ set(libmolsketch_HDRS
     molview.h
     osra.h
     residue.h
-    smilesitem.h)
+    smilesitem.h
+
+    tool.h
+    toolgroup.h
+    
+
+    tools/drawtool.h
+    tools/movetool.h
+    tools/lassotool.h
+    tools/rotatetool.h
+    tools/minimizetool.h
+    tools/connecttool.h
+    tools/chargetool.h
+    tools/hydrogentool.h
+    tools/electrontool.h
+    tools/reactionarrowtool.h
+    tools/mechanismarrowtool.h
+    
+    
+    )
 
 # Set up the include directory and symlink/copy all headers to it.
 # Note: Windows lacks symlinks and so the files must be copied.
@@ -79,7 +98,26 @@ set(libmolsketch_SRCS
     stereocenteritem.cpp
     reactionarrowdialog.cpp
     mechanismarrowdialog.cpp
-    graphsymitem.cpp)
+    graphsymitem.cpp
+    
+    
+    tool.cpp
+    toolgroup.cpp
+    
+    tools/drawtool.cpp
+    tools/movetool.cpp
+    tools/lassotool.cpp
+    tools/rotatetool.cpp
+    tools/minimizetool.cpp
+    tools/connecttool.cpp
+    tools/chargetool.cpp
+    tools/hydrogentool.cpp
+    tools/electrontool.cpp
+    tools/reactionarrowtool.cpp
+    tools/mechanismarrowtool.cpp
+   
+    
+    )
 
 
 file(GLOB molsketch_UIS "*.ui")

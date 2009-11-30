@@ -33,6 +33,9 @@
 #include <molsketch/itemplugin.h>
 #include <molsketch/osra.h>
 
+#include <molsketch/tool.h>
+#include <molsketch/toolgroup.h>
+
 #include <openbabel/mol.h>
 
 using namespace OpenBabel;
@@ -69,6 +72,30 @@ MainWindow::MainWindow()
   createToolBars();
   createStatusBar();
   initializeAssistant();
+
+  m_toolGroup = m_scene->toolGroup();
+  QList<Tool*> tools = m_toolGroup->tools();
+
+  /*
+  QToolBar *toolbar = addToolBar(tr("Tools"));
+  toolbar->setObjectName("drawToolBar"); // needed for saveState (window state)
+  toolbar->show();
+  */
+
+  QHash<QString, QToolBar*> toolbars;
+  foreach (Tool *tool, tools) {
+    foreach (QAction *action, tool->actions()) {
+      QString toolbarName = tool->toolbarName(action);
+
+      // create the toolbar if it doesn't exist already
+      if (!toolbars.contains(toolbarName)) {
+        toolbars[toolbarName] = addToolBar(toolbarName);
+        toolbars[toolbarName]->setObjectName(toolbarName); // needed for saveState (window state)
+      }
+
+      toolbars[toolbarName]->addAction(action);
+    }
+  }
 
   // Set icon
   QIcon icon;

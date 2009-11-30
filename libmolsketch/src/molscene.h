@@ -43,7 +43,8 @@ namespace Molsketch {
   class Atom;
   class Bond;
   class TextInputItem;
-  class MolLibItem;;
+  class MolLibItem;
+  class ToolGroup;
 
   class MolSceneOptions
   {
@@ -88,7 +89,9 @@ namespace Molsketch {
       };
 
       /**
-       * Creates a new MolScene with @p parent 
+       * Creates a new MolScene with @p toolGroup and @p parent. ToolGroup may be 0 if
+       * the scene is only used for rendering. When interactive behaviour is required,
+       * a ToolGroup should be created first.
        */
       MolScene(QObject* parent = 0);
       /** 
@@ -198,6 +201,11 @@ namespace Molsketch {
       /** Access to the stack */
       QUndoStack * stack();
 
+      ToolGroup* toolGroup() const
+      {
+        return m_toolGroup;
+      }
+
       // Advanced queries
       /** Returns the first molecule at position @p pos or NULL if none. */
       Molecule* moleculeAt(const QPointF &pos);
@@ -207,6 +215,9 @@ namespace Molsketch {
       Bond* bondAt(const QPointF &pos);
 
       bool textEditItemAt (const QPointF &pos) ;
+
+      /** Calculates the nearest magnetic point around @p curPos. */
+      QPointF nearestPoint(const QPointF &curPos);
 
     signals:
       /** Signal emitted if copy becomes available. */
@@ -347,8 +358,6 @@ namespace Molsketch {
       qreal m_tempRotateAngle;
 
       // Auxillary methods
-      /** Calculates the nearest magnetic point around @p curPos. */
-      QPointF nearestPoint(const QPointF &curPos);
       /** Returns the nearest grid point, starting from @p position. */
       QPointF toGrid(const QPointF &position);
       /** Returns the nearest rounded angle, starting from @p angle. */
@@ -367,6 +376,8 @@ namespace Molsketch {
       Bond::BondType m_bondType;
       /** Strores the bond angle. */
       int m_bondAngle;
+
+      ToolGroup *m_toolGroup;
 
       qreal m_atomSize; //!< Stores the current atom size.
       QFont m_atomSymbolFont; //!< Stores the current atomsymbol font.
