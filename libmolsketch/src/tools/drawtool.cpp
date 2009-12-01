@@ -190,6 +190,11 @@ namespace Molsketch {
 
   void DrawTool::mousePressEvent(QGraphicsSceneMouseEvent *event)
   {
+    if (event->button() == Qt::RightButton) {
+      delModePress(event);
+      return;
+    }
+
     // Get the position
     QPointF downPos = event->buttonDownScenePos(event->button());
     // Get pointer the undo stack
@@ -402,14 +407,141 @@ namespace Molsketch {
     scene()->update();
   }
 
+  void DrawTool::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+  {
+    switch (event->button()) {
+      case Qt::LeftButton:
+        this->addModeDoubleClick(event);
+        break;
+      case Qt::RightButton:
+        this->delModeDoubleClick(event);
+        break;
+      default:
+        break;
+    }
+  }
 
 
 
 
 
 
+  void DrawTool::addModeDoubleClick (QGraphicsSceneMouseEvent *event)
+  {
+    QUndoStack *stack = scene()->stack();
+    QPointF downPos = event->buttonDownScenePos(event->button());
+
+    qDebug() << "downPos = " << downPos;
+
+    //clicking on an atom spawns a new bond from that atom
+    if (scene()->atomAt (downPos)) {
+      QPointF new_atom_pos = downPos;
+      Atom *at1 = scene()->atomAt (downPos);
+      switch (at1 ->numBonds()) {
+        case 0:
+        {
+          qreal x = new_atom_pos.x ();
+          new_atom_pos.setX (x + m_bondLength);
+          break;
+        }
+        case 1:
+        {
+          Atom *at2 = at1 ->neighbours()[0];
+          if (at2 ->neighbours() .size ()< 2) {
+            QPointF v = downPos - at1 ->neighbours()[0] ->pos ();
+
+            QPointF rotated_v (v.x()*0.5 - v.y()*sqrt(3)*0.5, v.x()*0.5*sqrt(3) + v.y () *0.5);
+            qreal mod = sqrt (rotated_v.x()*rotated_v.x() + rotated_v.y()*rotated_v.y());
+            rotated_v *= m_bondLength/mod;
+            new_atom_pos = rotated_v + downPos;
+          } else {
+            Atom *at3 = at2 ->neighbours()[0];
+            if (at3 == at1) at3 = at2 ->neighbours()[1];
+            QPointF rotated_v = at2 ->pos () - at3 ->pos ();
+            qreal mod = sqrt (rotated_v.x()*rotated_v.x() + rotated_v.y()*rotated_v.y());
+            rotated_v *= m_bondLength/mod;
+
+            new_atom_pos = rotated_v + downPos;
+          }
+        }
+        break;
+        case 2:
+        {
+          Atom *n1 = at1 ->neighbours()[0];
+          Atom * n2 = at1 ->neighbours()[1];
+          QPointF v1 = n1 ->pos ();
+          QPointF v2 = n2 ->pos ();
+          QPointF v3 = v1 + v2;
+          QPointF v4 (v3.x () / 2, v3.y () / 2);
+          QPointF v5 =  at1 ->pos () - v4;
+          qreal mod = sqrt (v5.x()*v5.x() + v5.y()*v5.y());
+          v5 = QPointF (v5.x()/mod * m_bondLength, v5.y()/mod * m_bondLength);
+          new_atom_pos = v5 + at1->pos();
+        }
+        break;
+        default:
+        break;
+      }
+      if (new_atom_pos != downPos) {
+        stack->beginMacro("Add Bond");
+        Atom* atom = new Atom(new_atom_pos,m_currentElementSymbol,m_autoAddHydrogen);
+        stack->push(new AddAtom(atom,at1 ->molecule()));
+        Bond* bond = new Bond(at1,atom);
+        stack->push(new AddBond(bond));
+        for (int i = 0; i < m_bondOrder - 1; i++)
+          stack->push(new IncOrder(bond));
+
+        stack->push(new SetBondType(bond, m_bondType));
+        stack->endMacro();
+      }
+    }
 
 
+  }
+
+
+  void DrawTool::delModePress(QGraphicsSceneMouseEvent* event)
+  {
+    QUndoStack *stack = scene()->stack();
+    Atom* a = scene()->atomAt(event->scenePos());
+    Bond* b = scene()->bondAt(event->scenePos());
+    Molecule* mol;
+
+    // Look for atomclick
+    if (a)
+    {
+      mol = a->molecule();
+      stack->beginMacro(tr("removing atom"));
+      stack->push(new DelAtom(a));
+      if (mol->canSplit())
+        stack->push(new SplitMol(mol));
+      if (mol->atoms().isEmpty())
+        stack->push(new DelItem(mol));
+      stack->endMacro();
+      return;
+    }
+
+    // Look for bondclick
+    if (b)
+    {
+      mol = b->molecule();
+      stack->beginMacro(tr("removing bond"));
+      stack->push(new DelBond(b));
+      if (mol->canSplit())
+        stack->push(new SplitMol(mol));
+      stack->endMacro();
+      return;
+    }
+  }
+
+  void DrawTool::delModeDoubleClick( QGraphicsSceneMouseEvent * event )
+  {
+    QUndoStack *stack = scene()->stack();
+    Molecule* item = scene()->moleculeAt(event->scenePos());
+
+    if (item)
+      stack->push(new DelItem(item,tr("removing molecule")));
+  }
 
 
 

@@ -201,7 +201,7 @@ namespace Molsketch {
     QObject *sender = QObject::sender();
     QPushButton *button = qobject_cast<QPushButton*>(sender);
     QString text = button->text();
-    m_scene->setElement(text);
+    //m_scene->setElement(text);
     m_scene->setEditMode(MolScene::DrawMode);
 
     uncheckAtomButtons();
@@ -232,8 +232,8 @@ namespace Molsketch {
    
     if (!checkedBondButton()) {
       ui.buttonSingleBond->setChecked(true);
-      m_scene->setBondOrder(1);
-      m_scene->setBondType(Bond::InPlane);
+      //m_scene->setBondOrder(1);
+      //m_scene->setBondType(Bond::InPlane);
     }
     uncheckRingButtons();
     uncheckToolButtons();
@@ -252,13 +252,13 @@ namespace Molsketch {
 
   void DrawWidget::singleBondClicked()
   {
-    m_scene->setBondOrder(1);
-    m_scene->setBondType(Bond::InPlane);
+    //m_scene->setBondOrder(1);
+    //m_scene->setBondType(Bond::InPlane);
     m_scene->setEditMode(MolScene::DrawMode);
 
     if (!checkedAtomButton()) {
       ui.buttonC->setChecked(true);
-      m_scene->setElement("C");
+      //m_scene->setElement("C");
     }
     uncheckBondButtons();
     ui.buttonSingleBond->setChecked(true);
@@ -268,13 +268,13 @@ namespace Molsketch {
 
   void DrawWidget::doubleBondClicked()
   {
-    m_scene->setBondOrder(2);
-    m_scene->setBondType(Bond::InPlane);
+    //m_scene->setBondOrder(2);
+    //m_scene->setBondType(Bond::InPlane);
     m_scene->setEditMode(MolScene::DrawMode);
 
     if (!checkedAtomButton()) {
       ui.buttonC->setChecked(true);
-      m_scene->setElement("C");
+      //m_scene->setElement("C");
     }
     uncheckBondButtons();
     ui.buttonDoubleBond->setChecked(true);
@@ -284,13 +284,13 @@ namespace Molsketch {
 
   void DrawWidget::tripleBondClicked()
   {
-    m_scene->setBondOrder(3);
-    m_scene->setBondType(Bond::InPlane);  
+    //m_scene->setBondOrder(3);
+    //m_scene->setBondType(Bond::InPlane);
     m_scene->setEditMode(MolScene::DrawMode);
     
     if (!checkedAtomButton()) {
       ui.buttonC->setChecked(true);
-      m_scene->setElement("C");
+      //m_scene->setElement("C");
     }
     uncheckBondButtons();
     ui.buttonTripleBond->setChecked(true);
@@ -301,12 +301,12 @@ namespace Molsketch {
   void DrawWidget::wedgeBondClicked()
   {
     // also sets order
-    m_scene->setBondType(Bond::Wedge);
+    //m_scene->setBondType(Bond::Wedge);
     m_scene->setEditMode(MolScene::DrawMode);
  
     if (!checkedAtomButton()) {
       ui.buttonC->setChecked(true);
-      m_scene->setElement("C");
+      //m_scene->setElement("C");
     }
     uncheckBondButtons();
     ui.buttonWedge->setChecked(true);    
@@ -317,12 +317,12 @@ namespace Molsketch {
   void DrawWidget::hashBondClicked()
   {
     // also sets order
-    m_scene->setBondType(Bond::Hash);  
+    //m_scene->setBondType(Bond::Hash);
     m_scene->setEditMode(MolScene::DrawMode);
 
     if (!checkedAtomButton()) {
       ui.buttonC->setChecked(true);
-      m_scene->setElement("C");
+      //m_scene->setElement("C");
     }
     uncheckBondButtons();
     ui.buttonHash->setChecked(true);
@@ -333,12 +333,12 @@ namespace Molsketch {
   void DrawWidget::wedgeOrHashBondClicked()
   {
     // also sets order
-    m_scene->setBondType(Bond::WedgeOrHash);  
+    //m_scene->setBondType(Bond::WedgeOrHash);
     m_scene->setEditMode(MolScene::DrawMode);
     
     if (!checkedAtomButton()) {
       ui.buttonC->setChecked(true);
-      m_scene->setElement("C");
+      //m_scene->setElement("C");
     }
     uncheckBondButtons();
     ui.buttonWedgeOrHash->setChecked(true); 
@@ -349,12 +349,12 @@ namespace Molsketch {
   void DrawWidget::cisOrTransBondClicked()
   {
     // also sets order
-    m_scene->setBondType(Bond::CisOrTrans); 
+    //m_scene->setBondType(Bond::CisOrTrans);
     m_scene->setEditMode(MolScene::DrawMode);
 
     if (!checkedAtomButton()) {
       ui.buttonC->setChecked(true);
-      m_scene->setElement("C");
+      //m_scene->setElement("C");
     }
     uncheckBondButtons();
     ui.buttonCisOrTrans->setChecked(true);
@@ -370,7 +370,7 @@ namespace Molsketch {
   {
     uncheckAllButtons();
     ui.buttonRing3->setChecked(true);
-    m_scene->setHintRing(3);
+    //m_scene->setHintRing(3);
     m_scene->setEditMode(MolScene::DrawMode);
   }
 
@@ -378,7 +378,7 @@ namespace Molsketch {
   {
     uncheckAllButtons();
     ui.buttonRing4->setChecked(true);
-    m_scene->setHintRing(4);
+    //m_scene->setHintRing(4);
     m_scene->setEditMode(MolScene::DrawMode);
   }
   
@@ -386,7 +386,7 @@ namespace Molsketch {
   {
     uncheckAllButtons();
     ui.buttonRing5->setChecked(true);
-    m_scene->setHintRing(5);
+    //m_scene->setHintRing(5);
     m_scene->setEditMode(MolScene::DrawMode);
   }
   
@@ -394,7 +394,7 @@ namespace Molsketch {
   {
     uncheckAllButtons();
     ui.buttonRing6->setChecked(true);
-    m_scene->setHintRing(6);
+    //m_scene->setHintRing(6);
     m_scene->setEditMode(MolScene::DrawMode);
   }
   
@@ -402,7 +402,7 @@ namespace Molsketch {
   {
     uncheckAllButtons();
     ui.buttonRing7->setChecked(true);
-    m_scene->setHintRing(7);
+    //m_scene->setHintRing(7);
     m_scene->setEditMode(MolScene::DrawMode);
   }
   
@@ -410,7 +410,7 @@ namespace Molsketch {
   {
     uncheckAllButtons();
     ui.buttonRing8->setChecked(true);
-    m_scene->setHintRing(8);
+    //m_scene->setHintRing(8);
     m_scene->setEditMode(MolScene::DrawMode);
   }
   
@@ -418,7 +418,7 @@ namespace Molsketch {
   {
     uncheckAllButtons();
     ui.buttonRing5Arom->setChecked(true);
-    m_scene->setHintRing(5, true);
+    //m_scene->setHintRing(5, true);
     m_scene->setEditMode(MolScene::DrawMode);
   }
 
@@ -426,7 +426,7 @@ namespace Molsketch {
   {
     uncheckAllButtons();
     ui.buttonRing6Arom->setChecked(true);
-    m_scene->setHintRing(6, true);
+    //m_scene->setHintRing(6, true);
     m_scene->setEditMode(MolScene::DrawMode);
   }
   

@@ -21,6 +21,10 @@ namespace Molsketch {
   void Tool::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
   {
   }
+
+  void Tool::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+  {
+  }
       
   MolScene* Tool::scene() const
   {

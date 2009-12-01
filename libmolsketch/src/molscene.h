@@ -101,14 +101,9 @@ namespace Molsketch {
 
       void addResidue (QPointF pos = QPointF (0, 0), QString name = "");	
 
-      //adjust geometry
-      void minimiseAllMolecules ();
-      void minimiseMolecule (Molecule *mol);
-      void mirrorBondInMolecule (Molecule *mol, Bond *bo);
 
 
       QImage toImage (OpenBabel::OBMol *obmol);
-      Molecule *addAndMinimise (OpenBabel::OBMol *obmol);
       Molecule *toMol (OpenBabel::OBMol *obmol);
 
       // Queries
@@ -139,16 +134,7 @@ namespace Molsketch {
       }
       /** Returns @c true if hydrogens are automaticly added, return @c false otherwise. */
       bool autoAddHydrogen() const { return m_autoAddHydrogen; };
-      /** Returns the current bond length. */
-      qreal bondLength() const;
-      /** Returns the current bond width */
-      qreal bondWidth() const;
-      /** Returns the current bond angle. */
-      int bondAngle() const { return m_bondAngle; };
-      /** Returns the current bond order. */
-      int bondOrder() const { return m_bondOrder; };
-      /** Returns the current bond type. */
-      int bondType() const { return m_bondType; };
+
       /** Returns the current atom size. */
       qreal atomSize() const;
       /** Returns the current atomsymbol font */
@@ -195,8 +181,7 @@ namespace Molsketch {
       void setAtomSymbolFont(const QFont & font);
       /** Sets the atom size. */
       void setAtomSize(qreal size);
-      /** Merges @p molA and @p molB. Used two merge two molecules when connected with a bond. */
-      Molecule* merge(const Molecule* molA, const Molecule* molB);
+
 
       /** Access to the stack */
       QUndoStack * stack();
@@ -248,29 +233,10 @@ namespace Molsketch {
       void clear();
       /** Slot to set the edit mode to @p mode. */
       void setEditMode(int mode);
-      /** Slot to set the edit mode to increase/decrease charge mode */
-      void setChargeMode();
-      /** Slot to set the edit mode to increase/decrease hydrogen mode */
-      void setHydrogenMode();
       /** Slot to select all contents of the scene. */
       void selectAll();
-      /** 
-       * Slot to set the current element to the element of @p symbol. This will also set the editMode() to 
-       * DrawMode. If there exists a hint molecule, it will be deleted.
-       */
-      void setElement(const QString & symbol);
-      /** Sets the bond angle. */
-      void setBondAngle(int angle);
-      /** Sets the bond length. */
-      void setBondLength(double length);
-      /** Sets the bond width */
-      void setBondWidth(double width);
-      /** Sets the bond order. */
-      void setBondOrder(int order);
-      /** Sets the bond type. */
-      void setBondType(Bond::BondType type);
-      /** Slot to add a copy of molecule @p mol. */
-      //  void addMolecule(QListWidgetItem* mol);
+
+
       /** Slot to add a copy of molecule @p mol. */
       void addMolecule(Molecule* mol);
       /** Slot to align the molecules of the scene to the grid. */
@@ -280,23 +246,7 @@ namespace Molsketch {
       void convertImage();
 
 
-      /**
-       * Slot to set the current MolLibItem
-       */
-      void setHintMolecule(MolLibItem*);
-      /**
-       * Wrapper around setHintMolecule(MolLibItem*) slot.
-       */
-      void setHintMolecule(QListWidgetItem* mol);
 
-      /**
-       * Create a regular polygon shaped ring and make it the current hint molecule 
-       * (i.e. m_hintMoleculeItems or the gray molecule following the cursor). The 
-       * coordinates for the ring corners will be stored in m_hintRingPoints. This
-       * slot is meant to be connected to a widget specifying the ring size (e.g.
-       * buttons with icons, a QComboBox, ...).
-       */
-      void setHintRing(int ringSize, bool aromatic = false);
 
     protected:
       /** Generic event handler. Reimplementation for sceneChanged signals. */
@@ -316,20 +266,6 @@ namespace Molsketch {
 
       //void contextMenuEvent(Reason reason, );
 
-
-      /** Used for rotations. Stores the last vector from mouse pointer to center of rotation */
-      QPointF lastRotationVect;
-      QPointF  rotatePointAbs;
-      QPointF rotationCenter;
-
-
-      //lasso polygon
-      QVector <QPointF> m_lassoTrail;
-      QGraphicsPolygonItem *m_lassoPolygon;
-
-      //Item that is being rotated
-      QGraphicsItem *m_rotationItem;
-
     public:
       //item to accept input for text tool
       TextInputItem *m_inputTextItem;
@@ -340,42 +276,30 @@ namespace Molsketch {
     private:
 
       // Global properties
-      /** Contains the current element */
-      QString m_currentElementSymbol;
+
 
       // Hinting methods and properties
-      /** Shows a hintline from @p startPos to @p curPos. */
-      void setHintLine(const QPointF &startPos,const QPointF &curPos);
-      /** Hides the hintline. */
-      void removeHintLine();
-      /** Draws the dynamic grid around point @p curPos. */
-      void drawHintPoints(const QPointF &curPos );
-      /** Hides the dynamic grid. */
-      void removeHintPoints();
       /** Shows a highlight rectangle around @p item. */
       void setHoverRect( QGraphicsItem* item );
-      /** Stores the rotating angle during rotation*/
-      qreal m_tempRotateAngle;
 
       // Auxillary methods
       /** Returns the nearest grid point, starting from @p position. */
       QPointF toGrid(const QPointF &position);
-      /** Returns the nearest rounded angle, starting from @p angle. */
-      int toRoundedAngle(int angle);
+
 
       // Scene properties
       /** Stores the edit mode of the scene as an integer. */
       int m_editMode;
       /** Stores the current bond length. */
-      qreal m_bondLength;
+      //qreal m_bondLength;
       /** Stores the current bond width. */
-      qreal m_bondWidth;
+      //qreal m_bondWidth;
       /** Stores the current bond order. */
-      int m_bondOrder;
+      //int m_bondOrder;
       /** Stores the current bond type. */
-      Bond::BondType m_bondType;
+      //Bond::BondType m_bondType;
       /** Strores the bond angle. */
-      int m_bondAngle;
+      //int m_bondAngle;
 
       ToolGroup *m_toolGroup;
 
@@ -401,97 +325,25 @@ namespace Molsketch {
       QUndoStack * m_stack;
 
       // Event handlers
-      /** Event handler for mouse presses in add mode. */
-      void addModePress(QGraphicsSceneMouseEvent* event);
-      /** Event handler for double click in add mode. */
-      void addModeDoubleClick(QGraphicsSceneMouseEvent* event);
-      /** Event handler for mouse moves in add mode.*/
-      void addModeMove(QGraphicsSceneMouseEvent* event);
-      /** Event handler for mouse releases in add mode.*/
-      void addModeRelease(QGraphicsSceneMouseEvent* event);
-      /** Event handler for mouse doubleclicks in add mode.*/
-      void addModeDoubleRelease(QGraphicsSceneMouseEvent* event);
-      /** Event handler for mouse presses in charge mode. */
-      void chargeModePress(QGraphicsSceneMouseEvent* event);
-      /** Event handler for mouse presses in hydrogen mode. */
-      void hydrogenModePress(QGraphicsSceneMouseEvent* event);
-
-
-      /** Event handler for mouse presses in move mode. */
-      void moveModePress(QGraphicsSceneMouseEvent* event);
-      /** Event handler for mouse moves in move mode.*/
-      void moveModeMove(QGraphicsSceneMouseEvent* event);
-      /** Event handler for mouse releases in move mode.*/
-      void moveModeRelease(QGraphicsSceneMouseEvent* event);
 
       /** Event handler for mouse presses in text mode. */
       void textModePress(QGraphicsSceneMouseEvent* event);	
       /** Event handler for mouse releases in text mode. */
       void textModeRelease(QGraphicsSceneMouseEvent* event);
 
-      /** Event handler for mouse presses in minimise mode. */
-      void minimiseModePress(QGraphicsSceneMouseEvent* event);	
-      /** Event handler for mouse releases in minimise mode. */
-      void minimiseModeRelease(QGraphicsSceneMouseEvent* event);
 
-      /** Event handler for mouse presses in lasso mode. */
-      void lassoModePress(QGraphicsSceneMouseEvent* event);
-      /** Event handler for mouse moves in lasso mode.*/
-      void lassoModeMove(QGraphicsSceneMouseEvent* event);
-      /** Event handler for mouse releases in lasso mode.*/
-      void lassoModeRelease(QGraphicsSceneMouseEvent* event);
 
-      /** Event handler for mouse presses in rotate mode. */
-      void rotateModePress(QGraphicsSceneMouseEvent* event);
-      /** Event handler for mouse moves in rotate mode.*/
-      void rotateModeMove(QGraphicsSceneMouseEvent* event);
-      /** Event handler for mouse releases in rotate mode.*/
-      void rotateModeRelease(QGraphicsSceneMouseEvent* event);
 
-      /** Event handler for mouse presses in delete mode.*/
-      void delModePress(QGraphicsSceneMouseEvent* event);
-      /** Event handler for mouse double clicks in delete mode.*/
-      void delModeDoubleClick(QGraphicsSceneMouseEvent* event);
 
-      void connectModePress(QGraphicsSceneMouseEvent* event);
-      void insertReactionArrow(QGraphicsSceneMouseEvent* event);
 
-      void mechanismArrowPress(QGraphicsSceneMouseEvent* event);
-      void mechanismArrowMove(QGraphicsSceneMouseEvent* event);
-      void mechanismArrowRelease(QGraphicsSceneMouseEvent* event);
-      QGraphicsLineItem *m_mechanismArrowHint;
+
 
 
 
       // Auxillary feedback items
       /** The highlight rectangle. */
       QGraphicsPathItem* m_hoverRect;
-      /** The hint line. */
-      QGraphicsLineItem* m_hintLine;
-      /** The list of dynamic grid points. */
-      QList<QGraphicsItem*> m_hintPoints;
-      /** The group of dynamic grid points. */
-      QGraphicsItemGroup* m_hintPointsGroup;
 
-      Molecule *m_hintMolecule;
-      QGraphicsItemGroup *m_hintMoleculeItems;
-      QList<QPointF> m_hintRingPoints;
-      bool m_aromaticHintRing;
-
-      //selects item inside lassopolygon
-      void lassoSelect ();
-
-
-      /** Method to initialize the hinting.*/
-      void initHintItems();
-
-      void alignRingWithAtom(Atom *atom);
-      void alignRingWithBond(Bond *bond, const QPointF &pos);
-
-      /**
-       * Make hint ring into real atoms/bonds
-       */
-      void insertRing(const QPointF &pos);
 
 };
 

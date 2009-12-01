@@ -25,6 +25,7 @@ namespace Molsketch {
       void mousePressEvent(QGraphicsSceneMouseEvent *event);
       void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
       void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+      void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
     public slots:
       void hydrogenClicked();
@@ -59,6 +60,10 @@ namespace Molsketch {
       void aromatic6ringClicked();
 
     private:
+      void addModeDoubleClick(QGraphicsSceneMouseEvent *event);
+      void delModePress(QGraphicsSceneMouseEvent* event);
+      void delModeDoubleClick(QGraphicsSceneMouseEvent* event);
+
       void initHintItems();
       /** Draws the dynamic grid around point @p curPos. */
       void drawHintPoints(const QPointF &curPos);

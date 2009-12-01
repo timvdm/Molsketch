@@ -340,14 +340,16 @@ MergeMol::MergeMol(Molecule* moleculeA, Molecule* moleculeB, Molecule*& mergedMo
   //pre: molA.scene = molB.scene
   Q_ASSERT(moleculeA->scene() == moleculeB->scene());
 
-  mergedMolecule = m_molC = m_scene->merge(m_molA,m_molB);
+  mergedMolecule = m_molC = merge(m_molA,m_molB);
 }
+
 MergeMol::~MergeMol()
 {
   if (!m_undone) delete m_molA;
   if (!m_undone) delete m_molB;
   if (m_undone) delete m_molC;
 }
+
 void MergeMol::undo()
 {
   m_scene->removeItem(m_molC);
@@ -361,6 +363,7 @@ void MergeMol::undo()
     atom->setFlag(QGraphicsItem::ItemIsSelectable, m_scene->editMode()==MolScene::MoveMode);
   m_undone = true;
 }
+
 void MergeMol::redo()
 {
   m_scene->removeItem(m_molA);
@@ -371,6 +374,41 @@ void MergeMol::redo()
     atom->setFlag(QGraphicsItem::ItemIsSelectable, m_scene->editMode()==MolScene::MoveMode);
   m_undone = false;
 }
+
+ Molecule * MergeMol::merge( const Molecule * molA, const Molecule* molB )
+  {
+    // pre: molA and molB are different molecules
+    Q_CHECK_PTR(molA);
+    Q_CHECK_PTR(molB);
+    Q_ASSERT(molA != molB);
+
+    // Creating a new molecule for the merge
+    Molecule* molC = new Molecule;
+
+    // Adding the bonds and atoms of the first two molecules
+    foreach (Atom* a, molA->atoms())
+    {
+      Atom* a2 = new Atom(a->scenePos(),a->element(),a->hasImplicitHydrogens());
+    a2 ->setColor( a->getColor ());
+      molC->addAtom(a2);
+    }
+    foreach (Bond* b, molA->bonds())
+    {
+      molC->addBond( molC->atomAt(b->beginAtom()->scenePos()), molC->atomAt(b->endAtom()->scenePos()), b->bondOrder(), b->bondType(), b->getColor ());
+    }
+    foreach (Atom* a, molB->atoms())
+    {
+      molC->addAtom( a->element(), a->scenePos(), a->hasImplicitHydrogens(), a->getColor ());
+    }
+    foreach (Bond* b, molB->bonds())
+    {
+      molC->addBond( molC->atomAt(b->beginAtom()->scenePos()), molC->atomAt(b->endAtom()->scenePos()), b->bondOrder(), b->bondType(), b->getColor ());
+    }
+
+    //         molC->setPos(molA->scenePos());
+
+    return molC;
+  }
 
 SplitMol::SplitMol(Molecule* mol, const QString & text) :  QUndoCommand(text), m_oldMol(mol), m_scene(mol->scene())
 {

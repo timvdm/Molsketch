@@ -1005,8 +1005,13 @@ void MainWindow::readSettings()
   move(pos);
 
   // Restoring the state of the toolbars and dockwidgets
-  QByteArray state = settings.value("window-state", QByteArray("\0\0\0\xff\0\0\0\0\xfd\0\0\0\x2\0\0\0\0\0\0\x1\xe\0\0\x2#\xfc\x2\0\0\0\x2\xfb\0\0\0$\0t\0o\0o\0l\0\x62\0o\0x\0-\0\x64\0o\0\x63\0k\0w\0i\0\x64\0g\0\x65\0t\x1\0\0\0\x43\0\0\x1G\0\0\0\xbe\0\xff\xff\xff\xfb\0\0\0$\0i\0n\0\x66\0o\0\x62\0o\0x\0-\0\x64\0o\0\x63\0k\0w\0i\0\x64\0g\0\x65\0t\x1\0\0\x1\x90\0\0\0\xd6\0\0\0R\0\xff\xff\xff\0\0\0\x1\xff\xff\xff\xfa\0\0\x2#\xfc\x2\0\0\0\x1\xfb\0\0\0\x32\0p\0\x65\0r\0i\0o\0\x64\0i\0\x63\0-\0t\0\x61\0\x62\0l\0\x65\0-\0\x64\0o\0\x63\0k\0w\0i\0\x64\0g\0\x65\0t\x3\0\0\x3 \0\0\x2g\0\0\x1\xcc\0\0\x1\x18\0\0\x2\x87\0\0\x2#\0\0\0\x1\0\0\0\x4\0\0\0\x1\0\0\0\b\xfc\0\0\0\x1\0\0\0\x2\0\0\0\x3\0\0\0\x18\0\x66\0i\0l\0\x65\0-\0t\0o\0o\0l\0\x62\0\x61\0r\x1\0\0\0\0\0\0\x1\b\0\0\0\0\0\0\0\0\0\0\0\x18\0\x65\0\x64\0i\0t\0-\0t\0o\0o\0l\0\x62\0\x61\0r\x1\0\0\x1\b\0\0\x1\xf9\0\0\0\0\0\0\0\0\0\0\0\x18\0z\0o\0o\0m\0-\0t\0o\0o\0l\0\x62\0\x61\0r\x1\0\0\x3\x1\0\0\0\x9a\0\0\0\0\0\0\0\0")).toByteArray();
-  restoreState(state);
+  //QByteArray state = settings.value("window-state", QByteArray("\0\0\0\xff\0\0\0\0\xfd\0\0\0\x2\0\0\0\0\0\0\x1\xe\0\0\x2#\xfc\x2\0\0\0\x2\xfb\0\0\0$\0t\0o\0o\0l\0\x62\0o\0x\0-\0\x64\0o\0\x63\0k\0w\0i\0\x64\0g\0\x65\0t\x1\0\0\0\x43\0\0\x1G\0\0\0\xbe\0\xff\xff\xff\xfb\0\0\0$\0i\0n\0\x66\0o\0\x62\0o\0x\0-\0\x64\0o\0\x63\0k\0w\0i\0\x64\0g\0\x65\0t\x1\0\0\x1\x90\0\0\0\xd6\0\0\0R\0\xff\xff\xff\0\0\0\x1\xff\xff\xff\xfa\0\0\x2#\xfc\x2\0\0\0\x1\xfb\0\0\0\x32\0p\0\x65\0r\0i\0o\0\x64\0i\0\x63\0-\0t\0\x61\0\x62\0l\0\x65\0-\0\x64\0o\0\x63\0k\0w\0i\0\x64\0g\0\x65\0t\x3\0\0\x3 \0\0\x2g\0\0\x1\xcc\0\0\x1\x18\0\0\x2\x87\0\0\x2#\0\0\0\x1\0\0\0\x4\0\0\0\x1\0\0\0\b\xfc\0\0\0\x1\0\0\0\x2\0\0\0\x3\0\0\0\x18\0\x66\0i\0l\0\x65\0-\0t\0o\0o\0l\0\x62\0\x61\0r\x1\0\0\0\0\0\0\x1\b\0\0\0\0\0\0\0\0\0\0\0\x18\0\x65\0\x64\0i\0t\0-\0t\0o\0o\0l\0\x62\0\x61\0r\x1\0\0\x1\b\0\0\x1\xf9\0\0\0\0\0\0\0\0\0\0\0\x18\0z\0o\0o\0m\0-\0t\0o\0o\0l\0\x62\0\x61\0r\x1\0\0\x3\x1\0\0\0\x9a\0\0\0\0\0\0\0\0")).toByteArray();
+  //QByteArray state = settings.value("window-state", QByteArray("\0\0\0\xff\0\0\0\0\xfd\0\0\0\x1\0\0\0\0\0\0\x1\xe\0\0\x1\xc9\xfc\x2\0\0\0\x2\xfb\0\0\0$\0t\0o\0o\0l\0\x62\0o\0x\0-\0\x64\0o\0\x63\0k\0w\0i\0\x64\0g\0\x65\0t\x1\0\0\0x\0\0\x1I\0\0\0\xe8\0\xff\xff\xff\xfb\0\0\0$\0i\0n\0\x66\0o\0\x62\0o\0x\0-\0\x64\0o\0\x63\0k\0w\0i\0\x64\0g\0\x65\0t\x1\0\0\x1\xc7\0\0\0z\0\0\0l\0\xff\xff\xff\0\0\x1\xe1\0\0\x1\xc9\0\0\0\x1\0\0\0\x4\0\0\0\x1\0\0\0\b\xfc\0\0\0\x3\0\0\0\0\0\0\0\x2\0\0\0\n\0T\0o\0o\0l\0s\x3\0\0\0\0\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\x10\0R\0\x65\0\x61\0\x63\0t\0i\0o\0n\x3\0\0\0\xfe\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\x2\0\0\0\x3\0\0\0\x18\0\x66\0i\0l\0\x65\0-\0t\0o\0o\0l\0\x62\0\x61\0r\x1\0\0\0\0\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\x18\0\x65\0\x64\0i\0t\0-\0t\0o\0o\0l\0\x62\0\x61\0r\x1\0\0\x1\x33\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\x18\0z\0o\0o\0m\0-\0t\0o\0o\0l\0\x62\0\x61\0r\x1\0\0\x2s\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\x2\0\0\0\x2\0\0\0\b\0\x44\0r\0\x61\0w\x1\0\0\0\0\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\n\0R\0i\0n\0g\0s\x1\0\0\x2G\xff\xff\xff\xff\0\0\0\0\0\0\0\0")).toByteArray();
+
+  QByteArray state = settings.value("window-state", QByteArray("@ByteArray(\0\0\0\xff\0\0\0\0\xfd\0\0\0\x1\0\0\0\0\0\0\x1\xe\0\0\x3N\xfc\x2\0\0\0\x2\xfb\0\0\0$\0t\0o\0o\0l\0\x62\0o\0x\0-\0\x64\0o\0\x63\0k\0w\0i\0\x64\0g\0\x65\0t\x1\0\0\0x\0\0\x2\x65\0\0\0\xe8\0\xff\xff\xff\xfb\0\0\0$\0i\0n\0\x66\0o\0\x62\0o\0x\0-\0\x64\0o\0\x63\0k\0w\0i\0\x64\0g\0\x65\0t\x1\0\0\x2\xe3\0\0\0\xe3\0\0\0l\0\xff\xff\xff\0\0\x6l\0\0\x3N\0\0\0\x1\0\0\0\x4\0\0\0\x1\0\0\0\b\xfc\0\0\0\x2\0\0\0\x2\0\0\0\x3\0\0\0\x18\0\x66\0i\0l\0\x65\0-\0t\0o\0o\0l\0\x62\0\x61\0r\x1\0\0\0\0\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\x18\0\x65\0\x64\0i\0t\0-\0t\0o\0o\0l\0\x62\0\x61\0r\x1\0\0\x1\x33\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\x18\0z\0o\0o\0m\0-\0t\0o\0o\0l\0\x62\0\x61\0r\x1\0\0\x2s\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\x2\0\0\0\x4\0\0\0\b\0\x44\0r\0\x61\0w\x1\0\0\0\0\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\n\0R\0i\0n\0g\0s\x1\0\0\x2G\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\n\0T\0o\0o\0l\0s\x1\0\0\x3t\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\x10\0R\0\x65\0\x61\0\x63\0t\0i\0o\0n\x1\0\0\x4\x80\xff\xff\xff\xff\0\0\0\0\0\0\0\0)")).toByteArray();
+
+
+  //restoreState(state);
 
   // Load preferences
   readPreferences(settings);
@@ -1033,9 +1038,9 @@ void MainWindow::readPreferences(const QSettings & settings)
 
   m_scene->setAtomSymbolFont(settings.value("atom-symbol-font").value<QFont>());
 
-  m_scene->setBondLength(settings.value("bond-length",40).toDouble());
-  m_scene->setBondWidth(settings.value("bond-width",1).toDouble());
-  m_scene->setBondAngle(settings.value("bond-angle",30).toInt());
+  //m_scene->setBondLength(settings.value("bond-length",40).toDouble());
+  //m_scene->setBondWidth(settings.value("bond-width",1).toDouble());
+  //m_scene->setBondAngle(settings.value("bond-angle",30).toInt());
 
   // Update the scene contents
   m_scene->update();

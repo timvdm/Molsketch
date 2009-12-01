@@ -445,6 +445,9 @@ class MergeMol : public QUndoCommand
     /** Redo this command. */
     virtual void redo();
   private:
+    /** Merges @p molA and @p molB. Used two merge two molecules when connected with a bond. */
+    Molecule* merge(const Molecule* molA, const Molecule* molB);
+
     /** Undo state of the command. */
     bool m_undone;
     /** The first of the two molecules that should be merged. */

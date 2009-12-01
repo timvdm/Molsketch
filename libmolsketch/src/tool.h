@@ -12,20 +12,6 @@ namespace Molsketch {
   {
     public:
 
-      enum Tools {
-        MoveTool,     //!< Atoms and molecules are movable.
-        DrawTool,     //!< Mode to add atoms and bonds.
-        RotateTool,   //!< Mode to rotate molecules.
-        ChargeTool,   //!< Increase/decrease charges
-        HydrogenTool, //!< increase/decrease implicit hydrogen count
-        LassoTool,    //!< lasso selection tool
-        TextTool,     //!< add / edit text
-        MinimiseTool, //!< gemoetry optimise
-        ConnectTool,  //!< mode to drag/drop items
-        ReactionTool, //! mode to insert reaction arrows
-        MechanismTool, //!< mode for inserting mechanism arrows
-      };
-
       /**
        * Constructor.
        */
@@ -67,6 +53,10 @@ namespace Molsketch {
        * Reimplement this function to handle mouse release events. The default implementation does nothing.
        */
       virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+      /**
+       * Reimplement this function to handle mouse double click events. The default implementation does nothing.
+       */
+      virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
     protected:
       MolScene *m_scene;

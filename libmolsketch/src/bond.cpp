@@ -104,9 +104,9 @@ namespace Molsketch {
     MolScene* molScene = dynamic_cast<MolScene*>(scene());
 	  
     if (m_beginAtom->hasLabel())
-      begin += 0.20 * uvb * molScene->bondLength();
+      begin += 0.20 * uvb * 40/*molScene->bondLength()*/; // FIXME
     if (m_endAtom->hasLabel())
-      end -= 0.20 * uvb * molScene->bondLength();
+      end -= 0.20 * uvb * 40/*molScene->bondLength()*/; // FIXME
 
     switch (m_bondOrder) {
       case 1:
@@ -157,7 +157,7 @@ namespace Molsketch {
     QPointF offset = uvb * m_bondSpacing;
 
     MolScene* molScene = dynamic_cast<MolScene*>(scene());
-    QPointF offset2 = 0.20 * uvb * molScene->bondLength();
+    QPointF offset2 = 0.20 * uvb * 40/*molScene->bondLength()*/; //FIXME
 
     if (length(begin + spacing - center) > length(begin - spacing - center))
       spacing *= -1.0;
@@ -275,7 +275,8 @@ namespace Molsketch {
     // Set painter defaults
     painter->save();
     QPen pen;
-    pen.setWidthF(molScene->bondWidth());
+    pen.setWidthF(2/*molScene->bondWidth()*/); // FIXME
+    pen.setCapStyle(Qt::RoundCap);
     pen.setColor (m_color);
     painter->setPen(pen);
 

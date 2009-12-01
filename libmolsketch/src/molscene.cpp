@@ -48,20 +48,12 @@
 #include "commands.h"
 #include "smilesitem.h"
 #include "mimemolecule.h"
-
 #include "TextInputItem.h"
-#include "reactionarrow.h"
-#include "mechanismarrow.h"
-
 #include "tool.h"
 #include "toolgroup.h"
-
-
-#include "minimise.h"
 #include "math2d.h"
-
-//#include "filio.h"
 #include "osra.h"
+
 #include <openbabel/mol.h>
 #include <openbabel/atom.h>
 #include <openbabel/bond.h>
@@ -89,8 +81,6 @@ namespace Molsketch {
 
     // Set the default color to black
     m_color = QColor(0, 0, 0);
-    // Set the current rotation item to none
-    m_rotationItem = NULL;
 
 
     // Create the TextInputItem that will be shown to edit text in the scene
@@ -99,19 +89,10 @@ namespace Molsketch {
     // hide it for now...
     m_inputTextItem->hide();
 
-    // Create the lasso and hide it for now
-    m_lassoPolygon = addPolygon(QPolygon());
-    m_lassoPolygon->hide();
 
     //Initializing properties
-    m_currentElementSymbol = "C";
     m_editMode = MolScene::DrawMode;
-    m_bondLength = 40;
-    m_bondOrder = 1;
-    m_bondWidth = 0;
-    m_bondType = Bond::InPlane;
     m_atomSize = 5;
-    m_bondAngle = 30;
     m_carbonVisible = false;
     m_hydrogenVisible = true;
     m_chargeVisible = true;
@@ -125,9 +106,6 @@ namespace Molsketch {
     connect(m_stack, SIGNAL(indexChanged(int)), this, SIGNAL(selectionChange()));
     connect(m_stack, SIGNAL(indexChanged(int)), this, SLOT(update()));
 
-    // Prepare hinting items
-    initHintItems();
-
     // Set initial size
     QRectF sizerect(-5000,-5000,10000,10000);
     setSceneRect(sizerect);
@@ -136,16 +114,11 @@ namespace Molsketch {
   MolScene::~MolScene()
   {
     // Clear the scene
-    clear();
-
-    // Destroy the hint items
-    foreach(QGraphicsItem* item, m_hintPoints) 
-      delete item;
-    delete m_hintLine;
-    //delete m_hoverRect;
+    clear();   
   }
 
-	void MolScene::addResidue (QPointF pos, QString name) {		
+  void MolScene::addResidue (QPointF pos, QString name)
+  {
 		m_stack ->push (new AddResidue (new Residue (pos, name, 0, this)));
 	}
   // Commands
@@ -155,7 +128,8 @@ namespace Molsketch {
     return m_color;
   }
 
-	void MolScene::setColor (QColor c) {
+  void MolScene::setColor (QColor c)
+  {
 		m_color = c;
 		foreach (QGraphicsItem* item, selectedItems()) {
 			if (item->type() == Atom::Type) {
@@ -182,21 +156,6 @@ namespace Molsketch {
   void MolScene::setHydrogenVisible(bool value)
   {
     m_hydrogenVisible = value;
-  }
-
-  void MolScene::setBondLength(double length)
-  {
-    //pre: bondlength > 0
-    Q_ASSERT(length > 0);
-    //   if (m_bondLength <= 0) return;
-
-    // Set the bondlength
-    m_bondLength = length;
-
-    // Reinitialize hintitems
-    foreach (QGraphicsItem* item, m_hintPoints) delete item;
-    m_hintPoints.clear();
-    initHintItems();
   }
 
   void MolScene::setAtomSize( qreal size )
@@ -227,14 +186,7 @@ namespace Molsketch {
       if (item->type() == Molecule::Type || item->type() == Atom::Type) 
         item->setFlag(QGraphicsItem::ItemIsSelectable,mode == MolScene::MoveMode);
 
-    // Delete hint Ring if mode != addMode
-    if (mode != MolScene::DrawMode) {
-      if (m_hintMoleculeItems) {
-        delete m_hintMoleculeItems;
-        m_hintMoleculeItems = 0;
-      }
-      m_hintRingPoints.clear();
-    }
+
 
     // Set the new edit mode and signal other components
     m_editMode = mode;
@@ -334,8 +286,8 @@ namespace Molsketch {
     QGraphicsScene::clear();
 
     // Reinitialize the scene
-    m_hintPoints.clear();
-    initHintItems();
+    //m_hintPoints.clear();
+    //initHintItems();
     setEditMode(MolScene::DrawMode);
 
     m_inputTextItem = new TextInputItem();
@@ -345,7 +297,8 @@ namespace Molsketch {
 
   }
 
-	QImage MolScene::renderMolToImage (Molecule *mol) {
+  QImage MolScene::renderMolToImage (Molecule *mol)
+  {
 		QRectF rect = mol ->boundingRect();
 		QImage image(int(rect.width()),int(rect.height()),QImage::Format_RGB32);
 		image.fill(QColor("white").rgb());
@@ -376,55 +329,6 @@ namespace Molsketch {
     return image;
   }
 
-  Molecule * MolScene::merge( const Molecule * molA, const Molecule* molB )
-  {
-    // pre: molA and molB are different molecules
-    Q_CHECK_PTR(molA);
-    Q_CHECK_PTR(molB);
-    Q_ASSERT(molA != molB);
-
-    // Creating a new molecule for the merge
-    Molecule* molC = new Molecule;
-
-    // Adding the bonds and atoms of the first two molecules
-    foreach (Atom* a, molA->atoms())
-    {
-      Atom* a2 = new Atom(a->scenePos(),a->element(),a->hasImplicitHydrogens());
-		a2 ->setColor( a->getColor ());
-      molC->addAtom(a2);
-    }
-    foreach (Bond* b, molA->bonds())
-    {
-      molC->addBond( molC->atomAt(b->beginAtom()->scenePos()), molC->atomAt(b->endAtom()->scenePos()), b->bondOrder(), b->bondType(), b->getColor ());
-    }
-    foreach (Atom* a, molB->atoms())
-    {
-      molC->addAtom( a->element(), a->scenePos(), a->hasImplicitHydrogens(), a->getColor ());
-    }
-    foreach (Bond* b, molB->bonds())
-    {
-      molC->addBond( molC->atomAt(b->beginAtom()->scenePos()), molC->atomAt(b->endAtom()->scenePos()), b->bondOrder(), b->bondType(), b->getColor ());
-    }
-
-    //         molC->setPos(molA->scenePos());
-
-    return molC;
-  }
-
-  /** obsolete
-  void MolScene::addMolecule(QListWidgetItem* mol )
-  {
-    // Extract the molecule and add it to the sceneMolecule* m
-    Molecule * m;
-    if (dynamic_cast<MolLibItem*>(mol))
-      m = dynamic_cast<MolLibItem*>(mol)->getMolecule();
-    else
-      return;
-
-    addMolecule(m);
-  }
-  */
-
   void MolScene::addMolecule(Molecule* mol)
   {
     Q_CHECK_PTR(mol);
@@ -433,117 +337,6 @@ namespace Molsketch {
     m_stack->push(new AddItem(mol,this)); 
     if (mol->canSplit()) m_stack->push(new SplitMol(mol));
     m_stack->endMacro();
-  }
-
-  void MolScene::insertRing(const QPointF &pos)
-  {
-    qDebug() << "insertRing @ " << pos;
-
-    QList<Molecule*> molecules;
-    // check if there are already atoms at the corners
-    foreach (const QPointF &p, m_hintRingPoints) {
-      Atom *atom = atomAt(m_hintMoleculeItems->mapToScene(p));
-      if (atom) 
-        if (atom->molecule() && !molecules.contains(atom->molecule()))
-          molecules.append(atom->molecule());
-    }
-    m_stack->beginMacro("Add Molecule");
-    // create a new molecule or merge extisting molecules
-    if (molecules.isEmpty()) {
-      // Adding a totally new ring
-      molecules.append(new Molecule);
-      m_stack->push(new AddItem(molecules[0],this));
-    } else if (molecules.size() > 1) {
-      // the ring merges several molecules (i.e. it does not only extend a single molecule)
-      Molecule *mergedMol = molecules[0];
-      for (int i = 1; i < molecules.size(); ++i)
-        mergedMol = merge(mergedMol, molecules[i]);
-      //m_stack->push(new MergeMol(molecules[0], molecules[i], molecules[0]));
-      m_stack->push(new AddItem(mergedMol,this));
-      molecules[0] = mergedMol;
-    }
-    // add the atoms and bonds
-    QList<Bond*> bonds;
-    int indexOfFirstDoubleBond = -1;
-    for (int i = 0; i < m_hintRingPoints.size(); ++i) {
-      int next = i + 1;
-      if (next == m_hintRingPoints.size())
-        next = 0;
-
-      QPointF beginPoint = m_hintMoleculeItems->mapToScene(m_hintRingPoints[i]);
-      QPointF endPoint = m_hintMoleculeItems->mapToScene(m_hintRingPoints[next]);
-      Atom *begin = molecules[0]->atomAt(beginPoint);
-      if (!begin) {
-        begin = new Atom(beginPoint, "C", m_autoAddHydrogen);
-        m_stack->push(new AddAtom(begin, molecules[0]));
-      }
-      Atom *end = molecules[0]->atomAt(endPoint);
-      if (!end) {
-        end = new Atom(endPoint, "C", m_autoAddHydrogen);
-        m_stack->push(new AddAtom(end, molecules[0]));
-      }
-
-      Bond *bond = molecules[0]->bondBetween(begin, end);
-      if (!bond) {
-        bond = new Bond(begin, end);
-        m_stack->push(new AddBond(bond));
-      }
-      bonds.append(bond);
-
-      if (m_aromaticHintRing && (indexOfFirstDoubleBond < 0)) {
-
-        bool beginHasDoubleBond = false;
-        bool endHasDoubleBond = false;
-        foreach (Atom *nbr, begin->neighbours()) {
-          Bond *possibleDoubleBond = molecules[0]->bondBetween(begin, nbr);
-          if (possibleDoubleBond && possibleDoubleBond->bondOrder() == 2)
-            beginHasDoubleBond = true;
-        }
-        foreach (Atom *nbr, end->neighbours()) {
-          Bond *possibleDoubleBond = molecules[0]->bondBetween(end, nbr);
-          if (possibleDoubleBond && possibleDoubleBond->bondOrder() == 2)
-            endHasDoubleBond = true;
-        }
-
-        if (beginHasDoubleBond && endHasDoubleBond)
-          indexOfFirstDoubleBond = i;
-      }
-    }
-    if (m_aromaticHintRing) {
-      int numBonds;
-      if (m_hintRingPoints.size() == 5) {
-        if (indexOfFirstDoubleBond == -1) {
-          indexOfFirstDoubleBond = 1;
-          numBonds = 5;
-        } else {
-          indexOfFirstDoubleBond = indexOfFirstDoubleBond % 2 + 2;
-          numBonds = 4;
-        }
-      } else {
-        indexOfFirstDoubleBond = (indexOfFirstDoubleBond == -1) ? 0 : indexOfFirstDoubleBond % 2 + 2;
-        numBonds = 6;
-      }
-      for (int i = indexOfFirstDoubleBond; i < numBonds; i+=2)
-        if (bonds.at(i)->bondOrder() == 1)
-	  m_stack->push(new IncOrder(bonds.at(i)));
-    }
-
-    molecules[0]->setFocus();
-    m_stack->endMacro();
-  }
-
-  void MolScene::setBondAngle(int angle)
-  {
-    Q_ASSERT (angle > 0 and angle <= 360);
-
-    // delete previous hint items
-    foreach (QGraphicsItem* item, m_hintPoints) 
-      delete item;
-    m_hintPoints.clear();
-    
-    // Set the new hintPointCount and reinitialize
-    m_bondAngle = angle;
-    initHintItems();
   }
 
   void MolScene::selectAll()
@@ -562,141 +355,6 @@ namespace Molsketch {
     }
   }
 
-  // Hinting methods
-
-  void MolScene::drawHintPoints(const QPointF &startPos )
-  {
-    QPointF position = startPos;
-
-    // If clicked on atom, use that as startpoint
-    Atom* atom = atomAt(position);
-    if (atom) position = atom->scenePos();
-
-    // Draw hintpoints
-    m_hintPointsGroup->setPos(position);
-    addItem(m_hintPointsGroup);
-  }
-
-  void MolScene::initHintItems()
-  {
-    // hint molecule always starts as none
-    m_hintMolecule = 0;
-    m_hintMoleculeItems = 0;
-    m_mechanismArrowHint = 0;
-
-    // Initialize hintline
-    m_hintLine = new QGraphicsLineItem(QLineF(0,0,0,0));
-    m_hintLine->setAcceptedMouseButtons(0);
-    m_hintLine->setZValue(-1);
-
-    //   // Initialize hover feedback
-    //   m_hoverRect = new QGraphicsPathItem(QPainterPath());
-    //   m_hoverRect->setZValue(5);
-    //   m_hoverRect->setAcceptedMouseButtons(0);
-
-    // Initialize hint points circle
-    m_hintPointsGroup = new QGraphicsItemGroup();
-    int parts = 360/m_bondAngle;
-    for (int i = 0; i < parts; i++)
-    {
-      // Calculate dot position
-      double x = 2*3.14*i/parts;
-      QPointF hintPoint = QPointF(sin(x) * m_bondLength, cos(x) * m_bondLength);
-      // Create the dot
-      QGraphicsEllipseItem* dot = new QGraphicsEllipseItem(-2.5,-2.5,5,5);
-      dot->setBrush(Qt::lightGray);
-      dot->setPen(Qt::NoPen);
-      // Add the dot
-      m_hintPoints.append(dot);
-      m_hintPoints[i]->setPos(hintPoint);
-      m_hintPointsGroup->addToGroup(m_hintPoints[i]);
-      //     scene()->addRect(QRectF(hintPoint.x()-2.5,hintPoint.y()-2.5,5,5));
-    }
-    //   m_hintPointsGroup->setVisible(false);
-    m_hintPointsGroup->setAcceptedMouseButtons(0);
-  }
-
-  void MolScene::setHintLine(const QPointF &startPos, const QPointF &curPos)
-  {
-    // Set the hintline between startPos and curPos
-    m_hintLine->setLine(QLineF(startPos, curPos));
-
-    // If not already added, add the hintline to the scene
-    if (!items().contains(m_hintLine)) 
-      addItem(m_hintLine);
-  }
-
-  // create a QGraphicsItem for regular polygon rings
-  void MolScene::setHintRing(int ringSize, bool aromatic)
-  {
-    if (ringSize < 3)
-      return;
-
-    if (aromatic && ((ringSize == 5) || (ringSize == 6)))
-      m_aromaticHintRing = true;
-    else
-      m_aromaticHintRing = false;
-
-    // delete previous hint molecule
-    if (m_hintMoleculeItems)
-      delete m_hintMoleculeItems;
-
-    m_hintMoleculeItems = new QGraphicsItemGroup();
-    m_hintRingPoints.clear();
-
-    // circumscribed circle regular polygon
-    double radius = m_bondLength / (2 * sin(M_PI / ringSize));
-
-    for (int i = 0; i < ringSize; ++i) {
-      // Compute begin & end position
-      double x1 = 2 * M_PI * i / ringSize;
-      QPointF p1(sin(x1) * radius, cos(x1) * radius);
-      double x2 = 2 * M_PI * (i + 1) / ringSize;
-      QPointF p2(sin(x2) * radius, cos(x2) * radius);
-      // Add the line
-      QGraphicsLineItem *line = new QGraphicsLineItem(p1.x(), p1.y(), p2.x(), p2.y());
-      line->setPen(QPen(Qt::lightGray));
-      m_hintMoleculeItems->addToGroup(line);
-      m_hintRingPoints.append(p1);
-    }
-
-    addItem(m_hintMoleculeItems);
-  }
-
-  void MolScene::setHintMolecule(MolLibItem *item)
-  {
-    Q_CHECK_PTR(item);
-
-    // delete previous hint molecule
-    if (m_hintMolecule)
-      delete m_hintMolecule;
-    if (m_hintMoleculeItems)
-      delete m_hintMoleculeItems;
-
-    m_hintMolecule = item->getMolecule();
-    m_hintMoleculeItems = new QGraphicsItemGroup();
-
-    foreach (Bond *bond, m_hintMolecule->bonds()) {
-      // Create the line
-      QPointF a = bond->beginAtom()->pos();
-      QPointF b = bond->endAtom()->pos();
-      QGraphicsLineItem *line = new QGraphicsLineItem(a.x(), a.y(), b.x(), b.y());
-      line->setPen(QPen(Qt::lightGray));
-      // Add the line
-      m_hintMoleculeItems->addToGroup(line);
-    }
-
-    addItem(m_hintMoleculeItems);
-  }
-
-  void MolScene::setHintMolecule(QListWidgetItem *item)
-  {
-    Q_CHECK_PTR(item);
-
-    MolLibItem *molLibItem = dynamic_cast<MolLibItem*>(item);
-    if (molLibItem)
-      setHintMolecule(molLibItem);
-  }
 
   void MolScene::setHoverRect( QGraphicsItem* item )
   {
@@ -711,26 +369,6 @@ namespace Molsketch {
     }
   }
 
-  void MolScene::removeHintLine( )
-  {
-    //   delete hintLine;
-    //   scene()->removeItem(hintLine);
-    //   m_hintLine->setVisible(false);
-    if (items().contains(m_hintLine)) removeItem(m_hintLine);
-    //   scene()->update();
-  }
-
-  void MolScene::removeHintPoints( )
-  {
-    //   m_hintPointsGroup->setVisible(false);
-    if (items().contains(m_hintPointsGroup)) removeItem(m_hintPointsGroup);
-    //     for (int i = 0; i<m_bondAngle;i++)
-    //     {
-    //         //     scene()->removeItem(hintPoints[i]);
-    //         hintPoints[i]->setVisible(false);
-    //         //     delete hintPoints[i];
-    //     }
-  }
 
   // Queries
 
@@ -744,10 +382,7 @@ namespace Molsketch {
     return m_hydrogenVisible;
   }
 
-  qreal MolScene::bondLength( ) const
-  {
-    return m_bondLength;
-  }
+
 
   qreal MolScene::atomSize( ) const
   {
@@ -769,46 +404,12 @@ namespace Molsketch {
     m_renderMode = mode;
   }
 
-  // Advanced queries
-  QPointF MolScene::nearestPoint(const QPointF &curPos)
-  {
-    //pre: true
-    //ret: nearest preferred point of curPos
-
-    // Set the maximun length
-    qreal lastLength = m_bondLength / 4;
-    QPointF nPoint = curPos;
-
-    // Check the hinting points
-    for (int i = 0; i < m_hintPoints.size(); i++)
-    {
-      QPointF hPoint = m_hintPoints[i]->scenePos();
-      QLineF iLine(curPos,hPoint);
-      if (iLine.length() < lastLength)
-      {
-        nPoint = hPoint;
-        lastLength = iLine.length();
-      }
-    }
-
-    // Look whether a atom is nearby
-    Atom* atom = atomAt(curPos);
-    if (atom) nPoint = atom->scenePos();
-
-    return nPoint;
-  }
-
   QPointF MolScene::toGrid(const QPointF &position)
   {
     QPointF p = position;
-    //   p.rx() = floor(p.x() / 100) * 100;
-    //   p.ry() = floor(p.y() / 100) * 100;
-    //   m_bondLength;
     int factor = 40;
     p.rx() = floor(p.x() / factor) * factor;
     p.ry() = floor(p.y() / factor) * factor;
-    //   p.rx() = (p.x() / 10) * 10;
-    //   p.ry() = (p.y() / 10) * 10;
 
     return p;
   }
@@ -824,7 +425,9 @@ namespace Molsketch {
     return 0;
 
   }
-	bool MolScene::textEditItemAt (const QPointF &pos) {
+
+  bool MolScene::textEditItemAt (const QPointF &pos)
+  {
 	    foreach(QGraphicsItem* item,items(pos))
 		if (item->type() == TextInputItem::Type) return true;
 		return false;
@@ -835,14 +438,6 @@ namespace Molsketch {
     // Check if there is a atom at this position
     foreach(QGraphicsItem* item,items(pos))
       if (item->type() == Atom::Type) return dynamic_cast<Atom*>(item);
-    //   // Maybe the atom is hidden, try an alternative detection
-    //   for (int i = 0; i < items(pos).size(); i++)
-    //   {
-    //     QGraphicsItem* item = items(pos).at(i);
-    //     Atom* atom;
-    //     if (item->type() == Molecule::Type) atom = dynamic_cast<Molecule*>(item)->getAtom(pos);
-    //     if (atom) return atom;
-    //   }
 
     // Can't find an atom at that location
     return 0;
@@ -877,155 +472,10 @@ namespace Molsketch {
     return accepted;
   }
 
-  void MolScene::alignRingWithAtom(Atom *atom)
-  {
-    Q_CHECK_PTR(m_hintMoleculeItems);
-
-    if (m_hintRingPoints.isEmpty())
-      return;
-
-    if (atom->numBonds() == 0) {
-      // just translate ring to make 1 atom align
-      QPointF moleculeNormal = QPointF(0.0, -1.0);
-      QPointF ringNormal = normalized(m_hintRingPoints[0]);
-      QPointF rp = m_hintRingPoints[0];
-
-      qreal ang = angle(moleculeNormal, ringNormal) * 180.0 / M_PI;
-      if (angleSign(moleculeNormal, ringNormal) > 0.0)
-        ang = -ang;
-
-      m_hintMoleculeItems->setTransform(QTransform().rotate(ang+180.0).translate(-rp.x(), -rp.y()));
-    } else if (atom->numBonds() == 1) {
-      // rotate/translate ring to align with the bond
-      QPointF moleculeNormal = atom->scenePos() - atom->neighbours()[0]->scenePos();
-      moleculeNormal = normalized(moleculeNormal);
-      QPointF ringNormal = normalized(m_hintRingPoints[0]);
-      QPointF rp = m_hintRingPoints[0];
-
-      qreal ang = angle(moleculeNormal, ringNormal) * 180.0 / M_PI;
-      if (angleSign(moleculeNormal, ringNormal) > 0.0)
-        ang = -ang;
-
-      m_hintMoleculeItems->setTransform(QTransform().rotate(ang+180.0).translate(-rp.x(), -rp.y()));
-      m_hintMoleculeItems->setPos(atom->scenePos());
-
-    } else if (atom->numBonds() == 2) {
-      // rotate/translate ring to align with the bond
-      QPointF moleculeNormal = atom->scenePos() - atom->neighbours()[0]->scenePos();
-      moleculeNormal += atom->scenePos() - atom->neighbours()[1]->scenePos();
-      moleculeNormal = normalized(moleculeNormal);
-      QPointF ringNormal = normalized(m_hintRingPoints[0]);
-      QPointF rp = m_hintRingPoints[0];
-
-      qreal ang = angle(moleculeNormal, ringNormal) * 180.0 / M_PI;
-      if (angleSign(moleculeNormal, ringNormal) > 0.0)
-        ang = -ang;
-
-      m_hintMoleculeItems->setTransform(QTransform().rotate(ang+180.0).translate(-rp.x(), -rp.y()));
-      m_hintMoleculeItems->setPos(atom->scenePos());
-    }
-  }
-
-  void MolScene::alignRingWithBond(Bond *bond, const QPointF &pos)
-  {
-    Q_CHECK_PTR(m_hintMoleculeItems);
-    Q_CHECK_PTR(bond->beginAtom());
-    Q_CHECK_PTR(bond->endAtom());
-
-    if (m_hintRingPoints.isEmpty())
-      return;
-
-    // just translate ring to make 1 atom align
-    QPointF bondNormal = normalized(bond->endAtom()->pos() - bond->beginAtom()->pos());
-    QPointF ringNormal = normalized( (m_hintRingPoints[0] + m_hintRingPoints[1]) / 2.0 );
-    QPointF rp = m_hintRingPoints[0];
-
-    qreal ang = angle(bondNormal, ringNormal) * 180.0 / M_PI;
-    double angSign = angleSign(bondNormal, ringNormal);
-    if (angSign > 0.0) 
-      ang = -ang;
-
-    double triSign = triangleSign(bond->beginAtom()->scenePos(), bond->endAtom()->scenePos(), pos);
-
-    if (triSign > 0.0) {
-      m_hintMoleculeItems->setTransform(QTransform().rotate(ang+270.0).translate(-rp.x(), -rp.y()));
-      m_hintMoleculeItems->setPos(bond->endAtom()->scenePos());
-    } else {
-      m_hintMoleculeItems->setTransform(QTransform().rotate(ang+90.0).translate(-rp.x(), -rp.y()));
-      m_hintMoleculeItems->setPos(bond->beginAtom()->scenePos());
-    }
-  }
-
-
-
-
   void MolScene::mousePressEvent(QGraphicsSceneMouseEvent* event)
   {
     m_toolGroup->activeTool()->mousePressEvent(event);
-    QGraphicsScene::mousePressEvent(event);
-    return;
 
-    // Execute extended behavior depending on edit mode and mouse button
-    switch (event->button()) {
-      case Qt::RightButton:
-        switch (m_editMode) {
-          case MolScene::DrawMode:
-            delModePress( event );
-            break;
-          case MolScene::ChargeMode:
-            chargeModePress(event);
-            break;
-          case MolScene::HydrogenMode:
-            hydrogenModePress(event);
-            break;
-          default:
-            break;
-        }
-      case Qt::MidButton:
-        moveModePress( event );
-        break;
-      case Qt::LeftButton:
-        switch (m_editMode) {
-          case MolScene::DrawMode:
-            addModePress( event );
-            break;
-          case MolScene::ChargeMode:
-            chargeModePress(event);
-            break;
-          case MolScene::HydrogenMode:
-            hydrogenModePress(event);
-            break;
-          case MolScene::MoveMode:
-            moveModePress( event );
-            break;
-          case MolScene::RotateMode:
-            rotateModePress( event );
-            break;
-          case MolScene::LassoMode:
-            lassoModePress (event);
-            break;
-          case MolScene::TextMode:
-            textModePress (event);
-            break;
-          case MolScene::ConnectMode:
-            connectModePress(event);
-            break;
-          case MolScene::MinimiseMode:
-            minimiseModePress (event);
-            break;
-          case MolScene::ReactionMode:
-            insertReactionArrow(event);
-            break;
-          case MolScene::MechanismMode:
-            mechanismArrowPress(event);
-            break;
-          default:
-            break;
-        };
-      default:
-        break;
-    }
-	  
     // Execute default behavior
     QGraphicsScene::mousePressEvent(event);	
   }
@@ -1033,41 +483,6 @@ namespace Molsketch {
   void MolScene::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
   {
     m_toolGroup->activeTool()->mouseMoveEvent(event);
-    QGraphicsScene::mouseMoveEvent(event);
-    return;
-
-
-    // Determine the right action
-    if (m_hintMoleculeItems) {
-      m_hintMoleculeItems->setPos(event->scenePos());
-      m_hintMoleculeItems->setTransform(QTransform());
-
-      // Get the position
-      QPointF downPos = event->scenePos();
-
-      Atom *atom = atomAt(downPos);
-      if (atom)
-        alignRingWithAtom(atom);
-
-      Bond *bond = bondAt(downPos);
-      if (bond)
-        alignRingWithBond(bond, downPos);
-    } 
-
-    switch (m_editMode) {
-      case MolScene::DrawMode:
-        addModeMove(event);
-        break;
-      case MolScene::RotateMode:
-        rotateModeMove(event);
-        break;
-      case MolScene::LassoMode:
-        lassoModeMove(event);
-        break;
-      case MolScene::MechanismMode:
-        mechanismArrowMove(event);
-        break;
-    }
 
     // Execute default behavior
     QGraphicsScene::mouseMoveEvent(event);
@@ -1077,145 +492,20 @@ namespace Molsketch {
   void MolScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
   {
     m_toolGroup->activeTool()->mouseReleaseEvent(event);
-    QGraphicsScene::mouseReleaseEvent(event);
-    return;
-
-    // Determin the right action
-    switch (event->button()) {
-      case Qt::RightButton:
-        break;
-      case Qt::MidButton:
-        moveModeRelease(event);
-        break;
-      default:
-        switch (m_editMode) {
-          case MolScene::DrawMode:
-            addModeRelease(event);
-            clearSelection();
-            break;
-          case MolScene::MoveMode:
-            moveModeRelease(event);
-            break;
-          case MolScene::LassoMode:
-            lassoModeRelease(event);
-            break;
-          case MolScene::RotateMode:
-            rotateModeRelease(event);
-            break;
-          case MolScene::TextMode:
-            textModeRelease (event);
-          case MolScene::MinimiseMode:
-            minimiseModeRelease (event);
-            break;
-          case MolScene::MechanismMode:
-            mechanismArrowRelease(event);
-            break;
-        }
-    }
 
     // Execute the normal behavior
     QGraphicsScene::mouseReleaseEvent(event);
   }
 
 
-void MolScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * event )
-{
-
-  // Determin the corresponding action
-  switch (event->button())
+  void MolScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * event )
   {
-    case Qt::RightButton:
-      switch (m_editMode) {
-        case DrawMode:
-          delModeDoubleClick(event);
-          break;
-        default:
-          break;
-      }
-    default:
-      switch (m_editMode)
-      {
-        case MolScene::DrawMode:
-          addModeDoubleClick (event);
-          break;
-        default:
-        case MolScene::MoveMode:
-          break;
-      }
+    m_toolGroup->activeTool()->mouseDoubleClickEvent(event);
+
+    // Execute default behavior
+    QGraphicsScene::mouseDoubleClickEvent( event );
   }
 
-  // Execute default behavior
-  QGraphicsScene::mouseDoubleClickEvent( event );
-}
-
-  //////////////////////////////////////////////////////////////////////////////
-  //
-  // Move Mode
-  //
-  //////////////////////////////////////////////////////////////////////////////
-
-  void MolScene::moveModePress(QGraphicsSceneMouseEvent* event)
-  {
-    // Check whether to select an item
-    QGraphicsItem * item = itemAt(event->scenePos());
-    if (item && !item->isSelected()) {
-      clearSelection();
-      item->setSelected(true);
-      event->accept();
-    }
-
-    // Flag the selected items as moveable
-    clearFocus();
-    foreach(QGraphicsItem* item, selectedItems()) 
-      item->setFlag(QGraphicsItem::ItemIsMovable, true);
-    emit copyAvailable(!selectedItems().isEmpty());
-
-  }
-
-  void MolScene::moveModeMove(QGraphicsSceneMouseEvent* event)
-  {
-    event->accept();
-  }
-
-  void MolScene::moveModeRelease(QGraphicsSceneMouseEvent* event)
-  {
-    QPointF moveVector = event->scenePos() - event->buttonDownScenePos(event->button());
-    if (moveVector.isNull()) {
-      clearFocus();
-      return;
-    }
-    
-    m_stack->beginMacro(tr("moving item(s)"));
-    foreach(QGraphicsItem* item, selectedItems()) {
-      // reset the movement
-      item->moveBy(-moveVector.x(), -moveVector.y());
-      // perform the movement as undoable command
-      if (!moveVector.isNull()) 
-        m_stack->push(new MoveItem(item, moveVector, tr("moving item(s)")));
-      item->setFlag(QGraphicsItem::ItemIsMovable, false);
-    }
-    m_stack->endMacro();
-
-    clearFocus();
-  }
-  
-  //////////////////////////////////////////////////////////////////////////////
-  //
-  // Minimize Mode
-  //
-  //////////////////////////////////////////////////////////////////////////////
-
-	void MolScene::minimiseModePress (QGraphicsSceneMouseEvent* event) {
-		Bond *bond = bondAt (event ->scenePos());
-		if (bond) {
-			Molecule *molecule = bond ->molecule();
-			mirrorBondInMolecule(molecule, bond);
-			return;
-		}
-		Molecule * molecule = moleculeAt(event->scenePos());
-		if (molecule) minimiseMolecule (molecule);
-
-	}
 
 
   //////////////////////////////////////////////////////////////////////////////
@@ -1250,713 +540,19 @@ void MolScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * event )
 	}
 	
 	void MolScene::textModeRelease(QGraphicsSceneMouseEvent* event) 
-        {
-          Q_UNUSED(event)
-	}
-	
-        void MolScene::minimiseModeRelease(QGraphicsSceneMouseEvent* event) 
-        {
-          Q_UNUSED(event)
-	}
-
-  //////////////////////////////////////////////////////////////////////////////
-  //
-  // Lasso Mode
-  //
-  //////////////////////////////////////////////////////////////////////////////
-	
-  void MolScene::lassoModePress(QGraphicsSceneMouseEvent* event)
-  {
-    foreach(QGraphicsItem* item, items())
-    switch (item->type()) {
-      case Molecule::Type:
-      case Atom::Type:
-      case Bond::Type:
-        item->setFlag(QGraphicsItem::ItemIsSelectable, true);
-        break;
-      default:
-        break;
-    }
-
-    m_lassoPolygon->show();
-    m_lassoTrail.clear();
-    m_lassoTrail.push_back(event->scenePos());
-  }
-	
-	void MolScene::lassoModeMove(QGraphicsSceneMouseEvent* event)
-	{
-		if (!(event->buttons() & Qt::LeftButton)) return;
-		
-		m_lassoTrail.push_back (event->scenePos());
-		if (m_lassoTrail.size () > 4) {
-			m_lassoPolygon ->setPolygon (QPolygonF (m_lassoTrail));
-			lassoSelect ();
-
-		}
-		event->accept();
-	}
-	
-	void MolScene::lassoModeRelease(QGraphicsSceneMouseEvent* event)
-	{
-          Q_UNUSED(event)
-		
-		m_lassoTrail.clear ();
-		lassoSelect ();
-		m_lassoPolygon ->setPolygon(QPolygonF ());
-		m_lassoPolygon ->hide ();
-
-	
-		
-	}
-	
-	void MolScene::lassoSelect()
-	{
-		clearSelection();
-		QList<QGraphicsItem *> its = items (m_lassoPolygon ->polygon (), Qt::ContainsItemShape);
-		for (int i = 0; i < its.size (); i++) {
-			its[i] ->setSelected (true);
-		}
-
-		
-	}	
-	
-  //////////////////////////////////////////////////////////////////////////////
-  //
-  // Rotate Mode
-  //
-  //////////////////////////////////////////////////////////////////////////////
-	
-  void MolScene::rotateModeMove(QGraphicsSceneMouseEvent* event)
-  {
-    // Do nothing if no buttons are pressed or no item has been selected
-    if (!m_rotationItem) return;
-    if (!(event->buttons() & Qt::LeftButton)) return;
-    /*
-    // Find the item to rotate and it's rotation point
-    QGraphicsItem * item = itemAt(event->buttonDownScenePos(Qt::LeftButton));
-    if (!item) return;
-    if (item->type() == Atom::Type) item = item->parentItem();
-    if (item->type() == Bond::Type) item = item->parentItem();
-    QPointF rotatePoint = item->boundingRect().center();
-    QPointF rotatePointAbs = item->mapToScene(rotatePoint);
-     */
-
-  //  QPointF rotatePoint = m_rotationItem->boundingRect().center();
- //   QPointF rotatePointAbs = m_rotationItem->mapToScene(rotatePoint);
-
-
-    // Calculate the rotation angle
-    QPointF vec1 = lastRotationVect;
-    QPointF vec2 = event->scenePos() - rotationCenter;
-
-    qreal crossprod = vec1.x () * vec2.y () - vec1.y () * vec2.x ();
-    qreal dotprod =   vec1.x () * vec2.x () + vec1.y () * vec2.y ();
-    qreal rotateAngle = std::atan2 (crossprod, dotprod) * 180 / M_PI;
-
-
-    //	std::cerr << rotateAngle<<"   "<<std::endl;
-    //   if (event->modifiers() != Qt::AltModifier) rotateAngle = toRoundedAngle(rotateAngle);
-    if (rotateAngle == 0) return;
-
-    // Temporary rotate the item
-    QTransform transform;
-    transform.translate(rotationCenter.x(), rotationCenter.y());
-    switch (event->modifiers()) {
-      case Qt::ControlModifier: transform.rotate(rotateAngle, Qt::XAxis); break;
-      case Qt::ShiftModifier: transform.rotate(rotateAngle, Qt::YAxis); break;
-      default: transform.rotate(rotateAngle, Qt::ZAxis);
-    };
-    transform.translate(-rotationCenter.x(), -rotationCenter.y());
-    m_rotationItem->setTransform(transform, true);
-    lastRotationVect = vec2;
-    //   item->rotate(rotateAngle);
-  }
-
-
-
-
-  void MolScene::rotateModePress(QGraphicsSceneMouseEvent* event)
-  {
-
-
-    QGraphicsItem * item = itemAt(event->buttonDownScenePos(Qt::LeftButton));
-    if (!item) return;
-    if (item->type() == Atom::Type) item = item->parentItem();
-    if (item->type() == Bond::Type) item = item->parentItem();
-    QPointF rotatePoint = item->boundingRect().center();
-    QPointF rotatePointAbs = item->mapToScene(rotatePoint);
-
-	rotationCenter = rotatePointAbs;
-    m_rotationItem = item;
-    lastRotationVect = event->buttonDownScenePos(Qt::LeftButton) - rotatePointAbs ; //save vector for relative rotation step
-
-    // Execute default behavior
-    QGraphicsScene::mousePressEvent(event);
-  }
-
-  void MolScene::rotateModeRelease(QGraphicsSceneMouseEvent* event)
   {
     Q_UNUSED(event)
-    m_rotationItem = NULL;
-    /*
-
-    // Find the item to rotate find the rotate point
-    QGraphicsItem * item = itemAt(event->buttonDownScenePos(Qt::LeftButton));
-    if (!item) return;
-    if (item->type() == Atom::Type) item = item->parentItem();
-    if (item->type() == Bond::Type) item = item->parentItem();
-    QPointF rotatePoint = item->boundingRect().center();
-
-    // Calculate the rotation angle
-    QPointF vec1 = event->buttonDownScenePos(Qt::LeftButton) - item->mapToScene(rotatePoint);
-    QPointF vec2 = event->scenePos() - item->mapToScene(rotatePoint);
-    qreal alpha = std::atan2(vec1.y(), vec1.x());
-    qreal beta = std::atan2(vec2.y(), vec2.x());
-    qreal rotateAngle = beta - alpha;
-    //   if (event->modifiers() != Qt::AltModifier) rotateAngle = toRoundedAngle(rotateAngle);
-    if (rotateAngle == 0) return;
-
-    // Rotate the item
-    QTransform transform;
-    transform.translate(rotatePoint.x(), rotatePoint.y());
-    switch (event->modifiers()) {
-    case Qt::ControlModifier: transform.rotate(rotateAngle, Qt::XAxis); break;
-    case Qt::ShiftModifier: transform.rotate(rotateAngle, Qt::YAxis); break;
-    default: transform.rotate(rotateAngle, Qt::ZAxis);
-    };
-    transform.translate(-rotatePoint.x(), -rotatePoint.y());
-    item->setTransform(transform.inverted(), true);
-    //   item->rotate(-rotateAngle/(2*M_PI)*360);
-
-    m_stack->beginMacro(tr("rotating item(s)"));
-    m_stack->push(new RotateItem(item, transform, tr("rotating item(s)")));
-    m_stack->endMacro();
-     */
-  }
-
-void MolScene::minimiseMolecule (Molecule *mol) {
-	Minimise *minimise = new Minimise (m_bondLength);
-	//minimise ->minimiseMolecule (mol);
-	minimise ->conformationalSearchMolecule(mol);
-	
-}
-	
-	
-	void MolScene::mirrorBondInMolecule (Molecule *mol, Bond *bo) {
-		Minimise *minimise = new Minimise (m_bondLength);
-		//minimise ->minimiseMolecule (mol);
-		minimise ->mirrorBondInMolecule(mol, bo);
-		
-	}	
-	
-
-void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
-	QPointF downPos = event->buttonDownScenePos(event->button());
-
-        qDebug() << "downPos = " << downPos;
-
-	//clicking on an atom spawns a new bond from that atom
-	if (atomAt (downPos)) {
-		QPointF new_atom_pos = downPos;
-		Atom *at1 = atomAt (downPos);
-		switch (at1 ->numBonds()) {
-			case 0:
-                          {
-				qreal x = new_atom_pos.x ();
-				new_atom_pos.setX (x + m_bondLength);
-				break;
-                          }
-			case 1:
-			{
-				Atom *at2 = at1 ->neighbours()[0];
-				if (at2 ->neighbours() .size ()< 2) {
-				QPointF v = downPos - at1 ->neighbours()[0] ->pos ();
-
-				QPointF rotated_v (v.x()*0.5 - v.y()*sqrt(3)*0.5, v.x()*0.5*sqrt(3) + v.y () *0.5);
-				qreal mod = sqrt (rotated_v.x()*rotated_v.x() + rotated_v.y()*rotated_v.y());
-				rotated_v *= m_bondLength/mod;
-				new_atom_pos = rotated_v + downPos;
-				}
-				else {
-					Atom *at3 = at2 ->neighbours()[0];
-					if (at3 == at1) at3 = at2 ->neighbours()[1];
-					QPointF rotated_v = at2 ->pos () - at3 ->pos ();
-					qreal mod = sqrt (rotated_v.x()*rotated_v.x() + rotated_v.y()*rotated_v.y());
-					rotated_v *= m_bondLength/mod;
-
-
-					new_atom_pos = rotated_v + downPos;
-
-				}
-			}
-				break;
-			case 2:
-			{
-				Atom *n1 = at1 ->neighbours()[0];
-				Atom * n2 = at1 ->neighbours()[1];
-				QPointF v1 = n1 ->pos ();
-				QPointF v2 = n2 ->pos ();
-				QPointF v3 = v1 + v2;
-				QPointF v4 (v3.x () / 2, v3.y () / 2);
-				QPointF v5 =  at1 ->pos () - v4;
-				qreal mod = sqrt (v5.x()*v5.x() + v5.y()*v5.y());
-				v5 = QPointF (v5.x()/mod * m_bondLength, v5.y()/mod * m_bondLength);
-				new_atom_pos = v5 + at1->pos();
-			}
-				break;
-			default:
-				break;
-		}
-		if (new_atom_pos != downPos) {
-			m_stack->beginMacro("Add Bond");
-			Atom* atom = new Atom(new_atom_pos,m_currentElementSymbol,m_autoAddHydrogen);
-			m_stack->push(new AddAtom(atom,at1 ->molecule()));
-			Bond* bond = new Bond(at1,atom);
-			m_stack->push(new AddBond(bond));
-			for (int i = 0; i < m_bondOrder - 1; i++) 
-				m_stack->push(new IncOrder(bond));
-
-      m_stack->push(new SetBondType(bond, m_bondType));
-			m_stack->endMacro();
-		}
 	}
-		
 	
-}
+
+
+
 	
-  void MolScene::minimiseAllMolecules () {
 
-    foreach(QGraphicsItem* item, items())	{
-      if (item->type() == Molecule::Type) {
-        Molecule* mol = dynamic_cast<Molecule*>(item);
-        minimiseMolecule (mol);
-      }
-    }	
-  }
-  
-  void MolScene::connectModePress(QGraphicsSceneMouseEvent* event)
-  {
-    QPointF downPos = event->buttonDownScenePos(event->button());
-    Molecule *mol = moleculeAt(downPos);
-    if (mol) {
-      QImage molImg = renderMolToImage(mol);
 
-      MimeMolecule *data = new MimeMolecule;
-      data->setMolecule(mol);
-      data->setImageData(molImg);
 
-      QDrag *drag = new QDrag(event->widget());
-      drag->setMimeData(data);
-      drag->setPixmap(QPixmap::fromImage(molImg));
-      drag->start();
-    }
-  }
 
-  //////////////////////////////////////////////////////////////////////////////
-  //
-  // Add Mode
-  //
-  //////////////////////////////////////////////////////////////////////////////
 
-  void MolScene::addModePress(QGraphicsSceneMouseEvent* event)
-  {
-    // Get the position
-    QPointF downPos = event->buttonDownScenePos(event->button());
-
-    Bond *clickedBond = bondAt(downPos);
-    Atom *clickedAtom = atomAt(downPos);
-
-    // Check for bond click
-    if (clickedBond && !clickedAtom) {
-      if (m_hintMoleculeItems)
-        return;
-
-      switch (m_bondType) {
-        case Bond::InPlane:
-          if (clickedBond->bondType() == Bond::InPlane)
-            m_stack->push(new IncOrder(bondAt(downPos),tr("Change Bond Order")));
-          else
-            m_stack->push(new SetBondType(clickedBond, Bond::InPlane));
-          break;
-        case Bond::Wedge:
-          if (clickedBond->bondType() == Bond::Wedge)
-            m_stack->push(new SetBondType(clickedBond, Bond::InvertedWedge, tr("Change Wedge Bond")));
-          else
-            m_stack->push(new SetBondType(clickedBond, Bond::Wedge, tr("Change Wedge Bond")));
-          break;
-        case Bond::Hash:
-          if (clickedBond->bondType() == Bond::Hash)
-            m_stack->push(new SetBondType(clickedBond, Bond::InvertedHash, tr("Change Hash Bond")));
-          else
-            m_stack->push(new SetBondType(clickedBond, Bond::Hash, tr("Change Hash Bond")));
-          break;
-        case Bond::CisOrTrans:
-          m_stack->push(new SetBondType(clickedBond, Bond::CisOrTrans, tr("Change Hash Bond")));
-          break;
-        case Bond::WedgeOrHash:
-          m_stack->push(new SetBondType(clickedBond, Bond::WedgeOrHash, tr("Change Hash Bond")));
-          break;
-      };
-      return;
-    }
-
-    // Show hinting
-    if (!m_hintMoleculeItems) {
-      drawHintPoints(downPos);
-      setHintLine(downPos,event->scenePos());
-      m_hintLine->setVisible(true);
-    }
-
-    if (!clickedAtom) {
-      //
-      // mousePress in empty space
-      //
-      if (m_hintMoleculeItems) {
-        // insert the hinted molecule if it exists
-        if (!m_hintRingPoints.isEmpty()) {
-          //insertRing(downPos);
-        } else {
-          Molecule* mol = new Molecule;
-          mol->setPos(downPos);
-          m_stack->beginMacro("Add Molecule");
-          m_stack->push(new AddItem(mol,this));
-
-          Q_CHECK_PTR(m_hintMolecule);
-          foreach (Atom *hintAtom, m_hintMolecule->atoms())
-            m_stack->push(new AddAtom(new Atom( hintAtom->scenePos(), hintAtom->element(), m_autoAddHydrogen), mol));
-          m_stack->endMacro();
-        }
-
-      } else {
-        // insert a new atom
-        //Molecule* mol = new Molecule;
-        //mol->setPos(downPos);
-        //m_stack->beginMacro("Add Molecule");
-        //m_stack->push(new AddItem(mol,this));
-        //m_stack->push(new AddAtom(new Atom( downPos, m_currentElementSymbol, m_autoAddHydrogen ), mol));
-        //m_stack->endMacro();
-        addItem(new Atom( downPos, m_currentElementSymbol, m_autoAddHydrogen));
-      }
-    }
-  }
-
-  void MolScene::addModeMove(QGraphicsSceneMouseEvent* event)
-  {
-    //   QPointF startPos = event->buttonDownScenePos(Qt::LeftButton);
-    //   QPointF curPos = event->scenePos();
-    //   Atom* a1 = getAtom(startPos);
-    //   Atom* a2 = getAtom(curPos);
-    //   Bond* b = getBond(startPos);
-
-    // Check if hovering over an atom
-    //   Atom* atom = atomAt(event->scenePos());
-
-    // Check hinting conditions
-    if (!(event->buttons() & Qt::LeftButton))
-      return;
-    //   if (nearestPoint(event->buttonDownScenePos(Qt::LeftButton))==QPointF(0,0)) return;
-    if (!atomAt(event->buttonDownScenePos(Qt::LeftButton)))
-      return;
-
-    // Set hinting
-    setHintLine(nearestPoint(event->buttonDownScenePos(Qt::LeftButton)), nearestPoint(event->scenePos()));
-    //   setHoverRect(atom);
-  }
-
-  void MolScene::addModeRelease(QGraphicsSceneMouseEvent* event)
-  {
-    // Remove the hinting
-    removeHintLine();
-    removeHintPoints();
-
-    // Get position
-    QPointF downPos = event->buttonDownScenePos(event->button());
-    QPointF upPos = nearestPoint(event->scenePos());
-
-    // Check possible targets
-    Atom* a1 = atomAt(downPos);
-    Atom* a2 = atomAt(upPos);
-    Bond* b = bondAt(downPos);
-    Molecule* m1 = a1 ? a1->molecule() : 0;
-    Molecule* m2 = a2 ? a2->molecule() : 0;
-
-    // Add aligned hint molecule if applicable
-    if (m_hintMoleculeItems /*&& (a1 || b)*/) {
-      insertRing(upPos);
-      return;
-    }
-
-    /*
-    qDebug() << "a1 =" << a1;
-    qDebug() << "a2 =" << a2;
-    qDebug() << "m1 =" << m1;
-    qDebug() << "m2 =" << m2;
-    */
-    if (a1 != a2)
-      m_stack->beginMacro("Draw");
-
-    // Make sure both molecules are valid
-    if (m1 && !m2 && a2) {
-      m2 = m1;
-      a2->setMolecule(m2);
-      m_stack->push(new AddAtom(a2, m2));
-    } else if (m2 && !m1 && a1) {
-      m1 = m2;
-      a1->setMolecule(m1);
-      m_stack->push(new AddAtom(a1, m1));
-    }
-
-    /*
-    qDebug() << "    a1 =" << a1;
-    qDebug() << "    a2 =" << a2;
-    qDebug() << "    m1 =" << m1;
-    qDebug() << "    m2 =" << m2;
-    */
-
-    if (!a1 && !b) return;
-    if (b && !a1) return;
-
-    // Check for atom release
-    if (a2) {
-
-      // Check for atom click
-      if (a1 == a2) {
-        if (a1->element() != m_currentElementSymbol) {
-          // Press + Release with different symbol -> Change Element
-          m_stack->push(new ChangeElement(a1, m_currentElementSymbol, tr("Change Element")));
-        } else {
-          if (!m1) {
-            m1 = new Molecule;
-            //m_stack->beginMacro("Add Atom");
-            m_stack->push(new AddItem(m1, this));
-            m_stack->push(new AddAtom(a1,m1));
-            m_stack->endMacro();
-          }
-        }
-        return;
-      }
-
-
-      // Check for merge
-      if (m1 && m2 && (m1 != m2)) {
-        m_stack->push(new MergeMol(m1, m2, m1));
-        a1 = m1->atomAt(a1->scenePos());
-        a2 = m1->atomAt(a2->scenePos());
-        m1->setFocus();
-      } 
-
-      // Adding bond
-      Bond* bond = new Bond(a1,a2);
-      m_stack->push(new AddBond(bond));
-      for (int i = 0; i < m_bondOrder - 1; i++) 
-        m_stack->push(new IncOrder(bond));
-      m_stack->push(new SetBondType(bond, m_bondType));
-
-      // End adding macro
-      m_stack->endMacro();
-      return;
-    }
-
-    // Else scene release
-    //m_stack->beginMacro(tr("Add Atoms"));
-    if (!m1) {
-      m1 = new Molecule;
-      m_stack->push(new AddItem(m1,this));
-      m_stack->push(new AddAtom(a1,m1));
-    }
-
-    Atom* atom = new Atom(upPos,m_currentElementSymbol,m_autoAddHydrogen);
-    m_stack->push(new AddAtom(atom,m1));
-    Bond* bond = new Bond(a1,atom);
-    m_stack->push(new AddBond(bond));
-    for (int i = 0; i < m_bondOrder - 1; i++) 
-      m_stack->push(new IncOrder(bond));
-    m_stack->push(new SetBondType(bond, m_bondType));
-
-    m_stack->endMacro();
-
-    update();
-  }
-
-  void MolScene::addModeDoubleRelease( QGraphicsSceneMouseEvent * event )
-  {
-    /* TODO Find some nice use for double clicks */
-    event->accept();
-  }
-
-  void MolScene::delModePress(QGraphicsSceneMouseEvent* event)
-  {
-    Atom* a = atomAt(event->scenePos());
-    Bond* b = bondAt(event->scenePos());
-    Molecule* mol;
-
-    // Look for atomclick
-    if (a)
-    {
-      mol = a->molecule();
-      m_stack->beginMacro(tr("removing atom"));
-      m_stack->push(new DelAtom(a));
-      if (mol->canSplit()) m_stack->push(new SplitMol(mol));
-      if (mol->atoms().isEmpty()) m_stack->push(new DelItem(mol));
-      m_stack->endMacro();
-      return;
-    }
-
-    // Look for bondclick
-    if (b)
-    {
-      mol = b->molecule();
-      m_stack->beginMacro(tr("removing bond"));
-      m_stack->push(new DelBond(b));
-      if (mol->canSplit()) m_stack->push(new SplitMol(mol));
-      m_stack->endMacro();
-      return;
-    }
-  }
-
-  void MolScene::delModeDoubleClick( QGraphicsSceneMouseEvent * event )
-  {
-    Molecule* item = moleculeAt(event->scenePos());
-    if (item) 
-      m_stack->push(new DelItem(item,tr("removing molecule")));
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  //
-  // Charge Mode
-  //
-  //////////////////////////////////////////////////////////////////////////////
-
-  void MolScene::chargeModePress(QGraphicsSceneMouseEvent * event)
-  {
-    QPointF downPos = event->buttonDownScenePos(event->button());
-
-    // Check possible targets
-    Atom* atom = atomAt(downPos);
-    if (!atom)
-      return;
-
-    if (event->button() == Qt::RightButton) {
-      m_stack->push(new DecCharge(atom, tr("decreasing charge")));
-    } else {
-      m_stack->push(new IncCharge(atom, tr("increasing charge")));
-    }
-  }
-
-  void MolScene::hydrogenModePress(QGraphicsSceneMouseEvent * event)
-  {
-    QPointF downPos = event->buttonDownScenePos(event->button());
-
-    // Check possible targets
-    Atom* atom = atomAt(downPos);
-    if (!atom)
-      return;
-
-    if (event->button() == Qt::RightButton) {
-      if (atom->numImplicitHydrogens() > 0)
-        m_stack->push(new RemoveImplicitHydrogen(atom, tr("remove implicit hydrogen")));
-    } else {
-      m_stack->push(new AddImplicitHydrogen(atom, tr("add implicit hydrogen")));
-    }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  //
-  // Mechanism Arrow Mode
-  //
-  //////////////////////////////////////////////////////////////////////////////
-
-
-  void MolScene::mechanismArrowPress(QGraphicsSceneMouseEvent *event)
-  {
-    QPointF downPos = event->buttonDownScenePos(event->button());
-
-    Atom *atom = atomAt(downPos);
-    Bond *bond = bondAt(downPos);
-
-    if (!atom && !bond) {
-      // insert a mechanism arrow in an empty space on the scene
-      MechanismArrow *arrow = new MechanismArrow;
-      m_stack->push(new AddItem(arrow, this));
-      arrow->setPos(downPos);
-    }
-
-    if (atom) {
-      // start a mechanism arrow from an atom
-      m_mechanismArrowHint = new QGraphicsLineItem(QLineF(atom->pos(), downPos));
-      m_mechanismArrowHint->setPen(QPen(Qt::gray));
-      addItem(m_mechanismArrowHint);
-    }
-
-    if (bond) {
-      // start a mechanism arrow from an atom
-      QPointF midPoint = (bond->beginAtom()->pos() + bond->endAtom()->pos()) / 2;
-      m_mechanismArrowHint = new QGraphicsLineItem(QLineF(midPoint, downPos));
-      m_mechanismArrowHint->setPen(QPen(Qt::gray));
-      addItem(m_mechanismArrowHint);
-    }
-  }
-
-  void MolScene::mechanismArrowMove(QGraphicsSceneMouseEvent *event)
-  {
-    if (!m_mechanismArrowHint)
-      return;
-
-    QPointF begin(m_mechanismArrowHint->line().x1(), m_mechanismArrowHint->line().y1());
-    QPointF end = event->scenePos();
-
-    m_mechanismArrowHint->setLine(QLineF(begin, end));
-  }
-
-  void MolScene::mechanismArrowRelease(QGraphicsSceneMouseEvent *event)
-  {
-    if (!m_mechanismArrowHint)
-      return;
-
-
-    QPointF begin(m_mechanismArrowHint->line().x1(), m_mechanismArrowHint->line().y1());
-    QPointF end = event->scenePos();
-
-    QPointF vb = end - begin;
-    QPointF uvb = vb / sqrt(vb.x()*vb.x() + vb.y()*vb.y());
-    QPointF orthogonal(uvb.y(), -uvb.x());
-
-    if (atomAt(begin) && atomAt(end)) {
-      QPointF c1 = (begin + end) / 2 + orthogonal * length(vb) / 3 - begin;
-
-      MechanismArrow *arrow = new MechanismArrow(c1 - 10 * uvb, c1 + 10 * uvb, vb - 20 * uvb);
-      m_stack->push(new AddItem(arrow, this));
-      arrow->setPos(begin + 10 * uvb + 10 * orthogonal);
-    } else if (bondAt(begin) && bondAt(end)) {
-      QPointF c1 = (begin + end) / 2 + orthogonal * length(vb) / 2 - begin;
-
-      MechanismArrow *arrow = new MechanismArrow(20 * orthogonal + vb / 2, 20 * orthogonal + vb / 2, vb);
-      m_stack->push(new AddItem(arrow, this));
-      arrow->setPos(begin + 10 * orthogonal);
-    } else {
-      QPointF c1 = (begin + end) / 2 + orthogonal * length(vb) / 2 - begin;
-
-      MechanismArrow *arrow = new MechanismArrow(35 * orthogonal, vb + 35 * orthogonal, vb);
-      m_stack->push(new AddItem(arrow, this));
-      arrow->setPos(begin + 10 * orthogonal);
-    }
-
-
-    // remove the hint line
-    removeItem(m_mechanismArrowHint);
-    delete m_mechanismArrowHint;
-    m_mechanismArrowHint = 0;
-  }
-
-
-
-  void MolScene::insertReactionArrow(QGraphicsSceneMouseEvent *event)
-  {
-    QPointF downPos = event->buttonDownScenePos(event->button());
-    ReactionArrow *arrow = new ReactionArrow;
-    m_stack->push(new AddItem(arrow, this));
-    arrow->setPos(downPos);
-  }
 
 
 
@@ -2114,8 +710,9 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
     QGraphicsScene::keyPressEvent(keyEvent);
   }
 
-	QImage MolScene::toImage (OpenBabel::OBMol *obmol) {
-		Molecule *mol = addAndMinimise (obmol);
+  QImage MolScene::toImage (OpenBabel::OBMol *obmol)
+  {
+    Molecule *mol = toMol(obmol);
 		QImage im = renderMolToImage (mol);
 		removeItem (mol);
 		delete mol;
@@ -2123,8 +720,9 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
 	}
 
 	
-	Molecule *MolScene::toMol (OpenBabel::OBMol *obmol) {
-		qreal k = bondLength() / 1.5;
+  Molecule *MolScene::toMol (OpenBabel::OBMol *obmol)
+  {
+    qreal k = 40/*bondLength()*/ / 1.5; // FIXME
 		Molecule *mol = new Molecule ();
 		mol->setPos(QPointF(0,0));
 		qreal x = 0;
@@ -2211,97 +809,13 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
 		
 	}
 	
-	Molecule *MolScene::addAndMinimise (OpenBabel::OBMol *obmol) {
-		Molecule *mol = toMol (obmol);
-		minimiseMolecule (mol);
-				m_stack->beginMacro("Add Molecule");
-		m_stack->push(new AddItem(mol, this));
-		return mol;
-		
-		
-		
-	/*	
-		foreach (Atom* a1, m1 ->atoms ())
-				 {
-				 m_stack->push(new AddAtom(a1,m1));
-				 }
-		foreach (Bond* b, m1 ->bonds ())
-		{
-			m_stack->push(new AddBond(b));
-		}	
-		m_stack->endMacro();
-	 */
-	//	delete mol;
-				 //	std::cerr << mol ->atoms ().size () <<std::endl;
-	}
-	
+
 	
 	
 
   QUndoStack * MolScene::stack()
   {
     return m_stack;
-  }
-
-  int MolScene::toRoundedAngle(int angle)
-  {
-    return angle - angle % m_bondAngle;
-  }
-
-  void MolScene::setBondType(Bond::BondType type)
-  {
-    Q_ASSERT( type >= Bond::InPlane and type < Bond::NoType );
-    m_bondType = type;
-
-    // Delete the hint molecule if it exists
-    if (m_hintMoleculeItems) {
-      delete m_hintMoleculeItems;
-      m_hintMoleculeItems = 0;
-    }
-    m_hintRingPoints.clear();
-
-    switch (type) {
-      case Bond::Wedge:
-      case Bond::Hash:
-      case Bond::WedgeOrHash:
-        setBondOrder(1);
-        break;
-      case Bond::CisOrTrans:
-        setBondOrder(2);
-        break;
-      default:
-        break;
-    }
-  }
-
-  void MolScene::setBondOrder(int order)
-  {
-    Q_ASSERT( order > 0 and order < 4 );
-    m_bondOrder = order;
-  }
-
-  void MolScene::setElement(const QString & symbol)
-  {
-    m_currentElementSymbol = symbol;
-
-    // Delete the hint molecule if it exists
-    if (m_hintMoleculeItems) {
-      delete m_hintMoleculeItems;
-      m_hintMoleculeItems = 0;
-    }
-    m_hintRingPoints.clear();
-
-    setEditMode(MolScene::DrawMode);
-  }
-
-  void MolScene::setChargeMode()
-  {
-    m_editMode = ChargeMode;
-  }
-
-  void MolScene::setHydrogenMode()
-  {
-    m_editMode = HydrogenMode;
   }
 
   QFont MolScene::atomSymbolFont() const
@@ -2314,15 +828,6 @@ void MolScene::addModeDoubleClick (QGraphicsSceneMouseEvent *event) {
     m_atomSymbolFont = font;
   }
 
-  void MolScene::setBondWidth(double width)
-  {
-    Q_ASSERT(width > 0);
-    m_bondWidth = width;
-  }
 
-  qreal MolScene::bondWidth() const
-  {
-    return m_bondWidth;
-  }
 
 } // namespace
