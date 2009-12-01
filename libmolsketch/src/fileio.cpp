@@ -572,7 +572,6 @@ namespace Molsketch
 
     QXmlStreamReader xml(&file);
 
-    Molecule *currentMolecule = 0;
     QHash<QString, Atom*> atomHash;
     while (!xml.atEnd()) {
       xml.readNext();

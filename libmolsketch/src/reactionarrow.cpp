@@ -31,8 +31,8 @@
 
 namespace Molsketch {
 
-  ReactionArrow::ReactionArrow() : m_end(QPointF(50.0, 0.0)), m_hoverBegin(false), m_hoverEnd(false),
-      m_arrowType(SingleArrow), m_dialog(0)
+  ReactionArrow::ReactionArrow() : m_arrowType(SingleArrow), m_end(QPointF(50.0, 0.0)),
+      m_hoverBegin(false), m_hoverEnd(false), m_dialog(0)
   {
     setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable);
     setAcceptsHoverEvents(true);
@@ -67,6 +67,9 @@ namespace Molsketch {
 
   void ReactionArrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
   {
+    Q_UNUSED(option);
+    Q_UNUSED(widget);
+
     // draw the bounding rect if the arrow is selected
     if (isSelected() && !m_hoverBegin && !m_hoverEnd) {
       painter->save();
@@ -219,16 +222,13 @@ namespace Molsketch {
 
   void ReactionArrow::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
   {
-
-
+    Q_UNUSED(event);
   }
 
   void ReactionArrow::mousePressEvent(QGraphicsSceneMouseEvent *event)
   {
     //qDebug() << "mousePressEvent";
-
     QGraphicsItem::mousePressEvent(event);
-
   }
 
   void ReactionArrow::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
@@ -256,6 +256,7 @@ namespace Molsketch {
       
   void ReactionArrow::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
   {
+    Q_UNUSED(event);
     if (!m_dialog) {
       m_dialog = new ReactionArrowDialog(this);
     }

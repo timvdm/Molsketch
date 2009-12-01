@@ -41,6 +41,7 @@ namespace Molsketch {
 
   QString MoveTool::toolbarName(QAction *action)
   {
+    Q_UNUSED(action);
     return tr("Tools");
   }
 

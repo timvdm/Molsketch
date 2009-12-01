@@ -23,7 +23,7 @@ set(molsketch_SRCS
     main.cpp 
     mainwindow.cpp 
     settings.cpp 
-    drawwidget.cpp)
+    )
 
 # Including the resources
 file(GLOB molsketch_RCS "*.qrc")
@@ -40,7 +40,7 @@ if(WIN32)
 endif(WIN32)
 
 # MOC-ing headers
-set(molsketch_MOC_HDRS mainwindow.h settings.h drawwidget.h)
+set(molsketch_MOC_HDRS mainwindow.h settings.h)
 qt4_wrap_cpp(molsketch_SRCS ${molsketch_MOC_HDRS})
 # Take care of the .moc files
 qt4_automoc(${molsketch_SRCS})

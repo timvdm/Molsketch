@@ -42,7 +42,6 @@ using namespace OpenBabel;
 
 // widgets
 #include "settings.h"
-#include "drawwidget.h"
 
 
 #define PROGRAM_NAME "Molsketch"
@@ -131,7 +130,6 @@ MainWindow::MainWindow()
 
   // Connecting signals and slots
   connect(m_scene->stack(),SIGNAL(cleanChanged(bool)), this, SLOT(documentWasModified( )));
-  connect(m_scene,SIGNAL(selectionChange()), this, SLOT(updateInfoBox()));
 //   connect(m_scene,SIGNAL(newMolecule(QPointF,QString)),this, SLOT(newMolecule(QPointF,QString)));
   connect(m_scene,SIGNAL(editModeChange(int)),this,SLOT(updateEditMode(int)));
 
@@ -322,6 +320,8 @@ bool MainWindow::saveAs()
       QMessageBox::critical(this,tr(PROGRAM_NAME),tr("Invalid name or unknown file type"),QMessageBox::Ok,QMessageBox::Ok);
       return false;
     }
+
+  return false;
 }
 
 
@@ -508,11 +508,8 @@ void MainWindow::documentWasModified()
 
 void MainWindow::updateEditMode(int mode)
 {
-
-
-	m_molView->setDragMode(QGraphicsView::NoDrag);
-
- 
+  Q_UNUSED(mode);
+  m_molView->setDragMode(QGraphicsView::NoDrag);
 
 }
 
@@ -786,14 +783,6 @@ void MainWindow::createToolBoxes()
   toolBoxDock = new QDockWidget(tr("Toolbox"));
   toolBoxDock->setObjectName("toolbox-dockwidget");
   toolBoxDock->setMinimumWidth(270);
-  infoDock = new QDockWidget(tr("Infobox"));
-  infoDock->setObjectName("infobox-dockwidget");
-
-
-  ////////////////////////
-  // draw widget
-  ////////////////////////
-  DrawWidget *drawWidget = new DrawWidget(m_scene);
 
 
   // Create libraries
@@ -873,11 +862,6 @@ void MainWindow::createToolBoxes()
 
 
 
-  QVBoxLayout* vLayoutDS = new QVBoxLayout;
-
-  QFrame * frameDrawOptions = new QFrame;
-  frameDrawOptions->setLayout(vLayoutDS);
-
   // Composing customLib
   QHBoxLayout* hLayoutCL = new QHBoxLayout;
   hLayoutCL->addWidget(addButton);
@@ -891,23 +875,15 @@ void MainWindow::createToolBoxes()
 
   // Create a library toolbox and add the libraries
   toolBox = new QToolBox;
-  toolBox->addItem(drawWidget, tr("Draw"));
-  toolBox->addItem(frameDrawOptions,tr("Draw options"));
 //   toolBox->addItem(elementLib,tr("Elements"));
   toolBox->addItem(genericLib, tr("Generic Molecules"));
   toolBox->addItem(frameCustomLib,tr("Custom Molecules"));
   toolBoxDock->setWidget(toolBox);
 
-  // Create and add a infowidget
-  infoText = new QTextEdit;
-  infoText->setReadOnly(true);
-  infoDock->setWidget(infoText);
-
   // Placing the dockwidgets in their default position
   setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
   setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
   addDockWidget(Qt::LeftDockWidgetArea,toolBoxDock);
-  addDockWidget(Qt::LeftDockWidgetArea,infoDock);
 
 
   // Connecting signals and slots
@@ -1011,7 +987,7 @@ void MainWindow::readSettings()
   QByteArray state = settings.value("window-state", QByteArray("@ByteArray(\0\0\0\xff\0\0\0\0\xfd\0\0\0\x1\0\0\0\0\0\0\x1\xe\0\0\x3N\xfc\x2\0\0\0\x2\xfb\0\0\0$\0t\0o\0o\0l\0\x62\0o\0x\0-\0\x64\0o\0\x63\0k\0w\0i\0\x64\0g\0\x65\0t\x1\0\0\0x\0\0\x2\x65\0\0\0\xe8\0\xff\xff\xff\xfb\0\0\0$\0i\0n\0\x66\0o\0\x62\0o\0x\0-\0\x64\0o\0\x63\0k\0w\0i\0\x64\0g\0\x65\0t\x1\0\0\x2\xe3\0\0\0\xe3\0\0\0l\0\xff\xff\xff\0\0\x6l\0\0\x3N\0\0\0\x1\0\0\0\x4\0\0\0\x1\0\0\0\b\xfc\0\0\0\x2\0\0\0\x2\0\0\0\x3\0\0\0\x18\0\x66\0i\0l\0\x65\0-\0t\0o\0o\0l\0\x62\0\x61\0r\x1\0\0\0\0\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\x18\0\x65\0\x64\0i\0t\0-\0t\0o\0o\0l\0\x62\0\x61\0r\x1\0\0\x1\x33\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\x18\0z\0o\0o\0m\0-\0t\0o\0o\0l\0\x62\0\x61\0r\x1\0\0\x2s\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\x2\0\0\0\x4\0\0\0\b\0\x44\0r\0\x61\0w\x1\0\0\0\0\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\n\0R\0i\0n\0g\0s\x1\0\0\x2G\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\n\0T\0o\0o\0l\0s\x1\0\0\x3t\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\x10\0R\0\x65\0\x61\0\x63\0t\0i\0o\0n\x1\0\0\x4\x80\xff\xff\xff\xff\0\0\0\0\0\0\0\0)")).toByteArray();
 
 
-  //restoreState(state);
+  restoreState(state);
 
   // Load preferences
   readPreferences(settings);
@@ -1112,100 +1088,6 @@ QString MainWindow::strippedName(const QString &fullFileName)
   return QFileInfo(fullFileName).fileName();
 }
 
-
-void MainWindow::updateRecentList( QListWidgetItem* element )
-{
-  //   recentLib->addItem(element);
-  /*
-  bool unique = true;
-  for (int i = 0; i < recentLib->count(); i++)
-    if (recentLib->item(i)->text() == element->text()) unique = false;
-  if (unique) recentLib->addItem(element->text());
-  */
-}
-
-void MainWindow::updateRecentList( QTableWidgetItem * element )
-{
-  /*
-  bool unique = true;
-  for (int i = 0; i < recentLib->count(); i++)
-    if (recentLib->item(i)->text() == element->text()) unique = false;
-  if (unique) recentLib->addItem(element->text());
-  */
-}
-
-void MainWindow::updateInfoBox( )
-{
-  // Initializing variables
-  QString formula;
-  int molecules = 0;
-  int atoms = 0;
-  int bonds = 0;
-  qreal weight = 0;
-  int charge = 0;
-
-  // Get the selected molecules and load the values
-  QGraphicsItem* item;
-
-  // Check if selected
-  foreach(item,m_scene->selectedItems()) if (item->type() == Molecule::Type)
-    {
-      // Get the molecule
-      Molecule* mol = dynamic_cast<Molecule*>(item);
-
-      // Create formula
-      QString rawFormula = mol->formula();
-      QChar rawChar;
-      foreach (rawChar,rawFormula)
-      if (rawChar.isDigit())formula += "<sub>" + QString(rawChar) + "</sub>";
-      else formula += rawChar;
-
-      // Add charge
-      formula += "<sup>" + mol->chargeID() + "</sup>" + " ";
-
-      // Loading values
-      molecules += 1;
-      weight += mol->weight();
-      atoms += mol->atoms().count();
-      bonds += mol->bonds().count();
-      charge += mol->charge();
-    }
-
-  // Else check for focussed item
-  if (formula.isEmpty() && m_scene->focusItem())
-	  if (m_scene ->focusItem () ->type () == Molecule::Type) {
-    {
-      item = m_scene->focusItem();
-
-      // Get the molecule
-      Molecule* mol = dynamic_cast<Molecule*>(item);
-
-      // Create formula
-      QString rawFormula = mol->formula();
-      QChar rawChar;
-      foreach (rawChar,rawFormula)
-      if (rawChar.isDigit())formula += "<sub>" + QString(rawChar) + "</sub>";
-      else formula += rawChar;
-
-      // Add charge
-      formula += "<sup>" + mol->chargeID() + "</sup>" + " ";
-
-      // Loading values
-      molecules += 1;
-      weight += mol->weight();
-      atoms += mol->atoms().count();
-      bonds += mol->bonds().count();
-      charge += mol->charge();
-    }
-	  }
-
-  // Else failsafe
-  if (formula.isEmpty()) formula = tr("Non selected");
-  infoText->setText("<h1>" + formula + "\n" + "</h1>");
-
-  infoText->append("<h3>" + tr("Number of molecules: ") + QString::number(molecules) + "<P>" + tr("Total weight: ") + QString::number(weight) +"<P>" + tr("Total charge: ")+ QString::number(charge) + "<P>" + tr("Number of atoms: ") + QString::number(atoms) + "<P>" + tr("Number of bonds: ") + QString::number(bonds) + "<P>" + tr("Number of items: ") + QString::number(m_scene->items().count()) + "<P>" + "</h3>");
-
-}
 
 void MainWindow::editPreferences( )
 {

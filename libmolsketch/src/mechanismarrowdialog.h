@@ -41,8 +41,8 @@ namespace Molsketch {
       void typeChanged(int);
 
     private:
-      MechanismArrow *m_arrow;
       Ui::MechanismArrowDialog *m_ui;
+      MechanismArrow *m_arrow;
   };
 
 }

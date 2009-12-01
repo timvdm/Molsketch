@@ -45,6 +45,7 @@ namespace Molsketch {
 
   QString LassoTool::toolbarName(QAction *action)
   {
+    Q_UNUSED(action);
     return tr("Tools");
   }
 

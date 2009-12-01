@@ -86,10 +86,12 @@ namespace Molsketch {
 		Bond *bond;
 	};
 	
-	
+
+  /*
 	static qreal module (FFAtom &p) {
 		return std::sqrt (p.x()*p.x() + p.y()*p.y());
 	}
+  */
 	
 	static qreal square_distance (FFAtom &p1, FFAtom &p2) {
 		return (p2.x ()-p1.x ())*(p2.x ()-p1.x ()) + (p2.y ()-p1.y ())*(p2.y ()-p1.y ());
@@ -102,7 +104,8 @@ namespace Molsketch {
 	static QPointF vect (FFAtom &p1, FFAtom &p2) {
 		return p2.qpoint () - p1.qpoint ();
 	}
-	
+
+
 	static QPointF symmetric (QPointF p, QPointF a, QPointF b) {
 		QPointF diff = b - a;
 		if (diff.x () == 0) {
@@ -123,7 +126,7 @@ namespace Molsketch {
 		}	
 		return p;
 	}
-	
+
 	
 	static qreal angle (FFAtom &p1, FFAtom &p2, FFAtom &p3) {
 		QPointF vec1 = vect (p2, p1);
@@ -359,6 +362,7 @@ namespace Molsketch {
 			
 		}
 		void score (qreal &tot) {
+      Q_UNUSED(tot);
 			qreal ang = angle (*p1, *p2, *p3);
 			if (ang < 0) ang = -ang;
       //qreal a = (2* M_PI / 3) - ang;

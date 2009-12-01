@@ -34,8 +34,9 @@ set(libmolsketch_HDRS
 
     tool.h
     toolgroup.h
-    
+   )
 
+set(tool_HDRS
     tools/drawtool.h
     tools/movetool.h
     tools/lassotool.h
@@ -46,9 +47,7 @@ set(libmolsketch_HDRS
     tools/hydrogentool.h
     tools/electrontool.h
     tools/reactionarrowtool.h
-    tools/mechanismarrowtool.h
-    
-    
+    tools/mechanismarrowtool.h   
     )
 
 # Set up the include directory and symlink/copy all headers to it.
@@ -128,7 +127,7 @@ qt4_wrap_ui(molsketch_UIS_H ${molsketch_UIS})
 
 
 # MOC-ing headers
-set(molsketch_LIB_MOC_HDRS ${libmolsketch_HDRS})
+set(molsketch_LIB_MOC_HDRS ${libmolsketch_HDRS} ${tool_HDRS})
 set(molsketch_MOC_HDRS mainwindow.h settings.h drawwidget.h reactionarrowdialog.h mechanismarrowdialog.h)
 qt4_wrap_cpp(libmolsketch_SRCS ${molsketch_LIB_MOC_HDRS})
 

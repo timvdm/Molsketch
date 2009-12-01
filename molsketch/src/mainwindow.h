@@ -132,12 +132,7 @@ private slots:
 
   /** Update the window to match the edit mode @p mode. */
   void updateEditMode(int mode);
-  /** Update the list of recent elements with @p element. */
-  void updateRecentList(QListWidgetItem* element);
-  /** Update the list of recent elements with @p element. */
-  void updateRecentList(QTableWidgetItem* element);
-  /** Updated the info box with info on the selected item. */
-  void updateInfoBox( );
+
   
   void pluginActionTriggered();
 
@@ -223,11 +218,8 @@ protected:
   /** The dock widget for the toolbox. */
   QDockWidget* toolBoxDock;
   /** The dock widget for the info box. */
-  QDockWidget* infoDock;
   /** The toolbox with the libraries. */
   QToolBox* toolBox;
-  /** The info textbox. */
-  QTextEdit* infoText;
 
   // Menus
   /** The file menu. */

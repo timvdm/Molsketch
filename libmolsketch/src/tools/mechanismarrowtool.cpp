@@ -43,6 +43,7 @@ namespace Molsketch {
 
   QString MechanismArrowTool::toolbarName(QAction *action)
   {
+    Q_UNUSED(action);
     return tr("Reaction");
   }
 

@@ -41,8 +41,8 @@ namespace Molsketch {
       void typeChanged(int);
 
     private:
-      ReactionArrow *m_arrow;
       Ui::ReactionArrowDialog *m_ui;
+      ReactionArrow *m_arrow;
   };
 
 }

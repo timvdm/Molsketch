@@ -663,6 +663,7 @@ namespace Molsketch {
 
   void DrawTool::insertRing(const QPointF &pos)
   {
+    Q_UNUSED(pos);
     // Get pointer the undo stack
     QUndoStack *undostack = scene()->stack();
 

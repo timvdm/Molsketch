@@ -31,18 +31,18 @@
 
 namespace Molsketch {
 
-  MechanismArrow::MechanismArrow() : m_p1(QPointF(0.0, 0.0)), m_p2(QPointF(0.0, -50.0)),
+  MechanismArrow::MechanismArrow() : m_arrowType(SingleArrowRight), m_p1(QPointF(0.0, 0.0)), m_p2(QPointF(0.0, -50.0)),
       m_p3(QPointF(50.0, -50.0)), m_p4(QPointF(50.0, 0.0)), m_hoverP1(false), 
-      m_hoverP2(false), m_hoverP3(false), m_hoverP4(false), m_arrowType(SingleArrowRight), m_dialog(0)
+      m_hoverP2(false), m_hoverP3(false), m_hoverP4(false), m_dialog(0)
   {
     setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable);
     setAcceptsHoverEvents(true);
     setZValue(1.0);
   }
   
-  MechanismArrow::MechanismArrow(QPointF c1, QPointF c2, QPointF endPoint) : m_p1(QPointF(0.0, 0.0)), m_p2(c1),
-      m_p3(c2), m_p4(endPoint), m_hoverP1(false), m_hoverP2(false), m_hoverP3(false), m_hoverP4(false),
-      m_arrowType(SingleArrowRight), m_dialog(0)
+  MechanismArrow::MechanismArrow(QPointF c1, QPointF c2, QPointF endPoint) : m_arrowType(SingleArrowRight),
+      m_p1(QPointF(0.0, 0.0)), m_p2(c1), m_p3(c2), m_p4(endPoint), m_hoverP1(false),
+      m_hoverP2(false), m_hoverP3(false), m_hoverP4(false), m_dialog(0)
   {
     setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable);
     setAcceptsHoverEvents(true);
@@ -83,6 +83,9 @@ namespace Molsketch {
 
   void MechanismArrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
   {
+    Q_UNUSED(option);
+    Q_UNUSED(widget);
+
     // draw the bounding rect if the arrow is selected
     if (isSelected()/* && !m_hoverP1 && !m_hoverP2 && !m_hoverP3 && !m_hoverP4*/) {
       painter->save();
@@ -261,6 +264,7 @@ namespace Molsketch {
 
   void MechanismArrow::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
   {
+    Q_UNUSED(event);
     m_hoverP1 = false;
     m_hoverP2 = false;
     m_hoverP3 = false;
@@ -271,9 +275,7 @@ namespace Molsketch {
   void MechanismArrow::mousePressEvent(QGraphicsSceneMouseEvent *event)
   {
     //qDebug() << "mousePressEvent";
-
     QGraphicsItem::mousePressEvent(event);
-
   }
 
   void MechanismArrow::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
@@ -313,6 +315,7 @@ namespace Molsketch {
       
   void MechanismArrow::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
   {
+    Q_UNUSED(event)
     if (!m_dialog) {
       m_dialog = new MechanismArrowDialog(this);
     }

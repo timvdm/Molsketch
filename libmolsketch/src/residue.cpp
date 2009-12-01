@@ -33,6 +33,8 @@ namespace Molsketch {
 	
 	
 	void Residue::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
+    Q_UNUSED(option);
+    Q_UNUSED(widget);
 	//	MolScene* molScene = dynamic_cast<MolScene*>(scene());
 	//	Q_CHECK_PTR(molScene);
 		

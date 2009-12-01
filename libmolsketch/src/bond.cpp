@@ -101,8 +101,7 @@ namespace Molsketch {
     QPointF vb = end - begin;
     QPointF uvb = vb / sqrt(vb.x()*vb.x() + vb.y()*vb.y());
 
-    MolScene* molScene = dynamic_cast<MolScene*>(scene());
-	  
+
     if (m_beginAtom->hasLabel())
       begin += 0.20 * uvb * 40/*molScene->bondLength()*/; // FIXME
     if (m_endAtom->hasLabel())
@@ -156,7 +155,6 @@ namespace Molsketch {
     QPointF spacing = orthogonal * m_bondSpacing;
     QPointF offset = uvb * m_bondSpacing;
 
-    MolScene* molScene = dynamic_cast<MolScene*>(scene());
     QPointF offset2 = 0.20 * uvb * 40/*molScene->bondLength()*/; //FIXME
 
     if (length(begin + spacing - center) > length(begin - spacing - center))

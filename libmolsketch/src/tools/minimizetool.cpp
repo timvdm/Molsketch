@@ -39,6 +39,7 @@ namespace Molsketch {
 
   QString MinimizeTool::toolbarName(QAction *action)
   {
+    Q_UNUSED(action);
     return tr("Tools");
   }
 
