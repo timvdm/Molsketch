@@ -1,5 +1,0 @@
-<RCC>
-    <qresource prefix="/" >
-        <file>./molsketch.svg</file>
-    </qresource>
-</RCC>
