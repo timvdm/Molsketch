@@ -1,8 +1,8 @@
-## CMakeLists.txt for molsKetch
+## CMakeLists.txt for Molsketch
 cmake_minimum_required(VERSION 2.6.0) # Depend on CMake 2.6 or better
 
 # The name of the project
-project(molsKetch)
+project(Molsketch)
 
 # Include the extra modules (OpenBabel)
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
@@ -23,6 +23,11 @@ if (CMAKE_COMPILER_IS_GNUCXX)
 endif (CMAKE_COMPILER_IS_GNUCXX)
 
 # Enable CPack
+set(CPACK_PACKAGE_VERSION_MAJOR "0")
+set(CPACK_PACKAGE_VERSION_MINOR "1")
+set(CPACK_PACKAGE_VERSION_PATCH "0")
+set(CPACK_SOURCE_PACKAGE_NAME "${CMAKE_PROJECT_NAME}-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
+set(CPACK_SOURCE_IGNORE_FILES "/build;/.git")
 include(CPack)
 
 # Unit testing, mainly useful for developers and so defaults to off
@@ -52,7 +57,7 @@ set(_obIncDir ${CMAKE_SOURCE_DIR}/include)
 set(_obLinkDir ${CMAKE_SOURCE_DIR}/lib)
 
 # Find and setup Qt4 
-set(QT_MIN_VERSION "4.3.0") # we need at least version 4.3 of Qt
+set(QT_MIN_VERSION "4.5.0") # we need at least version 4.5 of Qt
 find_package(Qt4 REQUIRED)
 # and OpenBabel2
 find_package(PkgConfig)
