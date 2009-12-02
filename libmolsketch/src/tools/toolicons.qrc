@@ -1,0 +1,29 @@
+<RCC>
+  <qresource prefix="/" >
+    <file>images/electrons.png</file>
+    <file>images/reactionarrow.png</file>
+    <file>images/mechanismarrow.png</file>
+    <file>images/hydrogens.png</file>
+    <file>images/charges.png</file>
+    <file>images/connect.png</file>
+    <file>images/hand.png</file>
+    <file>images/move.png</file>
+    <file>images/lasso.png</file>
+    <file>images/rotate.png</file>
+    <file>images/ring8.png</file>
+    <file>images/C1CC1.png</file>
+    <file>images/ring7.png</file>
+    <file>images/C1CCC1.png</file>
+    <file>images/a1aaaa1.png</file>
+    <file>images/a1aaaaa1.png</file>
+    <file>images/C1CCCCC1.png</file>
+    <file>images/cistrans.png</file>
+    <file>images/wedge.png</file>
+    <file>images/C1CCCC1.png</file>
+    <file>images/double.png</file>
+    <file>images/triple.png</file>
+    <file>images/hash.png</file>
+    <file>images/hashOrWedge.png</file>
+    <file>images/single.png</file>
+  </qresource>
+</RCC>

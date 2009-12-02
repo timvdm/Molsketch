@@ -50,6 +50,7 @@ set(tool_HDRS
     tools/mechanismarrowtool.h   
     )
 
+
 # Set up the include directory and symlink/copy all headers to it.
 # Note: Windows lacks symlinks and so the files must be copied.
 message("creating ${CMAKE_CURRENT_BINARY_DIR}/include/molsketch")
@@ -118,11 +119,12 @@ set(libmolsketch_SRCS
     
     )
 
+set(toolicon_RCS tools/toolicons.qrc)
 
 file(GLOB molsketch_UIS "*.ui")
 message("UIS = ${molsketch_UIS}")
 qt4_automoc(${libmolsketch_HDRS})
-qt4_add_resources(molsketch_SRCS ${molsketch_RCS})
+qt4_add_resources(libmolsketch_SRCS ${toolicon_RCS})
 qt4_wrap_ui(molsketch_UIS_H ${molsketch_UIS})
 
 
