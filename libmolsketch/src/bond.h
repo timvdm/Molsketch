@@ -28,9 +28,9 @@
 #ifndef BOND_H
 #define BOND_H
 
-#include <Molsketch/GraphicsItemTypes>
-#include <Molsketch/Molecule>
-#include <Molsketch/Atom>
+#include <molsketch/graphicsitemtypes.h>
+#include <molsketch/molecule.h>
+#include <molsketch/atom.h>
 
 #include <QGraphicsItem>
 

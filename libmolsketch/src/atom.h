@@ -21,7 +21,7 @@
 #ifndef MSK_ATOM_H
 #define MSK_ATOM_H
 
-#include <Molsketch/GraphicsItemTypes>
+#include <molsketch/graphicsitemtypes.h>
 
 #include <QGraphicsItem>
 #include <QList>
