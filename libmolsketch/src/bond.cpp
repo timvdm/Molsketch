@@ -36,7 +36,15 @@
 
 namespace Molsketch {
 
-  Bond::Bond(Atom* atomA, Atom* atomB, int order, Bond::BondType type, QGraphicsItem* parent,QGraphicsScene* scene) : QGraphicsItem(parent,scene)
+  Bond::Bond(Atom* atomA, Atom* atomB, int order, Bond::BondType type, QGraphicsItem* parent
+#if QT_VERSION < 0x050000
+			, QGraphicsScene *scene
+#endif
+			) : QGraphicsItem (parent
+#if QT_VERSION < 0x050000
+					   , scene
+#endif
+					   )
   {
     Q_CHECK_PTR(atomA);
     Q_CHECK_PTR(atomB);
@@ -51,7 +59,13 @@ namespace Molsketch {
     atomB->addBond(this);
   
     setPos(m_beginAtom->scenePos());
-    MolScene* molScene = dynamic_cast<MolScene*>(scene);
+    MolScene* molScene = dynamic_cast<MolScene*>(
+#if QT_VERSION < 0x050000
+                scene
+#else
+                scene()
+#endif
+                );
     if (molScene) 
       setColor(molScene->color());
     else 

@@ -28,7 +28,7 @@
 #ifndef molview_H
 #define molview_H
 
-#include <QtGui/QGraphicsView>
+#include <QGraphicsView>
 
 namespace Molsketch {
 

@@ -218,7 +218,13 @@ namespace Molsketch
     using namespace OpenBabel;
     OBConversion conversion;
 
-    if (!conversion.SetOutFormat(QFileInfo(fileName).suffix().toAscii())) {
+    if (!conversion.SetOutFormat(QFileInfo(fileName).suffix().
+#if QT_VERSION < 0x050000
+                                 toAscii()
+#else
+                                 toLatin1()
+#endif
+                                 )) {
       qDebug() << "Error while saving #1";
       return false;
     }
@@ -302,7 +308,13 @@ namespace Molsketch
     using namespace OpenBabel;
     OBConversion * conversion = new OBConversion;
 
-    if (conversion->SetOutFormat(QFileInfo(fileName).suffix().toAscii()))
+    if (conversion->SetOutFormat(QFileInfo(fileName).suffix().
+#if QT_VERSION < 0x050000
+                                 toAscii()
+#else
+                                 toLatin1()
+#endif
+                                 ))
     {
       // Create the output molecule
       OBMol* obmol = new OBMol;
@@ -407,7 +419,13 @@ namespace Molsketch
     // Creating and setting conversion classes
     using namespace OpenBabel;
     OBConversion * conversion = new OBConversion;
-    conversion->SetInFormat(conversion->FormatFromExt(fileName.toAscii()));
+    conversion->SetInFormat(conversion->FormatFromExt(fileName.
+#if QT_VERSION < 0x050000
+                                                      toAscii()
+#else
+                                                      toLatin1()
+#endif
+                                                      ));
     OBMol obmol;
 
     // Try to load a file
@@ -468,7 +486,13 @@ namespace Molsketch
     // Creating and setting conversion classes
     using namespace OpenBabel;
     OBConversion * conversion = new OBConversion;
-    conversion->SetInFormat(conversion->FormatFromExt(fileName.toAscii()));
+    conversion->SetInFormat(conversion->FormatFromExt(fileName.
+#if QT_VERSION < 0x050000
+                                                      toAscii()
+#else
+                                                      toLatin1()
+#endif
+                                                      ));
     OBMol obmol;
 
     // Try to load a file

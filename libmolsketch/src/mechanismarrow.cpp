@@ -36,7 +36,11 @@ namespace Molsketch {
       m_hoverP2(false), m_hoverP3(false), m_hoverP4(false), m_dialog(0)
   {
     setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable);
+#if QT_VERSION < 0x050000
     setAcceptsHoverEvents(true);
+#else
+    setAcceptHoverEvents(true) ;
+#endif
     setZValue(1.0);
   }
   
@@ -45,7 +49,11 @@ namespace Molsketch {
       m_hoverP2(false), m_hoverP3(false), m_hoverP4(false), m_dialog(0)
   {
     setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable);
+#if QT_VERSION < 0x050000
     setAcceptsHoverEvents(true);
+#else
+    setAcceptHoverEvents(true) ;
+#endif
     setZValue(1.0);
   }
 

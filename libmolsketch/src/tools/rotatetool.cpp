@@ -48,7 +48,11 @@ namespace Molsketch {
 
   void RotateTool::mousePressEvent(QGraphicsSceneMouseEvent *event)
   {
-    QGraphicsItem * item = scene()->itemAt(event->buttonDownScenePos(Qt::LeftButton));
+    QGraphicsItem * item = scene()->itemAt(event->buttonDownScenePos(Qt::LeftButton)
+#if QT_VERSION >= 0x050000
+                                           , QTransform()
+#endif
+);
     if (!item)
       return;
 

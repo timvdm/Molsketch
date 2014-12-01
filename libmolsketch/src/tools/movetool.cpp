@@ -73,7 +73,11 @@ namespace Molsketch {
   {
     qDebug() << "mousePressEvent";
     // Check whether to select an item
-    QGraphicsItem * item = scene()->itemAt(event->scenePos());
+    QGraphicsItem * item = scene()->itemAt(event->scenePos()
+#if QT_VERSION >= 0x050000
+                                           , QTransform()
+#endif
+                                           );
     if (item && !item->isSelected()) {
       scene()->clearSelection();
       item->setSelected(true);

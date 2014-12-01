@@ -53,7 +53,11 @@ namespace Molsketch {
 
   int symbol2number( const QString &symbol )
   {
-    return eTable.GetAtomicNum(symbol.toAscii());;
+#if QT_VERSION >= 0x050000
+    return eTable.GetAtomicNum(symbol.toLatin1()) ;
+#else
+    return eTable.GetAtomicNum(symbol.toAscii()) ;
+#endif
   }
 
   double weightOfElement( int number )

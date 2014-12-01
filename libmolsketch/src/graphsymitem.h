@@ -19,7 +19,11 @@
 #ifndef GRAPHSYMITEM_H
 #define GRAPHSYMITEM_H
 
+#ifdef QMAKEBUILD
+#include <molinputitem.h>
+#else
 #include <molsketch/molinputitem.h>
+#endif
 
 namespace Molsketch {
 

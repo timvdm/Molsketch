@@ -75,7 +75,15 @@ namespace Molsketch {
 
 
   Atom::Atom(const QPointF &position, const QString &element, bool implicitHydrogens, 
-     QGraphicsItem* parent, QGraphicsScene* scene) : QGraphicsItem (parent,scene)
+     QGraphicsItem* parent
+#if QT_VERSION < 0x050000
+	     , QGraphicsScene *scene
+#endif
+	     ) : QGraphicsItem (parent
+#if QT_VERSION < 0x050000
+				, scene
+#endif
+				)
   {
     //pre: position is a valid position in scene coordinates
     setPos(position);
@@ -83,7 +91,13 @@ namespace Molsketch {
     //setFlag(QGraphicsItem::ItemIsMovable);
     //setFlag(QGraphicsItem::ItemIgnoresTransformations);
 
-    MolScene *molScene = dynamic_cast<MolScene*>(scene); // @todo qobject_cast is faster
+    MolScene *molScene = dynamic_cast<MolScene*>(
+#if QT_VERSION < 0x050000
+          scene
+#else
+          scene()
+#endif
+          ); // @todo qobject_cast is faster
     if (molScene)
       setFlag(QGraphicsItem::ItemIsSelectable, molScene->editMode() == MolScene::MoveMode);
 	  
@@ -92,7 +106,11 @@ namespace Molsketch {
 	  }
 	  else setColor (QColor (0, 0, 0));
     // Enabling hovereffects
+#if QT_VERSION < 0x050000
     setAcceptsHoverEvents(true);
+#else
+    setAcceptHoverEvents(true) ;
+#endif
     setAcceptedMouseButtons(Qt::LeftButton | Qt::MidButton);
 
     // Setting private fields

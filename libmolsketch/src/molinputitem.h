@@ -19,7 +19,11 @@
 #ifndef MOLINPUTITEM_H
 #define MOLINPUTITEM_H
 
+#ifdef QMAKEBUILD
+#include <itemplugin.h>
+#else
 #include <molsketch/itemplugin.h>
+#endif
 
 namespace Molsketch {
 

@@ -19,7 +19,7 @@
 #ifndef REACTIONARROWDIALOG_H
 #define REACTIONARROWDIALOG_H
 
-#include <QtGui/QDialog>
+#include <QDialog>
 
 
 namespace Ui {

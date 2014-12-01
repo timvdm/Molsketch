@@ -21,7 +21,11 @@
 #ifndef MSK_ATOM_H
 #define MSK_ATOM_H
 
+#ifdef QMAKEBUILD
+#include <graphicsitemtypes.h>
+#else
 #include <molsketch/graphicsitemtypes.h>
+#endif
 
 #include <QGraphicsItem>
 #include <QList>
@@ -55,7 +59,11 @@ namespace Molsketch {
        * @param invisible makes the atom invisible if @c true
        */
       Atom(const QPointF & position, const QString & element, 
-          bool implicitHydrogens, QGraphicsItem* parent = 0, QGraphicsScene* scene = 0);
+	  bool implicitHydrogens, QGraphicsItem* parent = 0
+#if QT_VERSION < 0x050000
+		      , QGraphicsScene *scene = 0
+#endif
+	   );
 
       //@name Inherited drawing methods
       //@{

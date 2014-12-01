@@ -19,7 +19,11 @@
 #ifndef STEREOCENTERITEM_H
 #define STEREOCENTERITEM_H
 
+#ifdef QMAKEBUILD
+#include <molinputitem.h>
+#else
 #include <molsketch/molinputitem.h>
+#endif
 
 namespace Molsketch {
 

@@ -43,7 +43,11 @@ namespace Molsketch {
 				 * @param residue the residue string to be displayed.
 				 */
 				Residue(const QPointF & position, const QString & residue, 
-					  QGraphicsItem* parent = 0, QGraphicsScene* scene = 0);
+					  QGraphicsItem* parent = 0
+		#if QT_VERSION < 0x050000
+				      , QGraphicsScene *scene = 0
+		#endif
+);
 				
 				void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget);
 				QRectF boundingRect() const;

@@ -68,7 +68,7 @@ namespace Molsketch {
 
 
     std::vector<unsigned int> canonical_labels;
-    OpenBabel::CanonicalLabels(obmol, fragatoms, symmetry_classes, canonical_labels);
+    OpenBabel::CanonicalLabels(obmol, symmetry_classes, canonical_labels);
 #endif
 
     for (int i = 0; i < atoms.size(); ++i) {

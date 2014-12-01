@@ -28,7 +28,11 @@
 #ifndef MOLECULE_H
 #define MOLECULE_H
 
+#ifdef QMAKEBUILD
+#include <graphicsitemtypes.h>
+#else
 #include <molsketch/graphicsitemtypes.h>
+#endif
 
 #include <QList>
 #include <QGraphicsItemGroup>
@@ -72,11 +76,23 @@ class Molecule : public QGraphicsItemGroup
 
     // Constructors and destructor
     /** Creates a molecule with @p parent on MolScene @p scene. */
-    Molecule(QGraphicsItem* parent = 0, MolScene* scene = 0);
+    Molecule(QGraphicsItem* parent = 0
+#if QT_VERSION < 0x050000
+        , MolScene *scene = 0
+#endif
+             );
     /** Creates a molecule from the atoms and bonds of the sets with @p parent on MolScene @p scene. */
-    Molecule(QSet<Atom*>, QSet<Bond*>, QGraphicsItem* parent = 0, MolScene* scene = 0);
+    Molecule(QSet<Atom*>, QSet<Bond*>, QGraphicsItem* parent = 0
+#if QT_VERSION < 0x050000
+        , MolScene *scene = 0
+#endif
+             );
     /** Creates a copy of molecule @p mol with @p parent on MolScene @p scene. */
-    Molecule(Molecule* mol, QGraphicsItem* parent = 0, MolScene* scene = 0);
+    Molecule(Molecule* mol, QGraphicsItem* parent = 0
+#if QT_VERSION < 0x050000
+        , MolScene *scene = 0
+#endif
+             );
 
 
 

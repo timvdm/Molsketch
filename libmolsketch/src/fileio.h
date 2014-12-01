@@ -26,6 +26,10 @@
  * @since Hydrogen
  */
 
+#if QT_VERSION >= 0x050000
+#include <QPrinter>
+#endif
+
 namespace Molsketch
 {
 class MolScene;

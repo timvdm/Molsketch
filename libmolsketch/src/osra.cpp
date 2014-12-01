@@ -21,7 +21,11 @@
 #include "fileio.h"
 #include "atom.h"
 
+#if QT_VERSION < 0x050000
 #include <QDesktopServices>
+#else
+#include <QStandardPaths>
+#endif
 #include <QProcess>
 #include <QDir>
 #include <QFile>
@@ -31,7 +35,11 @@ namespace Molsketch {
   Molecule* call_osra(QString fileName)
   {
     int n=0;
+#if QT_VERSION < 0x050000
     QString tmpresult = QDesktopServices::storageLocation(QDesktopServices::TempLocation) + QDir::separator() + "osra";
+#else
+    QString tmpresult = QStandardPaths::writableLocation(QStandardPaths::TempLocation) + QDir::separator() + "osra";
+#endif
     tmpresult += ".sdf";
     QString command;
     char *env = getenv("OSRA");

@@ -63,7 +63,7 @@ namespace Molsketch {
     graphsym.GetSymmetry(symmetry_classes);
 
     //std::vector<unsigned long> atomIds = FindTetrahedralAtoms(obmol, symmetry_classes);
-    std::vector<OpenBabel::StereogenicUnit> units = FindStereogenicUnits(obmol, symmetry_classes);
+    OpenBabel::OBStereoUnitSet units = FindStereogenicUnits(obmol, symmetry_classes);
     
     for (unsigned int i = 0; i < units.size(); ++i) {
       if (units.at(i).type == OpenBabel::OBStereo::Tetrahedral) {

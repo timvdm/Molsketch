@@ -31,7 +31,11 @@
 
 #include "settings.h"
 
+#ifdef QMAKEBUILD
+#include <molscene.h>
+#else
 #include <molsketch/molscene.h>
+#endif
 
 SettingsDialog::SettingsDialog(QWidget * parent, Qt::WindowFlags f ) : QDialog(parent,f)
 {
@@ -154,7 +158,7 @@ void SettingsDialog::browseCustomLibraryPath()
 
 void SettingsDialog::selectFont()
 {
-  bool * ok = false;
+  bool * ok = NULL;
   QFont previousFont = ui.fontComboBox->currentFont();
   previousFont.setPointSizeF(ui.doubleSpinBoxFontSize->value());
   QFont font = QFontDialog::getFont(ok, previousFont, this, "molsKetch - Select atomsymbol font");

@@ -19,22 +19,78 @@
  ***************************************************************************/
 
 #include <QtGui>
+#include <QToolBar>
+#include <QMessageBox>
+#include <QFileDialog>
+#include <QStatusBar>
+#include <QProgressBar>
+#include <QColorDialog>
+#include <QPrintPreviewDialog>
+#include <QMenuBar>
+#include <QMenu>
+#include <QDockWidget>
+#include <QToolBox>
+#include <QInputDialog>
+#if QT_VERSION <= 0x040603
 #include <QAssistantClient>
+#else
+#include <QProcess>
+#endif
 #include <QGridLayout>
 
 #include "mainwindow.h"
 
+#ifdef QMAKEBUILD
+#include <molecule.h>
+#else
 #include <molsketch/molecule.h>
+#endif
+#ifdef QMAKEBUILD
+#include <molview.h>
+#else
 #include <molsketch/molview.h>
+#endif
+#ifdef QMAKEBUILD
+#include <molscene.h>
+#else
 #include <molsketch/molscene.h>
+#endif
+#ifdef QMAKEBUILD
+#include <element.h>
+#else
 #include <molsketch/element.h>
+#endif
+#ifdef QMAKEBUILD
+#include <fileio.h>
+#else
 #include <molsketch/fileio.h>
+#endif
+#ifdef QMAKEBUILD
+#include <mollibitem.h>
+#else
 #include <molsketch/mollibitem.h>
+#endif
+#ifdef QMAKEBUILD
+#include <itemplugin.h>
+#else
 #include <molsketch/itemplugin.h>
+#endif
+#ifdef QMAKEBUILD
+#include <osra.h>
+#else
 #include <molsketch/osra.h>
+#endif
 
+#ifdef QMAKEBUILD
+#include <tool.h>
+#else
 #include <molsketch/tool.h>
+#endif
+#ifdef QMAKEBUILD
+#include <toolgroup.h>
+#else
 #include <molsketch/toolgroup.h>
+#endif
 
 #include <openbabel/mol.h>
 
@@ -161,7 +217,14 @@ void MainWindow::closeEvent(QCloseEvent *event)
   if (maybeSave())
     {
       writeSettings();
-      if (assistantClient) assistantClient->closeAssistant();
+      if (assistantClient)
+        {
+#if QT_VERSION <= 0x040603
+          assistantClient->closeAssistant();
+#else
+          assistantClient->terminate();
+#endif
+        }
       event->accept();
     }
   else
@@ -490,7 +553,16 @@ void MainWindow::assistant()
   QFileInfo file(ALT_DOC_PATH + QString("/index.html"));
   if (!file.exists()) file.setFile(QApplication::applicationDirPath() + "/doc/en/index.html");
   if (!file.exists()) file.setFile(QApplication::applicationDirPath() + "/../share/doc/molsketch/doc/en/index.html");
+#if QT_VERSION <= 0x040603
   assistantClient->showPage(file.absoluteFilePath());
+#else
+  qDebug() << "Opening help:" << file.absoluteFilePath() ;
+  QTextStream stream(assistantClient) ;
+  stream << QLatin1String("setSource ")
+         << file.absoluteFilePath()
+         << QLatin1Char('\0')
+         << endl;
+#endif
 }
 
 
@@ -956,15 +1028,36 @@ void MainWindow::createView()
 
 void MainWindow::initializeAssistant()
 {
+#if QT_VERSION <= 0x040603
   assistantClient = new QAssistantClient("", this);
-
+  QString docfile("molsketch.adp") ;
   QStringList arguments;
-  QFileInfo file(ALT_DOC_PATH + QString("/molsketch.adp"));
-  if (!file.exists()) file.setFile(QApplication::applicationDirPath() + "/doc/en/molsketch.adp");
-  if (!file.exists()) file.setFile(QApplication::applicationDirPath() + "/../share/doc/molsketch/doc/en/molsketch.adp");
+#else
+  assistantClient = new QProcess(this) ;
+  QString app = QLibraryInfo::location(QLibraryInfo::BinariesPath)
+               + QLatin1String("/assistant");
+#if QT_VERSION >= 0x050000
+  app += QLatin1String("-qt5") ;
+#endif
+  QString docfile("molsketch.qhp") ;
+#endif
 
+  QFileInfo file(ALT_DOC_PATH + QString("/molsketch.adp"));
+  if (!file.exists()) file.setFile(QApplication::applicationDirPath() + "/doc/en/" + docfile );
+  if (!file.exists()) file.setFile(QApplication::applicationDirPath() + "/../share/doc/molsketch/doc/en/" + docfile);
+
+#if QT_VERSION <= 0x040603
   arguments << "-profile" << file.absoluteFilePath();
   assistantClient->setArguments(arguments);
+#else
+  qDebug() << "Starting assistant with argumetns:" << file.absoluteFilePath() << app ;
+  assistantClient->start(app, QStringList() << QLatin1String("-enableRemoteControl")) ;
+  QTextStream stream(assistantClient) ;
+  stream << QLatin1String("register ")
+         << file.absoluteFilePath()
+         << QLatin1Char('\0')
+         << endl;
+#endif
 }
 
 // Auxillary methods

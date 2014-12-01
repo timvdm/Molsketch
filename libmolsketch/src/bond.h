@@ -28,9 +28,21 @@
 #ifndef BOND_H
 #define BOND_H
 
+#ifdef QMAKEBUILD
+#include <graphicsitemtypes.h>
+#else
 #include <molsketch/graphicsitemtypes.h>
+#endif
+#ifdef QMAKEBUILD
+#include <molecule.h>
+#else
 #include <molsketch/molecule.h>
+#endif
+#ifdef QMAKEBUILD
+#include <atom.h>
+#else
 #include <molsketch/atom.h>
+#endif
 
 #include <QGraphicsItem>
 
@@ -84,7 +96,11 @@ class Bond : public QGraphicsItem
      * @param order the bond order (@c Bond::Single for single, @c Bond::Double for double, @c Bond::Triple for tripple)
      * @param type the bond type (@c Bond::Normal, @c Bond::Up, @c Bond::Down, e.g.)
      */
-    Bond(Atom* atomA, Atom* atomB, int order = 1, Bond::BondType type = InPlane, QGraphicsItem* parent = 0, QGraphicsScene* scene = 0);
+    Bond(Atom* atomA, Atom* atomB, int order = 1, Bond::BondType type = InPlane, QGraphicsItem* parent = 0
+#if QT_VERSION < 0x050000
+				      , QGraphicsScene *scene = 0
+#endif
+	 );
     /**
      * Destructor. 
      */

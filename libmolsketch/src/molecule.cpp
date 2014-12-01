@@ -40,28 +40,62 @@ namespace Molsketch {
 
   // Constructors
 
-  Molecule::Molecule(QGraphicsItem* parent, MolScene* scene) : QGraphicsItemGroup(parent,scene)
+  Molecule::Molecule(QGraphicsItem* parent
+#if QT_VERSION < 0x050000
+                     , MolScene *scene
+#endif
+                     ) : QGraphicsItemGroup (parent
+#if QT_VERSION < 0x050000
+                                        , scene
+#endif
+                                        )
   {
     m_electronSystemsUpdate = true;
     // Setting properties
     setFlags(QGraphicsItem::ItemIsFocusable);
     setAcceptedMouseButtons(Qt::LeftButton|Qt::MidButton);
+#if QT_VERSION < 0x050000
     setAcceptsHoverEvents(true);
+#else
+    setAcceptHoverEvents(true) ;
+#endif
     setHandlesChildEvents(false);
+#if QT_VERSION < 0x050000
     if (scene)
       setFlag(QGraphicsItem::ItemIsSelectable, scene->editMode()==MolScene::MoveMode);
+#else
+    if (qobject_cast<MolScene*>(scene()))
+      setFlag(QGraphicsItem::ItemIsSelectable, qobject_cast<MolScene*>(scene())->editMode()==MolScene::MoveMode);
+#endif
   }
 
   Molecule::Molecule(QSet<Atom*> atomSet, QSet<Bond*> bondSet,
-                     QGraphicsItem* parent, MolScene* scene) : QGraphicsItemGroup(parent,scene)
+                     QGraphicsItem* parent
+#if QT_VERSION < 0x050000
+                     , MolScene *scene
+#endif
+                     ) : QGraphicsItemGroup (parent
+#if QT_VERSION < 0x050000
+                                        , scene
+#endif
+                                        )
   {
     m_electronSystemsUpdate = true;
     // Setting properties
     setFlags(QGraphicsItem::ItemIsFocusable);
     setAcceptedMouseButtons(Qt::LeftButton|Qt::MidButton);
+#if QT_VERSION < 0x050000
     setAcceptsHoverEvents(true);
+#else
+    setAcceptHoverEvents(true) ;
+#endif
     setHandlesChildEvents(false);
+#if QT_VERSION < 0x050000
     if (scene) setFlag(QGraphicsItem::ItemIsSelectable, scene->editMode()==MolScene::MoveMode);
+#else
+    if (qobject_cast<MolScene*>(scene()))
+        setFlag(QGraphicsItem::ItemIsSelectable, qobject_cast<MolScene*>(scene())->editMode()==MolScene::MoveMode);
+#endif
 
     // Add the new atoms
     foreach(Atom* atom, atomSet) {
@@ -78,16 +112,33 @@ namespace Molsketch {
     }
   }
 
-  Molecule::Molecule(Molecule* mol, QGraphicsItem* parent, MolScene* scene) : QGraphicsItemGroup(parent,scene)
+  Molecule::Molecule(Molecule* mol, QGraphicsItem* parent
+#if QT_VERSION < 0x050000
+                     , MolScene *scene
+#endif
+                     ) : QGraphicsItemGroup (parent
+#if QT_VERSION < 0x050000
+                                        , scene
+#endif
+                                                   )
   {
     m_electronSystemsUpdate = true;
     // Setting properties
     setFlags(QGraphicsItem::ItemIsFocusable);
     setAcceptedMouseButtons(Qt::LeftButton|Qt::MidButton);
+#if QT_VERSION < 0x050000
     setAcceptsHoverEvents(true);
+#else
+    setAcceptHoverEvents(true) ;
+#endif
     setHandlesChildEvents(false);
+#if QT_VERSION < 0x050000
     if (scene)
       setFlag(QGraphicsItem::ItemIsSelectable, scene->editMode()==MolScene::MoveMode);
+#else
+    if (qobject_cast<MolScene*>(scene()))
+      setFlag(QGraphicsItem::ItemIsSelectable, qobject_cast<MolScene*>(scene())->editMode()==MolScene::MoveMode);
+#endif
 
     // Add the new atoms
     foreach(Atom* atom, mol->atoms())

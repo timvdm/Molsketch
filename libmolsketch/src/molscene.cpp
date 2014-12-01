@@ -33,7 +33,11 @@
 #include <QUndoStack>
 #include <QProcess>
 #include <QDir>
+#if QT_VERSION < 0x050000
 #include <QDesktopServices>
+#else
+#include <QStandardPaths>
+#endif
 #include <QDebug>
 
 #include "molscene.h"
@@ -119,8 +123,14 @@ namespace Molsketch {
 
   void MolScene::addResidue (QPointF pos, QString name)
   {
-		m_stack ->push (new AddResidue (new Residue (pos, name, 0, this)));
-	}
+#if QT_VERSION < 0x050000
+    m_stack ->push (new AddResidue (new Residue (pos, name, 0, this)));
+#else
+    Residue* newResidue = new Residue(pos, name, 0) ;
+    addItem(newResidue) ;
+    m_stack->push(new AddResidue(newResidue)) ;
+#endif
+        }
   // Commands
 	
   QColor MolScene::color() const
@@ -268,7 +278,11 @@ namespace Molsketch {
 
     if (!img.isNull()) {
       m_stack->beginMacro(tr("converting image using OSRA"));
+#if QT_VERSION < 0x050000
       QString tmpimg = QDesktopServices::storageLocation(QDesktopServices::TempLocation) + QDir::separator() + "osra.png";
+#else
+      QString tmpimg = QStandardPaths::writableLocation(QStandardPaths::TempLocation) + QDir::separator() + "osra.png";
+#endif
       img.save(tmpimg, "PNG", 100);
       Molecule* mol = call_osra(tmpimg);
       if (mol) 

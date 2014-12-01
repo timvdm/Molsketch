@@ -29,6 +29,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#if QT_VERSION >= 0x050000
+#include <QPrinter>
+#endif
 
 class QAction;
 class QMenu;
@@ -40,7 +43,11 @@ class QListWidget;
 class QListWidgetItem;
 class QTableWidget;
 class QTableWidgetItem;
+#if QT_VERSION <= 0x040603
 class QAssistantClient;
+#else
+class QProcess ;
+#endif
 class QSettings;
 class QTimer;
 class OBMol;
@@ -193,7 +200,11 @@ protected:
 
   // Documentation classes
   /** The help client */
+#if QT_VERSION <= 0x040603
   QAssistantClient* assistantClient;
+#else
+  QProcess* assistantClient ;
+#endif
   /** Initialize the help client. */
   void initializeAssistant();
 

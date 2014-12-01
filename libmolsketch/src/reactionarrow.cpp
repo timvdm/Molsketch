@@ -35,7 +35,11 @@ namespace Molsketch {
       m_hoverBegin(false), m_hoverEnd(false), m_dialog(0)
   {
     setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable);
+#if QT_VERSION < 0x050000
     setAcceptsHoverEvents(true);
+#else
+    setAcceptHoverEvents(true) ;
+#endif
   }
   
   ReactionArrow::~ReactionArrow()
