@@ -10,12 +10,12 @@
 # Redistribution and use is allowed according to the terms of the BSD license.
 # For details see the accompanying COPYING-CMAKE-SCRIPTS file.
 
-if (OPENBABEL2_INCLUDE_DIRS AND OPENBABEL2_LIBRARIES)
+if (OPENBABEL2_INCLUDE_DIR AND OPENBABEL2_LIBRARIES)
 
   # in cache already
   set(OPENBABEL2_FOUND TRUE)
 
-else (OPENBABEL2_INCLUDE_DIRS AND OPENBABEL2_LIBRARIES)
+else (OPENBABEL2_INCLUDE_DIR AND OPENBABEL2_LIBRARIES)
 
   # not cached
   if(NOT WIN32)
@@ -28,9 +28,10 @@ else (OPENBABEL2_INCLUDE_DIRS AND OPENBABEL2_LIBRARIES)
       set(OPENBABEL_MINI_FOUND TRUE)
     endif(_return_VALUE STREQUAL "0")
 
-    exec_program(${PKGCONFIG_EXECUTABLE} ARGS --variable=pkgincludedir openbabel-2.0 RETURN_VALUE _return_VALUE OUTPUT_VARIABLE _obPkgIncDir )
+    exec_program(${PKG_CONFIG_EXECUTABLE} ARGS --variable=pkgincludedir openbabel-2.0 RETURN_VALUE _return_VALUE OUTPUT_VARIABLE _obPkgIncDir )
+    message(STATUS "Querying include dir: ${_obPkgIncDir}")
     if (_obPkgIncDir)
-      set(OPENBABEL_INCLUDE_DIRS "${_obPkgIncDir}")
+      set(OPENBABEL2_INCLUDE_DIR "${_obPkgIncDir}")
     endif (_obPkgIncDir)
 
   else(NOT WIN32)
@@ -41,6 +42,7 @@ else (OPENBABEL2_INCLUDE_DIRS AND OPENBABEL2_LIBRARIES)
 
     # minimal installation on unix / all windows
 
+    message(STATUS "OpenBabel include dir: ${OPENBABEL2_INCLUDE_DIR}")
     find_path(OPENBABEL2_INCLUDE_DIR openbabel/obconversion.h
       ${_obIncDir}
       /usr/local/include
@@ -50,6 +52,7 @@ else (OPENBABEL2_INCLUDE_DIRS AND OPENBABEL2_LIBRARIES)
       $ENV{OPENBABEL2_INCLUDE_DIR}
     )
 
+    message(STATUS "OpenBabel include dir2: ${OPENBABEL2_INCLUDE_DIR}")
     find_library(OPENBABEL2_LIBRARIES NAMES openbabel
       PATHS
       ${_obLinkDir}
@@ -58,6 +61,8 @@ else (OPENBABEL2_INCLUDE_DIRS AND OPENBABEL2_LIBRARIES)
       ${GNUWIN32_DIR}/lib
       $ENV{OPENBABEL2_LIBRARIES}
     )
+    
+    message(STATUS "OpenBabel include dir3: ${OPENBABEL2_INCLUDE_DIR}")
 
   endif(OPENBABEL_MINI_FOUND)
 
@@ -77,4 +82,4 @@ else (OPENBABEL2_INCLUDE_DIRS AND OPENBABEL2_LIBRARIES)
 
   mark_as_advanced(OPENBABEL2_INCLUDE_DIRS OPENBABEL2_LIBRARIES)
 
-endif (OPENBABEL2_INCLUDE_DIRS AND OPENBABEL2_LIBRARIES)
+endif (OPENBABEL2_INCLUDE_DIR AND OPENBABEL2_LIBRARIES)
