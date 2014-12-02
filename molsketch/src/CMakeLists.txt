@@ -4,7 +4,9 @@ cmake_policy(SET CMP0003 NEW)
 # Including qt4 and OpenBabel
 set(QT_USE_QTASSISTANT TRUE)
 set(QT_USE_QTSVG TRUE)
-include(${QT_USE_FILE})
+if(FORCEQt4)
+	include(${QT_USE_FILE})
+endif(FORCEQt4)
 
 
 # Ensure the Avogadro include directory is always first
@@ -29,9 +31,14 @@ set(molsketch_SRCS
 file(GLOB molsketch_RCS "*.qrc")
 file(GLOB molsketch_UIS "*.ui")
 message("UIS = ${molsketch_UIS}")
-qt4_automoc(${molsketch_SRCS})
-qt4_add_resources(molsketch_SRCS ${molsketch_RCS})
-qt4_wrap_ui(molsketch_UIS_H ${molsketch_UIS})
+if(FORCEQt4)
+	qt4_automoc(${molsketch_SRCS})
+	qt4_add_resources(molsketch_SRCS ${molsketch_RCS})
+	qt4_wrap_ui(molsketch_UIS_H ${molsketch_UIS})
+else(FORCEQt4)
+	qt5_add_resources(molsketch_SRCS ${molsketch_RCS})
+	qt5_wrap_ui(molsketch_UIS_H ${molsketch_UIS})
+endif(FORCEQt4)
 
 
 # Add a program icon for windows
@@ -41,9 +48,11 @@ endif(WIN32)
 
 # MOC-ing headers
 set(molsketch_MOC_HDRS mainwindow.h settings.h)
-qt4_wrap_cpp(molsketch_SRCS ${molsketch_MOC_HDRS})
-# Take care of the .moc files
-qt4_automoc(${molsketch_SRCS})
+if(FORCEQt4)
+	qt4_wrap_cpp(molsketch_SRCS ${molsketch_MOC_HDRS})
+	# Take care of the .moc files
+	qt4_automoc(${molsketch_SRCS})
+endif(FORCEQt4)
 
 
 
@@ -51,10 +60,20 @@ qt4_automoc(${molsketch_SRCS})
 # Create the main executable
 include_directories(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
 link_directories(${CMAKE_BINARY_DIR}/lib)
-add_executable(molsketch ${molsketch_SRCS} ${molsketch_UIS_H} ${molsketch_MOC_HDRS})
-install(TARGETS molsketch DESTINATION bin)
-# Link the code against libmolsKetch, Qt and OpenBabel
-target_link_libraries(molsketch molsketch_LIB ${QT_LIBRARIES} ${OPENBABEL2_LIBRARIES})
+if(FORCEQt4)
+	add_executable(molsketch ${molsketch_SRCS} ${molsketch_UIS_H} ${molsketch_MOC_HDRS})
+	install(TARGETS molsketch DESTINATION bin)
+	# Link the code against libmolsKetch, Qt and OpenBabel
+	target_link_libraries(molsketch molsketch_LIB ${QT_LIBRARIES} ${OPENBABEL2_LIBRARIES})
+else(FORCEQt4)
+	add_executable(molsketch-qt5 ${molsketch_SRCS} ${molsketch_UIS_H} ${molsketch_MOC_HDRS})
+	install(TARGETS molsketch-qt5 DESTINATION bin)
+	# Link the code against libmolsKetch, Qt and OpenBabel
+	target_link_libraries(molsketch-qt5 molsketch_LIB ${OPENBABEL2_LIBRARIES})
+	foreach(package ${Qt5RequiredPackages})
+		target_link_libraries(molsketch-qt5 Qt5::${package})
+	endforeach(package)
+endif(FORCEQt4)
 
 
 # Install the documentation

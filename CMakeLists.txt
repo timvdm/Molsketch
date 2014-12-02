@@ -50,15 +50,49 @@ add_custom_target(uninstall "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/c
 set(CMAKE_BUILD_TYPE Debug)
 
 # Enabling shared libraries
-set(BUILD_SHARED_LIBS OFF)
+set(BUILD_SHARED_LIBS ON)
 
 # Setting paths
 set(_obIncDir ${CMAKE_SOURCE_DIR}/include)
 set(_obLinkDir ${CMAKE_SOURCE_DIR}/lib)
 
-# Find and setup Qt4 
+# Find and setup Qt4 or Qt5
 set(QT_MIN_VERSION "4.5.0") # we need at least version 4.5 of Qt
-find_package(Qt4 REQUIRED)
+if(NOT FORCEQt4)
+
+#	CMAKE_MINIMUM_REQUIRED_VERSION(VERSION 2.8.11)
+	set(CMAKE_INCLUDE_CURRENT_DIR ON)
+	set(Qt5RequiredPackages
+		Core
+		Widgets
+		Gui
+		PrintSupport
+		Svg
+	)
+
+	foreach(package ${Qt5RequiredPackages})
+		find_package(Qt5${package})
+		INCLUDE_DIRECTORIES(${Qt5${package}_INCLUDE_DIRS})
+		add_definitions(${Qt5${package}_DEFINITIONS})
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5${package}_EXECUTABLE_COMPILE_FLAGS}")
+	endforeach(package)
+
+endif(NOT FORCEQt4)
+# if Qt5 is not available, try Qt4
+if(Qt5Core_FOUND AND Qt5Widgets_FOUND AND Qt5Gui_FOUND AND Qt5PrintSupport_FOUND AND Qt5Svg_FOUND)
+	message(STATUS "Using Qt5. Use option \"-D FORCEQt4=TRUE\" to switch to Qt4.")
+	set(CMAKE_AUTOMOC ON)
+else(Qt5Core_FOUND AND Qt5Widgets_FOUND AND Qt5Gui_FOUND AND Qt5PrintSupport_FOUND AND Qt5Svg_FOUND)
+	find_package(Qt4)
+	if(NOT Qt4_FOUND)
+		message(FATAL_ERROR "Could not find Qt4 or Qt5.")
+	endif(NOT Qt4_FOUND)
+	if(NOT FORCEQt4)
+		message(STATUS "Could not find Qt5.")
+	endif(NOT FORCEQt4)
+	set(FORCEQt4 TRUE)
+	message(STATUS "Using Qt4.")
+endif(Qt5Core_FOUND AND Qt5Widgets_FOUND AND Qt5Gui_FOUND AND Qt5PrintSupport_FOUND AND Qt5Svg_FOUND)
 # and OpenBabel2
 find_package(PkgConfig)
 find_package(OpenBabel2 REQUIRED)

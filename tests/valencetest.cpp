@@ -320,4 +320,8 @@ void ValenceTest::implicitHydrogensAndCharge()
 
 QTEST_MAIN(ValenceTest)
 
+#if QT_VERSION < 0x050000
 #include "moc_valencetest.cxx"
+#else
+#include "valencetest.moc"
+#endif

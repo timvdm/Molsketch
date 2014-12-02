@@ -16,8 +16,8 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef REACTIONARROWDIALOG_H
-#define REACTIONARROWDIALOG_H
+#ifndef MECHANISMARROWDIALOG_H
+#define MECHANISMARROWDIALOG_H
 
 #include <QDialog>
 
@@ -47,4 +47,4 @@ namespace Molsketch {
 
 }
 
-#endif // REACTIONARROWDIALOG_H
+#endif // MECHANISMARROWDIALOG_H

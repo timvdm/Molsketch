@@ -4,7 +4,9 @@ cmake_policy(SET CMP0003 NEW)
 # Including qt4 and OpenBabel
 set(QT_USE_QTASSISTANT TRUE)
 set(QT_USE_QTSVG TRUE)
-include(${QT_USE_FILE})
+if(FORCEQt4)
+	include(${QT_USE_FILE})
+endif(FORCEQt4)
 
 
 # Ensure the Molsketch include directory is always first
@@ -69,7 +71,11 @@ endforeach(headerFile ${libmolsketch_HDRS})
 
 
 set (libmolsketch_UIS)
-qt4_wrap_ui(libmolsketch_UIS_H ${libmolsketch_UIS})
+if(FORCEQt4)
+	qt4_wrap_ui(libmolsketch_UIS_H ${libmolsketch_UIS})
+else(FORCEQt4)
+	qt5_wrap_ui(libmolsketch_UIS_H ${libmolsketch_UIS})
+endif(FORCEQt4)
 
 # Source files
 set(libmolsketch_SRCS 
@@ -123,25 +129,33 @@ set(toolicon_RCS tools/toolicons.qrc)
 
 file(GLOB molsketch_UIS "*.ui")
 message("UIS = ${molsketch_UIS}")
-qt4_automoc(${libmolsketch_HDRS})
-qt4_add_resources(libmolsketch_SRCS ${toolicon_RCS})
-qt4_wrap_ui(molsketch_UIS_H ${molsketch_UIS})
+if(FORCEQt4)
+	qt4_automoc(${libmolsketch_HDRS})
+	qt4_add_resources(libmolsketch_SRCS ${toolicon_RCS})
+	qt4_wrap_ui(molsketch_UIS_H ${molsketch_UIS})
+else(FORCEQt4)
+	qt5_add_resources(libmolsketch_SRCS ${toolicon_RCS})
+	qt5_wrap_ui(molsketch_UIS_H ${molsketch_UIS})
+endif(FORCEQt4)
 
 
 # MOC-ing headers
 set(molsketch_LIB_MOC_HDRS ${libmolsketch_HDRS} ${tool_HDRS})
 set(molsketch_MOC_HDRS mainwindow.h settings.h drawwidget.h reactionarrowdialog.h mechanismarrowdialog.h)
-qt4_wrap_cpp(libmolsketch_SRCS ${molsketch_LIB_MOC_HDRS})
-
-# Take care of the .moc files
-qt4_automoc(${libmolsketch_SRCS})
-
-
+if(FORCEQt4)
+	qt4_wrap_cpp(libmolsketch_SRCS ${molsketch_LIB_MOC_HDRS})
+	# Take care of the .moc files
+	qt4_automoc(${libmolsketch_SRCS})
+endif(FORCEQt4)
 
 
 # Create the molsKetch libraries
 add_library(molsketch_LIB SHARED ${libmolsketch_SRCS} ${molsketch_UIS_H})
-set_target_properties(molsketch_LIB PROPERTIES OUTPUT_NAME "molsketch")
+if(FORCEQt4)
+	set_target_properties(molsketch_LIB PROPERTIES OUTPUT_NAME "molsketch")
+else(FORCEQt4)
+	set_target_properties(molsketch_LIB PROPERTIES OUTPUT_NAME "molsketch-qt5")
+endif(FORCEQt4)
 target_link_libraries(molsketch_LIB ${QT_LIBRARIES} ${OPENBABEL2_LIBRARIES})
 
 # Install the executable and the library
