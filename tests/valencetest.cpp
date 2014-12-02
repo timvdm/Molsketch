@@ -19,9 +19,17 @@
 #include <QObject>
 #include <QtTest>
 
+#ifdef QMAKEBUILD
+#include <element.h>
+#include <molecule.h>
+#include <atom.h>
+#else
 #include <molsketch/element.h>
 #include <molsketch/molecule.h>
 #include <molsketch/atom.h>
+#endif
+
+
 
 using namespace Molsketch;
 
@@ -321,7 +329,11 @@ void ValenceTest::implicitHydrogensAndCharge()
 QTEST_MAIN(ValenceTest)
 
 #if QT_VERSION < 0x050000
+#ifdef QMAKEBUILD
+#include "valencetest.moc"
+#else
 #include "moc_valencetest.cxx"
+#endif
 #else
 #include "valencetest.moc"
 #endif

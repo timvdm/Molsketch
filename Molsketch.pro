@@ -7,7 +7,8 @@ CONFIG += ordered
 # TODO (install uninstall)-targets
 SUBDIRS += \
 	libmolsketch/src \
-	molsketch/src
+	molsketch/src \
+	tests
 
 program.files=bin/molsketch
 program.path=$(bindir)
