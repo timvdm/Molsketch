@@ -481,9 +481,9 @@ namespace Molsketch {
     QStringList atomIndexes = attributes.value("atomRefs2").toString().split(" ") ;
     if (atomIndexes.size() != 2) return ;
 
-    m_beginAtom = molecule()->atom(atomIndexes.first()) ;
-    m_endAtom = molecule()->atom(atomIndexes.last()) ;
-    m_bondOrder = attributes.value("order").toString().toInt() ;
+    setAtoms(molecule()->atom(atomIndexes.first()),
+             molecule()->atom(atomIndexes.last())) ;
+    setOrder(attributes.value("order").toString().toInt()) ;
     if (attributes.hasAttribute("bondStereo"))
     {
       if (attributes.value("bondStereo") == "W")

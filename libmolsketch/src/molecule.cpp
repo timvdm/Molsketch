@@ -374,7 +374,7 @@ namespace Molsketch {
 
   int Molecule::atomIndex(const Atom *atomPointer) const
   {
-    return m_atomList.indexOf(const_cast<Atom*>(atomPointer)) ;
+    return m_atomList.indexOf(const_cast<Atom*>(atomPointer))+1 ;
   }
 
   QString Molecule::atomId(const Atom *atomPointer) const
@@ -1123,6 +1123,7 @@ namespace Molsketch {
     {\
       ITEMTYPE *item = new ITEMTYPE ;\
       item->setParentItem(p) ;\
+      append(item) ;\
       return item ;\
     }\
     return 0 ;\

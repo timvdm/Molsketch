@@ -37,6 +37,7 @@ namespace Molsketch {
   {
     // read own attributes
     QXmlStreamAttributes attributes = in.attributes() ;
+    readAttributes(attributes) ;
 
     // read children
     while (!in.atEnd())
@@ -53,7 +54,6 @@ namespace Molsketch {
       if (!child) continue ;
       child->readXml(in) ;
     }
-    readAttributes(attributes) ;
     return in ;
   }
 
