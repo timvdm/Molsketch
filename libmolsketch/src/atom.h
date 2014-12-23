@@ -21,11 +21,7 @@
 #ifndef MSK_ATOM_H
 #define MSK_ATOM_H
 
-#ifdef QMAKEBUILD
 #include <graphicsitemtypes.h>
-#else
-#include <molsketch/graphicsitemtypes.h>
-#endif
 
 #include <QGraphicsItem>
 #include <QList>

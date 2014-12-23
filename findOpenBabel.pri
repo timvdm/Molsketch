@@ -29,8 +29,7 @@ defineTest(findOpenBabel) {
 
 unix {
 	CONFIG += link_pkgconfig
-##	packagesExist(openbabel-2.0) {
-	packagesExist(dummylib) {
+	packagesExist(openbabel-2.0) {
 		message("Using pkgconfig to find OpenBabel.")
 		PKGCONFIG += openbabel-2.0
 	} else {

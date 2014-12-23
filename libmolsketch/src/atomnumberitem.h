@@ -19,11 +19,7 @@
 #ifndef ATOMNUMBERITEM_H
 #define ATOMNUMBERITEM_H
 
-#ifdef QMAKEBUILD
-#include <molinputitem.h>
-#else
-#include <molsketch/molinputitem.h>
-#endif
+#include "molinputitem.h"
 
 namespace Molsketch {
 

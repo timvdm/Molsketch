@@ -28,11 +28,7 @@
 #ifndef MOLECULE_H
 #define MOLECULE_H
 
-#ifdef QMAKEBUILD
 #include <graphicsitemtypes.h>
-#else
-#include <molsketch/graphicsitemtypes.h>
-#endif
 
 #include <QList>
 #include <QGraphicsItemGroup>

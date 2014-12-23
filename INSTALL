@@ -1,12 +1,31 @@
 Short instructions for building the source with CMake:
+0. Prepare
 - Unpack the source and change to the source dir
 - mkdir build
 - cd build
+
+1. Using cmake:
 - cmake ..
 - make
-
-If you want to install the binary:
+(using Qt5, if available, see below)
+1.1 Install the binary (if desired)
 - make install
-
-If you want to make a package:
+1.2 Make a package (if desired)
 - make package
+
+2. Using qmake:
+The binary will be in the bin/ subdirectory, the library part in the lib/ subdirectory.
+2.1. Qt4
+- qmake ..
+- make
+2.2. Qt5
+- qmake-qt5 ..
+- make
+
+3. Notes on Qt5 vs. Qt4
+If Qt5 is used, library and executable names will be appended with "-qt5" (both cmake and qmake).
+With qmake, one can choose the version by picking the appropriate version of qmake.
+With cmake, Qt5 is automatically selected, if available, otherwise Qt4. If you have both versions
+and want to force the usage of Qt4, use
+- cmake -D FORCEQt4=TRUE ..
+in the cmake step above.

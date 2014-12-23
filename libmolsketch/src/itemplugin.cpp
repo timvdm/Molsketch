@@ -17,13 +17,9 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifdef QMAKEBUILD
-#include <itemplugin.h>
-#else
-#include <molsketch/itemplugin.h>
-#endif
-
 #include <QPainter>
+
+#include "itemplugin.h"
 
 
 namespace Molsketch {

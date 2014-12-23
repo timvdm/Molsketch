@@ -40,57 +40,16 @@
 
 #include "mainwindow.h"
 
-#ifdef QMAKEBUILD
-#include <molecule.h>
-#else
-#include <molsketch/molecule.h>
-#endif
-#ifdef QMAKEBUILD
-#include <molview.h>
-#else
-#include <molsketch/molview.h>
-#endif
-#ifdef QMAKEBUILD
-#include <molscene.h>
-#else
-#include <molsketch/molscene.h>
-#endif
-#ifdef QMAKEBUILD
-#include <element.h>
-#else
-#include <molsketch/element.h>
-#endif
-#ifdef QMAKEBUILD
-#include <fileio.h>
-#else
-#include <molsketch/fileio.h>
-#endif
-#ifdef QMAKEBUILD
-#include <mollibitem.h>
-#else
-#include <molsketch/mollibitem.h>
-#endif
-#ifdef QMAKEBUILD
-#include <itemplugin.h>
-#else
-#include <molsketch/itemplugin.h>
-#endif
-#ifdef QMAKEBUILD
-#include <osra.h>
-#else
-#include <molsketch/osra.h>
-#endif
-
-#ifdef QMAKEBUILD
-#include <tool.h>
-#else
-#include <molsketch/tool.h>
-#endif
-#ifdef QMAKEBUILD
-#include <toolgroup.h>
-#else
-#include <molsketch/toolgroup.h>
-#endif
+#include "molecule.h"
+#include "molview.h"
+#include "molscene.h"
+#include "element.h"
+#include "fileio.h"
+#include "mollibitem.h"
+#include "itemplugin.h"
+#include "osra.h"
+#include "tool.h"
+#include "toolgroup.h"
 
 #include <openbabel/mol.h>
 
@@ -101,14 +60,14 @@ using namespace OpenBabel;
 
 
 #define PROGRAM_NAME "Molsketch"
-#define PROGRAM_VERSION "Helium"
+#define PROGRAM_VERSION "Lithium"
 
 #define ALT_DOC_PATH ""
 #define ALT_LIB_PATH ""
 #define ALT_CUSTOM_LIB_PATH ""
 
-#define OB_FILE_FORMATS "All supported types (*.*);;SMILES (*.smi);;MDL Molfile (*.mdl *.mol *.sd *.sdf);;XYZ (*.xyz);;ChemDraw Connection Table (*.ct);;Ghemical (*.gpr)"
-#define OB_DEFAULT_FORMAT "CML (*.cml)"
+#define OB_FILE_FORMATS "MolsKetsch default (*.msk);;All supported types (*.*);;SMILES (*.smi);;MDL Molfile (*.mdl *.mol *.sd *.sdf);;XYZ (*.xyz);;ChemDraw Connection Table (*.ct);;Ghemical (*.gpr);;CML (*.cml)"
+#define OB_DEFAULT_FORMAT "MolsKetch default (*.msk)"
 #define GRAPHIC_FILE_FORMATS "Scalable Vector Graphics (*.svg);;Portable Network Graphics (*.png);;Windows Bitmap (*.bmp);;Joint Photo Expert Group (*.jpeg)"
 #define GRAPHIC_DEFAULT_FORMAT "Portable Network Graphics (*.png)"
 #define OSRA_GRAPHIC_FILE_FORMATS "All supported types (*.*);;Images (*.png *.bmp *.jpg *.jpeg *.gif *.tif *.tiff);;Documents (*.pdf *.ps)"
@@ -570,7 +529,20 @@ void MainWindow::assistant()
 void MainWindow::about()
 {
   QMessageBox::about(this, tr("About"),
-                     tr("<H3>About Molsketch</H3> <P> Molsketch is a program for drawing molecular structures developed by Harm van Eersel at the <A href=\"http://www.tue.nl\">Eindhoven University of Technology</A>.<P> For more info check <A href=\"http://molsketch.sourceforge.net\">http://molsketch.sourceforge.net</A>  <P> It is <A href=\"http://www.gnu.org/philosophy/free-sw.html\">free software</A> and available under the <A>GPL</A>. <P> Special thanks to: <UL><LI>Prof. Dr. H. Zantema (coach of the initial version)</LI> <LI> Davy van der Vaart (tester)</LI><LI>Frans Visscher (tester)</LI><LI>Carsten Niehaus (reviewer)</LI></UL>Copyright 2007 - 2008, Harm van Eersel"));
+                     tr("<H3>About Molsketch</H3>"
+                        "<P> Molsketch is a program for drawing molecular structures developed by Harm van Eersel at the"
+                        "<A href=\"http://www.tue.nl\">Eindhoven University of Technology</A>."
+                        "<P> For more info check <A href=\"http://molsketch.sourceforge.net\">http://molsketch.sourceforge.net</A>"
+                        "<P> It is <A href=\"http://www.gnu.org/philosophy/free-sw.html\">free software</A> and available under the "
+                        "<A>GPL</A>."
+                        "<P> Special thanks to: <UL>"
+                        "<LI>Prof. Dr. H. Zantema (coach of the initial version)</LI>"
+                        "<LI> Davy van der Vaart (tester)</LI>"
+                        "<LI>Frans Visscher (tester)</LI>"
+                        "<LI>Carsten Niehaus (reviewer)</LI>"
+                        "</UL>Copyright 2007 - 2008, Harm van Eersel"
+                        "<P>Copyright 2009 Tim Vandermeersch"
+                        "<P>Maintenance since 12/2014: Hendrik Vennekate"));
 }
 
 void MainWindow::documentWasModified()

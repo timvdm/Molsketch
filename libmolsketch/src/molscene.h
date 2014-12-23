@@ -25,11 +25,7 @@
 #include <QGraphicsScene>
 #include <QUndoCommand>
 
-#ifdef QMAKEBUILD
-#include <bond.h>
-#else
-#include <molsketch/bond.h>
-#endif
+#include "bond.h"
 
 class QString;
 class QImage;

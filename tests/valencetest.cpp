@@ -19,16 +19,9 @@
 #include <QObject>
 #include <QtTest>
 
-#ifdef QMAKEBUILD
-#include <element.h>
-#include <molecule.h>
-#include <atom.h>
-#else
-#include <molsketch/element.h>
-#include <molsketch/molecule.h>
-#include <molsketch/atom.h>
-#endif
-
+#include "element.h"
+#include "molecule.h"
+#include "atom.h"
 
 
 using namespace Molsketch;

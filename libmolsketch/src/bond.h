@@ -28,22 +28,9 @@
 #ifndef BOND_H
 #define BOND_H
 
-#ifdef QMAKEBUILD
+#include "atom.h"
+#include "molecule.h"
 #include <graphicsitemtypes.h>
-#else
-#include <molsketch/graphicsitemtypes.h>
-#endif
-#ifdef QMAKEBUILD
-#include <molecule.h>
-#else
-#include <molsketch/molecule.h>
-#endif
-#ifdef QMAKEBUILD
-#include <atom.h>
-#else
-#include <molsketch/atom.h>
-#endif
-
 #include <QGraphicsItem>
 
 

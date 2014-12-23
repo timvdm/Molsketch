@@ -58,7 +58,6 @@ endif(FORCEQt4)
 
 
 # Create the main executable
-include_directories(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
 link_directories(${CMAKE_BINARY_DIR}/lib)
 if(FORCEQt4)
 	add_executable(molsketch ${molsketch_SRCS} ${molsketch_UIS_H} ${molsketch_MOC_HDRS})

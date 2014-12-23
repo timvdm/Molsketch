@@ -19,11 +19,7 @@
 #ifndef SMILESITEM_H
 #define SMILESITEM_H
 
-#ifdef QMAKEBUILD
-#include <itemplugin.h>
-#else
-#include <molsketch/itemplugin.h>
-#endif
+#include "itemplugin.h"
 
 namespace Molsketch {
 

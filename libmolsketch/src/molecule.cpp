@@ -54,16 +54,13 @@ namespace Molsketch {
     // Setting properties
     setFlags(QGraphicsItem::ItemIsFocusable);
     setAcceptedMouseButtons(Qt::LeftButton|Qt::MidButton);
-#if QT_VERSION < 0x050000
-    setAcceptsHoverEvents(true);
-#else
-    setAcceptHoverEvents(true) ;
-#endif
     setHandlesChildEvents(false);
 #if QT_VERSION < 0x050000
+    setAcceptsHoverEvents(true);
     if (scene)
-      setFlag(QGraphicsItem::ItemIsSelectable, scene->editMode()==MolScene::MoveMode);
+      setFlag(QGraphicsItem::ItemIsSelectable, qobject_cast<MolScene*>(scene)->editMode()==MolScene::MoveMode);
 #else
+    setAcceptHoverEvents(true) ;
     if (qobject_cast<MolScene*>(scene()))
       setFlag(QGraphicsItem::ItemIsSelectable, qobject_cast<MolScene*>(scene())->editMode()==MolScene::MoveMode);
 #endif
@@ -84,15 +81,13 @@ namespace Molsketch {
     // Setting properties
     setFlags(QGraphicsItem::ItemIsFocusable);
     setAcceptedMouseButtons(Qt::LeftButton|Qt::MidButton);
-#if QT_VERSION < 0x050000
-    setAcceptsHoverEvents(true);
-#else
-    setAcceptHoverEvents(true) ;
-#endif
+
     setHandlesChildEvents(false);
 #if QT_VERSION < 0x050000
-    if (scene) setFlag(QGraphicsItem::ItemIsSelectable, scene->editMode()==MolScene::MoveMode);
+    setAcceptsHoverEvents(true);
+    if (scene) setFlag(QGraphicsItem::ItemIsSelectable, qobject_cast<MolScene*>(scene)->editMode()==MolScene::MoveMode);
 #else
+    setAcceptHoverEvents(true) ;
     if (qobject_cast<MolScene*>(scene()))
         setFlag(QGraphicsItem::ItemIsSelectable, qobject_cast<MolScene*>(scene())->editMode()==MolScene::MoveMode);
 #endif
@@ -126,16 +121,13 @@ namespace Molsketch {
     // Setting properties
     setFlags(QGraphicsItem::ItemIsFocusable);
     setAcceptedMouseButtons(Qt::LeftButton|Qt::MidButton);
-#if QT_VERSION < 0x050000
-    setAcceptsHoverEvents(true);
-#else
-    setAcceptHoverEvents(true) ;
-#endif
     setHandlesChildEvents(false);
 #if QT_VERSION < 0x050000
+    setAcceptsHoverEvents(true);
     if (scene)
-      setFlag(QGraphicsItem::ItemIsSelectable, scene->editMode()==MolScene::MoveMode);
+      setFlag(QGraphicsItem::ItemIsSelectable, qobject_cast<MolScene*>(scene)->editMode()==MolScene::MoveMode);
 #else
+    setAcceptHoverEvents(true) ;
     if (qobject_cast<MolScene*>(scene()))
       setFlag(QGraphicsItem::ItemIsSelectable, qobject_cast<MolScene*>(scene())->editMode()==MolScene::MoveMode);
 #endif

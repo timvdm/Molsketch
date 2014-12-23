@@ -74,16 +74,9 @@ namespace Molsketch {
   }
 
 
-  Atom::Atom(const QPointF &position, const QString &element, bool implicitHydrogens, 
-     QGraphicsItem* parent
-#if QT_VERSION < 0x050000
-	     , QGraphicsScene *scene
-#endif
-	     ) : QGraphicsItem (parent
-#if QT_VERSION < 0x050000
-				, scene
-#endif
-				)
+  Atom::Atom(const QPointF &position, const QString &element, bool implicitHydrogens,
+     QGraphicsItem* parent GRAPHICSSCENESOURCE )
+    : graphicsItem (parent GRAPHICSSCENEINIT )
   {
     //pre: position is a valid position in scene coordinates
     setPos(position);

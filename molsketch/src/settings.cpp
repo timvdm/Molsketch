@@ -31,12 +31,6 @@
 
 #include "settings.h"
 
-#ifdef QMAKEBUILD
-#include <molscene.h>
-#else
-#include <molsketch/molscene.h>
-#endif
-
 SettingsDialog::SettingsDialog(QWidget * parent, Qt::WindowFlags f ) : QDialog(parent,f)
 {
   // Setup the user interface
