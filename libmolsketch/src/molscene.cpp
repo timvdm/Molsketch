@@ -31,6 +31,8 @@
 #include <QTableWidgetItem>
 #include <QKeyEvent>
 #include <QUndoStack>
+#include <QContextMenuEvent>
+#include <QMenu>
 #include <QProcess>
 #include <QDir>
 #if QT_VERSION < 0x050000
@@ -63,6 +65,9 @@
 #include <openbabel/bond.h>
 #include <openbabel/obiter.h>
 
+#include "reactionarrow.h"
+#include "mechanismarrow.h"
+
 using namespace OpenBabel;
 
 
@@ -79,7 +84,10 @@ namespace Molsketch {
   //
   //////////////////////////////////////////////////////////////////////////////
 
-  MolScene::MolScene(QObject* parent) : QGraphicsScene(parent)
+  MolScene::MolScene(QObject* parent)
+    : QGraphicsScene(parent),
+      m_bondWidth(2),
+      m_arrowLineWidth(1.5)
   {
     m_toolGroup = new ToolGroup(this);
 
@@ -109,6 +117,7 @@ namespace Molsketch {
     connect(m_stack, SIGNAL(indexChanged(int)), this, SIGNAL(documentChange()));
     connect(m_stack, SIGNAL(indexChanged(int)), this, SIGNAL(selectionChange()));
     connect(m_stack, SIGNAL(indexChanged(int)), this, SLOT(update()));
+    connect(m_stack, SIGNAL(indexChanged(int)), this, SLOT(updateAll())) ;
 
     // Set initial size
     QRectF sizerect(-5000,-5000,10000,10000);
@@ -427,6 +436,61 @@ namespace Molsketch {
 
     return p;
   }
+  qreal MolScene::arrowLineWidth() const
+  {
+    return m_arrowLineWidth;
+  }
+
+  void MolScene::setArrowLineWidth(const qreal &arrowLineWidth)
+  {
+    m_arrowLineWidth = arrowLineWidth;
+  }
+
+  abstractXmlObject *MolScene::produceChild(const QString &childName, const QString &type)
+  {
+    if (childName == "molecule") // TODO move those names to their classes.
+    {
+      Molecule *molecule = new Molecule ;
+      addItem(molecule) ;
+      return molecule ;
+    }
+    graphicsItem *object = 0 ;
+    if (childName == "object")
+    {
+      if (type == "ReactionArrow") object = new ReactionArrow ;
+      if (type == "MechanismArrow") object = new MechanismArrow ;
+    }
+    if (object) addItem(object) ;
+    return object ;
+  }
+
+  QList<const abstractXmlObject *> MolScene::children() const
+  {
+    QList<const abstractXmlObject*> childrenList ;
+    foreach(QGraphicsItem* item, items())
+      if (item->type() == graphicsItem::MoleculeType
+          || item->type() == graphicsItem::ReactionArrowType
+          || item->type() == graphicsItem::MechanismArrowType)
+      childrenList << dynamic_cast<const abstractXmlObject*>(item) ;
+    return childrenList ;
+  }
+
+  void MolScene::readAttributes(const QXmlStreamAttributes &attributes)
+  {
+    Q_UNUSED(attributes)
+    clear();
+  }
+
+  qreal MolScene::bondWidth() const
+  {
+    return m_bondWidth;
+  }
+
+  void MolScene::setBondWidth(const qreal &bondWidth)
+  {
+    m_bondWidth = bondWidth;
+  }
+
 
 
   Molecule* MolScene::moleculeAt(const QPointF &pos)
@@ -491,7 +555,8 @@ namespace Molsketch {
     m_toolGroup->activeTool()->mousePressEvent(event);
 
     // Execute default behavior
-    QGraphicsScene::mousePressEvent(event);	
+    QGraphicsScene::mousePressEvent(event);
+    qDebug() << "press event accepted:" << event->isAccepted() ;
   }
 
   void MolScene::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
@@ -509,6 +574,7 @@ namespace Molsketch {
 
     // Execute the normal behavior
     QGraphicsScene::mouseReleaseEvent(event);
+    qDebug() << "release event accepted:" << event->isAccepted() ;
   }
 
 
@@ -555,8 +621,14 @@ namespace Molsketch {
 	
 	void MolScene::textModeRelease(QGraphicsSceneMouseEvent* event) 
   {
-    Q_UNUSED(event)
-	}
+          Q_UNUSED(event)
+        }
+
+        void MolScene::updateAll()
+        {
+          invalidate() ;
+          update() ;
+        }
 	
 
 
@@ -721,7 +793,7 @@ namespace Molsketch {
 	  }
   
     // execute default behaviour (needed for text tool)
-    QGraphicsScene::keyPressEvent(keyEvent);
+          QGraphicsScene::keyPressEvent(keyEvent);
   }
 
   QImage MolScene::toImage (OpenBabel::OBMol *obmol)
@@ -841,7 +913,5 @@ namespace Molsketch {
   {
     m_atomSymbolFont = font;
   }
-
-
 
 } // namespace

@@ -604,6 +604,24 @@ namespace Molsketch {
     return QGraphicsItem::itemChange(change, value);
   }
 
+  void Atom::readGraphicAttributes(const QXmlStreamAttributes &attributes)
+  {
+    setElement(attributes.value("elementType").toString()) ;
+    setPos(attributes.value("x2").toString().toFloat(),
+           attributes.value("y2").toString().toFloat()) ;
+  }
+
+  QXmlStreamAttributes Atom::graphicAttributes() const
+  {
+    QXmlStreamAttributes attributes ;
+    attributes.append("id", molecule()->atomId(this)) ;
+    attributes.append("elementType", element()) ;
+    attributes.append("x2", QString::number(pos().x())) ;
+    attributes.append("y2", QString::number(pos().y())) ;
+    attributes.append("hydrogenCount", QString::number(numImplicitHydrogens())) ;
+    return attributes ;
+  }
+
 
   //////////////////////////////////////////////////////////////////////////////
   // Event handlers

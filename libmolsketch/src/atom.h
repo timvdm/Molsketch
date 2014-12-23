@@ -21,10 +21,9 @@
 #ifndef MSK_ATOM_H
 #define MSK_ATOM_H
 
-#include <graphicsitemtypes.h>
-
-#include <QGraphicsItem>
 #include <QList>
+
+#include "graphicsitem.h"
 
 namespace Molsketch {
 
@@ -35,17 +34,16 @@ namespace Molsketch {
   /**
    * Atom class
    */
-  class Atom : public QGraphicsItem
+  class Atom : public graphicsItem
   {
     friend class Molecule;
 
     public:
       // Methods needed for qt typecasting
-      enum { Type = GraphicsItemTypes::AtomType };
+      enum { Type = graphicsItem::AtomType };
       /**
        * @return The QGraphicsItem type of the class. Needed fro Qt typecasting. */
       int type() const { return Type; }
-
 
       /**
        * Creates a new atom.
@@ -54,12 +52,8 @@ namespace Molsketch {
        * @param element the element symbol of the new atom
        * @param invisible makes the atom invisible if @c true
        */
-      Atom(const QPointF & position, const QString & element, 
-	  bool implicitHydrogens, QGraphicsItem* parent = 0
-#if QT_VERSION < 0x050000
-		      , QGraphicsScene *scene = 0
-#endif
-	   );
+      Atom(const QPointF & position = QPointF(), const QString & element = QString(),
+          bool implicitHydrogens = true, QGraphicsItem* parent = 0 GRAPHICSSCENEHEADER ) ;
 
       //@name Inherited drawing methods
       //@{
@@ -198,6 +192,7 @@ namespace Molsketch {
       int number() const { return m_number; }
 
 	  void hoverOut () {m_hidden = true;}
+          QString xmlName() const { return "atom" ; }
     protected:
       // Event handlers
       /** Event handler to show hidden atoms when the mouse hovers over them. */
@@ -215,6 +210,9 @@ namespace Molsketch {
        * @sa Molecule::numberAtoms Atom::setNumber
        */
       void setNumber(int number) { m_number = number; }
+
+      void readGraphicAttributes(const QXmlStreamAttributes &attributes) ;
+      QXmlStreamAttributes graphicAttributes() const ;
 
     private:
       void drawAtomLabel(QPainter *painter, const QString &lbl, int alignment);

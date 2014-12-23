@@ -38,17 +38,24 @@
 
 namespace Molsketch {
 
+  template <>
+  QString Molecule::moleculeItemListClass<Atom>::xmlName() const
+  {
+    return "atomArray" ;
+  }
+
+  template <>
+  QString Molecule::moleculeItemListClass<Bond>::xmlName() const
+  {
+    return "bondArray" ;
+  }
+
   // Constructors
 
-  Molecule::Molecule(QGraphicsItem* parent
-#if QT_VERSION < 0x050000
-                     , MolScene *scene
-#endif
-                     ) : QGraphicsItemGroup (parent
-#if QT_VERSION < 0x050000
-                                        , scene
-#endif
-                                        )
+  Molecule::Molecule(QGraphicsItem* parent GRAPHICSSCENESOURCE )
+    : QGraphicsItemGroup (parent GRAPHICSSCENEINIT ),
+    m_atomList(this),
+    m_bondList(this)
   {
     m_electronSystemsUpdate = true;
     // Setting properties
@@ -67,15 +74,10 @@ namespace Molsketch {
   }
 
   Molecule::Molecule(QSet<Atom*> atomSet, QSet<Bond*> bondSet,
-                     QGraphicsItem* parent
-#if QT_VERSION < 0x050000
-                     , MolScene *scene
-#endif
-                     ) : QGraphicsItemGroup (parent
-#if QT_VERSION < 0x050000
-                                        , scene
-#endif
-                                        )
+                     QGraphicsItem* parent GRAPHICSSCENESOURCE)
+    : QGraphicsItemGroup (parent GRAPHICSSCENEINIT ),
+    m_atomList(this),
+    m_bondList(this)
   {
     m_electronSystemsUpdate = true;
     // Setting properties
@@ -107,15 +109,10 @@ namespace Molsketch {
     }
   }
 
-  Molecule::Molecule(Molecule* mol, QGraphicsItem* parent
-#if QT_VERSION < 0x050000
-                     , MolScene *scene
-#endif
-                     ) : QGraphicsItemGroup (parent
-#if QT_VERSION < 0x050000
-                                        , scene
-#endif
-                                                   )
+  Molecule::Molecule(Molecule* mol, QGraphicsItem* parent GRAPHICSSCENESOURCE)
+    : QGraphicsItemGroup (parent GRAPHICSSCENEINIT),
+      m_atomList(this),
+      m_bondList(this)
   {
     m_electronSystemsUpdate = true;
     // Setting properties
@@ -367,12 +364,27 @@ namespace Molsketch {
   // Query methods
 
 
-  Atom* Molecule::atomN (const int n) const
+  Atom* Molecule::atom (const int n) const
   {
     if (n>= 1 && n <= m_atomList.size ()) {
       return m_atomList[n - 1];
     }
     return NULL;
+  }
+
+  int Molecule::atomIndex(const Atom *atomPointer) const
+  {
+    return m_atomList.indexOf(const_cast<Atom*>(atomPointer)) ;
+  }
+
+  QString Molecule::atomId(const Atom *atomPointer) const
+  {
+    return "a" + QString::number(atomIndex(atomPointer)) ;
+  }
+
+  Atom *Molecule::atom(const QString &atomID) const
+  {
+    return atom(atomID.mid(1).toInt()) ;
   }
 
   Atom* Molecule::atomAt(const QPointF &pos) const
@@ -851,165 +863,6 @@ namespace Molsketch {
     return obmol;
   }
 
-  void Molecule::readXML(QXmlStreamReader &xml)
-  {
-    QHash<QString, Atom*> atomHash;
-    while (!xml.atEnd()) {
-      xml.readNext();
-
-      if (xml.name() == "atomArray") {
-        /*
-         * The atom array
-         */
-        while (!xml.atEnd()) {
-          xml.readNext();
-          if (xml.isStartElement()) {
-            if (xml.name() == "atom") {
-              QXmlStreamAttributes attr = xml.attributes();
-              QPointF pos;
-              QString element;
-
-              if (attr.hasAttribute("elementType"))
-                element = attr.value("elementType").toString();
-              if (attr.hasAttribute("x2") && attr.hasAttribute("y2"))
-                pos = QPointF(attr.value("x2").toString().toFloat(),
-                              attr.value("y2").toString().toFloat());
-
-              //Atom *atom = new Atom(pos, element, true);
-              Atom *atom = addAtom(element, pos, true);
-
-              if (attr.hasAttribute("colorR") && attr.hasAttribute("colorG") && attr.hasAttribute("colorB"))
-                atom->setColor(QColor(attr.value("colorR").toString().toInt(),
-                                      attr.value("colorG").toString().toInt(),
-                                      attr.value("colorB").toString().toInt()));
-
-              if (attr.hasAttribute("id"))
-                atomHash[attr.value("id").toString()] = atom;
-            }
-          } else if (xml.isEndElement())
-            if (xml.name() == "atomArray")
-              break;
-        }
-      } else if (xml.name() == "bondArray") {
-        /*
-         * The bond array
-         */
-        Bond *currentBond = 0;
-        while (!xml.atEnd()) {
-          xml.readNext();
-          if (xml.isStartElement()) {
-            if (xml.name() == "bond") {
-              QXmlStreamAttributes attr = xml.attributes();
-              Atom *begin, *end;
-              int order;
-
-              if (attr.hasAttribute("atomRefs2")) {
-                QString atomRefs2 = attr.value("atomRefs2").toString();
-                QStringList arefs = atomRefs2.split(" ");
-                if (arefs.size() != 2)
-                  continue;
-                qDebug() << "ref1 = " << arefs[0];
-                qDebug() << "ref2 = " << arefs[1];
-                begin = atomHash.value(arefs[0]);
-                end = atomHash.value(arefs[1]);
-
-              }
-              if (attr.hasAttribute("order"))
-                order = attr.value("order").toString().toInt();
-
-              currentBond = addBond(begin, end, order);
-
-              if (attr.hasAttribute("colorR") && attr.hasAttribute("colorG") && attr.hasAttribute("colorB"))
-                currentBond->setColor(QColor(attr.value("colorR").toString().toInt(),
-                                             attr.value("colorG").toString().toInt(),
-                                             attr.value("colorB").toString().toInt()));
-
-
-            } else if (xml.name() == "bondStereo") {
-              QString bondStereo = xml.readElementText();
-              if (bondStereo == "W")
-                currentBond->setType(Bond::Wedge);
-              if (bondStereo == "H")
-                currentBond->setType(Bond::Hash);
-
-            }
-          } else if (xml.isEndElement())
-            if (xml.name() == "bondArray")
-              break;
-        }
-
-      } else if (xml.name() == "molecule") {
-        if (xml.isEndElement())
-          break;
-      }
-
-
-      qDebug() << "text = " << xml.name();
-    }
-
-  }
-
-  void Molecule::writeXML(QXmlStreamWriter &xml)
-  {
-    xml.writeStartElement("molecule");
-    // write the atoms
-    xml.writeStartElement("atomArray");
-    //xml.writeAttribute("id", "aa" + QString::number(moleculeCount));
-    int atomCount = 0;
-    QHash<Atom*,QString> atomHash;
-    foreach (Atom *atom, atoms()) {
-      atomCount++;
-      xml.writeStartElement("atom");
-      QString id = "a" + QString::number(atomCount);
-      atomHash[atom] = id;
-      xml.writeAttribute("id", id);
-      xml.writeAttribute("elementType", atom->element());
-      xml.writeAttribute("x2", QString::number(atom->pos().x()));
-      xml.writeAttribute("y2", QString::number(atom->pos().y()));
-      xml.writeAttribute("hydrogenCount", QString::number(atom->numImplicitHydrogens()));
-      xml.writeAttribute("colorR", QString::number(atom->getColor().red()));
-      xml.writeAttribute("colorG", QString::number(atom->getColor().green()));
-      xml.writeAttribute("colorB", QString::number(atom->getColor().blue()));
-      xml.writeEndElement(); // atom
-    }
-    xml.writeEndElement(); // atomArray
-    // write the bonds
-    xml.writeStartElement("bondArray");
-    //xml.writeAttribute("id", "ab" + QString::number(moleculeCount));
-    int bondCount = 0;
-    foreach (Bond *bond, bonds()) {
-      bondCount++;
-      xml.writeStartElement("bond");
-      QString atomRefs2;
-      if ((bond->bondType() == Bond::InvertedHash) || (bond->bondType() == Bond::InvertedWedge))
-        atomRefs2 = atomHash[bond->endAtom()] + " " + atomHash[bond->beginAtom()];
-      else
-        atomRefs2 = atomHash[bond->beginAtom()] + " " + atomHash[bond->endAtom()];
-      xml.writeAttribute("atomRefs2", atomRefs2);
-      xml.writeAttribute("order", QString::number(bond->bondOrder()));
-      xml.writeAttribute("colorR", QString::number(bond->getColor().red()));
-      xml.writeAttribute("colorG", QString::number(bond->getColor().green()));
-      xml.writeAttribute("colorB", QString::number(bond->getColor().blue()));
-      switch (bond->bondType()) {
-      case Bond::InvertedWedge:
-      case Bond::Wedge:
-        //xml.writeStartElement("bondStereo");
-        xml.writeTextElement("bondStereo", "W");
-        break;
-      case Bond::InvertedHash:
-      case Bond::Hash:
-        xml.writeTextElement("bondStereo", "H");
-        break;
-      default:
-        break;
-      }
-      xml.writeEndElement(); // bond
-    }
-    xml.writeEndElement(); // bondArray
-    xml.writeEndElement(); // molecule  
-  }
-
-
   /**
    * Helper function to make sure double bonds are drawn in the ring with the 
    * most double bonds. Looks nicer!
@@ -1221,6 +1074,61 @@ namespace Molsketch {
     qDebug() << "# ElectronSystem =" << m_electronSystems.size();
 
   }
+
+  QList<const abstractXmlObject *> Molecule::children() const
+  {
+    return QList<const abstractXmlObject*>() << &m_atomList << &m_bondList ;
+  }
+
+  abstractXmlObject *Molecule::produceChild(const QString &name, const QString &type)
+  {
+    Q_UNUSED(type)
+    if (m_atomList.xmlName() == name){
+      m_atomList.clear();
+      return &m_atomList ;
+    }
+
+    if (m_bondList.xmlName() == name)
+    {
+      m_bondList.clear();
+      return &m_bondList ;
+    }
+
+    return 0 ;
+  }
+
+  template <class T>
+  abstractXmlObject *Molecule::moleculeItemListClass<T>::produceChild(const QString &name, const QString &type)
+  {
+     Q_UNUSED(type)
+    if (name == "bond") return new Bond ;
+    return 0 ;
+  }
+
+  template <class T>
+  QList<const abstractXmlObject *> Molecule::moleculeItemListClass<T>::children() const
+  {
+    QList<const abstractXmlObject*> childrenList ;
+    foreach (T* item, *this)
+      childrenList << item ;
+    return childrenList ;
+  }
+
+#define PRODUCECHILDTEMPLATEMACRO(ITEMTYPE, ITEMTYPENAME) \
+  template<> \
+  abstractXmlObject *Molecule::moleculeItemListClass<ITEMTYPE>::produceChild(const QString &name, const QString &type) \
+  { \
+    Q_UNUSED(type) \
+    if (name == ITEMTYPENAME) \
+    {\
+      ITEMTYPE *item = new ITEMTYPE ;\
+      item->setParentItem(p) ;\
+      return item ;\
+    }\
+    return 0 ;\
+  }
+  PRODUCECHILDTEMPLATEMACRO(Atom, "atom")
+  PRODUCECHILDTEMPLATEMACRO(Bond, "bond")
 
 
 } // namespace

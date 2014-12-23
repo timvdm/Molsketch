@@ -31,8 +31,13 @@
 
 namespace Molsketch {
 
-  ReactionArrow::ReactionArrow() : m_arrowType(SingleArrow), m_end(QPointF(50.0, 0.0)),
-      m_hoverBegin(false), m_hoverEnd(false), m_dialog(0)
+  ReactionArrow::ReactionArrow()
+    : arrowGraphicsItem(),
+      m_arrowType(SingleArrow),
+      m_end(QPointF(50.0, 0.0)),
+      m_hoverBegin(false),
+      m_hoverEnd(false),
+      m_dialog(0)
   {
     setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable);
 #if QT_VERSION < 0x050000
@@ -53,7 +58,7 @@ namespace Molsketch {
     m_arrowType = t;  
   }
 
-  QRectF ReactionArrow::boundingRect() const
+  QRectF ReactionArrow::boundingRect() const // TODO adapt
   {
     QRectF rect;
     if (m_end.x() < 0 && m_end.y() < 0)
@@ -87,11 +92,12 @@ namespace Molsketch {
 
     painter->save();
     QPen pen;
-    pen.setWidthF(1.5);
+    pen.setWidthF(lineWidth());
     pen.setCapStyle(Qt::RoundCap);
     pen.setJoinStyle(Qt::RoundJoin);
+    pen.setColor(getColor());
     painter->setPen(pen);
-    painter->setBrush(Qt::black);
+    painter->setBrush(pen.color());
 
     // draw the arrow
     switch (m_arrowType) {
@@ -268,30 +274,25 @@ namespace Molsketch {
     m_dialog->show();      
   }
 
-  void ReactionArrow::readXML(QXmlStreamReader &xml)
+  void ReactionArrow::readGraphicAttributes(const QXmlStreamAttributes &attributes)
   {
-    QXmlStreamAttributes attr = xml.attributes();
-    if (attr.hasAttribute("arrowType"))
-      m_arrowType = static_cast<ReactionArrow::ArrowType>(attr.value("arrowType").toString().toInt());
-    if (attr.hasAttribute("posx") && attr.hasAttribute("posy"))
-      setPos(QPointF(attr.value("posx").toString().toFloat(),
-                          attr.value("posy").toString().toFloat()));
-    if (attr.hasAttribute("endx") && attr.hasAttribute("endy"))
-      m_end = QPointF(attr.value("endx").toString().toFloat(),
-                      attr.value("endy").toString().toFloat());
+    m_arrowType = (ReactionArrow::ArrowType) (attributes.value("arrowType").toString().toInt()) ;
+    setPos(attributes.value("posx").toString().toFloat(),
+           attributes.value("posy").toString().toFloat());
+    m_end = QPointF(attributes.value("endx").toString().toFloat(),
+                    attributes.value("endy").toString().toFloat()) ;
   }
 
-  void ReactionArrow::writeXML(QXmlStreamWriter &xml)
+  QXmlStreamAttributes ReactionArrow::graphicAttributes() const
   {
-    xml.writeStartElement("object");
-    xml.writeAttribute("type", "ReactionArrow");
-    xml.writeAttribute("arrowType", QString::number(m_arrowType));
-    xml.writeAttribute("posx", QString::number(scenePos().x()));
-    xml.writeAttribute("posy", QString::number(scenePos().y()));
-    xml.writeAttribute("endx", QString::number(m_end.x()));
-    xml.writeAttribute("endy", QString::number(m_end.y()));
-    xml.writeEndElement();
+    QXmlStreamAttributes attributes ;
+    attributes.append("type", "ReactionArrow") ;
+    attributes.append("arrowType", QString::number(m_arrowType)) ;
+    attributes.append("posx", QString::number(scenePos().x())) ;
+    attributes.append("posy", QString::number(scenePos().y())) ;
+    attributes.append("endx", QString::number(m_end.x())) ;
+    attributes.append("endy", QString::number(m_end.y())) ;
+    return attributes ;
   }
-
 
 }

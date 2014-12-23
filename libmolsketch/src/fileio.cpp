@@ -561,7 +561,7 @@ namespace Molsketch
 
   }
 
-  void writeMskFile(const QString &fileName, MolScene *scene)
+  void writeMskFile(const QString &fileName, MolScene *scene) // TODO compare output to old version
   {
     QFile file(fileName);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -570,21 +570,7 @@ namespace Molsketch
     QXmlStreamWriter xml(&file);
     xml.setAutoFormatting(true);
     xml.writeStartDocument();
-    // make sure there is only 1 root node
-    xml.writeStartElement("div");
-
-    // write all the elements
-    foreach (QGraphicsItem *item, scene->items()) {
-      if (item->type() == Molecule::Type) {
-        static_cast<Molecule*>(item)->writeXML(xml);
-      } else if (item->type() == ReactionArrow::Type) {
-        static_cast<ReactionArrow*>(item)->writeXML(xml);
-      } else if (item->type() == MechanismArrow::Type) {
-        static_cast<MechanismArrow*>(item)->writeXML(xml);
-      }
-    }
-
-    xml.writeEndElement(); // div
+    xml << *scene ;
     xml.writeEndDocument();
   }
 
@@ -595,47 +581,16 @@ namespace Molsketch
       return;
 
     QXmlStreamReader xml(&file);
-
-    QHash<QString, Atom*> atomHash;
-    while (!xml.atEnd()) {
-      xml.readNext();
-
-      if (xml.isStartElement()) {
-        if (xml.name() == "molecule") {
-          Molecule *molecule = new Molecule;
-          molecule->readXML(xml);
-          scene->addItem(molecule);
-        } else if (xml.name() == "object") {
-          QXmlStreamAttributes attr = xml.attributes();
-          if (attr.hasAttribute("type")) {
-            if (attr.value("type") == "ReactionArrow") {
-              ReactionArrow *arrow = new ReactionArrow;
-              arrow->readXML(xml);
-              scene->addItem(arrow);
-            } else 
-            if (attr.value("type") == "MechanismArrow") {
-              MechanismArrow *arrow = new MechanismArrow;
-              arrow->readXML(xml);
-              scene->addItem(arrow);
-            }
-          }
-        }
-
-        qDebug() << "text = " << xml.name();
-      }
+    while (xml.name().toString() != scene->xmlName())
+      xml.readNext() ;
+    xml >> *scene ;
 
       //if (xml.name()
 
-    }
     if (xml.hasError()) {
       qDebug() << "ERROR while reading " << fileName;
       qDebug() << xml.errorString();
     }
-
-
-
-
-
   }
 
 

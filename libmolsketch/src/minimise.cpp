@@ -214,7 +214,7 @@ namespace Molsketch {
 			int n = r2 *bonds.size ();
 		//	std::cerr << "mutate bond" <<n<<"  ";
 
-			mirror (bonds[n]->at1, bonds[n] ->at2);
+                        mirror (bonds[n]->at1, bonds[n] ->at2); // FIXME crash when clicking on single H+ with min tool
 		}		
 	//	std::cerr << std::endl;
 	}

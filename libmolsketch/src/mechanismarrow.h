@@ -22,16 +22,16 @@
 #include "graphicsitemtypes.h"
 #include <QXmlStreamWriter>
 
-#include <QGraphicsItemGroup>
+#include "graphicsitem.h"
 
 //class QXmlStreamReader;
 //class QXmlStreamWriter;
 
 namespace Molsketch {
 
-  class MechanismArrowDialog;
+  class MechanismArrowDialog; // TODO improve contextmenu location recognition (presently only at the end points)
 
-  class MechanismArrow : public QGraphicsItem
+  class MechanismArrow : public arrowGraphicsItem
   {
     public:
       // Public enums
@@ -76,16 +76,9 @@ namespace Molsketch {
 
       void setArrowType(ArrowType type);
 
-      /**
-       * Read arrow data from the specified XML stream.
-       */
-      void readXML(QXmlStreamReader &xml);
-      /**
-       * Write this arrow the the specified XML stream.
-       */
-      void writeXML(QXmlStreamWriter &xml);
-
-
+  protected:
+      void readGraphicAttributes(const QXmlStreamAttributes &attributes) ;
+      QXmlStreamAttributes graphicAttributes() const ;
     private:
       ArrowType m_arrowType;
       QPointF m_p1, m_p2, m_p3, m_p4;

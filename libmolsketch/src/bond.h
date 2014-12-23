@@ -30,8 +30,7 @@
 
 #include "atom.h"
 #include "molecule.h"
-#include <graphicsitemtypes.h>
-#include <QGraphicsItem>
+#include "graphicsitem.h"
 
 
 namespace Molsketch {
@@ -41,13 +40,13 @@ namespace Molsketch {
  *
  * @author Harm van Eersel
  */
-class Bond : public QGraphicsItem
+class Bond : public graphicsItem
 {
     friend class Molecule;
 
   public:
     // Public enums
-    enum { Type = GraphicsItemTypes::BondType };
+    enum { Type = graphicsItem::BondType };
     /**
      * @return the type of the class. Needed for Qt type casting.
      */
@@ -83,20 +82,15 @@ class Bond : public QGraphicsItem
      * @param order the bond order (@c Bond::Single for single, @c Bond::Double for double, @c Bond::Triple for tripple)
      * @param type the bond type (@c Bond::Normal, @c Bond::Up, @c Bond::Down, e.g.)
      */
-    Bond(Atom* atomA, Atom* atomB, int order = 1, Bond::BondType type = InPlane, QGraphicsItem* parent = 0
-#if QT_VERSION < 0x050000
-				      , QGraphicsScene *scene = 0
-#endif
-	 );
+    Bond(Atom* atomA = 0, // TODO check usage
+         Atom* atomB = 0,
+         int order = 1,
+         Bond::BondType type = InPlane,
+         QGraphicsItem* parent = 0 GRAPHICSSCENEHEADER ) ;
     /**
      * Destructor. 
      */
     virtual ~Bond();
-
-    /** Undos the valency change caused by this bond in the two atoms connected to this bond. */
-    //  void undoValency();
-    /** Redos the valency change caused by this bond in the two atoms connected to this bond. */
-    //void redoValency();
 
     // Inherited methods
     /** Method to paint the bond on a QPainter object. Needed for Qt painting. */
@@ -114,10 +108,6 @@ class Bond : public QGraphicsItem
     // Manipulation methods
     /** Sets the bond type to @p type. */
     void setType(Bond::BondType type);
-    /** Cycle forward through the bond types. */
-    //void incType();
-    /** Cycle backward through the bond types. */
-    //void decType();
 
     /** Sets the bond order to @p order. */
     void setOrder(int order);
@@ -126,9 +116,6 @@ class Bond : public QGraphicsItem
     /** Cycle backward through the bond orders. */
     void decOrder();
 	
-	void setColor (QColor col) {m_color = col;}
-	QColor getColor () {return m_color;}
-
     // Query methods
     /** Returns the bond order. */
     int bondOrder() const;
@@ -143,6 +130,8 @@ class Bond : public QGraphicsItem
     bool hasAtom(const Atom* atom) const;
 
     Atom* otherAtom(const Atom *atom) const;
+
+    void setAtoms(Atom* A, Atom* B) ;
 
     /** Returns the molecule this bond is part of. */
     Molecule* molecule() const;
@@ -167,9 +156,13 @@ class Bond : public QGraphicsItem
      */
     Ring* ring() const { return m_ring; }
 
+    QString xmlName() const { return "bond" ; }
 
   protected:
     void setRing(Ring *ring) { m_ring = ring; }
+    QXmlStreamAttributes graphicAttributes() const ;
+    void readGraphicAttributes(const QXmlStreamAttributes &attributes) ;
+    QStringList textItemAttributes() const ;
 
   private:
     void drawSimpleBond(QPainter *painter);
@@ -182,14 +175,14 @@ class Bond : public QGraphicsItem
     Bond::BondType m_bondType;
     /** Stores the bond order as integer. */
     int m_bondOrder;
-	//color of the bond
-	QColor m_color;
     /** Stores a pointer to the first atom. */
     Atom* m_beginAtom;
     /** Stores a pointer to the second atom. */
     Atom* m_endAtom;
 
-    Ring *m_ring;      
+    Ring *m_ring;
+
+    void *pseudoStereoPointer ;
 
 };
 

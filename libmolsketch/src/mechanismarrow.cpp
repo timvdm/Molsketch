@@ -31,9 +31,18 @@
 
 namespace Molsketch {
 
-  MechanismArrow::MechanismArrow() : m_arrowType(SingleArrowRight), m_p1(QPointF(0.0, 0.0)), m_p2(QPointF(0.0, -50.0)),
-      m_p3(QPointF(50.0, -50.0)), m_p4(QPointF(50.0, 0.0)), m_hoverP1(false), 
-      m_hoverP2(false), m_hoverP3(false), m_hoverP4(false), m_dialog(0)
+  MechanismArrow::MechanismArrow()
+    : arrowGraphicsItem(),
+      m_arrowType(SingleArrowRight),
+      m_p1(QPointF(0.0, 0.0)),
+      m_p2(QPointF(0.0, -50.0)),
+      m_p3(QPointF(50.0, -50.0)),
+      m_p4(QPointF(50.0, 0.0)),
+      m_hoverP1(false),
+      m_hoverP2(false),
+      m_hoverP3(false),
+      m_hoverP4(false),
+      m_dialog(0)
   {
     setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable);
 #if QT_VERSION < 0x050000
@@ -44,9 +53,18 @@ namespace Molsketch {
     setZValue(1.0);
   }
   
-  MechanismArrow::MechanismArrow(QPointF c1, QPointF c2, QPointF endPoint) : m_arrowType(SingleArrowRight),
-      m_p1(QPointF(0.0, 0.0)), m_p2(c1), m_p3(c2), m_p4(endPoint), m_hoverP1(false),
-      m_hoverP2(false), m_hoverP3(false), m_hoverP4(false), m_dialog(0)
+  MechanismArrow::MechanismArrow(QPointF c1, QPointF c2, QPointF endPoint)
+    : arrowGraphicsItem(),
+      m_arrowType(SingleArrowRight),
+      m_p1(QPointF(0.0, 0.0)),
+      m_p2(c1),
+      m_p3(c2),
+      m_p4(endPoint),
+      m_hoverP1(false),
+      m_hoverP2(false),
+      m_hoverP3(false),
+      m_hoverP4(false),
+      m_dialog(0)
   {
     setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable);
 #if QT_VERSION < 0x050000
@@ -104,11 +122,12 @@ namespace Molsketch {
 
     painter->save();
     QPen pen;
-    pen.setWidthF(1.5);
+    pen.setWidthF(lineWidth());
     pen.setCapStyle(Qt::RoundCap);
     pen.setJoinStyle(Qt::RoundJoin);
+    pen.setColor(getColor());
     painter->setPen(pen);
-    //painter->setBrush(Qt::black);
+//    painter->setBrush(pen.color());
         
     // draw the bezier curve
     QPainterPath path;
@@ -129,7 +148,7 @@ namespace Molsketch {
     QPointF orthogonal2(line2.y(), -line2.x());
 
     painter->setPen(pen);
-    painter->setBrush(Qt::black);
+    painter->setBrush(pen.color());
 
     // draw the arrow
     switch (m_arrowType) {
@@ -331,43 +350,34 @@ namespace Molsketch {
     m_dialog->show();
   }
 
-  void MechanismArrow::readXML(QXmlStreamReader &xml)
+  void MechanismArrow::readGraphicAttributes(const QXmlStreamAttributes &attributes)
   {
-    QXmlStreamAttributes attr = xml.attributes();
-    if (attr.hasAttribute("arrowType"))
-      m_arrowType = static_cast<MechanismArrow::ArrowType>(attr.value("arrowType").toString().toInt());
-    if (attr.hasAttribute("posx") && attr.hasAttribute("posy"))
-      setPos(QPointF(attr.value("posx").toString().toFloat(),
-                          attr.value("posy").toString().toFloat()));
-    if (attr.hasAttribute("p1x") && attr.hasAttribute("p1y"))
-      m_p1 = QPointF(attr.value("p1x").toString().toFloat(),
-                     attr.value("p1y").toString().toFloat());
-    if (attr.hasAttribute("p2x") && attr.hasAttribute("p2y"))
-      m_p2 = QPointF(attr.value("p2x").toString().toFloat(),
-                     attr.value("p2y").toString().toFloat());
-    if (attr.hasAttribute("p3x") && attr.hasAttribute("p3y"))
-      m_p3 = QPointF(attr.value("p3x").toString().toFloat(),
-                     attr.value("p3y").toString().toFloat());
-    if (attr.hasAttribute("p4x") && attr.hasAttribute("p4y"))
-      m_p4 = QPointF(attr.value("p4x").toString().toFloat(),
-                     attr.value("p4y").toString().toFloat());
+    m_arrowType = (MechanismArrow::ArrowType) (attributes.value("arrowType").toString().toInt()) ;
+    setPos(attributes.value("posx").toString().toInt(),
+           attributes.value("posy").toString().toInt()) ;
+    QVector<QPointF*> points ;
+    points << &m_p1 << &m_p2 << &m_p3 << &m_p4 ;
+    for (int i = 0 ; i < points.size() ; ++i)
+    {
+      points[i]->setX(attributes.value("p" + QString::number(i+1) + "x").toString().toFloat());
+      points[i]->setY(attributes.value("p" + QString::number(i+1) + "y").toString().toFloat());
+    }
   }
 
-  void MechanismArrow::writeXML(QXmlStreamWriter &xml)
+  QXmlStreamAttributes MechanismArrow::graphicAttributes() const
   {
-    xml.writeStartElement("object");
-    xml.writeAttribute("type", "MechanismArrow");
-    xml.writeAttribute("arrowType", QString::number(m_arrowType));
-    xml.writeAttribute("posx", QString::number(scenePos().x()));
-    xml.writeAttribute("posy", QString::number(scenePos().y()));
-    xml.writeAttribute("p1x", QString::number(m_p1.x()));
-    xml.writeAttribute("p1y", QString::number(m_p1.y()));
-    xml.writeAttribute("p2x", QString::number(m_p2.x()));
-    xml.writeAttribute("p2y", QString::number(m_p2.y()));
-    xml.writeAttribute("p3x", QString::number(m_p3.x()));
-    xml.writeAttribute("p3y", QString::number(m_p3.y()));
-    xml.writeAttribute("p4x", QString::number(m_p4.x()));
-    xml.writeAttribute("p4y", QString::number(m_p4.y()));
-    xml.writeEndElement();
+    QXmlStreamAttributes attributes ;
+    attributes.append("type", "MechanismArrow");
+    attributes.append("arrowType", QString::number(m_arrowType));
+    attributes.append("posx", QString::number(scenePos().x()));
+    attributes.append("posy", QString::number(scenePos().y()));
+    QVector<const QPointF*> points ;
+    points << &m_p1 << &m_p2 << &m_p3 << &m_p4 ;
+    for (int i = 0 ; i < points.size() ; ++i)
+    {
+      attributes.append("p" + QString::number(i+1) + "x", QString::number(points[i]->x())) ;
+      attributes.append("p" + QString::number(i+1) + "y", QString::number(points[i]->y())) ;
+    }
+    return attributes ;
   }
 }

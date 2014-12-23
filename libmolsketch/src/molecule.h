@@ -28,7 +28,8 @@
 #ifndef MOLECULE_H
 #define MOLECULE_H
 
-#include <graphicsitemtypes.h>
+#include "graphicsitem.h"
+#include "abstractxmlobject.h"
 
 #include <QList>
 #include <QGraphicsItemGroup>
@@ -36,8 +37,6 @@
 class QString;
 class QPoint;
 class QPainter;
-class QXmlStreamReader;
-class QXmlStreamWriter;
 
 namespace OpenBabel {
   class OBMol;
@@ -58,11 +57,11 @@ namespace Molsketch {
  * @author Harm van Eersel <devsciurus@xs4all.nl>
  * @since Hydrogen
  */
-class Molecule : public QGraphicsItemGroup
+class Molecule : public QGraphicsItemGroup, public abstractXmlObject
 {
   public:
     // Enabling typecasting
-    enum { Type = GraphicsItemTypes::MoleculeType };
+    enum { Type = graphicsItem::MoleculeType };
     /**
      * @return The QGraphicsItem type of the class. Needed for Qt typecasting.
      */
@@ -72,25 +71,11 @@ class Molecule : public QGraphicsItemGroup
 
     // Constructors and destructor
     /** Creates a molecule with @p parent on MolScene @p scene. */
-    Molecule(QGraphicsItem* parent = 0
-#if QT_VERSION < 0x050000
-        , MolScene *scene = 0
-#endif
-             );
+    Molecule(QGraphicsItem* parent = 0 GRAPHICSSCENEHEADER ) ;
     /** Creates a molecule from the atoms and bonds of the sets with @p parent on MolScene @p scene. */
-    Molecule(QSet<Atom*>, QSet<Bond*>, QGraphicsItem* parent = 0
-#if QT_VERSION < 0x050000
-        , MolScene *scene = 0
-#endif
-             );
+    Molecule(QSet<Atom*>, QSet<Bond*>, QGraphicsItem* parent = 0 GRAPHICSSCENEHEADER ) ;
     /** Creates a copy of molecule @p mol with @p parent on MolScene @p scene. */
-    Molecule(Molecule* mol, QGraphicsItem* parent = 0
-#if QT_VERSION < 0x050000
-        , MolScene *scene = 0
-#endif
-             );
-
-
+    Molecule(Molecule* mol, QGraphicsItem* parent = 0 GRAPHICSSCENEHEADER ) ;
 
     QRectF boundingRect() const;
 
@@ -166,8 +151,13 @@ class Molecule : public QGraphicsItemGroup
     Atom* atomAt(const QPointF &pos) const;
 //    /** Returns a pointer to the atom with @p id. */
 //     Atom* atom(int id) const;
-	  
-	  Atom* atomN (const int n) const;
+    /** Returns the number of the atom pointed to by @p atomPointer */
+    int atomIndex(const Atom *atomPointer) const ;
+    /** Returns the atom identifier for xml */
+    QString atomId(const Atom *atomPointer) const ;
+    /** Returns the pointer from ID */
+    Atom* atom(const QString& atomID) const ;
+    Atom* atom(const int n) const;
 
     /** Returns a pointer to the bond at position @p pos or NULL id none. */
     Bond* bondAt(const QPointF &pos) const;
@@ -221,22 +211,13 @@ class Molecule : public QGraphicsItemGroup
     OpenBabel::OBMol* OBMol() const;
     void perceiveRings();
 
-
-    /**
-     * Read Molecule data from the specified XML stream.
-     */
-    void readXML(QXmlStreamReader &xml);
-    /**
-     * Write this Molecule to the specified XML stream.
-     */
-    void writeXML(QXmlStreamWriter &xml);
-
     /**
      * Invalidate the electron systems. To be called when Atom/Bond properties
      * change.
      */
     void invalidateElectronSystems();
 
+    QString xmlName() const { return "molecule" ; }
 
   protected:
 	  
@@ -260,14 +241,28 @@ class Molecule : public QGraphicsItemGroup
    bool m_electronSystemsUpdate;
    QList<ElectronSystem*> m_electronSystems;
 
-
+   QList<const abstractXmlObject*> children() const ;
+   abstractXmlObject* produceChild(const QString &name, const QString &type) ;
 
   private:
     // Internal representation
     /** A list of pointers to the atoms of the molecule. Used as internal reprentation. */
-    QList<Atom*> m_atomList;
+   template<class T>
+   class moleculeItemListClass : public QList<T*>, public abstractXmlObject
+   {
+   private:
+     Molecule* p ;
+   public:
+     explicit moleculeItemListClass(Molecule* parent) : p(parent) {}
+     QString xmlName() const ;
+     QList<const abstractXmlObject*> children() const ;
+     abstractXmlObject *produceChild(const QString &name, const QString &type) ;
+   };
+
+    moleculeItemListClass<Atom> m_atomList;
+
     /** A list of pointers to the bonds of the molecule. Used as internal representation. */
-    QList<Bond*> m_bondList;
+    moleculeItemListClass<Bond> m_bondList;
     
     QList<Ring*> m_rings;
   };

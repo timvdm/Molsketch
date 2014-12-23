@@ -20,6 +20,9 @@
 
 #include <QtGlobal>
 #include <QPainter>
+#include <QMenu>
+#include <QAction>
+
 #include <math.h>
 
 #include "bond.h"
@@ -32,33 +35,23 @@
 
 #include <QDebug>
 
+#define CHECKFORATOMS if (!m_beginAtom || !m_endAtom)
+
 // Constructor
 
 namespace Molsketch {
 
-  Bond::Bond(Atom* atomA, Atom* atomB, int order, Bond::BondType type, QGraphicsItem* parent
-#if QT_VERSION < 0x050000
-			, QGraphicsScene *scene
-#endif
-			) : QGraphicsItem (parent
-#if QT_VERSION < 0x050000
-					   , scene
-#endif
-					   )
+  Bond::Bond(Atom* atomA, Atom* atomB, int order, Bond::BondType type, QGraphicsItem* parent GRAPHICSSCENESOURCE )
+    : graphicsItem (parent GRAPHICSSCENEINIT ),
+      m_beginAtom(0),
+      m_endAtom(0)
   {
-    Q_CHECK_PTR(atomA);
-    Q_CHECK_PTR(atomB);
-
     m_bondType = type;
     m_bondOrder = order;
-    m_beginAtom = atomA;
-    m_endAtom = atomB;
     m_ring = 0;
 
-    atomA->addBond(this);
-    atomB->addBond(this);
+    setAtoms(atomA, atomB);
   
-    setPos(m_beginAtom->scenePos());
     MolScene* molScene = dynamic_cast<MolScene*>(
 #if QT_VERSION < 0x050000
                 scene
@@ -77,22 +70,18 @@ namespace Molsketch {
   
   Bond::~Bond()
   {
-    //m_beginAtom->removeNeighbor(m_endAtom);
-    //m_endAtom->removeNeighbor(m_beginAtom);
+    setAtoms(0,0);
   }
 
   // Inherited methods
 
   QRectF Bond::boundingRect() const
   {
-    Q_CHECK_PTR(m_beginAtom);
-    Q_CHECK_PTR(m_endAtom);
+    CHECKFORATOMS return QRect() ;
 
     qreal w = m_endAtom->x() - m_beginAtom->x();
     qreal h = m_endAtom->y() - m_beginAtom->y();
 
-    // 	qreal x = qMax(m_beginAtom->pos().x(),m_endAtom->pos().x());
-    // 	qreal y = qMax(m_beginAtom->pos().y(),m_beginAtom->pos().y());
     return QRectF(mapFromParent(m_beginAtom->pos()) - QPointF(5,5), QSizeF(w+10,h+10));
   }
 
@@ -104,9 +93,6 @@ namespace Molsketch {
       drawRingBond(painter);
       return;
     }
-
-    Q_CHECK_PTR(m_beginAtom);
-    Q_CHECK_PTR(m_endAtom);
 
     qreal m_bondSpacing = 4.0;
 
@@ -153,9 +139,7 @@ namespace Molsketch {
   // draw a double bond with one line inside the ring
   void Bond::drawRingBond(QPainter *painter)
   {
-    Q_CHECK_PTR(m_beginAtom);
-    Q_CHECK_PTR(m_endAtom);
-    Q_CHECK_PTR(m_ring);
+    if (!m_ring) return ;
 
     qreal m_bondSpacing = 4.0;
 
@@ -193,9 +177,6 @@ namespace Molsketch {
 
   void Bond::drawHashBond(QPainter *painter, bool inverted)
   {
-    Q_CHECK_PTR(m_beginAtom);
-    Q_CHECK_PTR(m_endAtom);
-
     qreal m_bondSpacing = 4.0;
 
     QPointF begin = mapFromParent(m_beginAtom->pos());
@@ -223,9 +204,6 @@ namespace Molsketch {
 
   void Bond::drawWedgeBond(QPainter *painter, bool inverted)
   {
-    Q_CHECK_PTR(m_beginAtom);
-    Q_CHECK_PTR(m_endAtom);
-
     qreal m_bondSpacing = 4.0;
 
     QPointF begin = mapFromParent(m_beginAtom->pos());
@@ -271,7 +249,7 @@ namespace Molsketch {
       }
     }
 
-    painter->setBrush( QBrush(m_color) );
+    painter->setBrush( QBrush(getColor()) );
     painter->drawConvexPolygon( points, i);
   }
 
@@ -280,16 +258,16 @@ namespace Molsketch {
     Q_UNUSED(option);
     Q_UNUSED(widget);
 
+    CHECKFORATOMS return ;
+
     // Check the scene
-    MolScene* molScene = dynamic_cast<MolScene*>(scene());
-    Q_CHECK_PTR(molScene);
 
     // Set painter defaults
     painter->save();
     QPen pen;
-    pen.setWidthF(2/*molScene->bondWidth()*/); // FIXME
+    pen.setWidthF(lineWidth());
     pen.setCapStyle(Qt::RoundCap);
-    pen.setColor (m_color);
+    pen.setColor (getColor());
     painter->setPen(pen);
 
 
@@ -353,6 +331,7 @@ namespace Molsketch {
 
   QPainterPath Bond::shape() const
   {
+    CHECKFORATOMS return QPainterPath() ;
     QPolygonF polygon;
     polygon << shiftVector(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())),10).p1()
     << shiftVector(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())),10).p2()
@@ -382,19 +361,13 @@ namespace Molsketch {
 
   void Bond::incOrder()
   {
-    //pre: true
-    //post: m_bondOrder = oldBondOrder % 3 + 1
-
     // Calculating the new order
     setOrder( m_bondOrder % 3 + 1 );
   }
 
   void Bond::decOrder()
   {
-    //pre: true
-    //post: m_bondOrder = (oldBondOrder + 1) % 3 + 1
-
-    // Calculating the new order
+    // Calculating the new order // TODO check
     setOrder( (m_bondOrder + 1) % 3 + 1 );
   }
 
@@ -402,43 +375,11 @@ namespace Molsketch {
   {
     Q_ASSERT(0 <= t && t < Bond::NoType);
 
-    m_bondType = t;
-    // adjust the order if needed
-    /*
-    switch (t) {
-      case Wedge:
-      case InvertedWedge:
-      case Hash:
-      case InvertedHash:
-      case WedgeOrHash:
-        setOrder(1);
-        break;
-      case CisOrTrans:
-        setOrder(2);
-        break;
-      default:
-        break;
-    }
-*/
+    m_bondType = (BondType) qBound(0,(int) t,Bond::NoType-1);
 
     update();
   }
 
-  /*
-  void Bond::incType()
-  {
-    //pre: true
-    //post: bondType = bondType % 6 + 1
-    setType((m_bondType + 1) % NoType);
-  }
-
-  void Bond::decType()
-  {
-    //pre: true
-    //post: bondType = (bondType + 5) % 6
-    setType( (m_bondType + NoType - 1) % NoType);
-  }
-  */
 
   // Query methods
 
@@ -471,6 +412,20 @@ namespace Molsketch {
   {
     return (atom == m_beginAtom) ? m_endAtom : m_beginAtom;
   }
+
+  void Bond::setAtoms(Atom *A, Atom *B)
+  {
+    if (m_beginAtom) m_beginAtom->removeBond(this) ;
+    if (m_endAtom)   m_endAtom  ->removeBond(this);
+    m_beginAtom = A ;
+    m_endAtom = B ;
+    if (m_beginAtom)
+    {
+      m_beginAtom->addBond(this) ;
+      setPos(m_beginAtom->scenePos()) ;
+    }
+    if (m_endAtom)   m_endAtom  ->addBond(this);
+  }
   
   Molecule* Bond::molecule() const
   {
@@ -492,6 +447,55 @@ namespace Molsketch {
 
     // Returning the new vector
     return QLineF(rx1,ry1,rx2,ry2);
+  }
+
+  QXmlStreamAttributes Bond::graphicAttributes() const
+  {
+    QXmlStreamAttributes attributes ;
+
+    QString atomOne = molecule()->atomId(m_beginAtom),
+        atomTwo = molecule()->atomId(m_endAtom) ;
+    if ((bondType() == Bond::InvertedHash) || (bondType() == Bond::InvertedWedge))
+      atomOne.swap(atomTwo) ;
+
+    attributes.append("atomRefs2", atomOne + " " + atomTwo) ;
+    attributes.append("order", QString::number(bondOrder()));
+    switch (bondType()) {
+      case Bond::InvertedWedge:
+      case Bond::Wedge:
+        attributes.append("bondStereo", "W");
+        break;
+      case Bond::InvertedHash:
+      case Bond::Hash:
+        attributes.append("bondStereo", "H");
+        break;
+      default:
+        break;
+    }
+
+    return attributes ;
+  }
+
+  void Bond::readGraphicAttributes(const QXmlStreamAttributes &attributes)
+  {
+    QStringList atomIndexes = attributes.value("atomRefs2").toString().split(" ") ;
+    if (atomIndexes.size() != 2) return ;
+
+    m_beginAtom = molecule()->atom(atomIndexes.first()) ;
+    m_endAtom = molecule()->atom(atomIndexes.last()) ;
+    m_bondOrder = attributes.value("order").toString().toInt() ;
+    if (attributes.hasAttribute("bondStereo"))
+    {
+      if (attributes.value("bondStereo") == "W")
+        setType(Wedge);
+      if (attributes.value("bondStereo") == "H")
+        setType(Hash) ;
+    }
+  }
+
+  QStringList Bond::textItemAttributes() const
+  {
+    return QStringList() << "bondStereo" ;
   }
 
 } // namespace

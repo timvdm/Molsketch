@@ -26,12 +26,14 @@
 #include <QUndoCommand>
 
 #include "bond.h"
+#include "abstractxmlobject.h"
 
 class QString;
 class QImage;
 class QListWidgetItem;
 class QTableWidgetItem;
 class QUndoStack;
+class QContextMenuEvent;
 
 namespace OpenBabel {
   class OBMol;
@@ -58,7 +60,7 @@ namespace Molsketch {
    * event handling for molecules. In can be used in the same fashion as QGraphicsScene.
    *
    */
-  class MolScene : public QGraphicsScene
+  class MolScene : public QGraphicsScene, public abstractXmlObject
   {
     Q_OBJECT
 
@@ -266,17 +268,26 @@ namespace Molsketch {
 
       //void contextMenuEvent(Reason reason, );
 
-    public:
+  public:
       //item to accept input for text tool
       TextInputItem *m_inputTextItem;
       void setColor (QColor);
       QColor color() const;
 
 
-    private:
+      qreal bondWidth() const;
+      void setBondWidth(const qreal &bondWidth);
 
-      // Global properties
+      qreal arrowLineWidth() const;
+      void setArrowLineWidth(const qreal &arrowLineWidth);
 
+      QString xmlName() const { return "div" ; }
+  protected:
+      abstractXmlObject* produceChild(const QString &childName, const QString& type) ;
+      QList<const abstractXmlObject*> children() const ;
+      void readAttributes(const QXmlStreamAttributes &attributes) ;
+
+  private:
 
       // Hinting methods and properties
       /** Shows a highlight rectangle around @p item. */
@@ -293,7 +304,9 @@ namespace Molsketch {
       /** Stores the current bond length. */
       //qreal m_bondLength;
       /** Stores the current bond width. */
-      //qreal m_bondWidth;
+      qreal m_bondWidth;
+      /** Stores the current arrow line width. */
+      qreal m_arrowLineWidth ;
       /** Stores the current bond order. */
       //int m_bondOrder;
       /** Stores the current bond type. */
@@ -343,6 +356,8 @@ namespace Molsketch {
       // Auxillary feedback items
       /** The highlight rectangle. */
       QGraphicsPathItem* m_hoverRect;
+  private slots:
+      void updateAll() ;
 
 
 };
