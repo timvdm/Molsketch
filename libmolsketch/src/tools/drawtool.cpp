@@ -190,7 +190,10 @@ namespace Molsketch {
 
   void DrawTool::mousePressEvent(QGraphicsSceneMouseEvent *event)
   {
-    if (event->button() == Qt::RightButton) {
+    if (event->button() == Qt::RightButton)
+      return ;
+
+    if (event->button() == Qt::MiddleButton) {
       delModePress(event);
       return;
     }
@@ -414,7 +417,7 @@ namespace Molsketch {
         this->addModeDoubleClick(event);
         break;
       case Qt::RightButton:
-        this->delModeDoubleClick(event);
+//        this->delModeDoubleClick(event);
         break;
       default:
         break;

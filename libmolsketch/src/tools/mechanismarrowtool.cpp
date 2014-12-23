@@ -49,6 +49,7 @@ namespace Molsketch {
 
   void MechanismArrowTool::mousePressEvent(QGraphicsSceneMouseEvent *event)
   {
+    if (Qt::LeftButton != event->button()) return ;
     QPointF downPos = event->buttonDownScenePos(event->button());
 
     QUndoStack *stack = scene()->stack();
