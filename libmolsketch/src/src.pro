@@ -43,7 +43,12 @@ HEADERS += \
     tools/minimizetool.h \
     tools/movetool.h \
     tools/reactionarrowtool.h \
-    tools/rotatetool.h
+    tools/rotatetool.h \
+    coloraction.h \
+    graphicsitem.h \
+    linewidthaction.h \
+    abstractitemaction.h \
+    abstractxmlobject.h
 
 SOURCES += \
     atom.cpp \
@@ -83,7 +88,12 @@ SOURCES += \
     tools/minimizetool.cpp \
     tools/movetool.cpp \
     tools/reactionarrowtool.cpp \
-    tools/rotatetool.cpp
+    tools/rotatetool.cpp \
+    coloraction.cpp \
+    graphicsitem.cpp \
+    linewidthaction.cpp \
+    abstractitemaction.cpp \
+    abstractxmlobject.cpp
 
 FORMS += \
     mechanismarrowdialog.ui \

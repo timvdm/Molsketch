@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2009 by Nicola Zonta                               *
- *                                                                      *
+ *   Copyright (C) 2007 by Harm van Eersel                                 *
+ *   devsciurus@xs4all.nl                                                  *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -17,32 +17,31 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef TEXTINPUTITEM_H
-#define TEXTINPUTITEM_H
 
-#include "atom.h"
+/** @file
+ * This file is part of molsKetch and contains the lineWidthAction class.
+ *
+ * @author Hendrik Vennekate <HVennekate@gmx.de>
+ * @since Lithium
+ */
+
+#ifndef LINEWIDTHACTION_H
+#define LINEWIDTHACTION_H
+
+#include "abstractitemaction.h"
 
 namespace Molsketch {
-	
 
-class TextInputItem : public QGraphicsTextItem {
-public:
-	TextInputItem (QGraphicsItem *parent = 0);
-	void setAtom (Atom *at);
-	void clickedOn (Atom *at);
-	// Methods needed for qt typecasting
-	/** Defines the type of the class. Needed for Qt typecasting.*/
-  enum { Type = graphicsItem::TextInputType };
-	/** Returns the type of the class. Needed fro Qt typecasting. */
-	virtual int type() const {return Atom::Type;};
-	
-protected:
-	void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 ) ;
-	void focusOutEvent ( QFocusEvent * event );
-	void applyString ();
-	void keyPressEvent (QKeyEvent *event);
-	Atom *_atom;
-};
-} //namespace
+  class lineWidthAction : public abstractItemAction
+  {
+    Q_OBJECT
+  public:
+    explicit lineWidthAction(QObject *parent = 0);
 
-#endif //TEXTINPUTITEM_H
+  private:
+    void execute() ;
+  };
+
+} // namespace
+
+#endif // LINEWIDTHACTION_H

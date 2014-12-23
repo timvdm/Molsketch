@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2009 by Nicola Zonta                               *
- *                                                                      *
+ *   Copyright (C) 2007-2008 by Harm van Eersel                            *
+ *   Copyright (C) 2009 Tim Vandermeersch                                  *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -17,32 +17,29 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef TEXTINPUTITEM_H
-#define TEXTINPUTITEM_H
 
-#include "atom.h"
+#include <QColorDialog>
+#include "coloraction.h"
+#include "commands.h"
 
 namespace Molsketch {
-	
 
-class TextInputItem : public QGraphicsTextItem {
-public:
-	TextInputItem (QGraphicsItem *parent = 0);
-	void setAtom (Atom *at);
-	void clickedOn (Atom *at);
-	// Methods needed for qt typecasting
-	/** Defines the type of the class. Needed for Qt typecasting.*/
-  enum { Type = graphicsItem::TextInputType };
-	/** Returns the type of the class. Needed fro Qt typecasting. */
-	virtual int type() const {return Atom::Type;};
-	
-protected:
-	void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 ) ;
-	void focusOutEvent ( QFocusEvent * event );
-	void applyString ();
-	void keyPressEvent (QKeyEvent *event);
-	Atom *_atom;
-};
-} //namespace
+  colorAction::colorAction(QObject *parent) :
+    abstractItemAction(parent)
+  {
+    setText(tr("Color...")) ;
+    setToolTip(tr("Set color")) ;
+    setWhatsThis(tr("Displays the color chooser dialog")) ;
+  }
 
-#endif //TEXTINPUTITEM_H
+  void colorAction::execute()
+  {
+    QColor newColor = QColorDialog::getColor(items().size() == 1
+                                             ? items().first()->getColor()
+                                             : QColor()) ;
+    if (!newColor.isValid()) return ;
+
+    ITERATEOVERITEMSMACRO("Change color", changeColor, newColor)
+  }
+
+}// namespace

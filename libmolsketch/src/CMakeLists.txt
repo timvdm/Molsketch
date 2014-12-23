@@ -49,7 +49,12 @@ set(tool_HDRS
     tools/hydrogentool.h
     tools/electrontool.h
     tools/reactionarrowtool.h
-    tools/mechanismarrowtool.h   
+    tools/mechanismarrowtool.h
+    coloraction.h
+    graphicsitem.h
+    linewidthaction.h
+    abstractitemaction.h
+    abstractxmlobject.h
     )
 
 
@@ -105,11 +110,8 @@ set(libmolsketch_SRCS
     reactionarrowdialog.cpp
     mechanismarrowdialog.cpp
     graphsymitem.cpp
-    
-    
     tool.cpp
     toolgroup.cpp
-    
     tools/drawtool.cpp
     tools/movetool.cpp
     tools/lassotool.cpp
@@ -121,8 +123,11 @@ set(libmolsketch_SRCS
     tools/electrontool.cpp
     tools/reactionarrowtool.cpp
     tools/mechanismarrowtool.cpp
-   
-    
+    coloraction.cpp
+    graphicsitem.cpp
+    linewidthaction.cpp
+    abstractitemaction.cpp
+    abstractxmlobject.cpp
     )
 
 set(toolicon_RCS tools/toolicons.qrc)
