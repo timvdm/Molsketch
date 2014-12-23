@@ -633,6 +633,51 @@ class RotateItem : public QUndoCommand
 
   };
 
+/**
+ * Command to change color of an item
+ *
+ * @author Hendrik Vennekate
+ */
+class changeColor : public QUndoCommand
+{
+public:
+  /**
+   * Constructor
+   *
+   * @param color the new color
+   * @param item the item whose color will be changed
+   */
+  changeColor(QColor color, graphicsItem* item) ;
+  void undo() ;
+  void redo() ;
+private:
+  QColor m_color ;
+  graphicsItem* m_item ;
+};
+
+/**
+ * Command to change the relative line width
+ *
+ * @author Hendrik Vennekate
+ */
+class changeRelativeWidth : public QUndoCommand // TODO macro for property changes (linewidth, color, bond order...)
+{
+public:
+  /**
+   * Constructor
+   *
+   * @param relativeWidth the factor by which the global width (defined for the scene)
+   * will be changed during drawing
+   * @param item the affected item
+   */
+  changeRelativeWidth(qreal relativeWidth, graphicsItem* item) ;
+  void undo() ;
+  void redo() ;
+private:
+  qreal lw ;
+  graphicsItem* m_item ;
+};
+
 } // namespace Commands
 
 } // namespace Molsketch

@@ -30,6 +30,7 @@
 #include "molecule.h"
 
 #include "molscene.h"
+#include "graphicsitem.h"
 
 using Molsketch::Atom;
 using Molsketch::Bond;
@@ -520,4 +521,44 @@ void RotateItem::redo()
 {
   m_item -> setTransform( m_transform, true );
   m_undone = false;
+}
+
+
+changeColor::changeColor(QColor color, Molsketch::graphicsItem *item)
+  : m_color(color),
+    m_item(item)
+{
+}
+
+void changeColor::undo() // TODO does not seem to refresh properly upon redo
+{
+  if (!m_item) return ;
+  QColor tempColor = m_item->getColor() ;
+  m_item->setColor(m_color) ;
+  m_color = tempColor ;
+}
+
+void changeColor::redo()
+{
+  undo() ;
+}
+
+
+changeRelativeWidth::changeRelativeWidth(qreal relativeWidth, Molsketch::graphicsItem *item)
+  : lw(relativeWidth),
+    m_item(item)
+{
+}
+
+void changeRelativeWidth::undo()
+{
+  if (!m_item) return ;
+  qreal t = m_item->relativeWidth() ;
+  m_item->setRelativeWidth(lw);
+  lw = t ;
+}
+
+void changeRelativeWidth::redo()
+{
+  undo() ;
 }
