@@ -38,9 +38,3 @@ unix {
 } else {
 	findOpenBabel()
 }
-
-QT += widgets printsupport
-
-DEFINES += QMAKEBUILD
-
-CONFIG += silent

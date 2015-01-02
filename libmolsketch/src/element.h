@@ -42,6 +42,19 @@ class QString;
 namespace Molsketch {
 
   namespace Element {
+    static const QStringList strings(QStringList()
+    << "Dummy" << "H" << "He"
+    << "Li" << "Be" << "B" << "C" << "N" << "O" << "F" << "Ne"
+    << "Na" << "Mg" << "Al" << "Si" << "P" << "S" << "Cl" << "Ar"
+    << "K" << "Ca" << "Sc" << "Ti" << "V" << "Cr" << "Mn" << "Fe" << "Co" << "Ni" << "Cu" << "Zn"
+    << "Ga" << "Ge" << "As" << "Se" << "Br" << "Kr"
+    << "Rb" << "Sr" << "Y" << "Zr" << "Nb" << "Mo" << "Tc" << "Ru" << "Rh" << "Pd" << "Ag" << "Cd"
+    << "In" << "Sn" << "Sb" << "Te" << "I" << "Xe"
+    << "Cs" << "Ba" << "La" << "Ce" << "Pr" << "Nd" << "Pm" << "Sm" << "Eu" << "Gd" << "Tb" << "Dy"
+    << "Ho" << "Er" << "Tm" << "Yb" << "Lu" << "Hf" << "Ta" << "W"  << "Re" << "Os" << "Ir" << "Pt" 
+    << "Au" << "Hg" << "Tl" << "Pb" << "Bi" << "Po" << "At" << "Rn" << "Fr" << "Ra" << "Ac" << "Th"
+    << "Pa" << "U" << "Np" << "Pu" << "Am" << "Cm" << "Bk" << "Cf" << "Es" << "Fm" << "Md" << "No" 
+    << "Lr" << "Rf" << "Db" << "Sg" << "Bh" << "Hs" << "Mt" << "Ds" << "Rg" << "Uub" << "Uut") ;
     enum Elements {
       Dummy = 0,
       RGroup = 0,
@@ -166,32 +179,6 @@ namespace Molsketch {
    */
   QColor elementColor(int element);
   
-/** Returns whether @p symbol is a proper element symbol. */
-bool isElementSymbol(const QString &symbol);
-/** Returns whether @p name is a proper element name. */
-bool isElementName(const QString &name);
-/** Returns whether @p number is a proper atom number. */
-bool isMsKAtomNumber(int number);
-
-/** Returns the name of the element with atom number @p number. */
-// QString number2name(int number);
-/** Returns the symbol of the element with atom number @p number. */
-QString number2symbol(int number);
-/** Returns the atom number of the element with name @p name. */
-// int name2number(const QString &name);
-/** Returns the element symbol of the element with name @p name. */
-// QString name2symbol(const QString &name);
-/** 
- * @return The atom number of the element with symbol @p symbol (e.g. 6 for carbon, 
- * 8 for oxygen).
- */
-int symbol2number(const QString &symbol);
-/** Returns the element name of the element with symbol @p symbol. */
-// QString symbol2name(const QString &symbol);
-
-/** Returns the weight of element with atom number @p number. */
-qreal weightOfElement(int number);
-
 /**
  * Get the group for the specified element.
  */

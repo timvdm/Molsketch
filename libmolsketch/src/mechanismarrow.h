@@ -19,7 +19,6 @@
 #ifndef MECHANISMARROW_H
 #define MECHANISMARROW_H
 
-#include "graphicsitemtypes.h"
 #include <QXmlStreamWriter>
 
 #include "graphicsitem.h"
@@ -35,7 +34,7 @@ namespace Molsketch {
   {
     public:
       // Public enums
-      enum { Type = GraphicsItemTypes::MechanismArrowType };
+      enum { Type = graphicsItem::MechanismArrowType };
       /**
        * @return the QGraphicsItem type of the class. Needed for Qt type casting.
        */

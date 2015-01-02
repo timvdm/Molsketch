@@ -157,9 +157,9 @@ class Bond : public graphicsItem
     Ring* ring() const { return m_ring; }
 
     QString xmlName() const { return "bond" ; }
+    void setRing(Ring *ring) { m_ring = ring; }
 
   protected:
-    void setRing(Ring *ring) { m_ring = ring; }
     QXmlStreamAttributes graphicAttributes() const ;
     void readGraphicAttributes(const QXmlStreamAttributes &attributes) ;
     QStringList textItemAttributes() const ;

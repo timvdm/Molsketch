@@ -386,7 +386,7 @@ namespace Molsketch {
     MolScene* molScene = dynamic_cast<MolScene*>(scene());
     Q_CHECK_PTR(molScene);
 
-    int element = symbol2number(m_elementSymbol);
+    int element = Element::strings.indexOf(m_elementSymbol);
     
     switch (molScene->renderMode()) {
       case MolScene::RenderColoredSquares:
@@ -703,7 +703,7 @@ namespace Molsketch {
   int Atom::numNonBondingElectrons() const
   {
     int boSum = bondOrderSum();
-    switch (elementGroup(symbol2number(m_elementSymbol))) {
+    switch (elementGroup(Element::strings.indexOf(m_elementSymbol))) {
       case 1:
       case 2:
       case 13:
@@ -759,7 +759,7 @@ namespace Molsketch {
     if (!mol) 
       return 0;
     
-    switch (symbol2number(m_elementSymbol)) {
+    switch (Element::strings.indexOf(m_elementSymbol)) {
       case Element::B:
       case Element::C:
       case Element::N:
@@ -776,7 +776,7 @@ namespace Molsketch {
     foreach (Bond *bond, mol->bonds(this))
       bosum += bond->bondOrder();
 
-    int n = Molsketch::expectedValence(Molsketch::symbol2number(m_elementSymbol)) - bosum + m_userImplicitHydrogens;
+    int n = Molsketch::expectedValence(Molsketch::Element::strings.indexOf(m_elementSymbol)) - bosum + m_userImplicitHydrogens;
     
     return (n > 0) ? n : 0;
   }
@@ -789,7 +789,7 @@ namespace Molsketch {
   int Atom::charge()  const
   {
     // non element atoms have no charge unless explicitly set (m_userCharge)
-    int atomicNumber = symbol2number(m_elementSymbol);
+    int atomicNumber = Element::strings.indexOf(m_elementSymbol);
     if (!atomicNumber)
       return m_userCharge;
     
@@ -827,11 +827,6 @@ namespace Molsketch {
 
     // Return the charge string
     return string;
-  }
-
-  qreal Atom::weight( ) const
-  {
-    return Molsketch::weightOfElement(Molsketch::symbol2number(m_elementSymbol)) + numImplicitHydrogens() * Molsketch::weightOfElement(1);
   }
 
   Molecule * Atom::molecule() const

@@ -354,7 +354,7 @@ namespace Molsketch {
 
     Q_ASSERT( order > 0 );
     m_bondOrder = order;
-    molecule()->perceiveRings();
+    molecule()->refreshRings();
     molecule()->invalidateElectronSystems();
     update();
   }

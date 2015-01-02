@@ -10,7 +10,6 @@ HEADERS += \
     electronsystem.h \
     element.h \
     fileio.h \
-    graphicsitemtypes.h \
     graphsymitem.h \
     itemplugin.h \
     math2d.h \

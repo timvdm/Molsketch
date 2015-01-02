@@ -1,5 +1,5 @@
 message("Welcome to molsKetch build")
-message("current dir: $$PWD COPY $(COPY)")
+message("current dir: $$PWD")
 
 TEMPLATE = subdirs
 CONFIG += ordered

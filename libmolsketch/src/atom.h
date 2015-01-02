@@ -95,10 +95,6 @@ namespace Molsketch {
        */
       void setElement(const QString & element);
       /** 
-       * Get the weight of the atom and it's implicit hydrogens. 
-       */
-      qreal weight() const;
-      /** 
        * Get the valency of the atom (i.e. the number of explicit bonds). 
        */
       int valency() const;

@@ -38,10 +38,6 @@ class QString;
 class QPoint;
 class QPainter;
 
-namespace OpenBabel {
-  class OBMol;
-}
-
 namespace Molsketch {
 
   class Atom;
@@ -114,6 +110,12 @@ class Molecule : public QGraphicsItemGroup, public abstractXmlObject
     * @return a list with the bonds which were connected to the removed atom..
     */
     QList<Bond*> delAtom(Atom* atom);
+    /**
+    * Returns the "center of mass", i.e. the average of all atom coordinates
+    * (no actual mass involved)
+    */
+    QPointF graphicalCenterOfMass() const ;
+    
 
     /** Adds a bond between @p atomA and @p atomB with @p order and @p type. */
     Bond* addBond(Atom* atomA, Atom* atomB, int order = 1, int type = 0, QColor c = QColor (0, 0, 0));
@@ -196,20 +198,12 @@ class Molecule : public QGraphicsItemGroup, public abstractXmlObject
 
     /** Returns the molecule formula. */
     QString formula() const;
-    /** Returns the weigth of the molecule. */
-    double weight() const;
     /** Returns the charge of the molecule. */
     int charge() const;
     /** Returns the charge as a string with an appropiate + or - sign. */
     QString chargeID() const;
 	  
-    /**
-     * Get the SMILES for this molecule.
-     */
-    QString smiles() const;
-
-    OpenBabel::OBMol* OBMol() const;
-    void perceiveRings();
+    void refreshRings();
 
     /**
      * Invalidate the electron systems. To be called when Atom/Bond properties
@@ -258,6 +252,8 @@ class Molecule : public QGraphicsItemGroup, public abstractXmlObject
      QList<const abstractXmlObject*> children() const ;
      abstractXmlObject *produceChild(const QString &name, const QString &type) ;
    };
+   
+   QList<Atom*> smallestRing(QList<Atom*> atomList) const ;
 
     moleculeItemListClass<Atom> m_atomList;
 

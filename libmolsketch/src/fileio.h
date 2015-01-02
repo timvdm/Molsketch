@@ -40,45 +40,28 @@ class Molecule;
  *
  * @author Harm van Eersel
  */
-
-/** 
- * Loads file with @p fileName and returns it as pointer to a new Molecule 
- * object. 
- */
-Molecule* loadFile(const QString &fileName);
-/** 
- * Loads file with @p fileName and returns it as pointer to a new Molecule 
- * object. 
- */
-Molecule* loadFile3D(const QString &fileName);
-/** 
- * Saves the current document under @p fileName and returns @c false if the
- * save failed.
- */
-bool saveFile(const QString &fileName, QGraphicsScene * scene);
-/** 
- * Saves the current document with coordinates suitable for 3D applications
- * under @p fileName and returns @c false if the save failed.
- */
-bool saveFile3D(const QString &fileName, QGraphicsScene * scene);
-/** 
- * Exports the document on MolScene @p scene as a bitmap with @p fileName 
- * and returns @c false if the export failed.
- */
-bool exportFile(const QString &fileName, MolScene * scene);
 /** 
  * Prints the document on MolScene @p scene on QPrinter @p printer and 
  * returns @c false if the print failed.
  */
-bool printFile(QPrinter &printer, MolScene * scene);
+  bool printFile(QPrinter &printer, MolScene * scene);
 /** 
  * Exports the current document on MolScene @p scene under @p fileName and 
  * returns @c false if the export failed.
  */
-bool saveToSVG(const QString &fileName, MolScene * scene);
-
-void readMskFile(const QString &fileName, MolScene *scene);
-void writeMskFile(const QString &fileName, MolScene *scene);
-  // Molecule* smiles(QString formula);
+  bool saveToSVG(const QString &fileName, MolScene * scene);
+/**
+ * Read file @p fileName in native fomat *.msk to @p scene.
+ */
+  void readMskFile(const QString &fileName, MolScene *scene);
+/**
+ * Write @p scene to file @p fileName in native fomat *.msk.
+ */
+  void writeMskFile(const QString &fileName, MolScene *scene);
+/** 
+ * Exports the document on MolScene @p scene as a bitmap with @p fileName 
+ * and returns @c false if the export failed.
+ */
+  bool exportFile(const QString &fileName, MolScene * scene);
 
 }
