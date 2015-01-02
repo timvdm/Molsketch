@@ -1,5 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2009 by Tim Vandermeersch                               *
+ *   Copyright (C) 2008 by Igor Filippov                                   *
+ *   Copyright (C) 2009 Tim Vandermeersch                                  *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -17,37 +18,19 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef MSK_RING_H
-#define MSK_RING_H
-
-#include "atom.h"
-
-namespace Molsketch {
-
-  class Molecule;
-
-  /**
-   * Ring class
-   */
-  class Ring
-  {
-    friend class Molecule;
-    public:
-      QList<Atom*> atoms() const;
-      int size() const ;
-      QPointF center() const ;
-      
-      int numberOfDoubleBonds() const ;
-      QSet<Bond*> bonds() const ;
-      void refreshBonds() ;
-    protected:
-      Ring() {}
-      void setAtoms(const QList<Atom*> &atoms) ;
-
-    private:
-      QList<Atom*> m_atoms;
-  };
-
-} // namespace
-
+#if QT_VERSION < 0x050000
+#define STRINGCONVERSION toAscii()
+#else
+#define STRINGCONVERSION toLatin1()
 #endif
+
+#if QT_VERSION < 0x050000
+#define GRAPHICSSCENEHEADER , QGraphicsScene * scene = 0
+#define GRAPHICSSCENESOURCE , QGraphicsScene *scene
+#define GRAPHICSSCENEINIT , scene
+#else
+#define GRAPHICSSCENEHEADER
+#define GRAPHICSSCENESOURCE
+#define GRAPHICSSCENEINIT
+#endif
+

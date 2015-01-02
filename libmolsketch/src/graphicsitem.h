@@ -4,15 +4,7 @@
 #include <QGraphicsItem>
 #include "abstractxmlobject.h"
 
-#if QT_VERSION < 0x050000
-#define GRAPHICSSCENEHEADER , QGraphicsScene * scene = 0
-#define GRAPHICSSCENESOURCE , QGraphicsScene *scene
-#define GRAPHICSSCENEINIT , scene
-#else
-#define GRAPHICSSCENEHEADER
-#define GRAPHICSSCENESOURCE
-#define GRAPHICSSCENEINIT
-#endif
+#include "qtversionmacros.h"
 
 namespace Molsketch {
 
