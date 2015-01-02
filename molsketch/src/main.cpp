@@ -24,18 +24,6 @@
 #include <QLocale>
 
 #include "mainwindow.h"
-  
-// @todo make this real plugins
-/*
-#include "smilesitem.h"
-const static Molsketch::SmilesItemFactory *smilesItemFactory = new Molsketch::SmilesItemFactory;
-#include "graphsymitem.h"
-const static Molsketch::GraphSymItemFactory *graphSymItemFactory = new Molsketch::GraphSymItemFactory;
-#include "atomnumberitem.h"
-const static Molsketch::AtomNumberItemFactory *atomNumberItemFactory = new Molsketch::AtomNumberItemFactory;
-#include "stereocenteritem.h"
-const static Molsketch::StereoCenterItemFactory *stereoCenterItemFactory = new Molsketch::StereoCenterItemFactory;
-*/
 
 int main(int argc, char *argv[])
 {

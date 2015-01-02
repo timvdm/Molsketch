@@ -35,6 +35,8 @@
 #include <QMenu>
 #include <QProcess>
 #include <QDir>
+#include <QLibrary>
+#include <QMessageBox>
 #if QT_VERSION < 0x050000
 #include <QDesktopServices>
 #else
@@ -50,7 +52,6 @@
 #include "residue.h"
 
 #include "molecule.h"
-#include "mollibitem.h"
 #include "commands.h"
 #include "smilesitem.h"
 #include "mimemolecule.h"
@@ -58,17 +59,10 @@
 #include "tool.h"
 #include "toolgroup.h"
 #include "math2d.h"
-#include "osra.h"
-
-#include <openbabel/mol.h>
-#include <openbabel/atom.h>
-#include <openbabel/bond.h>
-#include <openbabel/obiter.h>
+#include "obabeliface.h"
 
 #include "reactionarrow.h"
 #include "mechanismarrow.h"
-
-using namespace OpenBabel;
 
 
 
@@ -284,21 +278,32 @@ namespace Molsketch {
   {
     QClipboard* clipboard = qApp->clipboard();
     QImage img = clipboard->image();
+    if (img.isNull()) return ;
 
-    if (!img.isNull()) {
-      m_stack->beginMacro(tr("converting image using OSRA"));
+    QLibrary obabeliface("obabeliface") ;
+    obabeliface.load() ;
+    callOsraFunctionPointer callOsraPtr = (callOsraFunctionPointer) obabeliface.resolve("call_osra") ;
+    if (!callOsraPtr)
+    {
+      QMessageBox::critical(0, tr("Error importing image"), tr("OpenBabel support unavailable.")) ;
+      return ;
+    }
 #if QT_VERSION < 0x050000
-      QString tmpimg = QDesktopServices::storageLocation(QDesktopServices::TempLocation) + QDir::separator() + "osra.png";
+    QString tmpimg = QDesktopServices::storageLocation(QDesktopServices::TempLocation) + QDir::separator() + "osra.png";
 #else
-      QString tmpimg = QStandardPaths::writableLocation(QStandardPaths::TempLocation) + QDir::separator() + "osra.png";
+    QString tmpimg = QStandardPaths::writableLocation(QStandardPaths::TempLocation) + QDir::separator() + "osra.png";
 #endif
-      img.save(tmpimg, "PNG", 100);
-      Molecule* mol = call_osra(tmpimg);
-      if (mol) 
-        m_stack->push(new AddItem(new Molecule(mol), this));
-      QFile::remove(tmpimg);
+    img.save(tmpimg, "PNG", 100);
+    Molecule* mol = callOsraPtr(tmpimg);
+    if (mol) 
+    {
+      m_stack->beginMacro(tr("converting image using OSRA"));
+      m_stack->push(new AddItem(new Molecule(mol), this));
       m_stack->endMacro();
     }
+    else
+      QMessageBox::critical(0, tr("Error"), tr("OSRA conversion failed. Is OSRA installed?")) ;
+    QFile::remove(tmpimg);
   }
  
   void MolScene::clear()
@@ -794,110 +799,7 @@ namespace Molsketch {
   
     // execute default behaviour (needed for text tool)
           QGraphicsScene::keyPressEvent(keyEvent);
-  }
-
-  QImage MolScene::toImage (OpenBabel::OBMol *obmol)
-  {
-    Molecule *mol = toMol(obmol);
-		QImage im = renderMolToImage (mol);
-		removeItem (mol);
-		delete mol;
-		return im;
-	}
-
-	
-  Molecule *MolScene::toMol (OpenBabel::OBMol *obmol)
-  {
-    qreal k = 40/*bondLength()*/ / 1.5; // FIXME
-		Molecule *mol = new Molecule ();
-		mol->setPos(QPointF(0,0));
-		qreal x = 0;
-		qreal y = 0;
-		OpenBabel::OBAtom *first_atom = obmol ->GetAtom (1);
-		if (first_atom) {
-			x = first_atom ->x ();
-			y = -first_atom ->y ();
-		}
-		std::vector <Atom *>ats;
-		std::vector <Bond *>bonds;
-
-		//	for (unsigned int i = 0; i <= obmol ->NumAtoms();i++)
-		FOR_ATOMS_OF_MOL(obatom,obmol)
-		{
-			//	OpenBabel::OBAtom *obatom = obmol ->GetAtom(i);
-			//  			scene->addRect(QRectF(atom->GetX(),atom->GetY(),5,5));
-			//           Atom* atom =
-			ats.push_back (new Atom (QPointF((obatom->x() - x)*k,(-obatom->y()-y)*k),number2symbol(obatom->GetAtomicNum()), autoAddHydrogen (), mol));
-			//mol->addAtom();
-		}
-		
-		// Add bonds one-by-one
-		/// Mind the numbering!
-		//	for (unsigned int i = 0; i < obmol ->NumBonds();i++)
-		FOR_BONDS_OF_MOL(obbond,obmol)
-		{
-			// Loading the OpenBabel objects
-			//	OpenBabel::OBBond *obbond = obmol ->GetBond(i);
-			OpenBabel::OBAtom *a1 = obbond->GetBeginAtom();
-			OpenBabel::OBAtom *a2 = obbond->GetEndAtom();
-			if (a1 ->IsHydrogen()) continue;
-			if (a2 ->IsHydrogen()) continue;
-			
-			Atom* atomA = 0;
-			Atom* atomB = 0;
-			
-			if (a1 ->GetIdx() > 0 && (a1 ->GetIdx() -1) <ats.size ()) 
-			atomA = ats [a1 ->GetIdx() -1];
-			if (a2 ->GetIdx() > 0 && (a2 ->GetIdx() -1) <ats.size ()) 
-			atomB = ats [a2 ->GetIdx() -1];
-			std::cerr<< a2 ->GetIdx() -1<<"  "<<a1 ->GetIdx() -1<<std::endl;
-
-			if (atomA && atomB)	{
-				Bond* bond  = new Bond (atomA,atomB,obbond->GetBondOrder());
-				// Set special bond types
-				if (obbond->IsWedge())
-					bond->setType( Bond::Wedge );
-				if (obbond->IsHash()) 
-					bond->setType( Bond::Hash );
-				
-				bonds.push_back(bond);
-
-			}
-			// Normalizing
-			//             factor = scene->getBondLength()/obbond->GetLength();
-		}
-		
-		// // Normalizing molecule
-		// mol->scale(factor,factor);
-		// mol->setAtomSize(LABEL_SIZE/factor);
-		for (unsigned int i=0; i < ats.size (); i++) {
-			if (ats[i] ->element () == "H") continue;
-			mol ->addAtom (ats[i]);
-		}
-		for (unsigned int i=0; i < bonds.size (); i++) {
-
-			Atom *a1 = bonds[i] ->beginAtom ();
-			Atom *a2 = bonds[i] ->endAtom ();
-			if (a1 ->element () == "H") continue;
-			if (a2 ->element () == "H") continue;
-			mol ->addBond (bonds[i]);
-		}		
-		//int nu = 0;
-		//QList <Atom *> atts = mol ->atoms ();
-
-                /*
-		for (int i = 0; i < atts.size () ; i++) {
-			atts[i] ->setNumber(i); 
-		}
-                */
-                mol->numberAtoms();
-		return mol;
-		
-	}
-	
-
-	
-	
+  }	
 
   QUndoStack * MolScene::stack()
   {

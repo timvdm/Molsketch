@@ -23,6 +23,8 @@
 #include <QPainter>
 #include <QGraphicsSceneDragDropEvent>
 #include <QDebug>
+#include <QLibrary>
+#include "obabeliface.h"
 
 namespace Molsketch {
 
@@ -49,9 +51,12 @@ namespace Molsketch {
 
     if (m_molecule) {
       QFontMetrics fm = painter->fontMetrics();
-      QString smiles = m_molecule->smiles();
-      m_rect = QRectF(0, 0, fm.width(smiles), fm.height());
-      painter->drawText(m_rect, Qt::AlignCenter | Qt::TextDontClip, smiles);
+      QLibrary obabeliface("obabeliface") ;
+      obabeliface.load() ;
+      smilesFunctionPointer smilesPtr = (smilesFunctionPointer) (obabeliface.resolve("smiles")) ;
+      QString smilesText = smilesPtr ? smilesPtr(m_molecule) : QString("OpenBabel unavailable");
+      m_rect = QRectF(0, 0, fm.width(smilesText), fm.height());
+      painter->drawText(m_rect, Qt::AlignCenter | Qt::TextDontClip, smilesText);
     } else {
       paintDefault(painter);
     }

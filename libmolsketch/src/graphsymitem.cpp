@@ -23,13 +23,9 @@
 #include <QPainter>
 #include <QGraphicsSceneDragDropEvent>
 #include <QDebug>
+#include <QLibrary>
 
-#ifdef OPENBABEL2_TRUNK
-#include <openbabel/graphsym.h>
-#else
-#include <openbabel/mol.h>
-#include <openbabel/canon.h>
-#endif
+#include "obabeliface.h"
 
 namespace Molsketch {
 
@@ -53,29 +49,21 @@ namespace Molsketch {
 
     const QList<Atom*> &atoms = mol->atoms();
 
-    OpenBabel::OBMol *obmol = mol->OBMol();
     std::vector<unsigned int> symmetry_classes;
-
-#ifdef OPENBABEL2_TRUNK      
-    OpenBabel::OBGraphSym graphsym(obmol);
-    graphsym.GetSymmetry(symmetry_classes);
-#else
-    OpenBabel::OBBitVec fragatoms(obmol->NumAtoms());
-
-    using OpenBabel::OBMolAtomIter;
-    FOR_ATOMS_OF_MOL(a, obmol)
-      fragatoms.SetBitOn(a->GetIdx());
-
-
-    std::vector<unsigned int> canonical_labels;
-    OpenBabel::CanonicalLabels(obmol, symmetry_classes, canonical_labels);
-#endif
-
-    for (int i = 0; i < atoms.size(); ++i) {
-      painter->drawText(mapFromItem(mol, atoms[i]->pos()), QString::number(symmetry_classes.at(i)));
+    QLibrary obabeliface("obabeliface") ;
+    obabeliface.load() ;
+    getSymmetryClassesFunctionPointer getSymmetryClassesPtr = (getSymmetryClassesFunctionPointer) obabeliface.resolve("getSymmetryClasses") ;
+    if (getSymmetryClassesPtr)
+    {
+      getSymmetryClassesPtr(mol, symmetry_classes) ;
+      for (int i = 0; i < atoms.size(); ++i) {
+        painter->drawText(mapFromItem(mol, atoms[i]->pos()), QString::number(symmetry_classes.at(i)));
+      }
     }
+    else 
+      painter->drawText(mapFromItem(mol, mol->graphicalCenterOfMass()), "OpenBabel unavailable") ;
 
-    // default behavious (draw the label())
+    // default behaviour (draw the label())
     MolInputItem::paint(painter, option, widget);
     painter->restore();
   }

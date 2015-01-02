@@ -8,6 +8,7 @@ CONFIG += ordered
 SUBDIRS += \
 	libmolsketch/src \
 	molsketch/src \
+	obabeliface \
 	tests
 
 program.files=bin/molsketch

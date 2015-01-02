@@ -35,17 +35,12 @@ class QTableWidgetItem;
 class QUndoStack;
 class QContextMenuEvent;
 
-namespace OpenBabel {
-  class OBMol;
-}
-
 namespace Molsketch {
 
   class Molecule;
   class Atom;
   class Bond;
   class TextInputItem;
-  class MolLibItem;
   class ToolGroup;
 
   class MolSceneOptions
@@ -102,11 +97,6 @@ namespace Molsketch {
       ~MolScene();
 
       void addResidue (QPointF pos = QPointF (0, 0), QString name = "");	
-
-
-
-      QImage toImage (OpenBabel::OBMol *obmol);
-      Molecule *toMol (OpenBabel::OBMol *obmol);
 
       // Queries
       /** 
@@ -306,7 +296,7 @@ namespace Molsketch {
       /** Stores the current bond width. */
       qreal m_bondWidth;
       /** Stores the current arrow line width. */
-      qreal m_arrowLineWidth ;
+      qreal m_arrowLineWidth ; // TODO add to XML
       /** Stores the current bond order. */
       //int m_bondOrder;
       /** Stores the current bond type. */

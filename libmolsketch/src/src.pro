@@ -1,6 +1,9 @@
 include(../../findOpenBabel.pri)
+include(../../settings.pri)
 
 TEMPLATE = lib
+
+INCLUDEPATH += ../../obabeliface
 
 HEADERS += \
     atom.h \
@@ -22,7 +25,6 @@ HEADERS += \
     mollibitem.h \
     molscene.h \
     molview.h \
-    osra.h \
     reactionarrow.h \
     reactionarrowdialog.h \
     residue.h \
@@ -68,10 +70,10 @@ SOURCES += \
     mollibitem.cpp \
     molscene.cpp \
     molview.cpp \
-    osra.cpp \
     reactionarrow.cpp \
     reactionarrowdialog.cpp \
     residue.cpp \
+    ring.cpp \
     smilesitem.cpp \
     stereocenteritem.cpp \
     TextInputItem.cpp \
