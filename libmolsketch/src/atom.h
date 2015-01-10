@@ -55,6 +55,7 @@ namespace Molsketch {
       Atom(const QPointF & position = QPointF(), const QString & element = QString(),
           bool implicitHydrogens = true, QGraphicsItem* parent = 0 GRAPHICSSCENEHEADER ) ;
 
+      ~Atom() ;
       //@name Inherited drawing methods
       //@{
       /** 
@@ -72,9 +73,6 @@ namespace Molsketch {
       bool isDrawn() const;
       /** Returns whether the atom is hidden. */
       bool isHidden() const;
-
-	  void setColor (QColor col) {m_color = col;}
-	  QColor getColor () {return m_color;}
 
       //@name Chemistry methods
       //@{
@@ -235,11 +233,6 @@ namespace Molsketch {
       int m_userElectrons;
 
       int m_number;
-	  
-	  //color of the atom
-	  QColor m_color;
-	  
-	  //identifies the atom in a molecule. set with molecule::numberAtoms ()
 
       /**
        * Stores the list of atoms connected to this atom by a bond

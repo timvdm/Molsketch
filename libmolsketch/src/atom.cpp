@@ -118,6 +118,12 @@ namespace Molsketch {
     computeBoundingRect();
   }
 
+  Atom::~Atom()
+  {
+    foreach (Bond* bond, m_bonds)
+      delete bond ; // TODO rethink
+  }
+
 
   //////////////////////////////////////////////////////////////////////////////
   // Inherited painting methods
@@ -153,6 +159,7 @@ namespace Molsketch {
     // get the font & metrics
     QSettings settings;
     QFont symbolFont = settings.value("atom-symbol-font").value<QFont>();
+    symbolFont.setPointSizeF(symbolFont.pointSizeF() * lineWidth());
     QFont subscriptFont = symbolFont;
     subscriptFont.setPointSize(0.75 * symbolFont.pointSize());
     QFontMetrics fmSymbol(symbolFont);
@@ -238,8 +245,9 @@ namespace Molsketch {
   {
     MolScene* molScene = dynamic_cast<MolScene*>(scene());
 
-    painter->save();
+    painter->save(); // TODO mit computeBoundingRect zusammenfuehren
     QFont symbolFont = molScene->atomSymbolFont();
+    symbolFont.setPointSizeF(symbolFont.pointSizeF()*relativeWidth());
     QFont subscriptFont = symbolFont;
     subscriptFont.setPointSize(0.75 * symbolFont.pointSize());
     QFontMetrics fmSymbol(symbolFont);
@@ -372,7 +380,7 @@ namespace Molsketch {
     Q_UNUSED(option)
     Q_UNUSED(widget)
     
-    painter->setPen(m_color);
+    painter->setPen(getColor());
     // Save the original painter state
     //painter->save();
     
@@ -456,6 +464,8 @@ namespace Molsketch {
       lbl += "H";
     if ((hCount > 1) && !leftAligned)
       lbl += QString::number(hCount);
+
+    painter->setPen(getColor());
 
     drawAtomLabel(painter, lbl, alignment);
 
@@ -578,7 +588,7 @@ namespace Molsketch {
 
 
       painter->save();
-      painter->setBrush(Qt::black);
+//      painter->setBrush(Qt::black);
 
       for (int i = 0; i < unboundElectrons; i++)
         painter->drawEllipse(layoutList[i]);
@@ -867,8 +877,8 @@ namespace Molsketch {
   void Atom::addBond(Bond *bond)
   {
     Q_CHECK_PTR(bond);
-    Q_CHECK_PTR(bond->beginAtom());
-    Q_CHECK_PTR(bond->endAtom());
+//    Q_CHECK_PTR(bond->beginAtom());
+//    Q_CHECK_PTR(bond->endAtom());
 
     if (!m_bonds.contains(bond))
       m_bonds.append(bond);
