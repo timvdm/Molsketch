@@ -52,6 +52,12 @@ namespace Molsketch {
 
   // Constructors
 
+  qreal Molecule::toDegrees(const qreal &angle)
+  {
+    qreal temp = (angle - (int) angle) + ((int)angle % 360) ;
+    return temp < 0 ? 360 + temp : temp ;
+  }
+
   Molecule::Molecule(QGraphicsItem* parent GRAPHICSSCENESOURCE )
     : QGraphicsItemGroup (parent GRAPHICSSCENEINIT ),
     m_atomList(this),

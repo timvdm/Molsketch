@@ -19,6 +19,7 @@
 #include "graphsymitem.h"
 #include "molscene.h"
 #include "mimemolecule.h"
+#include "atom.h"
 
 #include <QPainter>
 #include <QGraphicsSceneDragDropEvent>
@@ -80,6 +81,37 @@ namespace Molsketch {
 
     if (scene())
       scene()->update();
+  }
+
+  QPointF getRectangleIntersectionVector(const QRectF& rectangle, qreal angle)
+  {
+    if (!rectangle.isValid()) return QPointF(0,0) ;
+    QLineF diagonal(rectangle.center(), rectangle.topRight()) ;
+    diagonal.setLength(diagonal.length()*1.5);
+    diagonal.setAngle(angle);
+    QVector<QLineF> sides ;
+    sides << QLineF(rectangle.bottomRight(), rectangle.topRight())
+          << QLineF(rectangle.topRight(), rectangle.topLeft())
+          << QLineF(rectangle.topLeft(), rectangle.bottomLeft())
+          << QLineF(rectangle.bottomLeft(), rectangle.bottomRight()) ;
+    QPointF interPoint ;
+    foreach(const QLineF side, sides)
+      if (QLineF::BoundedIntersection == side.intersect(diagonal, &interPoint))
+        return interPoint - rectangle.center() ;
+    return QPointF() ;
+  }
+
+  void MolInputItem::drawTextNearAtom(QPainter *painter, Atom *atom, const QString &text, const Molecule* mol)
+  {
+    QRectF textRect(painter->fontMetrics().boundingRect(text)) ;
+    qreal direction = atom->annotationDirection() ;
+    QPointF offset(-textRect.center()) ;
+    offset += 1.5*getRectangleIntersectionVector(textRect, direction) ;
+
+    if (atom->isDrawn())
+      offset += 1.5*getRectangleIntersectionVector(atom->boundingRect(), direction) ;
+
+    painter->drawText(mapFromItem(mol, atom->pos()) + offset, text);
   }
 
 

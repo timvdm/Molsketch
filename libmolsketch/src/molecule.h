@@ -67,6 +67,7 @@ class Molecule : public QGraphicsItemGroup, public abstractXmlObject
      */
     int type() const { return Type; }
 
+    static qreal toDegrees(const qreal& angle) ;
 
 
     // Constructors and destructor

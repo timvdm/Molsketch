@@ -24,6 +24,7 @@
 namespace Molsketch {
 
   class Molecule;
+  class Atom ;
 
   /**
    * Subclass of ItemPlugin to take a molecule as input. The type of output
@@ -74,6 +75,8 @@ namespace Molsketch {
 
       virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
       void dropEvent(QGraphicsSceneDragDropEvent *event);
+  protected:
+      void drawTextNearAtom(QPainter* painter, Atom* atom, const QString& text, const Molecule *mol) ;
     private:
       OutputType m_output;
       Molecule *m_molecule;

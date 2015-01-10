@@ -85,6 +85,18 @@ namespace Molsketch {
     return QRectF(mapFromParent(m_beginAtom->pos()) - QPointF(5,5), QSizeF(w+10,h+10));
   }
 
+  qreal Bond::bondAngle(const Atom *origin) const
+  {
+    if (!m_endAtom || !m_beginAtom) return 0 ;
+    return Molecule::toDegrees(bondAxis().angle() + (origin == endAtom()) * 180.) ;
+  }
+
+  QLineF Bond::bondAxis() const
+  {
+    return QLineF(mapFromParent(m_beginAtom->pos()),
+                  mapFromParent(m_endAtom->pos())) ;
+  }
+
   // draw single, double and triple bonds
   void Bond::drawSimpleBond(QPainter *painter)
   {

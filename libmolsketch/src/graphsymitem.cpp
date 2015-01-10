@@ -71,9 +71,9 @@ namespace Molsketch {
     OpenBabel::CanonicalLabels(obmol, symmetry_classes, canonical_labels);
 #endif
 
-    for (int i = 0; i < atoms.size(); ++i) {
-      painter->drawText(mapFromItem(mol, atoms[i]->pos()), QString::number(symmetry_classes.at(i)));
-    }
+    int i = 0 ;
+    foreach(Atom* atom, atoms)
+      drawTextNearAtom(painter, atom, QString::number(symmetry_classes.at(i)), mol);
 
     // default behavious (draw the label())
     MolInputItem::paint(painter, option, widget);

@@ -67,6 +67,7 @@ namespace Molsketch {
        */
       void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget);
       //@}
+      qreal annotationDirection() const ;
 
       // Query methods
       /** Returns whether the atom is drawn. */

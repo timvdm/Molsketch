@@ -32,6 +32,7 @@
 #include "element.h"
 #include "molscene.h"
 #include <iostream>
+#include <cmath>
 
 namespace Molsketch {
 
@@ -595,6 +596,33 @@ namespace Molsketch {
 
       painter->restore();
     }
+  }
+
+  qreal Atom::annotationDirection() const
+  {
+    // Determine optimum direction if angleDirection negative
+    //   No preference & no bonds => downward
+    if (m_bonds.isEmpty())
+      return 270 ;
+    if (m_bonds.size() == 1)
+      return Molecule::toDegrees(m_bonds.first()->bondAngle(this)+180.) ;
+    //   Have bonds? determine largest free angle
+    QVector<qreal> angles ;
+    foreach (Bond *bond, m_bonds)
+      angles << bond->bondAngle(this) ;
+    qSort(angles) ;
+    angles << angles.first() + 360. ;
+    qreal maxAngleGap = -1, result = 270 ;
+    for (int i = 0 ; i < angles.size()-1 ; ++i)
+    {
+      qreal gap = angles[i+1] - angles[i] ;
+      if (gap > maxAngleGap)
+      {
+        maxAngleGap = gap ;
+        result = (angles[i+1]+angles[i]) / 2. ;
+      }
+    }
+    return Molecule::toDegrees(result) ;
   }
 
   QVariant Atom::itemChange(GraphicsItemChange change, const QVariant &value)
