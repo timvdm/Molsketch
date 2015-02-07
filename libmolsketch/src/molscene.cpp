@@ -67,6 +67,7 @@
 
 #include "reactionarrow.h"
 #include "mechanismarrow.h"
+#include "arrow.h"
 
 using namespace OpenBabel;
 
@@ -122,6 +123,37 @@ namespace Molsketch {
     // Set initial size
     QRectF sizerect(-5000,-5000,10000,10000);
     setSceneRect(sizerect);
+
+    /////////////// Test
+    Arrow *a = new Arrow ;
+    a->setCoordinates(QVector<QPointF>()
+                      << QPointF(0,0)
+                      << QPointF(0,50)
+                      << QPointF(50,50)
+                      << QPointF(50,0)
+                      << QPointF(50,-50)
+                      << QPointF(100,-50)
+                      << QPointF(100,0)
+                      );
+    Arrow *b = new Arrow ;
+    b->setCoordinates(QVector<QPointF>()
+                      << QPointF(-50,0)
+                      << QPointF(-100,-50)) ;
+    b->setArrowType(Arrow::ForwardDown
+                    | Arrow::ForwardUp
+                    | Arrow::BackwardDown
+                    | Arrow::BackwardUp);
+    a->setArrowType(Arrow::NoArrow);
+    addItem(a);
+    addItem(b);
+    Arrow *c = new Arrow ;
+    c->setArrowType(Arrow::ForwardUp | Arrow::BackwardUp);
+    c->setColor(Qt::red);
+    c->setCoordinates(QVector<QPointF>()
+                      << QPointF(-50,-50)
+                      << QPointF(0,0)) ;
+    addItem(c);
+    /////////////// End Test
   }
 
   MolScene::~MolScene()
@@ -460,7 +492,9 @@ namespace Molsketch {
       if (type == "ReactionArrow") object = new ReactionArrow ;
       if (type == "MechanismArrow") object = new MechanismArrow ;
     }
+    qDebug() << "Adding:" << object << items() ;
     if (object) addItem(object) ;
+    qDebug() << "added:" << items() ;
     return object ;
   }
 
@@ -545,6 +579,10 @@ namespace Molsketch {
       //     emit pasteAvailable(!m_clipItems.isEmpty());
       emit selectionChange( );
     }
+
+    // Check if mouse left scene
+    if (QEvent::Leave == event->type())
+      m_toolGroup->activeTool()->leaveSceneEvent(event) ;
 
     // Execute default behavior
     return accepted;

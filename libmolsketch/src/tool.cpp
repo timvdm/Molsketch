@@ -29,6 +29,11 @@ namespace Molsketch {
   {
     Q_UNUSED(event);
   }
+
+  void Tool::leaveSceneEvent(QEvent *event)
+  {
+    Q_UNUSED(event);
+  }
       
   MolScene* Tool::scene() const
   {

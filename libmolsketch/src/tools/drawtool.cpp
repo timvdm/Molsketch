@@ -281,6 +281,7 @@ namespace Molsketch {
   {
     // Determine the right action
     if (m_hintMoleculeItems) {
+      m_hintMoleculeItems->show();
       m_hintMoleculeItems->setPos(event->scenePos());
       m_hintMoleculeItems->setTransform(QTransform());
 
@@ -417,11 +418,18 @@ namespace Molsketch {
         this->addModeDoubleClick(event);
         break;
       case Qt::RightButton:
-//        this->delModeDoubleClick(event);
+//        this->delModeDoubleClick(event); // this doesn't seem to work as Qt appears to  allow double clicks only from the left button.
         break;
       default:
         break;
     }
+  }
+
+  void DrawTool::leaveSceneEvent(QEvent *event)
+  {
+    Q_UNUSED(event)
+    if (m_hintMoleculeItems)
+      m_hintMoleculeItems->hide();
   }
 
 
@@ -537,7 +545,7 @@ namespace Molsketch {
     }
   }
 
-  void DrawTool::delModeDoubleClick( QGraphicsSceneMouseEvent * event )
+  void DrawTool::delModeDoubleClick( QGraphicsSceneMouseEvent * event ) // This doesn't seem to work
   {
     QUndoStack *stack = scene()->stack();
     Molecule* item = scene()->moleculeAt(event->scenePos());
@@ -661,12 +669,13 @@ namespace Molsketch {
       m_hintRingPoints.append(p1);
     }
 
+    m_hintMoleculeItems->hide();
     scene()->addItem(m_hintMoleculeItems);
   }
 
   void DrawTool::insertRing(const QPointF &pos)
   {
-    Q_UNUSED(pos);
+    Q_UNUSED(pos); // Why would you write a non-virtual, private function with an unused argument?
     // Get pointer the undo stack
     QUndoStack *undostack = scene()->stack();
 

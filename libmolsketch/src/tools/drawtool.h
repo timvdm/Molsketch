@@ -26,6 +26,7 @@ namespace Molsketch {
       void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
       void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
       void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+      void leaveSceneEvent(QEvent *event) ;
 
     public slots:
       void hydrogenClicked();
