@@ -14,6 +14,8 @@
 #define GRAPHICSSCENEINIT
 #endif
 
+class QUndoCommand ;
+
 namespace Molsketch {
 
   class MolScene ;
@@ -52,6 +54,10 @@ namespace Molsketch {
     QXmlStreamAttributes xmlAttributes() const ;
     virtual void readGraphicAttributes(const QXmlStreamAttributes& attributes) { Q_UNUSED(attributes)}
     virtual QXmlStreamAttributes graphicAttributes() const { return QXmlStreamAttributes() ; }
+    /**
+     * Attempt to push a command onto the undo stack. If none is available, execute the command and dispose of it.
+     */
+    void attemptUndoPush(QUndoCommand* command) ;
   private:
     QColor m_color ;
     qreal lineWidthScaling ;

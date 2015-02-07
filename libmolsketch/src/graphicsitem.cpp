@@ -1,5 +1,6 @@
 #include <QGraphicsSceneContextMenuEvent>
 #include <QMenu>
+#include <QUndoCommand>
 #include "graphicsitem.h"
 #include "molscene.h"
 #include "coloraction.h"
@@ -69,6 +70,18 @@ namespace Molsketch {
     attributes.append("colorB", QString::number(getColor().blue())) ;
     attributes.append("scalingParameter", QString::number(lineWidthScaling));
     return attributes ;
+  }
+
+  void graphicsItem::attemptUndoPush(QUndoCommand *command)
+  {
+    MolScene *molscene = dynamic_cast<MolScene*>(scene());
+    if (!molscene || !molscene->stack())
+    {
+      command->redo();
+      delete command;
+    }
+    else
+      molscene->stack()->push(command) ;
   }
 
   qreal graphicsItem::sceneLineWidth(MolScene *scene) const
