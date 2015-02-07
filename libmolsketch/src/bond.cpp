@@ -461,6 +461,20 @@ namespace Molsketch {
     return QLineF(rx1,ry1,rx2,ry2);
   }
 
+  void Bond::setCoordinates(const QVector<QPointF> &c)
+  {
+    if (c.size() != 2) return ;
+    m_beginAtom->setCoordinates(c.mid(0,1)) ;
+    m_endAtom->setCoordinates(c.mid(1,1));
+  }
+
+  QVector<QPointF> Bond::coordinates() const
+  {
+    return QVector<QPointF>()
+        << m_beginAtom->coordinates()
+        << m_endAtom->coordinates() ;
+  }
+
   QXmlStreamAttributes Bond::graphicAttributes() const
   {
     QXmlStreamAttributes attributes ;

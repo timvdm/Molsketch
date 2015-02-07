@@ -897,6 +897,17 @@ namespace Molsketch {
     return m_hidden;
   }
 
+  void Atom::setCoordinates(const QVector<QPointF> &c)
+  {
+    if (c.size() != 1) return ;
+    setPos(c.first());
+  }
+
+  QVector<QPointF> Atom::coordinates() const
+  {
+    return QVector<QPointF>() << pos() ;
+  }
+
   void Atom::enableImplicitHydrogens(bool enabled)
   {
     m_implicitHydrogens = enabled/* && (m_elementSymbol == "C" || m_elementSymbol == "N" || m_elementSymbol == "O")*/;

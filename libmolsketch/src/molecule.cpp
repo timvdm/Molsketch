@@ -115,7 +115,7 @@ namespace Molsketch {
     }
   }
 
-  Molecule::Molecule(Molecule* mol, QGraphicsItem* parent GRAPHICSSCENESOURCE)
+  Molecule::Molecule(const Molecule &mol, QGraphicsItem* parent GRAPHICSSCENESOURCE)
     : QGraphicsItemGroup (parent GRAPHICSSCENEINIT),
       m_atomList(this),
       m_bondList(this)
@@ -136,14 +136,14 @@ namespace Molsketch {
 #endif
 
     // Add the new atoms
-    foreach(Atom* atom, mol->atoms())
+    foreach(Atom* atom, mol.atoms())
     {
       Atom *a = new Atom(atom->pos(),atom->element(), atom->hasImplicitHydrogens(), this);
       a ->setColor(atom ->getColor ());
       addAtom(a);
     }
     // ...and bonds
-    foreach(Bond* bond, mol->bonds())
+    foreach(Bond* bond, mol.bonds())
     {
       Bond *b = new Bond(atomAt(bond->beginAtom()->pos()),atomAt(bond->endAtom()->pos()),bond->bondOrder(),bond->bondType());
       b ->setColor (bond ->getColor ());
@@ -151,7 +151,7 @@ namespace Molsketch {
     }
 
     // Set the position
-    setPos(mol->pos());
+    setPos(mol.pos());
   }
 
   void Molecule::numberAtoms () {
@@ -800,10 +800,21 @@ namespace Molsketch {
       }
     }
 
+  }
 
+  QVector<QPointF> Molecule::coordinates() const
+  {
+    QVector<QPointF> result ;
+    foreach (Atom* atom, m_atomList)
+      result << atom->coordinates() ;
+    return result ;
+  }
 
-
-
+  void Molecule::setCoordinates(const QVector<QPointF> &c)
+  {
+    if (c.size() != m_atomList.size()) return ;
+    for (int i = 0 ; i < c.size() ; ++i)
+      m_atomList[i]->setCoordinates(c.mid(i,1)) ;
   }
   
   QRectF Molecule::boundingRect() const

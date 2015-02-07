@@ -160,6 +160,10 @@ class Bond : public graphicsItem
     Ring* ring() const { return m_ring; }
 
     QString xmlName() const { return "bond" ; }
+    /** set the coordinates of the two atoms */
+    void setCoordinates(const QVector<QPointF> &c) ;
+    /** get the coordinates of the two atoms */
+    QVector<QPointF> coordinates() const ;
 
   protected:
     void setRing(Ring *ring) { m_ring = ring; }

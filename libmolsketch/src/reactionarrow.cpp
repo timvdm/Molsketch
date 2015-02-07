@@ -55,7 +55,19 @@ namespace Molsketch {
       
   void ReactionArrow::setArrowType(ArrowType t)
   {
-    m_arrowType = t;  
+    m_arrowType = t;
+  }
+
+  void ReactionArrow::setCoordinates(const QVector<QPointF> &c)
+  {
+    if (c.size() != 2) return ;
+    setPos(c.first()) ;
+    m_end = c.last() ;
+  }
+
+  QVector<QPointF> ReactionArrow::coordinates() const
+  {
+    return QVector<QPointF>() << pos() << m_end ;
   }
 
   QRectF ReactionArrow::boundingRect() const // TODO adapt

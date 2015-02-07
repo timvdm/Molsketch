@@ -74,6 +74,10 @@ namespace Molsketch {
       bool isDrawn() const;
       /** Returns whether the atom is hidden. */
       bool isHidden() const;
+      /** set coordinate */
+      void setCoordinates(const QVector<QPointF> &c) ;
+      /** get coordinate */
+      QVector<QPointF> coordinates() const ;
 
       //@name Chemistry methods
       //@{

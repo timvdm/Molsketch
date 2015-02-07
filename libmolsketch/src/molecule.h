@@ -57,7 +57,7 @@ namespace Molsketch {
  * @author Harm van Eersel <devsciurus@xs4all.nl>
  * @since Hydrogen
  */
-class Molecule : public QGraphicsItemGroup, public abstractXmlObject
+class Molecule : public QGraphicsItemGroup, public coordinateItem
 {
   public:
     // Enabling typecasting
@@ -76,7 +76,7 @@ class Molecule : public QGraphicsItemGroup, public abstractXmlObject
     /** Creates a molecule from the atoms and bonds of the sets with @p parent on MolScene @p scene. */
     Molecule(QSet<Atom*>, QSet<Bond*>, QGraphicsItem* parent = 0 GRAPHICSSCENEHEADER ) ;
     /** Creates a copy of molecule @p mol with @p parent on MolScene @p scene. */
-    Molecule(Molecule* mol, QGraphicsItem* parent = 0 GRAPHICSSCENEHEADER ) ;
+    Molecule(const Molecule& mol, QGraphicsItem* parent = 0 GRAPHICSSCENEHEADER ) ;
 
     QRectF boundingRect() const;
 
@@ -84,6 +84,10 @@ class Molecule : public QGraphicsItemGroup, public abstractXmlObject
     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget);
 
 
+    /** Coordinates */
+    QVector<QPointF> coordinates() const ;
+    /** Set coordinates */
+    void setCoordinates(const QVector<QPointF> &c) ;
     // Manipulation methods
 
     /**

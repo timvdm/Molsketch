@@ -76,6 +76,9 @@ namespace Molsketch {
 
       void setArrowType(ArrowType type);
 
+      void setCoordinates(const QVector<QPointF> &c) ;
+      QVector<QPointF> coordinates() const ;
+
   protected:
       void readGraphicAttributes(const QXmlStreamAttributes &attributes) ;
       QXmlStreamAttributes graphicAttributes() const ;

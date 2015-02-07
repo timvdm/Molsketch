@@ -18,7 +18,14 @@ namespace Molsketch {
 
   class MolScene ;
 
-  class graphicsItem : public QGraphicsItem, public abstractXmlObject
+  class coordinateItem: public abstractXmlObject
+  {
+  public:
+    virtual QVector<QPointF> coordinates() const = 0;
+    virtual void setCoordinates(const QVector<QPointF>& c) = 0;
+  };
+
+  class graphicsItem : public QGraphicsItem, public coordinateItem
   {
   public:
 
