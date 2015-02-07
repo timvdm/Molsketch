@@ -36,7 +36,6 @@ HEADERS += \
     tools/chargetool.h \
     tools/connecttool.h \
     tools/drawtool.h \
-    tools/electrontool.h \
     tools/hydrogentool.h \
     tools/lassotool.h \
     tools/mechanismarrowtool.h \
@@ -81,7 +80,6 @@ SOURCES += \
     tools/chargetool.cpp \
     tools/connecttool.cpp \
     tools/drawtool.cpp \
-    tools/electrontool.cpp \
     tools/hydrogentool.cpp \
     tools/lassotool.cpp \
     tools/mechanismarrowtool.cpp \
