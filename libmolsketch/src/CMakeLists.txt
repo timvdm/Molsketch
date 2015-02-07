@@ -47,7 +47,6 @@ set(tool_HDRS
     tools/connecttool.h
     tools/chargetool.h
     tools/hydrogentool.h
-    tools/electrontool.h
     tools/reactionarrowtool.h
     tools/mechanismarrowtool.h
     coloraction.h
@@ -120,7 +119,6 @@ set(libmolsketch_SRCS
     tools/connecttool.cpp
     tools/chargetool.cpp
     tools/hydrogentool.cpp
-    tools/electrontool.cpp
     tools/reactionarrowtool.cpp
     tools/mechanismarrowtool.cpp
     coloraction.cpp
