@@ -38,7 +38,8 @@ namespace Molsketch {
       ResidueType = QGraphicsItem::UserType + 4,
       TextInputType = QGraphicsItem::UserType + 5,
       ReactionArrowType = QGraphicsItem::UserType + 6,
-      MechanismArrowType = QGraphicsItem::UserType + 7
+      MechanismArrowType = QGraphicsItem::UserType + 7,
+      GeneralArrowType = QGraphicsItem::UserType + 8
     };
 
     graphicsItem(QGraphicsItem* parent = 0 GRAPHICSSCENEHEADER);

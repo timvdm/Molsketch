@@ -47,7 +47,19 @@ HEADERS += \
     graphicsitem.h \
     linewidthaction.h \
     abstractitemaction.h \
-    abstractxmlobject.h
+    abstractxmlobject.h \
+    actions/genericaction.h \
+    actions/multiaction.h \
+    actions/incdecaction.h \
+    actions/connectaction.h \
+    actions/minimizeaction.h \
+    actions/rotateaction.h \
+    actions/transformcommand.h \
+    actions/reactionarrowaction.h \
+    arrow.h \
+    actions/periodictablewidget.h \
+    actions/bondtypewidget.h \
+    actions/drawaction.h
 
 SOURCES += \
     atom.cpp \
@@ -91,7 +103,19 @@ SOURCES += \
     graphicsitem.cpp \
     linewidthaction.cpp \
     abstractitemaction.cpp \
-    abstractxmlobject.cpp
+    abstractxmlobject.cpp \
+    actions/genericaction.cpp \
+    actions/multiaction.cpp \
+    actions/incdecaction.cpp \
+    actions/connectaction.cpp \
+    actions/minimizeaction.cpp \
+    actions/rotateaction.cpp \
+    actions/transformcommand.cpp \
+    actions/reactionarrowaction.cpp \
+    arrow.cpp \
+    actions/periodictablewidget.cpp \
+    actions/bondtypewidget.cpp \
+    actions/drawaction.cpp
 
 FORMS += \
     mechanismarrowdialog.ui \
