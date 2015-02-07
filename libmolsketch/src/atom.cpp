@@ -79,44 +79,13 @@ namespace Molsketch {
      QGraphicsItem* parent GRAPHICSSCENESOURCE )
     : graphicsItem (parent GRAPHICSSCENEINIT )
   {
-    //pre: position is a valid position in scene coordinates
-    setPos(position);
-    setZValue(3);
-    //setFlag(QGraphicsItem::ItemIsMovable);
-    //setFlag(QGraphicsItem::ItemIgnoresTransformations);
+    initialize(position, element, implicitHydrogens);
+  }
 
-    MolScene *molScene = dynamic_cast<MolScene*>(
-#if QT_VERSION < 0x050000
-          scene
-#else
-          scene()
-#endif
-          ); // @todo qobject_cast is faster
-    if (molScene)
-      setFlag(QGraphicsItem::ItemIsSelectable, molScene->editMode() == MolScene::MoveMode);
-	  
-	  if (molScene) {
-		  setColor (molScene ->color());    // Setting initial parameters
-	  }
-	  else setColor (QColor (0, 0, 0));
-    // Enabling hovereffects
-#if QT_VERSION < 0x050000
-    setAcceptsHoverEvents(true);
-#else
-    setAcceptHoverEvents(true) ;
-#endif
-    setAcceptedMouseButtons(Qt::LeftButton | Qt::MidButton);
-
-    // Setting private fields
-    m_elementSymbol = element;
-    m_hidden = true;
-    m_drawn = false;
-
-    m_userCharge = 0; // The initial additional charge is zero
-    m_userElectrons = 0;
-    m_userImplicitHydrogens =  0;
-    enableImplicitHydrogens(implicitHydrogens);
-    computeBoundingRect();
+  Atom::Atom(const Atom &other GRAPHICSSCENESOURCE)
+    : graphicsItem (other GRAPHICSSCENEINIT)
+  {
+    initialize(other.scenePos(), other.element(), other.hasImplicitHydrogens());
   }
 
   Atom::~Atom()
@@ -224,6 +193,49 @@ namespace Molsketch {
         m_shape = QRectF(xOffset, yOffsetSubscript - fmSymbol.ascent() - fmSymbol.height(), totalWidth, fmSymbol.ascent() + fmSymbol.height());
     }
 
+  }
+
+  void Atom::initialize(const QPointF &position,
+                        const QString &element,
+                        bool implicitHydrogens)
+  {
+    //pre: position is a valid position in scene coordinates
+    setPos(position);
+    setZValue(3);
+    //setFlag(QGraphicsItem::ItemIsMovable);
+    //setFlag(QGraphicsItem::ItemIgnoresTransformations);
+
+    MolScene *molScene = dynamic_cast<MolScene*>(
+#if QT_VERSION < 0x050000
+          scene
+#else
+          scene()
+#endif
+          ); // @todo qobject_cast is faster
+
+    if (molScene) {
+      setFlag(QGraphicsItem::ItemIsSelectable, molScene->editMode() == MolScene::MoveMode);
+      setColor (molScene ->color());    // Setting initial parameters
+    }
+    else setColor (QColor (0, 0, 0));
+    // Enabling hovereffects
+#if QT_VERSION < 0x050000
+    setAcceptsHoverEvents(true);
+#else
+    setAcceptHoverEvents(true) ;
+#endif
+    setAcceptedMouseButtons(Qt::LeftButton | Qt::MidButton);
+
+    // Setting private fields
+    m_elementSymbol = element;
+    m_hidden = true;
+    m_drawn = false;
+
+    m_userCharge = 0; // The initial additional charge is zero
+    m_userElectrons = 0;
+    m_userImplicitHydrogens =  0;
+    enableImplicitHydrogens(implicitHydrogens);
+    computeBoundingRect();
   }
 
   QRectF Atom::boundingRect() const

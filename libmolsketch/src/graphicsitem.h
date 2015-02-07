@@ -40,6 +40,7 @@ namespace Molsketch {
     };
 
     graphicsItem(QGraphicsItem* parent = 0 GRAPHICSSCENEHEADER);
+    graphicsItem(const graphicsItem& other GRAPHICSSCENEHEADER);
     // TODO XML i/o
     void setColor(const QColor &color) ;
     QColor getColor() const ;

@@ -270,6 +270,11 @@ class Molecule : public QGraphicsItemGroup, public coordinateItem
     moleculeItemListClass<Bond> m_bondList;
     
     QList<Ring*> m_rings;
+
+public:
+    Molecule& operator+=(const Molecule& other);
+    Molecule operator+(const Molecule& other) const;
+
   };
 
 } // namespace

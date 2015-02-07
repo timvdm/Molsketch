@@ -1114,6 +1114,27 @@ namespace Molsketch {
     return 0 ;
   }
 
+  Molecule &Molecule::operator+=(const Molecule &other)
+  {
+    if (&other == this) return *this;
+    int offset = m_atomList.size();
+    foreach(const Atom* atom, other.m_atomList)
+      addAtom(new Atom(*atom));
+    foreach(const Bond* bond, other.m_bondList)
+      addBond(m_atomList[offset+other.m_atomList.indexOf(bond->beginAtom())],
+          m_atomList[offset+other.m_atomList.indexOf(bond->endAtom())],
+          bond->bondOrder(), bond->type(), bond->getColor());
+    return *this;
+  }
+
+  Molecule Molecule::operator+(const Molecule &other) const
+  {
+    Molecule result ;
+    result += *this;
+    result += other;
+    return result;
+  }
+
   template <class T>
   abstractXmlObject *Molecule::moleculeItemListClass<T>::produceChild(const QString &name, const QString &type)
   {

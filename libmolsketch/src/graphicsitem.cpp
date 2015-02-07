@@ -11,7 +11,14 @@ namespace Molsketch {
     : QGraphicsItem(parent GRAPHICSSCENEINIT),
       lineWidthScaling(1)
   {
-//    setCacheMode(QGraphicsItem::NoCache);
+    //    setCacheMode(QGraphicsItem::NoCache);
+  }
+
+  graphicsItem::graphicsItem(const graphicsItem &other GRAPHICSSCENESOURCE)
+    : QGraphicsItem(0 GRAPHICSSCENEINIT),
+      m_color(other.m_color),
+      lineWidthScaling(other.lineWidthScaling)
+  {
   }
 
   void graphicsItem::setColor(const QColor& color)

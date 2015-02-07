@@ -54,7 +54,7 @@ namespace Molsketch {
        */
       Atom(const QPointF & position = QPointF(), const QString & element = QString(),
           bool implicitHydrogens = true, QGraphicsItem* parent = 0 GRAPHICSSCENEHEADER ) ;
-
+      Atom(const Atom& other GRAPHICSSCENEHEADER); // TODO copy constructor fuer graphicsItem
       ~Atom() ;
       //@name Inherited drawing methods
       //@{
@@ -225,6 +225,10 @@ namespace Molsketch {
        * the elelement symbol, adding bonds, ...
        */
       void computeBoundingRect();
+
+      void initialize(const QPointF & position,
+                      const QString & element,
+                      bool implicitHydrogens);
 
       // Internal representation
       /** Represents the atom's element symbol. */
