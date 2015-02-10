@@ -6,7 +6,7 @@ namespace Molsketch {
   struct multiAction::privateData
   {
     QMenu *menu ;
-    QAction *activeAction ;
+    QActionGroup *actionGroup ;
   };
 
   multiAction::multiAction(MolScene *scene)
@@ -15,8 +15,13 @@ namespace Molsketch {
   {
     d->menu = new QMenu() ;
     setMenu(d->menu) ;
-    d->activeAction = 0 ;
     setIconVisibleInMenu(false) ;
+    d->actionGroup = new QActionGroup(this);
+    d->actionGroup->setExclusive(true);
+    connect(d->actionGroup, SIGNAL(triggered(QAction*)),
+            this, SLOT(changeIcon()));
+    connect(d->actionGroup, SIGNAL(triggered(QAction*)),
+            this, SLOT(trigger()));
   }
 
   multiAction::~multiAction()
@@ -27,14 +32,14 @@ namespace Molsketch {
 
   void multiAction::addSubAction(QAction *a)
   {
-    if (d->menu->actions().isEmpty())
-    {
-      setIcon(a->icon());
-      d->activeAction = a ;
-    }
+    a->setCheckable(true);
     d->menu->addAction(a) ;
-    connect(a, SIGNAL(triggered()), this, SLOT(subActionSlot())) ;
-    connect(a, SIGNAL(toggled(bool)), this, SLOT(subActionSlot(bool))) ;
+    d->actionGroup->addAction(a);
+    if (!d->actionGroup->checkedAction())
+    {
+      a->setChecked(true);
+      setIcon(a->icon());
+    }
   }
 
   void multiAction::addSeparator()
@@ -44,18 +49,12 @@ namespace Molsketch {
 
   QAction *multiAction::activeSubAction() const
   {
-    return d->activeAction ;
+    return d->actionGroup->checkedAction() ;
   }
 
-  void multiAction::subActionSlot(bool active)
+  void multiAction::changeIcon()
   {
-    Q_UNUSED(active)
-    QAction* subAction = qobject_cast<QAction*>(sender()) ;
-    if (!subAction) return ;
-    setIcon(subAction->icon());
-    d->activeAction = subAction ;
-    setChecked(true);
+    setIcon(d->actionGroup->checkedAction()->icon());
   }
-
 
 }

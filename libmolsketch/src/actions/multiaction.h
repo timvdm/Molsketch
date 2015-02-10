@@ -18,7 +18,7 @@ namespace Molsketch {
     class privateData ;
     privateData *d ;
   private slots:
-    void subActionSlot(bool active = true) ;
+    void changeIcon();
   };
 
 } // namespace
