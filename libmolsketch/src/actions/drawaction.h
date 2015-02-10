@@ -5,26 +5,25 @@
 
 namespace Molsketch {
 
-        class drawAction : public genericAction
-	{
-          Q_OBJECT
-	public:
-                explicit drawAction(MolScene* scene);
-		~drawAction();
+  class drawAction : public genericAction
+  {
+    Q_OBJECT
+  public:
+    explicit drawAction(MolScene* scene);
+    ~drawAction();
 
-                void mousePressEvent(QGraphicsSceneMouseEvent *event);
-                void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-                void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-                void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event); // TODO
-                void leaveSceneEvent(QEvent *event) ;
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event); // TODO
 
-        private:
-                class privateData;
-                privateData *d;
-        private slots:
-                void refreshIcon();
-                void toggleVisibility(bool visible);
-	};
+  private:
+    class privateData;
+    privateData *d;
+  private slots:
+    void refreshIcon();
+    void toggleVisibility(bool visible);
+  };
 
 } // namespace Molsketch
 

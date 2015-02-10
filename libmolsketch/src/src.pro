@@ -59,7 +59,8 @@ HEADERS += \
     arrow.h \
     actions/periodictablewidget.h \
     actions/bondtypewidget.h \
-    actions/drawaction.h
+    actions/drawaction.h \
+    actions/ringaction.h
 
 SOURCES += \
     atom.cpp \
@@ -115,7 +116,8 @@ SOURCES += \
     arrow.cpp \
     actions/periodictablewidget.cpp \
     actions/bondtypewidget.cpp \
-    actions/drawaction.cpp
+    actions/drawaction.cpp \
+    actions/ringaction.cpp
 
 FORMS += \
     mechanismarrowdialog.ui \
