@@ -13,10 +13,10 @@ namespace Molsketch {
 
     enum ArrowTypeParts {
       NoArrow = 0,
-      ForwardUp = 1,
-      ForwardDown = 2,
-      BackwardUp = 4,
-      BackwardDown = 8
+      UpperBackward = 1,
+      LowerBackward = 2,
+      UpperForward = 4,
+      LowerForward = 8
     };
 
     Q_DECLARE_FLAGS(ArrowType, ArrowTypeParts)

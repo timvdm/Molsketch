@@ -65,7 +65,7 @@ namespace Molsketch {
     : arrowGraphicsItem(),
       d(new privateData)
   {
-    d->arrowType = ForwardDown | ForwardUp ;
+    d->arrowType = LowerBackward | UpperBackward ;
     d->points << QPointF(0,0) << QPointF(50.0, 0.0),
     d->selectedPoint = -1 ;
     d->dialog = 0 ;
@@ -178,20 +178,20 @@ namespace Molsketch {
 
     // draw arrow tips
     painter->setBrush(pen.color());
-    if ((ForwardUp | ForwardDown) & d->arrowType)
-      painter->drawPath(generateArrowTip(d->points.last(),
-                                         d->points[d->points.size()-2],
-                        pos(),
-                        ForwardUp & d->arrowType,
-                        ForwardDown & d->arrowType,
-                        relativeWidth()
-                        ));
-    if ((BackwardUp | BackwardDown) & d->arrowType)
+    if ((UpperBackward | LowerBackward) & d->arrowType)
       painter->drawPath(generateArrowTip(d->points.first(),
                         d->points[1],
                         pos(),
-                        BackwardDown & d->arrowType,
-                        BackwardUp & d->arrowType,
+                        UpperBackward & d->arrowType,
+                        LowerBackward & d->arrowType,
+                        relativeWidth()
+                        ));
+    if ((UpperForward | LowerForward) & d->arrowType)
+      painter->drawPath(generateArrowTip(d->points.last(),
+                                         d->points[d->points.size()-2],
+                        pos(),
+                        LowerForward & d->arrowType,
+                        UpperForward & d->arrowType,
                         relativeWidth()
                         )) ;
 

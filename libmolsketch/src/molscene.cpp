@@ -139,15 +139,15 @@ namespace Molsketch {
     b->setCoordinates(QVector<QPointF>()
                       << QPointF(-50,0)
                       << QPointF(-100,-50)) ;
-    b->setArrowType(Arrow::ForwardDown
-                    | Arrow::ForwardUp
-                    | Arrow::BackwardDown
-                    | Arrow::BackwardUp);
+    b->setArrowType(Arrow::LowerBackward
+                    | Arrow::UpperBackward
+                    | Arrow::LowerForward
+                    | Arrow::UpperForward);
     a->setArrowType(Arrow::NoArrow);
     addItem(a);
     addItem(b);
     Arrow *c = new Arrow ;
-    c->setArrowType(Arrow::ForwardUp | Arrow::BackwardUp);
+    c->setArrowType(Arrow::UpperBackward | Arrow::UpperForward);
     c->setColor(Qt::red);
     c->setCoordinates(QVector<QPointF>()
                       << QPointF(-50,-50)

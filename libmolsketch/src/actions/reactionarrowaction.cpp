@@ -47,13 +47,13 @@ namespace Molsketch {
     if (d->currentArrow) delete d->currentArrow ;
     d->currentArrow = new Arrow() ;
     if (activeSubAction() == d->doubleArrow)
-      d->currentArrow->setArrowType(Arrow::BackwardDown
-                                    | Arrow::BackwardUp
-                                    | Arrow::ForwardDown
-                                    | Arrow::ForwardUp);
+      d->currentArrow->setArrowType(Arrow::LowerForward
+                                    | Arrow::UpperForward
+                                    | Arrow::LowerBackward
+                                    | Arrow::UpperBackward);
     if (activeSubAction() == d->hookArrow)
-      d->currentArrow->setArrowType(Arrow::ForwardUp);
-    QPointF pos = event->pos() ;
+      d->currentArrow->setArrowType(Arrow::UpperBackward);
+    QPointF pos = event->scenePos() ;
     d->currentArrow->setCoordinates(QVector<QPointF>(2, pos)) ;
     scene()->addItem(d->currentArrow) ;
     scene()->update(d->currentArrow->boundingRect());
