@@ -24,6 +24,7 @@ namespace Molsketch {
     *doubleArrow,
     *hookArrow ;
     Arrow* currentArrow ;
+    QPointF mousePressPosition;
   };
 
   reactionArrowAction::reactionArrowAction(MolScene *scene)
@@ -53,18 +54,22 @@ namespace Molsketch {
                                     | Arrow::UpperBackward);
     if (activeSubAction() == d->hookArrow)
       d->currentArrow->setArrowType(Arrow::UpperBackward);
-    QPointF pos = event->scenePos() ;
-    d->currentArrow->setCoordinates(QVector<QPointF>(2, pos)) ;
+    d->mousePressPosition = event->scenePos();
+    d->currentArrow->setCoordinates(QVector<QPointF>(2, d->mousePressPosition)) ;
     scene()->addItem(d->currentArrow) ;
     scene()->update(d->currentArrow->boundingRect());
-    qDebug() << "Arrow origin" << pos ;
+    event->accept();
   }
 
   void reactionArrowAction::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
   {
     if (!d->currentArrow) return ;
-    d->currentArrow->setPoint(0,event->scenePos()) ;
+    d->currentArrow->setPoints(
+          makePolygon(QLineF(
+                        d->mousePressPosition, // TODO event->buttonDownScenePos
+                        event->scenePos())));
     scene()->update(d->currentArrow->boundingRect());
+    event->accept();
   }
 
   void reactionArrowAction::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
@@ -74,6 +79,12 @@ namespace Molsketch {
     if (!scene() || !scene()->stack()) return ; // TODO
     scene()->stack()->push(new Commands::AddItem(d->currentArrow, scene())) ;
     d->currentArrow = 0 ;
+    event->accept();
+  }
+
+  QPolygonF reactionArrowAction::makePolygon(const QLineF &line)
+  {
+    return QPolygonF() << line.p1() << line.p2() ;
   }
 
 } // namespace

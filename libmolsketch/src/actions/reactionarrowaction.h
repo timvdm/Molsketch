@@ -13,6 +13,8 @@ namespace Molsketch {
     void mousePressEvent(QGraphicsSceneMouseEvent *event) ;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) ;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) ;
+  protected:
+    virtual QPolygonF makePolygon(const QLineF& line);
   private:
     class privateData ;
     privateData *d ;
