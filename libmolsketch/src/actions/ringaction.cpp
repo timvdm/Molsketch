@@ -13,16 +13,13 @@ namespace Molsketch {
   {
   public:
     QGraphicsPolygonItem hintMoleculeItems;
-    // TODO initialization
     QPolygonF hintRingPoints;
-    Molecule* hintMolecule;
     qreal bondLength;
     ringAction *parent;
     bool autoAddHydrogen;
 
     privateData(ringAction* p) :
       hintMoleculeItems(0),
-      hintMolecule(0),
       bondLength(Bond::defaultLength), // TODO here and in draw action: replace with direct access to defaultLength (possibly move to settings object)
       parent(p),
       autoAddHydrogen(false)
@@ -175,14 +172,7 @@ namespace Molsketch {
 
   ringAction::~ringAction()
   {
-    delete d->hintMolecule;
     delete d;
-  }
-
-  void ringAction::mousePressEvent(QGraphicsSceneMouseEvent *event)
-  {
-    if (Qt::LeftButton != event->button()) return ;
-    if (event->modifiers()) return ; // TODO change for "snap to grid"
   }
 
   void ringAction::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
