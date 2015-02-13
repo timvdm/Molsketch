@@ -59,13 +59,12 @@ namespace Molsketch {
   }
 
   Molecule::Molecule(QGraphicsItem* parent GRAPHICSSCENESOURCE )
-    : QGraphicsItemGroup (parent GRAPHICSSCENEINIT ),
+    : graphicsItem(parent GRAPHICSSCENEINIT ),
     m_atomList(this),
     m_bondList(this)
   {
     m_electronSystemsUpdate = true;
     // Setting properties
-    setFlags(QGraphicsItem::ItemIsFocusable);
     setAcceptedMouseButtons(Qt::LeftButton|Qt::MidButton);
     setHandlesChildEvents(false);
 #if QT_VERSION < 0x050000
@@ -81,13 +80,12 @@ namespace Molsketch {
 
   Molecule::Molecule(QSet<Atom*> atomSet, QSet<Bond*> bondSet,
                      QGraphicsItem* parent GRAPHICSSCENESOURCE)
-    : QGraphicsItemGroup (parent GRAPHICSSCENEINIT ),
+    : graphicsItem (parent GRAPHICSSCENEINIT ),
     m_atomList(this),
     m_bondList(this)
   {
     m_electronSystemsUpdate = true;
     // Setting properties
-    setFlags(QGraphicsItem::ItemIsFocusable);
     setAcceptedMouseButtons(Qt::LeftButton|Qt::MidButton);
 
     setHandlesChildEvents(false);
@@ -116,13 +114,12 @@ namespace Molsketch {
   }
 
   Molecule::Molecule(const Molecule &mol, QGraphicsItem* parent GRAPHICSSCENESOURCE)
-    : QGraphicsItemGroup (parent GRAPHICSSCENEINIT),
+    : graphicsItem (parent GRAPHICSSCENEINIT),
       m_atomList(this),
       m_bondList(this)
   {
     m_electronSystemsUpdate = true;
     // Setting properties
-    setFlags(QGraphicsItem::ItemIsFocusable);
     setAcceptedMouseButtons(Qt::LeftButton|Qt::MidButton);
     setHandlesChildEvents(false);
 #if QT_VERSION < 0x050000
@@ -181,7 +178,7 @@ namespace Molsketch {
 
     // Add the atom to the molecule
     m_atomList.append(atom);
-    addToGroup(atom);
+    atom->setParentItem(this);
     if (scene ()) {
       atom ->setColor (dynamic_cast<MolScene *> (scene ()) ->color());
     }
@@ -237,7 +234,7 @@ namespace Molsketch {
 
     // Adding the bond the the molecule
     m_bondList.append(bond);
-    addToGroup(bond);
+    bond->setParentItem(this);
 
     //  /// Work-around qt-bug
     //  if (scene()) scene()->addItem(bond);
@@ -261,7 +258,8 @@ namespace Molsketch {
       //delBond(bond);
       Q_ASSERT(m_bondList.contains(bond));
       m_bondList.removeAll(bond);
-      removeFromGroup(bond);
+      bond->setParentItem(0);
+      bond->setParentItem(0);
       Atom *begin = bond->beginAtom();
       Atom *end = bond->beginAtom();
       if (begin)
@@ -274,7 +272,7 @@ namespace Molsketch {
 
     // Remove the atom
     m_atomList.removeAll(atom);
-    removeFromGroup(atom);
+    atom->setParentItem(0);
     if (scene())
       scene()->removeItem(atom);
 
@@ -300,7 +298,7 @@ namespace Molsketch {
 
     // Removing the bond
     m_bondList.removeAll(bond);
-    removeFromGroup(bond);
+    bond->setParentItem(0);
     if (scene()) 
       scene()->removeItem(bond);
 
@@ -802,7 +800,7 @@ namespace Molsketch {
 
   }
 
-  QVector<QPointF> Molecule::coordinates() const
+  QPolygonF Molecule::coordinates() const
   {
     QVector<QPointF> result ;
     foreach (Atom* atom, m_atomList)
@@ -824,7 +822,7 @@ namespace Molsketch {
 
   MolScene* Molecule::scene() const
   {
-    return static_cast<MolScene*>(QGraphicsItemGroup::scene());
+    return static_cast<MolScene*>(QGraphicsItem::scene());
   }
 
   OpenBabel::OBMol* Molecule::OBMol() const

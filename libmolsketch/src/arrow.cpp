@@ -11,41 +11,6 @@
 
 namespace Molsketch {
 
-  class moveArrowPointCommand : public QUndoCommand
-  {
-  private:
-    int index ;
-    QPointF point ;
-    Arrow *arrow ;
-  public:
-    moveArrowPointCommand(const int& i,
-                          const QPointF& p,
-                          Arrow* a,
-                          QUndoCommand* parent = 0)
-      : QUndoCommand(parent),
-        index(i),
-        point(p),
-        arrow(a)
-    {}
-    void redo()
-    {
-      arrow->swapPoint(index, point) ;
-    }
-    void undo()
-    {
-      redo() ;
-    }
-    bool mergeWith(const QUndoCommand *other)
-    {
-      const moveArrowPointCommand* mapc = dynamic_cast<const moveArrowPointCommand*>(other) ;
-      if (!mapc) return false ;
-      if (mapc->arrow != arrow) return false ;
-      if (mapc->index != index) return false ;
-      return true ;
-    }
-    int id() const { return arrow->type(); } // TODO define command IDs in central place
-  };
-
   class ArrowDialog : public QDialog
   {
   public:
@@ -56,7 +21,6 @@ namespace Molsketch {
   {
     Arrow::ArrowType arrowType;
     QVector<QPointF> points;
-    int selectedPoint ;
     bool spline ;
     ArrowDialog *dialog;
   };
@@ -67,16 +31,8 @@ namespace Molsketch {
   {
     d->arrowType = LowerBackward | UpperBackward ;
     d->points << QPointF(0,0) << QPointF(50.0, 0.0),
-    d->selectedPoint = -1 ;
     d->dialog = 0 ;
     d->spline = true ;
-
-    setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable);
-#if QT_VERSION < 0x050000
-    setAcceptsHoverEvents(true);
-#else
-    setAcceptHoverEvents(true) ;
-#endif
   }
 
   Arrow::~Arrow()
@@ -96,7 +52,7 @@ namespace Molsketch {
     d->points = c ;
   }
 
-  QVector<QPointF> Arrow::coordinates() const
+  QPolygonF Arrow::coordinates() const
   {
     return d->points ;
   }
@@ -179,16 +135,16 @@ namespace Molsketch {
     // draw arrow tips
     painter->setBrush(pen.color());
     if ((UpperBackward | LowerBackward) & d->arrowType)
-      painter->drawPath(generateArrowTip(d->points.first(),
-                        d->points[1],
+      painter->drawPath(generateArrowTip(d->points.last(),
+                                         d->points[d->points.size()-2],
                         pos(),
                         UpperBackward & d->arrowType,
                         LowerBackward & d->arrowType,
                         relativeWidth()
                         ));
     if ((UpperForward | LowerForward) & d->arrowType)
-      painter->drawPath(generateArrowTip(d->points.last(),
-                                         d->points[d->points.size()-2],
+      painter->drawPath(generateArrowTip(d->points.first(),
+                                         d->points[1],
                         pos(),
                         LowerForward & d->arrowType,
                         UpperForward & d->arrowType,
@@ -198,8 +154,8 @@ namespace Molsketch {
     // draw red circles when hovering above one of the points
     painter->setPen(Qt::red);
     painter->setBrush(QBrush());
-    if (d->selectedPoint >= 0 && d->selectedPoint < d->points.size())
-        painter->drawEllipse(d->points[d->selectedPoint], 5,5) ;
+    if (selectedPoint() >= 0 && selectedPoint() < d->points.size())
+        painter->drawEllipse(d->points[selectedPoint()], 5,5) ;
     painter->restore();
   }
 
@@ -209,54 +165,6 @@ namespace Molsketch {
     foreach(const QPointF& p, d->points)
       result |= QRectF(p,QSizeF(1,1)) ;
     return result.adjusted(-10,-10,10,10) ;
-  }
-
-  void Arrow::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
-  {
-    hoverMoveEvent(event) ; // TODO ???
-  }
-
-  void Arrow::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
-  {
-    d->selectedPoint = -1 ;
-    QPointF eventPosition = event->pos() - scenePos() ;
-    int i = 0 ;
-    double minDistance = INFINITY ;
-
-    foreach(const QPointF& p, coordinates())
-    {
-      qreal currentDistance = QLineF(eventPosition, p).length() ;
-      if (currentDistance < minDistance
-          && currentDistance < 5.)
-      {
-        minDistance = currentDistance ;
-        d->selectedPoint = i ;
-      }
-      ++i ;
-    }
-    update() ;
-//    if (d->selectedPoint >= 0) event->accept(); // TODO
-//    arrowGraphicsItem::hoverMoveEvent(event) ;
-  }
-
-  void Arrow::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
-  {
-    Q_UNUSED(event)
-    d->selectedPoint = -1 ;
-    update() ;
-  }
-
-  void Arrow::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
-  {
-    if (d->selectedPoint >= 0)
-    {
-      attemptUndoPush(new moveArrowPointCommand(d->selectedPoint,
-                                                event->pos(),
-                                                this));
-      return ;
-    }
-
-//    arrowGraphicsItem::mouseMoveEvent(event) ;
   }
 
   void Arrow::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
@@ -273,14 +181,31 @@ namespace Molsketch {
     d->points[index] = p ;
   }
 
-  QPointF Arrow::getPoint(const int &index)
+  void Arrow::setPoints(const QPolygonF &polygon)
+  {
+    d->points = polygon;
+  }
+
+  QPointF Arrow::getPoint(const int &index) const
   {
     if (index == d->points.size()) return pos() ;
     if (index > d->points.size() || index < 0) return QPointF() ;
     return d->points[index] ;
   }
 
-  int Arrow::numPoints() const
+  QPointF Arrow::lastPoint() const
+  {
+    if (d->points.isEmpty()) return QPointF();
+    return d->points.last();
+  }
+
+  QPointF Arrow::firstPoint() const
+  {
+    if (d->points.isEmpty()) return QPointF();
+    return d->points.first();
+  }
+
+  int Arrow::coordinateCount() const
   {
     return d->points.size() + 1 ;
   }

@@ -1,18 +1,17 @@
 #include "graphicsitem.h"
 
 #include "transformcommand.h"
-#include <QDebug>
 
 namespace Molsketch {
 
   struct transformCommand::privateData
   {
     QVector<QPointF> coordinates ;
-    coordinateItem *item ;
+    graphicsItem *item ;
     int originalTrafoType ;
   };
 
-  transformCommand::transformCommand(coordinateItem *item,
+  transformCommand::transformCommand(graphicsItem *item,
                                      const QTransform& trafo,
                                      const QPointF& itemCenter,
                                      QUndoCommand* parent)
@@ -45,7 +44,6 @@ namespace Molsketch {
   void transformCommand::redo()
   {
     QVector<QPointF> temp(d->item->coordinates()) ;
-    qDebug() << "Coords:" << temp ;
     d->item->setCoordinates(d->coordinates) ;
     d->coordinates.swap(temp);
   }

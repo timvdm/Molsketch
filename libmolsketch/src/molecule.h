@@ -57,7 +57,7 @@ namespace Molsketch {
  * @author Harm van Eersel <devsciurus@xs4all.nl>
  * @since Hydrogen
  */
-class Molecule : public QGraphicsItemGroup, public coordinateItem
+class Molecule : public graphicsItem
 {
   public:
     // Enabling typecasting
@@ -85,7 +85,7 @@ class Molecule : public QGraphicsItemGroup, public coordinateItem
 
 
     /** Coordinates */
-    QVector<QPointF> coordinates() const ;
+    QPolygonF coordinates() const ;
     /** Set coordinates */
     void setCoordinates(const QVector<QPointF> &c) ;
     // Manipulation methods

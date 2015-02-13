@@ -3,14 +3,14 @@
 
 #include <QUndoCommand>
 
-class coordinateItem ;
-
 namespace Molsketch {
+
+  class graphicsItem;
 
   class transformCommand : public QUndoCommand
   {
   public:
-    transformCommand(coordinateItem *item, const QTransform &trafo, const QPointF &center, QUndoCommand *parent= 0);
+    transformCommand(graphicsItem *item, const QTransform &trafo, const QPointF &center, QUndoCommand *parent= 0);
     ~transformCommand() ;
     void undo() ;
     void redo() ;

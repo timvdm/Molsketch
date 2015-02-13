@@ -246,7 +246,7 @@ namespace Molsketch {
   bool Atom::hasLabel() const
   {
     MolScene* molScene = dynamic_cast<MolScene*>(scene());
-    Q_CHECK_PTR(molScene);
+    if (!molScene) return true ;
 
     if ((m_elementSymbol == "C") && !molScene->carbonVisible() && (numBonds() > 1) && ((charge() == 0) || !molScene->chargeVisible()))
       return false;
@@ -405,6 +405,7 @@ namespace Molsketch {
     */
     // Check the scene
     MolScene* molScene = dynamic_cast<MolScene*>(scene());
+    if (!molScene) return ;
     Q_CHECK_PTR(molScene);
 
     int element = symbol2number(m_elementSymbol);
@@ -680,21 +681,21 @@ namespace Molsketch {
   void Atom::mousePressEvent( QGraphicsSceneMouseEvent* event )
   {
     // Execute default behavior
-    QGraphicsItem::mousePressEvent( event );
+    graphicsItem::mousePressEvent( event );
   }
 
   void Atom::hoverEnterEvent( QGraphicsSceneHoverEvent * event )
   {
     m_hidden = false;
     // Execute default behavior
-    QGraphicsItem::hoverEnterEvent( event );
+    graphicsItem::hoverEnterEvent( event );
   }
 
   void Atom::hoverLeaveEvent( QGraphicsSceneHoverEvent * event )
   {
     m_hidden = true;
     // Execute default behavior
-    QGraphicsItem::hoverLeaveEvent( event );
+    graphicsItem::hoverLeaveEvent( event );
   }
 
 
@@ -915,7 +916,7 @@ namespace Molsketch {
     setPos(c.first());
   }
 
-  QVector<QPointF> Atom::coordinates() const
+  QPolygonF Atom::coordinates() const
   {
     return QVector<QPointF>() << pos() ;
   }

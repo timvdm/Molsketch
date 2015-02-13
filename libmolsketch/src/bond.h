@@ -72,7 +72,8 @@ class Bond : public graphicsItem
       Triple = 3 /**< Triple bond */
     };
 
-
+    static qreal defaultLength ;
+    static qreal defaultAngle ;
 
     /**
      * Constructor. Create a new bond between @p atomA and @p atomB. 
@@ -97,6 +98,7 @@ class Bond : public graphicsItem
     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget);
     /** Event handler for changes in the bond. Needed for Qt painting. */
     QVariant itemChange(GraphicsItemChange change, const QVariant & value);
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
     // Inherited query methods
     /** Returns the shape of the bond. Needed for Qt event handling. */
@@ -135,6 +137,7 @@ class Bond : public graphicsItem
     Atom* otherAtom(const Atom *atom) const;
 
     void setAtoms(Atom* A, Atom* B) ;
+    void removeAtom(Atom* a) ;
 
     /** Returns the molecule this bond is part of. */
     Molecule* molecule() const;
@@ -163,7 +166,7 @@ class Bond : public graphicsItem
     /** set the coordinates of the two atoms */
     void setCoordinates(const QVector<QPointF> &c) ;
     /** get the coordinates of the two atoms */
-    QVector<QPointF> coordinates() const ;
+    QPolygonF coordinates() const ;
 
   protected:
     void setRing(Ring *ring) { m_ring = ring; }

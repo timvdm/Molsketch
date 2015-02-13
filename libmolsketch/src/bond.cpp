@@ -22,6 +22,7 @@
 #include <QPainter>
 #include <QMenu>
 #include <QAction>
+#include <QGraphicsSceneMouseEvent>
 
 #include <math.h>
 
@@ -82,7 +83,7 @@ namespace Molsketch {
     qreal w = m_endAtom->x() - m_beginAtom->x();
     qreal h = m_endAtom->y() - m_beginAtom->y();
 
-    return QRectF(mapFromParent(m_beginAtom->pos()) - QPointF(5,5), QSizeF(w+10,h+10));
+    return QRectF(mapFromParent(m_beginAtom->pos()) - QPointF(5,5), QSizeF(w+10,h+10)).normalized();
   }
 
   qreal Bond::bondAngle(const Atom *origin) const
@@ -341,6 +342,11 @@ namespace Molsketch {
     return QGraphicsItem::itemChange(change, value);
   }
 
+  void Bond::mousePressEvent(QGraphicsSceneMouseEvent *event)
+  {
+    event->ignore();
+  }
+
   QPainterPath Bond::shape() const
   {
     CHECKFORATOMS return QPainterPath() ;
@@ -468,7 +474,7 @@ namespace Molsketch {
     m_endAtom->setCoordinates(c.mid(1,1));
   }
 
-  QVector<QPointF> Bond::coordinates() const
+  QPolygonF Bond::coordinates() const
   {
     return QVector<QPointF>()
         << m_beginAtom->coordinates()
@@ -523,5 +529,8 @@ namespace Molsketch {
   {
     return QStringList() << "bondStereo" ;
   }
+
+  qreal Bond::defaultLength = 40 ; // TODO modifiable
+  qreal Bond::defaultAngle = 30 ; // TODO modifiable
 
 } // namespace

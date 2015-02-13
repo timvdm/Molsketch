@@ -39,12 +39,6 @@ namespace Molsketch {
       m_hoverEnd(false),
       m_dialog(0)
   {
-    setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable);
-#if QT_VERSION < 0x050000
-    setAcceptsHoverEvents(true);
-#else
-    setAcceptHoverEvents(true) ;
-#endif
   }
   
   ReactionArrow::~ReactionArrow()
@@ -65,7 +59,7 @@ namespace Molsketch {
     m_end = c.last() ;
   }
 
-  QVector<QPointF> ReactionArrow::coordinates() const
+  QPolygonF ReactionArrow::coordinates() const
   {
     return QVector<QPointF>() << pos() << m_end ;
   }

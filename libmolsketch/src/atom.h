@@ -77,7 +77,7 @@ namespace Molsketch {
       /** set coordinate */
       void setCoordinates(const QVector<QPointF> &c) ;
       /** get coordinate */
-      QVector<QPointF> coordinates() const ;
+      QPolygonF coordinates() const ;
 
       //@name Chemistry methods
       //@{

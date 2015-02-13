@@ -20,14 +20,7 @@ namespace Molsketch {
 
   class MolScene ;
 
-  class coordinateItem: public abstractXmlObject
-  {
-  public:
-    virtual QVector<QPointF> coordinates() const = 0;
-    virtual void setCoordinates(const QVector<QPointF>& c) = 0;
-  };
-
-  class graphicsItem : public QGraphicsItem, public coordinateItem
+  class graphicsItem : public QGraphicsItem, public abstractXmlObject
   {
   public:
 
@@ -50,6 +43,26 @@ namespace Molsketch {
     void setRelativeWidth(const double& w) ;
     qreal lineWidth() const ;
     qreal relativeWidth() const ;
+
+    /** Event handlers */
+    void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
+    void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+
+    /** coordinate functions */
+    virtual QPolygonF coordinates() const = 0; // TODO change to QPolygonF
+    virtual void setCoordinates(const QVector<QPointF>& c) = 0;
+    virtual void setCoordinate(const int& index, const QPointF& p);
+    virtual QPointF getPoint(const int& index) const;
+    virtual QPointF lastPoint() const;
+    virtual QPointF firstPoint() const;
+    virtual int coordinateCount() const;
+    virtual void swapPoint(const int& index, QPointF& p);
+
+    virtual void prepareContextMenu(QMenu* contextMenu);
   protected:
     void readAttributes(const QXmlStreamAttributes &attributes) ;
     QXmlStreamAttributes xmlAttributes() const ;
@@ -59,9 +72,14 @@ namespace Molsketch {
      * Attempt to push a command onto the undo stack. If none is available, execute the command and dispose of it.
      */
     void attemptUndoPush(QUndoCommand* command) ;
+    void attemptBeginMacro(const QString& text);
+    void attemptEndEndMacro();
+    int selectedPoint() const;
   private:
     QColor m_color ;
     qreal lineWidthScaling ;
+    class privateData;
+    privateData *d;
     virtual qreal sceneLineWidth(MolScene* scene) const ;
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event) ;
   };

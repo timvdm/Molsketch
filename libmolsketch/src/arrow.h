@@ -26,20 +26,19 @@ namespace Molsketch {
 
     void setArrowType(ArrowType type);
     void setCoordinates(const QVector<QPointF> &c) ;
-    QVector<QPointF> coordinates() const ;
+    QPolygonF coordinates() const ;
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     QRectF boundingRect() const ;
 
-    void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
-    void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
-    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
-    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
     void setPoint(const int& index, const QPointF& p) ;
-    QPointF getPoint(const int& index) ;
-    int numPoints() const ;
+    void setPoints(const QPolygonF&polygon);
+    QPointF getPoint(const int& index) const;
+    QPointF lastPoint() const;
+    QPointF firstPoint() const;
+    int coordinateCount() const ;
     void swapPoint(const int& index, QPointF &p) ;
 
 protected:
