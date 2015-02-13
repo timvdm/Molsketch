@@ -43,10 +43,10 @@ HEADERS += \
     tools/movetool.h \
     tools/reactionarrowtool.h \
     tools/rotatetool.h \
-    coloraction.h \
+    actions/coloraction.h \
     graphicsitem.h \
-    linewidthaction.h \
-    abstractitemaction.h \
+    actions/linewidthaction.h \
+    actions/abstractitemaction.h \
     abstractxmlobject.h \
     actions/genericaction.h \
     actions/multiaction.h \
@@ -100,10 +100,10 @@ SOURCES += \
     tools/movetool.cpp \
     tools/reactionarrowtool.cpp \
     tools/rotatetool.cpp \
-    coloraction.cpp \
+    actions/coloraction.cpp \
     graphicsitem.cpp \
-    linewidthaction.cpp \
-    abstractitemaction.cpp \
+    actions/linewidthaction.cpp \
+    actions/abstractitemaction.cpp \
     abstractxmlobject.cpp \
     actions/genericaction.cpp \
     actions/multiaction.cpp \
