@@ -3,12 +3,22 @@
 #include "molscene.h"
 #include "transformcommand.h"
 
+#include <QToolTip>
+
 namespace Molsketch {
+
+  struct transformAction::privateData
+  {
+    graphicsItem *transformItem;
+    QLineF originalLine ;
+  };
 
   transformAction::transformAction(MolScene *scene) :
     genericAction(scene),
-    m_rotationItem(0)
-  {}
+    d(new privateData)
+  {
+    d->transformItem = 0;
+  }
 
   void transformAction::mousePressEvent(QGraphicsSceneMouseEvent *event)
   {
@@ -23,35 +33,49 @@ namespace Molsketch {
     if (item->type() == graphicsItem::AtomType
         || item->type() == graphicsItem::BondType)
       item = item->parentItem();
-    m_rotationItem = dynamic_cast<coordinateItem*>(item) ;
-    if (!m_rotationItem) return;
+    d->transformItem = dynamic_cast<graphicsItem*>(item) ;
+    if (!d->transformItem) return;
 
-    m_originalLine = QLineF(item->mapToScene(item->boundingRect().center()),
+    d->originalLine = QLineF(item->mapToScene(item->boundingRect().center()),
                             event->buttonDownScenePos(Qt::LeftButton)) ;
     event->accept();
   }
 
   void transformAction::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
   {
-    if (!m_rotationItem) return;
+    if (!d->transformItem) return;
 
     // Calculate the rotation angle
-    QLineF newLine(m_originalLine.p1(), event->scenePos()) ;
-    transformCommand *cmd = new transformCommand(m_rotationItem,
-                                                 generateTransform(m_originalLine,
-                                                                   newLine),
-                                                 m_originalLine.p1());
+    QLineF newLine(d->originalLine.p1(), event->scenePos()) ;
+    if (event->modifiers() & Qt::ShiftModifier)
+      snapLine(QLineF(d->originalLine.p1(), event->buttonDownScenePos(Qt::LeftButton)), newLine);
+
+    QToolTip::showText(event->screenPos(),
+                       cursorLabel(QLineF(d->originalLine.p1(), event->buttonDownScenePos(Qt::LeftButton)), newLine),
+                       parentWidget(),
+                       QRect());
+    transformCommand *cmd = new transformCommand(d->transformItem,
+                                                 generateTransform(d->originalLine,
+                                                                   newLine), // TODO doesn't work
+                                                 d->originalLine.p1());
     cmd->setText(text());
     scene()->stack()->push(cmd) ;
-    m_originalLine = newLine ;
+    d->originalLine = newLine ;
     event->accept();
   }
 
   void transformAction::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
   {
     Q_UNUSED(event)
-    m_rotationItem = 0 ;
+    d->transformItem = 0 ;
     event->accept();
+  }
+
+  QString transformAction::cursorLabel(const QLineF &originalLine, QLineF &currentLine)
+  {
+    Q_UNUSED(originalLine)
+    Q_UNUSED(currentLine)
+    return QString();
   }
 
   rotateAction::rotateAction(MolScene *scene)
@@ -61,9 +85,21 @@ namespace Molsketch {
     setText(tr("Rotate")) ;
   }
 
+  void rotateAction::snapLine(const QLineF &originalLine, QLineF &currentLine)
+  {
+    const qreal step = 30;
+    qreal angle = step*qRound(currentLine.angleTo(originalLine)/step);
+    currentLine.setAngle(originalLine.angle()-angle);
+  }
+
+  QString rotateAction::cursorLabel(const QLineF &originalLine, QLineF &currentLine)
+  {
+    return QString::number(currentLine.angleTo(originalLine)) + "°";
+  }
+
   QTransform rotateAction::generateTransform(const QLineF &originalLine, const QLineF &currentLine)
   {
-    return QTransform().rotate(currentLine.angleTo(originalLine)) ;
+    return QTransform().rotate(currentLine.angleTo(originalLine));
   }
 
   translateAction::translateAction(MolScene *scene)
@@ -77,6 +113,13 @@ namespace Molsketch {
   {
     QPointF diff = currentLine.p2() - originalLine.p2() ;
     return QTransform().translate(diff.x(), diff.y()) ;
+  }
+
+  void translateAction::snapLine(const QLineF& originalLine, QLineF &currentLine)
+  {
+    Q_UNUSED(originalLine)
+    Q_UNUSED(currentLine)
+    // TODO
   }
 
 } // namespace Molsketch

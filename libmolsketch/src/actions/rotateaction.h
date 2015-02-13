@@ -4,7 +4,7 @@
 #include "genericaction.h"
 
 namespace Molsketch {
-  class coordinateItem ;
+  class graphicsItem ;
 
   class transformAction : public genericAction
   {
@@ -17,10 +17,11 @@ namespace Molsketch {
 
   protected:
     virtual QTransform generateTransform(const QLineF& originalLine, const QLineF& currentLine) = 0;
+    virtual void snapLine(const QLineF &originalLine, QLineF& currentLine) = 0;
+    virtual QString cursorLabel(const QLineF &originalLine, QLineF& currentLine);
   private:
-    coordinateItem *m_rotationItem;
-    /** Used for rotations. Stores the last vector from mouse pointer to center of rotation */
-    QLineF m_originalLine ;
+    class privateData;
+    privateData *d;
   };
 
   class rotateAction : public transformAction
@@ -30,6 +31,8 @@ namespace Molsketch {
     explicit rotateAction(MolScene* scene) ;
   private:
     QTransform generateTransform(const QLineF &originalLine, const QLineF &currentLine) ;
+    void snapLine(const QLineF &originalLine, QLineF &currentLine);
+    QString cursorLabel(const QLineF &originalLine, QLineF &currentLine);
   };
 
   class translateAction : public transformAction
@@ -39,6 +42,7 @@ namespace Molsketch {
     explicit translateAction(MolScene* scene) ;
   private:
     QTransform generateTransform(const QLineF &originalLine, const QLineF &currentLine) ;
+    void snapLine(const QLineF &originalLine, QLineF &currentLine);
   };
 
 } // namespace Molsketch
