@@ -22,26 +22,54 @@
 #include <QUndoStack>
 #include "molscene.h"
 #include "graphicsitem.h"
+#include <QDebug>
 
 namespace Molsketch {
 
-  abstractItemAction::abstractItemAction(QObject *parent) :
-    QAction(parent),
-    UndoStack(0)
+  struct abstractItemAction::privateData
+  {
+    QSet<graphicsItem *> itemList ;
+    abstractItemAction *parent;
+    int minItemCount;
+
+    privateData(abstractItemAction* p)
+      : parent(p), minItemCount(0) {}
+    void checkItems()
+    {
+      itemList.remove(0) ;
+      parent->setEnabled(itemList.size() >= minItemCount);
+    }
+  };
+
+  abstractItemAction::abstractItemAction(MolScene *parent) :
+    genericAction(parent),
+    d(new privateData(this))
   {
     connect(this, SIGNAL(triggered()), this, SLOT(gotTrigger())) ;
-    setEnabled(false) ;
   }
+
+  abstractItemAction::~abstractItemAction()
+  {
+    delete d;
+  }
+
+
 
   void abstractItemAction::setItem(graphicsItem * item)
   {
-    setItems(QList<graphicsItem*>() << item) ;
+    d->itemList.clear();
+    d->itemList << item;
   }
 
-  void abstractItemAction::setItems(const QList<graphicsItem *>& list)
+  void abstractItemAction::setItems(const QList<QGraphicsItem *>& list)
   {
-    itemList = list ;
-    checkItems();
+    d->itemList.clear();
+    foreach(QGraphicsItem* item, list)
+    {
+      graphicsItem *gItem = dynamic_cast<graphicsItem*>(item);
+      if (gItem) d->itemList << gItem;
+    }
+    d->checkItems();
   }
 
   void abstractItemAction::removeItem(graphicsItem *item)
@@ -52,44 +80,37 @@ namespace Molsketch {
   void abstractItemAction::removeItems(const QList<graphicsItem *> &list)
   {
     foreach(graphicsItem* item, list)
-      itemList.removeAll(item) ;
-    checkItems();
+      d->itemList.remove(item) ;
+    d->checkItems();
   }
 
   void abstractItemAction::clearItems()
   {
-    itemList.clear();
-    checkItems();
+    d->itemList.clear();
+    d->checkItems();
+  }
+
+  void abstractItemAction::addItem(graphicsItem *item)
+  {
+    d->itemList << item;
+    d->checkItems();
+  }
+
+  void abstractItemAction::setMinimumItemCount(const int &count)
+  {
+    d->minItemCount = count;
+    d->checkItems();
   }
 
   QList<graphicsItem *> abstractItemAction::items() const
   {
-    return itemList ;
-  }
-
-  QUndoStack *abstractItemAction::undoStack() const
-  {
-    return UndoStack ;
-  }
-
-  void abstractItemAction::checkItems()
-  {
-    itemList.removeAll(0) ;
-    setEnabled(!itemList.isEmpty());
+    return d->itemList.toList() ;
   }
 
   void abstractItemAction::gotTrigger()
   {
-    if (itemList.isEmpty()) return ;
-    UndoStack = 0 ;
-    foreach(graphicsItem* item, itemList)
-    {
-      MolScene *scene = qobject_cast<MolScene*>(item->scene()) ;
-      if (!scene) continue ;
-      UndoStack = scene->stack() ;
-      if (UndoStack) break ; // TODO improve
-    }
-    if (!UndoStack) return ;
+    if (d->itemList.size() < d->minItemCount) return ;
+    qDebug() << "itemaction" << scene() ;
     execute();
   }
 

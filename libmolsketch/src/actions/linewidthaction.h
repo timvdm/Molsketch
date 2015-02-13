@@ -19,62 +19,29 @@
  ***************************************************************************/
 
 /** @file
- * This file is part of molsKetch and contains the abstractItemAction class.
- *
- * This class provides the infrastructure for an action that operates on
- * one or more items.
+ * This file is part of molsKetch and contains the lineWidthAction class.
  *
  * @author Hendrik Vennekate <HVennekate@gmx.de>
  * @since Lithium
  */
 
-#ifndef ABSTRACTITEMACTION_H
-#define ABSTRACTITEMACTION_H
+#ifndef LINEWIDTHACTION_H
+#define LINEWIDTHACTION_H
 
-#include <QAction>
-#include <QList>
+#include "abstractitemaction.h"
 
-class QUndoStack ;
+namespace Molsketch {
 
-namespace Molsketch
-{
-  class graphicsItem ;
+  class lineWidthAction : public abstractItemAction
+  {
+    Q_OBJECT
+  public:
+    explicit lineWidthAction(MolScene *parent = 0);
 
-class abstractItemAction : public QAction
-{
-  Q_OBJECT
-public:
-  explicit abstractItemAction(QObject *parent = 0);
-  /** set an item  (convenience function) */
-  void setItem(graphicsItem*) ;
-  /** set multiple items for the action (previously set items are discarded) */
-  void setItems(const QList<graphicsItem *> &) ;
-  /** convenience function */
-  void removeItem(graphicsItem*) ;
-  /** remove items (e.g. because they have been deleted) */
-  void removeItems(const QList<graphicsItem*>&) ;
-  /** remove all items */
-  void clearItems() ;
-protected:
-  /** obtain items currently associated with this action */
-  QList<graphicsItem*> items() const ;
-  /** obtain undoStack pointer */
-  QUndoStack *undoStack() const ;
-private:
-  QList<graphicsItem *> itemList ;
-  QUndoStack *UndoStack ;
-  void checkItems() ;
-  /** will be executed, when action is triggered */
-  virtual void execute() = 0 ;
-private slots:
-  void gotTrigger() ;
-};
+  private:
+    void execute() ;
+  };
 
 } // namespace
 
-#define ITERATEOVERITEMSMACRO(COMMENT,COMMAND,VALUE) \
-  undoStack()->beginMacro(tr(COMMENT)) ;\
-  foreach(graphicsItem* item, items())\
-    undoStack()->push(new Commands::COMMAND(VALUE, item)) ;\
-  undoStack()->endMacro() ;
-#endif // ABSTRACTITEMACTION_H
+#endif // LINEWIDTHACTION_H
