@@ -33,7 +33,6 @@ class QImage;
 class QListWidgetItem;
 class QTableWidgetItem;
 class QUndoStack;
-class QContextMenuEvent;
 
 namespace OpenBabel {
   class OBMol;
@@ -47,6 +46,7 @@ namespace Molsketch {
   class TextInputItem;
   class MolLibItem;
   class ToolGroup;
+  class genericAction;
 
   class MolSceneOptions
   {
@@ -193,6 +193,8 @@ namespace Molsketch {
         return m_toolGroup;
       }
 
+      QList<Molsketch::genericAction *> sceneActions() const;
+
       // Advanced queries
       /** Returns the first molecule at position @p pos or NULL if none. */
       Molecule* moleculeAt(const QPointF &pos);
@@ -225,6 +227,7 @@ namespace Molsketch {
       void setHintPointSize(int size);
 
     public slots:
+      void selectionSlot();
       /** Slot to cut the current selection to the clipboard. */
       void cut();
       /** Slot to copy the current selection to the clipboard. */
@@ -265,9 +268,8 @@ namespace Molsketch {
       virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event);
       /** Event handler for keyboard interaction */
       virtual void keyPressEvent(QKeyEvent* keyEvent);
-
-      //void contextMenuEvent(Reason reason, );
-
+      /** Event handler to display context menu */
+      void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
   public:
       //item to accept input for text tool
       TextInputItem *m_inputTextItem;
@@ -343,8 +345,6 @@ namespace Molsketch {
       void textModePress(QGraphicsSceneMouseEvent* event);	
       /** Event handler for mouse releases in text mode. */
       void textModeRelease(QGraphicsSceneMouseEvent* event);
-
-
 
 
 

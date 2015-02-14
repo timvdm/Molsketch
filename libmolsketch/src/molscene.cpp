@@ -31,7 +31,6 @@
 #include <QTableWidgetItem>
 #include <QKeyEvent>
 #include <QUndoStack>
-#include <QContextMenuEvent>
 #include <QMenu>
 #include <QProcess>
 #include <QDir>
@@ -68,6 +67,9 @@
 #include "reactionarrow.h"
 #include "mechanismarrow.h"
 #include "arrow.h"
+#include "actions/abstractitemaction.h"
+
+#include <actions/genericaction.h>
 
 using namespace OpenBabel;
 
@@ -119,6 +121,7 @@ namespace Molsketch {
     connect(m_stack, SIGNAL(indexChanged(int)), this, SIGNAL(selectionChange()));
     connect(m_stack, SIGNAL(indexChanged(int)), this, SLOT(update()));
     connect(m_stack, SIGNAL(indexChanged(int)), this, SLOT(updateAll())) ;
+    connect(this, SIGNAL(selectionChanged()), this, SLOT(selectionSlot()));
 
     // Set initial size
     QRectF sizerect(-5000,-5000,10000,10000);
@@ -542,8 +545,15 @@ namespace Molsketch {
   {
 	    foreach(QGraphicsItem* item,items(pos))
 		if (item->type() == TextInputItem::Type) return true;
-		return false;
-	}
+            return false;
+  }
+
+  void MolScene::selectionSlot()
+  {
+    foreach(abstractItemAction* itemAction, findChildren<abstractItemAction*>())
+      itemAction->setItems(selectedItems());
+    return;
+  }
 
   Atom* MolScene::atomAt(const QPointF &pos)
   {
@@ -591,8 +601,14 @@ namespace Molsketch {
   void MolScene::mousePressEvent(QGraphicsSceneMouseEvent* event)
   {
     m_toolGroup->activeTool()->mousePressEvent(event);
+    if (event->isAccepted()) return;
 
     // Execute default behavior
+    if (event->button() == Qt::RightButton && !event->modifiers())
+    {
+      event->ignore();
+      return;
+    }
     QGraphicsScene::mousePressEvent(event);
     qDebug() << "press event accepted:" << event->isAccepted() ;
   }
@@ -600,6 +616,7 @@ namespace Molsketch {
   void MolScene::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
   {
     m_toolGroup->activeTool()->mouseMoveEvent(event);
+    if (event->isAccepted()) return;
 
     // Execute default behavior
     QGraphicsScene::mouseMoveEvent(event);
@@ -609,6 +626,7 @@ namespace Molsketch {
   void MolScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
   {
     m_toolGroup->activeTool()->mouseReleaseEvent(event);
+    if (event->isAccepted()) return;
 
     // Execute the normal behavior
     QGraphicsScene::mouseReleaseEvent(event);
@@ -619,6 +637,7 @@ namespace Molsketch {
   void MolScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * event )
   {
     m_toolGroup->activeTool()->mouseDoubleClickEvent(event);
+    if (event->isAccepted()) return;
 
     // Execute default behavior
     QGraphicsScene::mouseDoubleClickEvent( event );
@@ -834,6 +853,27 @@ namespace Molsketch {
           QGraphicsScene::keyPressEvent(keyEvent);
   }
 
+  void MolScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+  {
+    if (selectedItems().isEmpty())
+    {
+      QGraphicsScene::contextMenuEvent(event); // let the item handle the event
+      return;
+    }
+
+    // have a selection, so scene is handling the context menu
+    QMenu contextMenu;
+    foreach(QGraphicsItem* qgItem, selectedItems())
+    {
+      graphicsItem *item = dynamic_cast<graphicsItem*>(qgItem);
+      if (!item) continue;
+      item->prepareContextMenu(&contextMenu);
+    }
+
+    contextMenu.exec(event->screenPos());
+    event->accept();
+  }
+
   QImage MolScene::toImage (OpenBabel::OBMol *obmol)
   {
     Molecule *mol = toMol(obmol);
@@ -940,6 +980,11 @@ namespace Molsketch {
   QUndoStack * MolScene::stack()
   {
     return m_stack;
+  }
+
+  QList<genericAction *> MolScene::sceneActions() const
+  {
+    return findChildren<genericAction*>();
   }
 
   QFont MolScene::atomSymbolFont() const

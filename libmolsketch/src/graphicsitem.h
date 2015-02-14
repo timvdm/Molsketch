@@ -75,6 +75,7 @@ namespace Molsketch {
     void attemptBeginMacro(const QString& text);
     void attemptEndEndMacro();
     int selectedPoint() const;
+    virtual void prepareItemContextMenu(QMenu* contextMenu);
   private:
     QColor m_color ;
     qreal lineWidthScaling ;

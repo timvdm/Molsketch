@@ -258,15 +258,15 @@ namespace Molsketch {
 
   void graphicsItem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
   {
-    QMenu *contextMenu = new QMenu(QObject::tr("Bond actions")) ;
-    colorAction *myAction = new colorAction(contextMenu) ;
-    lineWidthAction *otherAction = new lineWidthAction(contextMenu) ;
-    myAction->setItem(this) ;
-    otherAction->setItem(this) ;
-    contextMenu->addAction(myAction) ;
-    contextMenu->addAction(otherAction) ;
-    contextMenu->exec(event->screenPos()) ;
-    delete contextMenu ;
+    QMenu contextMenu;
+    prepareItemContextMenu(&contextMenu);
+    foreach(QAction* action, contextMenu.actions())
+    {
+      abstractItemAction *itemAction = dynamic_cast<abstractItemAction*>(action);
+      if (itemAction) itemAction->setItem(this);
+    }
+
+    contextMenu.exec(event->screenPos()) ;
     event->accept();
   }
 
@@ -318,6 +318,16 @@ namespace Molsketch {
     if (index < 0 || index >= cc) return;
     QPolygonF oldCoords(coordinates());
     qSwap(p,oldCoords[index]);
+  }
+
+  void graphicsItem::prepareContextMenu(QMenu *contextMenu)
+  {
+    colorAction *caction = scene()->findChild<colorAction*>();
+    lineWidthAction *lwaction = scene()->findChild<lineWidthAction*>();
+    rotateAction *raction = scene()->findChild<rotateAction*>();
+    if (caction)  contextMenu->addAction(caction);
+    if (lwaction) contextMenu->addAction(lwaction);
+    if (raction)  contextMenu->addAction(raction);
   }
 
 } // namespace
