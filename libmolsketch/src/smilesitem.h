@@ -37,8 +37,6 @@ namespace Molsketch {
       QRectF boundingRect() const;
       void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
-      void dropEvent(QGraphicsSceneDragDropEvent *event);
-
    private:
       Molecule *m_molecule;
       QRectF m_rect;

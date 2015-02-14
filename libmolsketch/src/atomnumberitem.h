@@ -39,6 +39,6 @@ namespace Molsketch {
 
   ITEM_PLUGIN_FACTORY(AtomNumberItem, "Molecule", "Atom Numbers")
 
-}
+} // TODO boundingRect
 
 #endif // SMILESITEM_H

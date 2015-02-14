@@ -495,6 +495,8 @@ namespace Molsketch {
       if (type == "ReactionArrow") object = new ReactionArrow ;
       if (type == "MechanismArrow") object = new MechanismArrow ;
     }
+    if (childName == "plugin")
+      object = ItemPluginFactory::createInstance(type);
     qDebug() << "Adding:" << object << items() ;
     if (object) addItem(object) ;
     qDebug() << "added:" << items() ;

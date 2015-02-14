@@ -21,7 +21,6 @@
 #include "mimemolecule.h"
 
 #include <QPainter>
-#include <QGraphicsSceneDragDropEvent>
 #include <QDebug>
 
 #ifdef OPENBABEL2_TRUNK

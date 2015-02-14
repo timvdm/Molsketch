@@ -262,7 +262,7 @@ class Molecule : public graphicsItem
      QString xmlName() const ;
      QList<const abstractXmlObject*> children() const ;
      abstractXmlObject *produceChild(const QString &name, const QString &type) ;
-   };
+   }; // TODO implement filter function for childItems() (by ID and by type) and move this to QGraphicsItem
 
     moleculeItemListClass<Atom> m_atomList;
 

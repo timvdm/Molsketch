@@ -52,7 +52,7 @@ namespace Molsketch {
        */
       virtual QString label() const { return QString(); }
 
-      Molecule* molecule() const { return m_molecule; }
+      Molecule* molecule() const;
 
       /**
        * Get the boundingRect for this item. While this item is not connected,
@@ -74,12 +74,10 @@ namespace Molsketch {
       QPainterPath shape() const;
 
       virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-      void dropEvent(QGraphicsSceneDragDropEvent *event);
   protected:
       void drawTextNearAtom(QPainter* painter, Atom* atom, const QString& text, const Molecule *mol) ;
     private:
       OutputType m_output;
-      Molecule *m_molecule;
       QRectF m_rect;
   };
 

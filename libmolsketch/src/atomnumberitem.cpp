@@ -22,7 +22,6 @@
 #include "mimemolecule.h"
 
 #include <QPainter>
-#include <QGraphicsSceneDragDropEvent>
 #include <QDebug>
 
 namespace Molsketch {

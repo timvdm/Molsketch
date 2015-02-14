@@ -21,7 +21,6 @@
 #include "mimemolecule.h"
 
 #include <QPainter>
-#include <QGraphicsSceneDragDropEvent>
 #include <QDebug>
 
 namespace Molsketch {
@@ -55,22 +54,6 @@ namespace Molsketch {
     } else {
       paintDefault(painter);
     }
-  }
-
-  void SmilesItem::dropEvent(QGraphicsSceneDragDropEvent *event)
-  {
-    const MimeMolecule *mimeMol = dynamic_cast<const MimeMolecule*>(event->mimeData());
-    if (!mimeMol)
-      return;
-
-    m_molecule = mimeMol->molecule();
-    QRectF rect = m_molecule->boundingRect();
-    setPos(rect.bottomLeft());
-
-    m_molecule->addToGroup(this);
-
-    if (scene())
-      scene()->update();
   }
 
   SmilesItemFactory::SmilesItemFactory()

@@ -17,21 +17,85 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
+#include <QGraphicsSceneDragDropEvent>
 #include <QPainter>
+#include <QUndoCommand>
 
 #include "itemplugin.h"
+#include "mimemolecule.h"
+#include "molecule.h"
+#include "molscene.h"
 
 
 namespace Molsketch {
 
+  class connectToMoleculeCommand : public QUndoCommand
+  {
+  private:
+    QGraphicsItem *oldParent;
+    Molecule *molecule;
+    ItemPlugin *plugin;
+    QPointF originalPosition;
+  public:
+    connectToMoleculeCommand(Molecule *m,
+                             ItemPlugin *p)
+      : oldParent(p->parentItem()),
+        molecule(m),
+        plugin(p),
+        originalPosition(p->pos())
+    {}
+
+    void redo()
+    {
+      plugin->setPos(molecule->boundingRect().bottomLeft());
+      plugin->setParentItem(molecule);
+    }
+
+    void undo()
+    {
+      plugin->setPos(originalPosition);
+      plugin->setParentItem(oldParent);
+    }
+
+    bool mergeWith(const QUndoCommand *otherCommand)
+    {
+      const connectToMoleculeCommand *other = dynamic_cast<const connectToMoleculeCommand*>(otherCommand);
+      if (!other) return false;
+      if (other->plugin != plugin) return false;
+      molecule = other->molecule;
+      return true;
+    }
+
+    int id() const {return 2000;} // TODO centralize
+  };
+
   ItemPlugin::ItemPlugin()
   {
     setAcceptDrops(true);
-    setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
   }
 
   ItemPlugin::~ItemPlugin()
   {
+  }
+
+  void ItemPlugin::dropEvent(QGraphicsSceneDragDropEvent *event)
+  {
+    const MimeMolecule *mimeMol = dynamic_cast<const MimeMolecule*>(event->mimeData());
+    if (!mimeMol) return;
+    if (!mimeMol->molecule()) return;
+    attemptUndoPush(new connectToMoleculeCommand(mimeMol->molecule(),
+                                                 this));
+  }
+
+  QPolygonF ItemPlugin::coordinates() const
+  {
+    return QPolygonF() << pos();
+  }
+
+  void ItemPlugin::setCoordinates(const QVector<QPointF> &c)
+  {
+    if (c.isEmpty()) return;
+    setPos(c.first());
   }
  
   void ItemPlugin::paintDefault(QPainter *painter)
@@ -52,6 +116,28 @@ namespace Molsketch {
   QRectF ItemPlugin::defaultBoundingRect() const
   {
     return QRectF(-100, -50, 200, 100);
+  }
+
+  QString ItemPlugin::xmlName() const
+  {
+    return "plugin";
+  }
+
+  void ItemPlugin::readAttributes(const QXmlStreamAttributes &attributes)
+  {
+    setPos(attributes.value("posX").toDouble(), attributes.value("posY").toDouble());
+    QGraphicsItem *possibleParent = scene()->items().at(attributes.value("molecule").toInt()); // TODO doesn't work if plugin was created before molecule
+    if (possibleParent) setParentItem(possibleParent);
+  }
+
+  QXmlStreamAttributes ItemPlugin::xmlAttributes() const
+  {
+    QXmlStreamAttributes attributes;
+    attributes.append("posX", QString::number(pos().x())); // TODO to graphicsItem
+    attributes.append("posY", QString::number(pos().y()));
+    attributes.append("molecule", QString::number(scene()->items().indexOf(parentItem())));
+    attributes.append("type", output());
+    return attributes;
   }
       
   ItemPlugin* ItemPluginFactory::createInstance(const QString &out)

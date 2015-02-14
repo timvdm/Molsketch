@@ -22,23 +22,26 @@
 #include "atom.h"
 
 #include <QPainter>
-#include <QGraphicsSceneDragDropEvent>
 #include <QDebug>
 
 
 namespace Molsketch {
 
-  MolInputItem::MolInputItem(OutputType output) : m_output(output), m_molecule(0), m_rect(QRectF(0, 0, 150, 100))
+  MolInputItem::MolInputItem(OutputType output) : m_output(output), m_rect(QRectF(0, 0, 150, 100))
   {
     setAcceptDrops(true);
     setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable);
   }
 
+  Molecule *MolInputItem::molecule() const
+  {
+     return dynamic_cast<Molecule*>(parentItem());
+  }
+
   QRectF MolInputItem::boundingRect() const
   {
-    if (m_molecule) {
-      QRectF molRect = m_molecule->boundingRect();
-      return QRectF(mapFromItem(m_molecule, molRect.topLeft()), mapFromItem(m_molecule, molRect.bottomRight())) | m_rect;
+    if (molecule()) {
+      return QRectF() ; // TODO
     } else
       return defaultBoundingRect();
   }
@@ -46,7 +49,7 @@ namespace Molsketch {
   QPainterPath MolInputItem::shape() const
   {
     QPainterPath path;
-    if (m_molecule)
+    if (molecule())
       path.addRect(m_rect);
     else
       path.addRect(defaultBoundingRect());
@@ -57,7 +60,7 @@ namespace Molsketch {
   {
     Q_UNUSED(option);
     Q_UNUSED(widget);
-    if (m_molecule) {
+    if (molecule()) {
 
       QFontMetrics fm = painter->fontMetrics();
       m_rect = QRectF(0, 0, fm.width(label()), fm.height());
@@ -65,22 +68,6 @@ namespace Molsketch {
     } else {
       paintDefault(painter);
     }
-  }
-
-  void MolInputItem::dropEvent(QGraphicsSceneDragDropEvent *event)
-  {
-    const MimeMolecule *mimeMol = dynamic_cast<const MimeMolecule*>(event->mimeData());
-    if (!mimeMol)
-      return;
-
-    m_molecule = mimeMol->molecule();
-    QRectF rect = m_molecule->boundingRect();
-    setPos(rect.bottomLeft());
-
-//    m_molecule->addToGroup(this);
-
-    if (scene())
-      scene()->update();
   }
 
   QPointF getRectangleIntersectionVector(const QRectF& rectangle, qreal angle)

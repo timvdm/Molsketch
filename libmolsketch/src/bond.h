@@ -55,7 +55,7 @@ class Bond : public graphicsItem
     /** 
      * Enum for the different bond types 
      */
-    enum BondType { 
+    enum BondType { // TODO replace with unified version from bondTypeWidget
       InPlane = 0,
       Wedge,
       InvertedWedge,

@@ -25,7 +25,7 @@ namespace Molsketch {
 
   class Molecule;
 
-  class MimeMolecule : public QMimeData
+  class MimeMolecule : public QMimeData // TODO this is wildly dangerous!
   {
     public:
       MimeMolecule();
