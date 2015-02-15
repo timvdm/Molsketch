@@ -31,7 +31,6 @@
 #include <QTableWidgetItem>
 #include <QKeyEvent>
 #include <QUndoStack>
-#include <QContextMenuEvent>
 #include <QMenu>
 #include <QProcess>
 #include <QDir>
@@ -63,6 +62,10 @@
 
 #include "reactionarrow.h"
 #include "mechanismarrow.h"
+#include "arrow.h"
+#include "actions/abstractitemaction.h"
+
+#include <actions/genericaction.h>
 
 
 
@@ -79,66 +82,98 @@ namespace Molsketch {
   //////////////////////////////////////////////////////////////////////////////
 
   MolScene::MolScene(QObject* parent)
-    : QGraphicsScene(parent),
-      m_bondWidth(2),
-      m_arrowLineWidth(1.5)
+	: QGraphicsScene(parent),
+	  m_bondWidth(2),
+	  m_arrowLineWidth(1.5)
   {
-    m_toolGroup = new ToolGroup(this);
+	m_toolGroup = new ToolGroup(this);
 
-    // Set the default color to black
-    m_color = QColor(0, 0, 0);
-
-
-    // Create the TextInputItem that will be shown to edit text in the scene
-    m_inputTextItem = new TextInputItem();
-    addItem(m_inputTextItem);
-    // hide it for now...
-    m_inputTextItem->hide();
+	// Set the default color to black
+	m_color = QColor(0, 0, 0);
 
 
-    //Initializing properties
-    m_editMode = MolScene::DrawMode;
-    m_atomSize = 5;
-    m_carbonVisible = false;
-    m_hydrogenVisible = true;
-    m_chargeVisible = true;
-    m_electronSystemsVisible = false;
-    m_autoAddHydrogen = true;
-    m_renderMode = RenderLabels;
+	// Create the TextInputItem that will be shown to edit text in the scene
+	m_inputTextItem = new TextInputItem();
+	addItem(m_inputTextItem);
+	// hide it for now...
+	m_inputTextItem->hide();
 
-    // Prepare undo m_stack
-    m_stack = new QUndoStack(this);
-    connect(m_stack, SIGNAL(indexChanged(int)), this, SIGNAL(documentChange()));
-    connect(m_stack, SIGNAL(indexChanged(int)), this, SIGNAL(selectionChange()));
-    connect(m_stack, SIGNAL(indexChanged(int)), this, SLOT(update()));
-    connect(m_stack, SIGNAL(indexChanged(int)), this, SLOT(updateAll())) ;
 
-    // Set initial size
-    QRectF sizerect(-5000,-5000,10000,10000);
-    setSceneRect(sizerect);
+	//Initializing properties
+	m_editMode = MolScene::DrawMode;
+	m_atomSize = 5;
+	m_carbonVisible = false;
+	m_hydrogenVisible = true;
+	m_chargeVisible = true;
+	m_electronSystemsVisible = false;
+	m_autoAddHydrogen = true;
+	m_renderMode = RenderLabels;
+
+	// Prepare undo m_stack
+	m_stack = new QUndoStack(this);
+	connect(m_stack, SIGNAL(indexChanged(int)), this, SIGNAL(documentChange()));
+	connect(m_stack, SIGNAL(indexChanged(int)), this, SIGNAL(selectionChange()));
+	connect(m_stack, SIGNAL(indexChanged(int)), this, SLOT(update()));
+	connect(m_stack, SIGNAL(indexChanged(int)), this, SLOT(updateAll())) ;
+	connect(this, SIGNAL(selectionChanged()), this, SLOT(selectionSlot()));
+
+	// Set initial size
+	QRectF sizerect(-5000,-5000,10000,10000);
+	setSceneRect(sizerect);
+
+	/////////////// Test
+	Arrow *a = new Arrow ;
+	a->setCoordinates(QVector<QPointF>()
+					  << QPointF(0,0)
+					  << QPointF(0,50)
+					  << QPointF(50,50)
+					  << QPointF(50,0)
+					  << QPointF(50,-50)
+					  << QPointF(100,-50)
+					  << QPointF(100,0)
+					  );
+	Arrow *b = new Arrow ;
+	b->setCoordinates(QVector<QPointF>()
+					  << QPointF(-50,0)
+					  << QPointF(-100,-50)) ;
+	b->setArrowType(Arrow::LowerBackward
+					| Arrow::UpperBackward
+					| Arrow::LowerForward
+					| Arrow::UpperForward);
+	a->setArrowType(Arrow::NoArrow);
+	addItem(a);
+	addItem(b);
+	Arrow *c = new Arrow ;
+	c->setArrowType(Arrow::UpperBackward | Arrow::UpperForward);
+	c->setColor(Qt::red);
+	c->setCoordinates(QVector<QPointF>()
+					  << QPointF(-50,-50)
+					  << QPointF(0,0)) ;
+	addItem(c);
+	/////////////// End Test
   }
 
   MolScene::~MolScene()
   {
-    // Clear the scene
-    clear();   
+	// Clear the scene
+	clear();
   }
 
   void MolScene::addResidue (QPointF pos, QString name)
   {
 #if QT_VERSION < 0x050000
-    m_stack ->push (new AddResidue (new Residue (pos, name, 0, this)));
+	m_stack ->push (new AddResidue (new Residue (pos, name, 0, this)));
 #else
-    Residue* newResidue = new Residue(pos, name, 0) ;
-    addItem(newResidue) ;
-    m_stack->push(new AddResidue(newResidue)) ;
+	Residue* newResidue = new Residue(pos, name, 0) ;
+	addItem(newResidue) ;
+	m_stack->push(new AddResidue(newResidue)) ;
 #endif
-        }
+		}
   // Commands
-	
+
   QColor MolScene::color() const
   {
-    return m_color;
+	return m_color;
   }
 
   void MolScene::setColor (QColor c)
@@ -158,170 +193,170 @@ namespace Molsketch {
 				if (b-> beginAtom() ->isSelected () && b->endAtom() ->isSelected()) b->setColor(c);
 			}
 		}
-			
+
 	}
 
   void MolScene::setCarbonVisible(bool value)
   {
-    m_carbonVisible = value;
+	m_carbonVisible = value;
   }
 
   void MolScene::setHydrogenVisible(bool value)
   {
-    m_hydrogenVisible = value;
+	m_hydrogenVisible = value;
   }
 
   void MolScene::setAtomSize( qreal size )
   {
-    m_atomSize = size;
+	m_atomSize = size;
   }
-	
+
 
 
   void MolScene::alignToGrid()
   {
-    m_stack->beginMacro(tr("aligning to grid"));
-    foreach(QGraphicsItem* item,items()) 
-      if (item->type() == Molecule::Type) 
-        m_stack->push(new MoveItem(item,toGrid(item->scenePos()) - item->scenePos()));
-    m_stack->endMacro();
-    update();
+	m_stack->beginMacro(tr("aligning to grid"));
+	foreach(QGraphicsItem* item,items())
+	  if (item->type() == Molecule::Type)
+		m_stack->push(new MoveItem(item,toGrid(item->scenePos()) - item->scenePos()));
+	m_stack->endMacro();
+	update();
   }
 
   void MolScene::setEditMode(int mode)
   {
-    // Reset moveflag (movebug)
-    foreach(QGraphicsItem* item, items()) 
-      item->setFlag(QGraphicsItem::ItemIsMovable, false);
+	// Reset moveflag (movebug)
+	foreach(QGraphicsItem* item, items())
+	  item->setFlag(QGraphicsItem::ItemIsMovable, false);
 
-    // enable moving for all Molecule and atom items
-    foreach(QGraphicsItem* item, items())
-      if (item->type() == Molecule::Type || item->type() == Atom::Type) 
-        item->setFlag(QGraphicsItem::ItemIsSelectable,mode == MolScene::MoveMode);
+	// enable moving for all Molecule and atom items
+	foreach(QGraphicsItem* item, items())
+	  if (item->type() == Molecule::Type || item->type() == Atom::Type)
+		item->setFlag(QGraphicsItem::ItemIsSelectable,mode == MolScene::MoveMode);
 
 
 
-    // Set the new edit mode and signal other components
-    m_editMode = mode;
-    emit editModeChange( mode );
+	// Set the new edit mode and signal other components
+	m_editMode = mode;
+	emit editModeChange( mode );
   }
 
   void MolScene::cut()
   {
-    /* TODO Using the desktop clipboard*/
-    // Check if something is selected
-    if (selectedItems().isEmpty()) return;
+	/* TODO Using the desktop clipboard*/
+	// Check if something is selected
+	if (selectedItems().isEmpty()) return;
 
-    // Then do a copy
-    copy();
+	// Then do a copy
+	copy();
 
-    // Finally delete the selected items
-    m_stack->beginMacro(tr("cutting items"));
-    foreach (QGraphicsItem* item, selectedItems())
-      if (item->type() == Molecule::Type) m_stack->push(new DelItem(item));
-    m_stack->endMacro();
+	// Finally delete the selected items
+	m_stack->beginMacro(tr("cutting items"));
+	foreach (QGraphicsItem* item, selectedItems())
+	  if (item->type() == Molecule::Type) m_stack->push(new DelItem(item));
+	m_stack->endMacro();
   }
 
   void MolScene::copy()
   {
-    // Check if something is selected
-    if (selectedItems().isEmpty()) return;
+	// Check if something is selected
+	if (selectedItems().isEmpty()) return;
 
-    /* TODO Using the desktop clipboard */
-    // Access the clipboard
-    QClipboard* clipboard = qApp->clipboard();
+	/* TODO Using the desktop clipboard */
+	// Access the clipboard
+	QClipboard* clipboard = qApp->clipboard();
 
-    // Calculate total boundingrect
-    QRectF totalRect;
-    foreach(QGraphicsItem* item, selectedItems())
-    {
-      QRectF itemRect = item->boundingRect();
-      itemRect.translate(item->scenePos());
-      totalRect |= itemRect;
-    }
-    // Add to internal clipboard
-    foreach(QGraphicsItem* item, m_clipItems) delete item;
-    m_clipItems.clear();
-    foreach(QGraphicsItem* item, selectedItems())
-      if (item->type() == Molecule::Type)
-        m_clipItems.append(new Molecule(dynamic_cast<Molecule*>(item)));
+	// Calculate total boundingrect
+	QRectF totalRect;
+	foreach(QGraphicsItem* item, selectedItems())
+	{
+	  QRectF itemRect = item->boundingRect();
+	  itemRect.translate(item->scenePos());
+	  totalRect |= itemRect;
+	}
+	// Add to internal clipboard
+	foreach(QGraphicsItem* item, m_clipItems) delete item;
+	m_clipItems.clear();
+	foreach(QGraphicsItem* item, selectedItems())
+	  if (item->type() == Molecule::Type)
+		m_clipItems.append(new Molecule(dynamic_cast<Molecule*>(item)));
 
-    // Clear selection
-    QList<QGraphicsItem*> selList(selectedItems());
-    clearSelection();
+	// Clear selection
+	QList<QGraphicsItem*> selList(selectedItems());
+	clearSelection();
 
-    // Choose the datatype
-    //   clipboard->setText("Test");
-    clipboard->setImage(renderImage(totalRect));
-    //   clipboard->mimeData( );
+	// Choose the datatype
+	//   clipboard->setText("Test");
+	clipboard->setImage(renderImage(totalRect));
+	//   clipboard->mimeData( );
 
-    // Restore selection
-    foreach(QGraphicsItem* item, selList) item->setSelected(true);
+	// Restore selection
+	foreach(QGraphicsItem* item, selList) item->setSelected(true);
 
-    // Emit paste available signal
-    emit pasteAvailable(!m_clipItems.isEmpty());
+	// Emit paste available signal
+	emit pasteAvailable(!m_clipItems.isEmpty());
   }
 
   void MolScene::paste()
   {
-    // Access the clipboard
-    //   QClipboard* clipboard = qApp->clipboard();
-    /* TODO Using the system clipboard*/
+	// Access the clipboard
+	//   QClipboard* clipboard = qApp->clipboard();
+	/* TODO Using the system clipboard*/
 
-    // Paste all items on the internal clipboard
-    m_stack->beginMacro(tr("pasting items"));
-    foreach(Molecule* item, m_clipItems) m_stack->push(new AddItem(new Molecule(item),this));
-    m_stack->endMacro();
+	// Paste all items on the internal clipboard
+	m_stack->beginMacro(tr("pasting items"));
+	foreach(Molecule* item, m_clipItems) m_stack->push(new AddItem(new Molecule(item),this));
+	m_stack->endMacro();
   }
 
   void MolScene::convertImage()
   {
-    QClipboard* clipboard = qApp->clipboard();
-    QImage img = clipboard->image();
-    if (img.isNull()) return ;
+	QClipboard* clipboard = qApp->clipboard();
+	QImage img = clipboard->image();
+	if (img.isNull()) return ;
 
-    QLibrary obabeliface("obabeliface") ;
-    obabeliface.load() ;
-    callOsraFunctionPointer callOsraPtr = (callOsraFunctionPointer) obabeliface.resolve("call_osra") ;
-    if (!callOsraPtr)
-    {
-      QMessageBox::critical(0, tr("Error importing image"), tr("OpenBabel support unavailable.")) ;
-      return ;
-    }
+	QLibrary obabeliface("obabeliface") ;
+	obabeliface.load() ;
+	callOsraFunctionPointer callOsraPtr = (callOsraFunctionPointer) obabeliface.resolve("call_osra") ;
+	if (!callOsraPtr)
+	{
+	  QMessageBox::critical(0, tr("Error importing image"), tr("OpenBabel support unavailable.")) ;
+	  return ;
+	}
 #if QT_VERSION < 0x050000
-    QString tmpimg = QDesktopServices::storageLocation(QDesktopServices::TempLocation) + QDir::separator() + "osra.png";
+	QString tmpimg = QDesktopServices::storageLocation(QDesktopServices::TempLocation) + QDir::separator() + "osra.png";
 #else
-    QString tmpimg = QStandardPaths::writableLocation(QStandardPaths::TempLocation) + QDir::separator() + "osra.png";
+	QString tmpimg = QStandardPaths::writableLocation(QStandardPaths::TempLocation) + QDir::separator() + "osra.png";
 #endif
-    img.save(tmpimg, "PNG", 100);
-    Molecule* mol = callOsraPtr(tmpimg);
-    if (mol) 
-    {
-      m_stack->beginMacro(tr("converting image using OSRA"));
-      m_stack->push(new AddItem(new Molecule(mol), this));
-      m_stack->endMacro();
-    }
-    else
-      QMessageBox::critical(0, tr("Error"), tr("OSRA conversion failed. Is OSRA installed?")) ;
-    QFile::remove(tmpimg);
+	img.save(tmpimg, "PNG", 100);
+	Molecule* mol = callOsraPtr(tmpimg);
+	if (mol)
+	{
+	  m_stack->beginMacro(tr("converting image using OSRA"));
+	  m_stack->push(new AddItem(new Molecule(mol), this));
+	  m_stack->endMacro();
+	}
+	else
+	  QMessageBox::critical(0, tr("Error"), tr("OSRA conversion failed. Is OSRA installed?")) ;
+	QFile::remove(tmpimg);
   }
- 
+
   void MolScene::clear()
   {
-    // Purge the undom_stack
-    m_stack->clear();
+	// Purge the undom_stack
+	m_stack->clear();
 
-    QGraphicsScene::clear();
+	QGraphicsScene::clear();
 
-    // Reinitialize the scene
-    //m_hintPoints.clear();
-    //initHintItems();
-    setEditMode(MolScene::DrawMode);
+	// Reinitialize the scene
+	//m_hintPoints.clear();
+	//initHintItems();
+	setEditMode(MolScene::DrawMode);
 
-    m_inputTextItem = new TextInputItem();
-    addItem(m_inputTextItem);
-    // hide it for now...
-    m_inputTextItem->hide();
+	m_inputTextItem = new TextInputItem();
+	addItem(m_inputTextItem);
+	// hide it for now...
+	m_inputTextItem->hide();
 
   }
 
@@ -330,71 +365,71 @@ namespace Molsketch {
 		QRectF rect = mol ->boundingRect();
 		QImage image(int(rect.width()),int(rect.height()),QImage::Format_RGB32);
 		image.fill(QColor("white").rgb());
-		
+
 		// Creating and setting the painter
 		QPainter painter(&image);
 		painter.setRenderHint(QPainter::Antialiasing);
-		
+
 		// Rendering in the image and saving to file
 		render(&painter,QRectF(0,0,rect.width(),rect.height()),QRectF (mol ->mapToScene (rect.topLeft ()), mol ->mapToScene (rect.bottomRight ())));
 		return image;
 	}
-	
-	
+
+
   QImage MolScene::renderImage(const QRectF &rect)
   {
-    // Creating an image
-    QImage image(int(rect.width()),int(rect.height()),QImage::Format_RGB32);
-    image.fill(QColor("white").rgb());
+	// Creating an image
+	QImage image(int(rect.width()),int(rect.height()),QImage::Format_RGB32);
+	image.fill(QColor("white").rgb());
 
-    // Creating and setting the painter
-    QPainter painter(&image);
-    painter.setRenderHint(QPainter::Antialiasing);
+	// Creating and setting the painter
+	QPainter painter(&image);
+	painter.setRenderHint(QPainter::Antialiasing);
 
-    // Rendering in the image and saving to file
-    render(&painter,QRectF(0,0,rect.width(),rect.height()),rect);
+	// Rendering in the image and saving to file
+	render(&painter,QRectF(0,0,rect.width(),rect.height()),rect);
 
-    return image;
+	return image;
   }
 
   void MolScene::addMolecule(Molecule* mol)
   {
-    Q_CHECK_PTR(mol);
-    if (!mol) return;
-    m_stack->beginMacro(tr("add molecule"));
-    m_stack->push(new AddItem(mol,this)); 
-    if (mol->canSplit()) m_stack->push(new SplitMol(mol));
-    m_stack->endMacro();
+	Q_CHECK_PTR(mol);
+	if (!mol) return;
+	m_stack->beginMacro(tr("add molecule"));
+	m_stack->push(new AddItem(mol,this));
+	if (mol->canSplit()) m_stack->push(new SplitMol(mol));
+	m_stack->endMacro();
   }
 
   void MolScene::selectAll()
   {
-    // Switch to move mode to make selection posible
-    setEditMode(MolScene::MoveMode);
+	// Switch to move mode to make selection posible
+	setEditMode(MolScene::MoveMode);
 
-    // Clear any previous selection
-    clearSelection();
+	// Clear any previous selection
+	clearSelection();
 
-    // Mark all atoms as selected
-    foreach (QGraphicsItem* item, items())
-    {
-      if (item->type() == Atom::Type)
-        item->setSelected(true);
-    }
+	// Mark all atoms as selected
+	foreach (QGraphicsItem* item, items())
+	{
+	  if (item->type() == Atom::Type)
+		item->setSelected(true);
+	}
   }
 
 
   void MolScene::setHoverRect( QGraphicsItem* item )
   {
-    if (item) {
-      m_hoverRect->setPath(item->shape());
-      m_hoverRect->setPos(item->scenePos());
-      //       m_hoverRect->setVisible(true);
-      addItem(m_hoverRect);
-    } else {
-      //     m_hoverRect->setVisible(false);
-      removeItem(m_hoverRect);
-    }
+	if (item) {
+	  m_hoverRect->setPath(item->shape());
+	  m_hoverRect->setPos(item->scenePos());
+	  //       m_hoverRect->setVisible(true);
+	  addItem(m_hoverRect);
+	} else {
+	  //     m_hoverRect->setVisible(false);
+	  removeItem(m_hoverRect);
+	}
   }
 
 
@@ -402,193 +437,217 @@ namespace Molsketch {
 
   bool MolScene::carbonVisible( ) const
   {
-    return m_carbonVisible;
+	return m_carbonVisible;
   }
 
   bool MolScene::hydrogenVisible( ) const
   {
-    return m_hydrogenVisible;
+	return m_hydrogenVisible;
   }
 
 
 
   qreal MolScene::atomSize( ) const
   {
-    return m_atomSize;
+	return m_atomSize;
   }
 
   int MolScene::editMode() const
   {
-    return m_editMode;
+	return m_editMode;
   }
 
   MolScene::RenderMode MolScene::renderMode() const
   {
-    return m_renderMode;
+	return m_renderMode;
   }
 
   void MolScene::setRenderMode(MolScene::RenderMode mode)
   {
-    m_renderMode = mode;
+	m_renderMode = mode;
   }
 
   QPointF MolScene::toGrid(const QPointF &position)
   {
-    QPointF p = position;
-    int factor = 40;
-    p.rx() = floor(p.x() / factor) * factor;
-    p.ry() = floor(p.y() / factor) * factor;
+	QPointF p = position;
+	int factor = 40;
+	p.rx() = floor(p.x() / factor) * factor;
+	p.ry() = floor(p.y() / factor) * factor;
 
-    return p;
+	return p;
   }
   qreal MolScene::arrowLineWidth() const
   {
-    return m_arrowLineWidth;
+	return m_arrowLineWidth;
   }
 
   void MolScene::setArrowLineWidth(const qreal &arrowLineWidth)
   {
-    m_arrowLineWidth = arrowLineWidth;
+	m_arrowLineWidth = arrowLineWidth;
   }
 
   abstractXmlObject *MolScene::produceChild(const QString &childName, const QString &type)
   {
-    if (childName == "molecule") // TODO move those names to their classes.
-    {
-      Molecule *molecule = new Molecule ;
-      addItem(molecule) ;
-      return molecule ;
-    }
-    graphicsItem *object = 0 ;
-    if (childName == "object")
-    {
-      if (type == "ReactionArrow") object = new ReactionArrow ;
-      if (type == "MechanismArrow") object = new MechanismArrow ;
-    }
-    if (object) addItem(object) ;
-    return object ;
+	if (childName == "molecule") // TODO move those names to their classes.
+	{
+	  Molecule *molecule = new Molecule ;
+	  addItem(molecule) ;
+	  return molecule ;
+	}
+	graphicsItem *object = 0 ;
+	if (childName == "object")
+	{
+	  if (type == "ReactionArrow") object = new ReactionArrow ;
+	  if (type == "MechanismArrow") object = new MechanismArrow ;
+	}
+	if (childName == "plugin")
+	  object = ItemPluginFactory::createInstance(type);
+	qDebug() << "Adding:" << object << items() ;
+	if (object) addItem(object) ;
+	qDebug() << "added:" << items() ;
+	return object ;
   }
 
   QList<const abstractXmlObject *> MolScene::children() const
   {
-    QList<const abstractXmlObject*> childrenList ;
-    foreach(QGraphicsItem* item, items())
-      if (item->type() == graphicsItem::MoleculeType
-          || item->type() == graphicsItem::ReactionArrowType
-          || item->type() == graphicsItem::MechanismArrowType)
-      childrenList << dynamic_cast<const abstractXmlObject*>(item) ;
-    return childrenList ;
+	QList<const abstractXmlObject*> childrenList ;
+	foreach(QGraphicsItem* item, items())
+	  if (item->type() == graphicsItem::MoleculeType
+		  || item->type() == graphicsItem::ReactionArrowType
+		  || item->type() == graphicsItem::MechanismArrowType)
+	  childrenList << dynamic_cast<const abstractXmlObject*>(item) ;
+	return childrenList ;
   }
 
   void MolScene::readAttributes(const QXmlStreamAttributes &attributes)
   {
-    Q_UNUSED(attributes)
-    clear();
+	Q_UNUSED(attributes)
+	clear();
   }
 
   qreal MolScene::bondWidth() const
   {
-    return m_bondWidth;
+	return m_bondWidth;
   }
 
   void MolScene::setBondWidth(const qreal &bondWidth)
   {
-    m_bondWidth = bondWidth;
+	m_bondWidth = bondWidth;
   }
 
 
 
   Molecule* MolScene::moleculeAt(const QPointF &pos)
   {
-    // Check if there is a molecule at this position
-    foreach(QGraphicsItem* item,items(pos))
-      if (item->type() == Molecule::Type) return dynamic_cast<Molecule*>(item);
+	// Check if there is a molecule at this position
+	foreach(QGraphicsItem* item,items(pos))
+	  if (item->type() == Molecule::Type) return dynamic_cast<Molecule*>(item);
 
-    // Else return NULL
-    return 0;
+	// Else return NULL
+	return 0;
 
   }
 
   bool MolScene::textEditItemAt (const QPointF &pos)
   {
-	    foreach(QGraphicsItem* item,items(pos))
+		foreach(QGraphicsItem* item,items(pos))
 		if (item->type() == TextInputItem::Type) return true;
-		return false;
-	}
+			return false;
+  }
+
+  void MolScene::selectionSlot()
+  {
+	foreach(abstractItemAction* itemAction, findChildren<abstractItemAction*>())
+	  itemAction->setItems(selectedItems());
+	return;
+  }
 
   Atom* MolScene::atomAt(const QPointF &pos)
   {
-    // Check if there is a atom at this position
-    foreach(QGraphicsItem* item,items(pos))
-      if (item->type() == Atom::Type) return dynamic_cast<Atom*>(item);
+	// Check if there is a atom at this position
+	foreach(QGraphicsItem* item,items(pos))
+	  if (item->type() == Atom::Type) return dynamic_cast<Atom*>(item);
 
-    // Can't find an atom at that location
-    return 0;
+	// Can't find an atom at that location
+	return 0;
   }
 
   Bond* MolScene::bondAt(const QPointF &pos)
   {
-    // Check if there is a bond at this position
-    foreach( QGraphicsItem* item,items(pos))
-      if (item->type() == Bond::Type) return dynamic_cast<Bond*>(item);
+	// Check if there is a bond at this position
+	foreach( QGraphicsItem* item,items(pos))
+	  if (item->type() == Bond::Type) return dynamic_cast<Bond*>(item);
 
-    // Else return NULL
-    return 0;
+	// Else return NULL
+	return 0;
   }
 
   // Event handlers
 
   bool MolScene::event(QEvent* event)
   {
-    // Execute default behaivior
-    bool accepted = QGraphicsScene::event(event);
+	// Execute default behaivior
+	bool accepted = QGraphicsScene::event(event);
 
-    // Check whether copying is available
-    if ((event->type() == QEvent::GraphicsSceneMouseRelease) || (event->type() == QEvent::KeyRelease))
-    {
-      emit copyAvailable(!selectedItems().isEmpty());
-      //     emit pasteAvailable(!m_clipItems.isEmpty());
-      emit selectionChange( );
-    }
+	// Check whether copying is available
+	if ((event->type() == QEvent::GraphicsSceneMouseRelease) || (event->type() == QEvent::KeyRelease))
+	{
+	  emit copyAvailable(!selectedItems().isEmpty());
+	  //     emit pasteAvailable(!m_clipItems.isEmpty());
+	  emit selectionChange( );
+	}
 
-    // Execute default behavior
-    return accepted;
+	// Check if mouse left scene
+	if (QEvent::Leave == event->type())
+	  m_toolGroup->activeTool()->leaveSceneEvent(event) ;
+
+	// Execute default behavior
+	return accepted;
   }
 
   void MolScene::mousePressEvent(QGraphicsSceneMouseEvent* event)
   {
-    m_toolGroup->activeTool()->mousePressEvent(event);
+	m_toolGroup->activeTool()->mousePressEvent(event);
+	if (event->isAccepted()) return;
 
-    // Execute default behavior
-    QGraphicsScene::mousePressEvent(event);
-    qDebug() << "press event accepted:" << event->isAccepted() ;
+	// Execute default behavior
+	if (event->button() == Qt::RightButton && !event->modifiers())
+	{
+	  event->ignore();
+	  return;
+	}
+	QGraphicsScene::mousePressEvent(event);
+	qDebug() << "press event accepted:" << event->isAccepted() ;
   }
 
   void MolScene::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
   {
-    m_toolGroup->activeTool()->mouseMoveEvent(event);
+	m_toolGroup->activeTool()->mouseMoveEvent(event);
+	if (event->isAccepted()) return;
 
-    // Execute default behavior
-    QGraphicsScene::mouseMoveEvent(event);
+	// Execute default behavior
+	QGraphicsScene::mouseMoveEvent(event);
   }
 
 
   void MolScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
   {
-    m_toolGroup->activeTool()->mouseReleaseEvent(event);
+	m_toolGroup->activeTool()->mouseReleaseEvent(event);
+	if (event->isAccepted()) return;
 
-    // Execute the normal behavior
-    QGraphicsScene::mouseReleaseEvent(event);
-    qDebug() << "release event accepted:" << event->isAccepted() ;
+	// Execute the normal behavior
+	QGraphicsScene::mouseReleaseEvent(event);
+	qDebug() << "release event accepted:" << event->isAccepted() ;
   }
 
 
   void MolScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * event )
   {
-    m_toolGroup->activeTool()->mouseDoubleClickEvent(event);
+	m_toolGroup->activeTool()->mouseDoubleClickEvent(event);
+	if (event->isAccepted()) return;
 
-    // Execute default behavior
-    QGraphicsScene::mouseDoubleClickEvent( event );
+	// Execute default behavior
+	QGraphicsScene::mouseDoubleClickEvent( event );
   }
 
 
@@ -609,7 +668,7 @@ namespace Molsketch {
 			m_inputTextItem ->clickedOn (atom);
 
 				}
-/*		
+/*
 		else {
 			QGraphicsTextItem *text = addText("");
 			text ->show ();
@@ -620,25 +679,25 @@ namespace Molsketch {
 
 		}
 */
-		
+
 			}
 	}
-	
-	void MolScene::textModeRelease(QGraphicsSceneMouseEvent* event) 
+
+	void MolScene::textModeRelease(QGraphicsSceneMouseEvent* event)
   {
-          Q_UNUSED(event)
-        }
+		  Q_UNUSED(event)
+		}
 
-        void MolScene::updateAll()
-        {
-          invalidate() ;
-          update() ;
-        }
-	
-
+		void MolScene::updateAll()
+		{
+		  invalidate() ;
+		  update() ;
+		}
 
 
-	
+
+
+
 
 
 
@@ -670,55 +729,55 @@ namespace Molsketch {
   void MolScene::keyPressEvent(QKeyEvent* keyEvent)
   {
 	  if ( !m_inputTextItem ->hasFocus ()) {
-    // Declare item
-    QGraphicsItem* item;
-    Atom* atom;
-    //   Bond* bond;
-    //   Molecule* mol;
-    QSet<Molecule*> molSet;
+	// Declare item
+	QGraphicsItem* item;
+	Atom* atom;
+	//   Bond* bond;
+	//   Molecule* mol;
+	QSet<Molecule*> molSet;
 
-    switch (keyEvent->key())
-    {
-      case Qt::Key_Delete:
-        m_stack->beginMacro(tr("removing item(s)"));
-        // First delete all selected molecules
-        foreach (item, selectedItems())
-          if (item->type() == Molecule::Type)
-          {
-            m_stack->push(new DelItem(item));
-          }
-        //       // Then delete 
-        //       foreach (item, selectedItems())
-        //         if (item->type() == Bond::Type)
-        //         {
-        //           bond = dynamic_cast<Bond*>(item);
-        //           mol = bond->molecule();
-        //           m_stack->push(new DelBond(bond));
-        //           if (mol->canSplit()) m_stack->push(new SplitMol(mol));
-        //         };
+	switch (keyEvent->key())
+	{
+	  case Qt::Key_Delete:
+		m_stack->beginMacro(tr("removing item(s)"));
+		// First delete all selected molecules
+		foreach (item, selectedItems())
+		  if (item->type() == Molecule::Type)
+		  {
+			m_stack->push(new DelItem(item));
+		  }
+		//       // Then delete
+		//       foreach (item, selectedItems())
+		//         if (item->type() == Bond::Type)
+		//         {
+		//           bond = dynamic_cast<Bond*>(item);
+		//           mol = bond->molecule();
+		//           m_stack->push(new DelBond(bond));
+		//           if (mol->canSplit()) m_stack->push(new SplitMol(mol));
+		//         };
 
-        // Then delete all selected atoms
-        foreach (item, selectedItems())
-          if (item->type() == Atom::Type)
-          {
-            atom = dynamic_cast<Atom*>(item);
-            molSet << atom->molecule();
-            m_stack->push(new DelAtom(atom));
-          }
+		// Then delete all selected atoms
+		foreach (item, selectedItems())
+		  if (item->type() == Atom::Type)
+		  {
+			atom = dynamic_cast<Atom*>(item);
+			molSet << atom->molecule();
+			m_stack->push(new DelAtom(atom));
+		  }
 
-        // Cleanup the affected molecules
-        foreach (Molecule* mol, molSet)
-        {
-          if (mol->canSplit()) m_stack->push(new SplitMol(mol));
-          if (mol->atoms().isEmpty()) m_stack->push(new DelItem(mol));
-        }
+		// Cleanup the affected molecules
+		foreach (Molecule* mol, molSet)
+		{
+		  if (mol->canSplit()) m_stack->push(new SplitMol(mol));
+		  if (mol->atoms().isEmpty()) m_stack->push(new DelItem(mol));
+		}
 
-        // Finally delete all the residues
-        foreach (item, selectedItems()) m_stack->push(new DelItem(item));
+		// Finally delete all the residues
+		foreach (item, selectedItems()) m_stack->push(new DelItem(item));
 
-        m_stack->endMacro();
-        keyEvent->accept();
-        break;
+		m_stack->endMacro();
+		keyEvent->accept();
+		break;
 		case Qt::Key_Backspace:
 			m_stack->beginMacro(tr("removing item(s)"));
 			// First delete all selected molecules
@@ -727,7 +786,7 @@ namespace Molsketch {
 			{
 				m_stack->push(new DelItem(item));
 			}
-			//       // Then delete 
+			//       // Then delete
 			//       foreach (item, selectedItems())
 			//         if (item->type() == Bond::Type)
 			//         {
@@ -736,7 +795,7 @@ namespace Molsketch {
 			//           m_stack->push(new DelBond(bond));
 			//           if (mol->canSplit()) m_stack->push(new SplitMol(mol));
 			//         };
-			
+
 			// Then delete all selected atoms
 			foreach (item, selectedItems())
 			if (item->type() == Atom::Type)
@@ -745,75 +804,204 @@ namespace Molsketch {
 				molSet << atom->molecule();
 				m_stack->push(new DelAtom(atom));
 			}
-			
+
 			// Cleanup the affected molecules
 			foreach (Molecule* mol, molSet)
-        {
+		{
 			if (mol->canSplit()) m_stack->push(new SplitMol(mol));
 			if (mol->atoms().isEmpty()) m_stack->push(new DelItem(mol));
-        }
-			
+		}
+
 			// Finally delete all the residues
 			foreach (item, selectedItems()) m_stack->push(new DelItem(item));
-			
+
 			m_stack->endMacro();
 			keyEvent->accept();
 			break;
-			
-			
-      case Qt::Key_Up:
-        m_stack->beginMacro("moving item(s)");
-        foreach (item, selectedItems())
-          m_stack->push(new MoveItem(item,QPointF(0,-10)));
-        m_stack->endMacro();
-        keyEvent->accept();
-        break;
-      case Qt::Key_Down:
-        m_stack->beginMacro("moving item(s)");
-        foreach (item, selectedItems())
-          m_stack->push(new MoveItem(item,QPointF(0,10)));
-        m_stack->endMacro();
-        keyEvent->accept();
-        break;
-      case Qt::Key_Left:
-        m_stack->beginMacro("moving item(s)");
-        foreach (item, selectedItems())
-          m_stack->push(new MoveItem(item,QPointF(-10,0)));
-        m_stack->endMacro();
-        keyEvent->accept();
-        break;
-      case Qt::Key_Right:
-        m_stack->beginMacro("moving item(s)");
-        foreach (item, selectedItems())
-          m_stack->push(new MoveItem(item,QPointF(10,0)));
-        m_stack->endMacro();
-        keyEvent->accept();
-        break;
-      case Qt::Key_Escape:
-        clearSelection();
-        break;
-      default:
-        keyEvent->ignore();
-    }
+
+
+	  case Qt::Key_Up:
+		m_stack->beginMacro("moving item(s)");
+		foreach (item, selectedItems())
+		  m_stack->push(new MoveItem(item,QPointF(0,-10)));
+		m_stack->endMacro();
+		keyEvent->accept();
+		break;
+	  case Qt::Key_Down:
+		m_stack->beginMacro("moving item(s)");
+		foreach (item, selectedItems())
+		  m_stack->push(new MoveItem(item,QPointF(0,10)));
+		m_stack->endMacro();
+		keyEvent->accept();
+		break;
+	  case Qt::Key_Left:
+		m_stack->beginMacro("moving item(s)");
+		foreach (item, selectedItems())
+		  m_stack->push(new MoveItem(item,QPointF(-10,0)));
+		m_stack->endMacro();
+		keyEvent->accept();
+		break;
+	  case Qt::Key_Right:
+		m_stack->beginMacro("moving item(s)");
+		foreach (item, selectedItems())
+		  m_stack->push(new MoveItem(item,QPointF(10,0)));
+		m_stack->endMacro();
+		keyEvent->accept();
+		break;
+	  case Qt::Key_Escape:
+		clearSelection();
+		break;
+	  default:
+		keyEvent->ignore();
+	}
 	  }
-  
-    // execute default behaviour (needed for text tool)
-          QGraphicsScene::keyPressEvent(keyEvent);
-  }	
+
+	// execute default behaviour (needed for text tool)
+		  QGraphicsScene::keyPressEvent(keyEvent);
+  }
+
+  void MolScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+  {
+	if (selectedItems().isEmpty())
+	{
+	  QGraphicsScene::contextMenuEvent(event); // let the item handle the event
+	  return;
+	}
+
+	// have a selection, so scene is handling the context menu
+	QMenu contextMenu;
+	foreach(QGraphicsItem* qgItem, selectedItems())
+	{
+	  graphicsItem *item = dynamic_cast<graphicsItem*>(qgItem);
+	  if (!item) continue;
+	  item->prepareContextMenu(&contextMenu);
+	}
+
+	contextMenu.exec(event->screenPos());
+	event->accept();
+  }
+
+  QImage MolScene::toImage (OpenBabel::OBMol *obmol)
+  {
+	Molecule *mol = toMol(obmol);
+		QImage im = renderMolToImage (mol);
+		removeItem (mol);
+		delete mol;
+		return im;
+	}
+
+
+  Molecule *MolScene::toMol (OpenBabel::OBMol *obmol)
+  {
+	qreal k = 40/*bondLength()*/ / 1.5; // FIXME
+		Molecule *mol = new Molecule ();
+		mol->setPos(QPointF(0,0));
+		qreal x = 0;
+		qreal y = 0;
+		OpenBabel::OBAtom *first_atom = obmol ->GetAtom (1);
+		if (first_atom) {
+			x = first_atom ->x ();
+			y = -first_atom ->y ();
+		}
+		std::vector <Atom *>ats;
+		std::vector <Bond *>bonds;
+
+		//	for (unsigned int i = 0; i <= obmol ->NumAtoms();i++)
+		FOR_ATOMS_OF_MOL(obatom,obmol)
+		{
+			//	OpenBabel::OBAtom *obatom = obmol ->GetAtom(i);
+			//  			scene->addRect(QRectF(atom->GetX(),atom->GetY(),5,5));
+			//           Atom* atom =
+			ats.push_back (new Atom (QPointF((obatom->x() - x)*k,(-obatom->y()-y)*k),number2symbol(obatom->GetAtomicNum()), autoAddHydrogen (), mol));
+			//mol->addAtom();
+		}
+
+		// Add bonds one-by-one
+		/// Mind the numbering!
+		//	for (unsigned int i = 0; i < obmol ->NumBonds();i++)
+		FOR_BONDS_OF_MOL(obbond,obmol)
+		{
+			// Loading the OpenBabel objects
+			//	OpenBabel::OBBond *obbond = obmol ->GetBond(i);
+			OpenBabel::OBAtom *a1 = obbond->GetBeginAtom();
+			OpenBabel::OBAtom *a2 = obbond->GetEndAtom();
+			if (a1 ->IsHydrogen()) continue;
+			if (a2 ->IsHydrogen()) continue;
+
+			Atom* atomA = 0;
+			Atom* atomB = 0;
+
+			if (a1 ->GetIdx() > 0 && (a1 ->GetIdx() -1) <ats.size ())
+			atomA = ats [a1 ->GetIdx() -1];
+			if (a2 ->GetIdx() > 0 && (a2 ->GetIdx() -1) <ats.size ())
+			atomB = ats [a2 ->GetIdx() -1];
+			std::cerr<< a2 ->GetIdx() -1<<"  "<<a1 ->GetIdx() -1<<std::endl;
+
+			if (atomA && atomB)	{
+				Bond* bond  = new Bond (atomA,atomB,obbond->GetBondOrder());
+				// Set special bond types
+				if (obbond->IsWedge())
+					bond->setType( Bond::Wedge );
+				if (obbond->IsHash())
+					bond->setType( Bond::Hash );
+
+				bonds.push_back(bond);
+
+			}
+			// Normalizing
+			//             factor = scene->getBondLength()/obbond->GetLength();
+		}
+
+		// // Normalizing molecule
+		// mol->scale(factor,factor);
+		// mol->setAtomSize(LABEL_SIZE/factor);
+		for (unsigned int i=0; i < ats.size (); i++) {
+			if (ats[i] ->element () == "H") continue;
+			mol ->addAtom (ats[i]);
+		}
+		for (unsigned int i=0; i < bonds.size (); i++) {
+
+			Atom *a1 = bonds[i] ->beginAtom ();
+			Atom *a2 = bonds[i] ->endAtom ();
+			if (a1 ->element () == "H") continue;
+			if (a2 ->element () == "H") continue;
+			mol ->addBond (bonds[i]);
+		}
+		//int nu = 0;
+		//QList <Atom *> atts = mol ->atoms ();
+
+				/*
+		for (int i = 0; i < atts.size () ; i++) {
+			atts[i] ->setNumber(i);
+		}
+				*/
+				mol->numberAtoms();
+		return mol;
+
+	}
+
+
+
+
 
   QUndoStack * MolScene::stack()
   {
-    return m_stack;
+	return m_stack;
+  }
+
+  QList<genericAction *> MolScene::sceneActions() const
+  {
+	return findChildren<genericAction*>();
   }
 
   QFont MolScene::atomSymbolFont() const
   {
-    return m_atomSymbolFont;
+	return m_atomSymbolFont;
   }
 
   void MolScene::setAtomSymbolFont(const QFont & font)
   {
-    m_atomSymbolFont = font;
+	m_atomSymbolFont = font;
   }
 
 } // namespace

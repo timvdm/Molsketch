@@ -21,7 +21,6 @@
 #include "mimemolecule.h"
 
 #include <QPainter>
-#include <QGraphicsSceneDragDropEvent>
 #include <QDebug>
 #include <QLibrary>
 
@@ -35,37 +34,37 @@ namespace Molsketch {
 
   void GraphSymItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
   {
-    Molecule *mol = molecule();
-    
-    painter->save();
-    painter->setPen(Qt::red);
+	Molecule *mol = molecule();
 
-    if (!mol) {
-      // not connected: default behaviour (draw connectable box)
-      MolInputItem::paint(painter, option, widget);
-      painter->restore();
-      return;
-    }
+	painter->save();
+	painter->setPen(Qt::red);
 
-    const QList<Atom*> &atoms = mol->atoms();
+	if (!mol) {
+	  // not connected: default behaviour (draw connectable box)
+	  MolInputItem::paint(painter, option, widget);
+	  painter->restore();
+	  return;
+	}
 
-    std::vector<unsigned int> symmetry_classes;
-    QLibrary obabeliface("obabeliface") ;
-    obabeliface.load() ;
-    getSymmetryClassesFunctionPointer getSymmetryClassesPtr = (getSymmetryClassesFunctionPointer) obabeliface.resolve("getSymmetryClasses") ;
-    if (getSymmetryClassesPtr)
-    {
-      getSymmetryClassesPtr(mol, symmetry_classes) ;
-      for (int i = 0; i < atoms.size(); ++i) {
-        painter->drawText(mapFromItem(mol, atoms[i]->pos()), QString::number(symmetry_classes.at(i)));
-      }
-    }
-    else 
-      painter->drawText(mapFromItem(mol, mol->graphicalCenterOfMass()), "OpenBabel unavailable") ;
+	const QList<Atom*> &atoms = mol->atoms();
 
-    // default behaviour (draw the label())
-    MolInputItem::paint(painter, option, widget);
-    painter->restore();
+	std::vector<unsigned int> symmetry_classes;
+	QLibrary obabeliface("obabeliface") ;
+	obabeliface.load() ;
+	getSymmetryClassesFunctionPointer getSymmetryClassesPtr = (getSymmetryClassesFunctionPointer) obabeliface.resolve("getSymmetryClasses") ;
+	if (getSymmetryClassesPtr)
+	{
+	  getSymmetryClassesPtr(mol, symmetry_classes) ;
+	  for (int i = 0; i < atoms.size(); ++i) {
+		painter->drawText(mapFromItem(mol, atoms[i]->pos()), QString::number(symmetry_classes.at(i)));
+	  }
+	}
+	else
+	  painter->drawText(mapFromItem(mol, mol->graphicalCenterOfMass()), "OpenBabel unavailable") ;
+
+	// default behaviour (draw the label())
+	MolInputItem::paint(painter, option, widget);
+	painter->restore();
   }
 
   GraphSymItemFactory theGraphSymItemFactory;

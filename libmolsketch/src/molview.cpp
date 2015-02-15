@@ -40,9 +40,9 @@ MolView::MolView(QGraphicsScene* scene) : QGraphicsView(scene)
         setContextMenuPolicy(Qt::DefaultContextMenu);
         qDebug() << "contextMenuPolicy:" << contextMenuPolicy() ;
 
-//#if QT_VERSION >= 0x040300
-//        setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
-//#endif
+#if QT_VERSION >= 0x040300
+        setViewportUpdateMode(QGraphicsView::FullViewportUpdate); // ::FullViewportUpdate);
+#endif
 }
 
 void MolView::wheelEvent(QWheelEvent* event)

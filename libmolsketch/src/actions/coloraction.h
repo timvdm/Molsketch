@@ -28,7 +28,7 @@
 #ifndef COLORACTION_H
 #define COLORACTION_H
 
-#include "abstractitemaction.h"
+#include "actions/abstractitemaction.h"
 
 
 namespace Molsketch {
@@ -38,7 +38,7 @@ namespace Molsketch {
   {
     Q_OBJECT
   public:
-    explicit colorAction(QObject *parent = 0);
+    explicit colorAction(MolScene *parent = 0);
   private:
     void execute() ;
   };

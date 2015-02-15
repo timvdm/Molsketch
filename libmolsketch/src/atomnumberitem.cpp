@@ -22,7 +22,6 @@
 #include "mimemolecule.h"
 
 #include <QPainter>
-#include <QGraphicsSceneDragDropEvent>
 #include <QDebug>
 
 namespace Molsketch {
@@ -43,14 +42,9 @@ namespace Molsketch {
       return;
     }
     
-    const QList<Atom*> &atoms = mol->atoms();
-    QFontMetrics fm = painter->fontMetrics();
-
-    QPointF offset(0.0, fm.height() - fm.descent());
-    for (int i = 0; i < atoms.size(); ++i) {
-      painter->drawText(mapFromItem(mol, atoms[i]->pos()) + offset, QString::number(i+1));
-    }
-
+    int i = 0 ;
+    foreach (Atom* atom, mol->atoms())
+      drawTextNearAtom(painter, atom, QString::number(++i), mol) ;
     
     MolInputItem::paint(painter, option, widget);
     painter->restore();

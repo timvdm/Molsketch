@@ -24,7 +24,7 @@
 
 namespace Molsketch {
 
-  lineWidthAction::lineWidthAction(QObject *parent) :
+  lineWidthAction::lineWidthAction(MolScene *parent) :
     abstractItemAction(parent)
   {
     setText(tr("Line width...")) ;

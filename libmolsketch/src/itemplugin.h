@@ -19,14 +19,15 @@
 #ifndef ITEMPLUGIN_H
 #define ITEMPLUGIN_H
 
+#include "graphicsitem.h"
+
 #include <QtPlugin>
-#include <QGraphicsItem>
 
 class QPainter;
 
 namespace Molsketch {
 
-  class ItemPlugin : public QGraphicsItem
+  class ItemPlugin : public graphicsItem
   {
     public:
       ItemPlugin();
@@ -35,10 +36,17 @@ namespace Molsketch {
       virtual QString input() const = 0;
       virtual QString output() const = 0;
 
-      virtual void dropEvent(QGraphicsSceneDragDropEvent *event) = 0;
+      void dropEvent(QGraphicsSceneDragDropEvent *event) ;
+
+      QPolygonF coordinates() const;
+      void setCoordinates(const QVector<QPointF> &c);
     protected:
       void paintDefault(QPainter *painter);
       QRectF defaultBoundingRect() const;
+  private:
+      QString xmlName() const;
+      void readAttributes(const QXmlStreamAttributes &attributes);
+      QXmlStreamAttributes xmlAttributes() const;
   };
 
   class ItemPluginFactory

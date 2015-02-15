@@ -32,6 +32,7 @@
 #include "element.h"
 #include "molscene.h"
 #include <iostream>
+#include <cmath>
 
 namespace Molsketch {
 
@@ -78,44 +79,19 @@ namespace Molsketch {
      QGraphicsItem* parent GRAPHICSSCENESOURCE )
     : graphicsItem (parent GRAPHICSSCENEINIT )
   {
-    //pre: position is a valid position in scene coordinates
-    setPos(position);
-    setZValue(3);
-    //setFlag(QGraphicsItem::ItemIsMovable);
-    //setFlag(QGraphicsItem::ItemIgnoresTransformations);
+    initialize(position, element, implicitHydrogens);
+  }
 
-    MolScene *molScene = dynamic_cast<MolScene*>(
-#if QT_VERSION < 0x050000
-          scene
-#else
-          scene()
-#endif
-          ); // @todo qobject_cast is faster
-    if (molScene)
-      setFlag(QGraphicsItem::ItemIsSelectable, molScene->editMode() == MolScene::MoveMode);
-	  
-	  if (molScene) {
-		  setColor (molScene ->color());    // Setting initial parameters
-	  }
-	  else setColor (QColor (0, 0, 0));
-    // Enabling hovereffects
-#if QT_VERSION < 0x050000
-    setAcceptsHoverEvents(true);
-#else
-    setAcceptHoverEvents(true) ;
-#endif
-    setAcceptedMouseButtons(Qt::LeftButton | Qt::MidButton);
+  Atom::Atom(const Atom &other GRAPHICSSCENESOURCE)
+    : graphicsItem (other GRAPHICSSCENEINIT)
+  {
+    initialize(other.scenePos(), other.element(), other.hasImplicitHydrogens());
+  }
 
-    // Setting private fields
-    m_elementSymbol = element;
-    m_hidden = true;
-    m_drawn = false;
-
-    m_userCharge = 0; // The initial additional charge is zero
-    m_userElectrons = 0;
-    m_userImplicitHydrogens =  0;
-    enableImplicitHydrogens(implicitHydrogens);
-    computeBoundingRect();
+  Atom::~Atom()
+  {
+    foreach (Bond* bond, m_bonds)
+      delete bond ; // TODO rethink
   }
 
 
@@ -153,6 +129,7 @@ namespace Molsketch {
     // get the font & metrics
     QSettings settings;
     QFont symbolFont = settings.value("atom-symbol-font").value<QFont>();
+    symbolFont.setPointSizeF(symbolFont.pointSizeF() * lineWidth());
     QFont subscriptFont = symbolFont;
     subscriptFont.setPointSize(0.75 * symbolFont.pointSize());
     QFontMetrics fmSymbol(symbolFont);
@@ -218,6 +195,49 @@ namespace Molsketch {
 
   }
 
+  void Atom::initialize(const QPointF &position,
+                        const QString &element,
+                        bool implicitHydrogens)
+  {
+    //pre: position is a valid position in scene coordinates
+    setPos(position);
+    setZValue(3);
+    //setFlag(QGraphicsItem::ItemIsMovable);
+    //setFlag(QGraphicsItem::ItemIgnoresTransformations);
+
+    MolScene *molScene = dynamic_cast<MolScene*>(
+#if QT_VERSION < 0x050000
+          scene
+#else
+          scene()
+#endif
+          ); // @todo qobject_cast is faster
+
+    if (molScene) {
+      setFlag(QGraphicsItem::ItemIsSelectable, molScene->editMode() == MolScene::MoveMode);
+      setColor (molScene ->color());    // Setting initial parameters
+    }
+    else setColor (QColor (0, 0, 0));
+    // Enabling hovereffects
+#if QT_VERSION < 0x050000
+    setAcceptsHoverEvents(true);
+#else
+    setAcceptHoverEvents(true) ;
+#endif
+    setAcceptedMouseButtons(Qt::LeftButton | Qt::MidButton);
+
+    // Setting private fields
+    m_elementSymbol = element;
+    m_hidden = true;
+    m_drawn = false;
+
+    m_userCharge = 0; // The initial additional charge is zero
+    m_userElectrons = 0;
+    m_userImplicitHydrogens =  0;
+    enableImplicitHydrogens(implicitHydrogens);
+    computeBoundingRect();
+  }
+
   QRectF Atom::boundingRect() const
   {
     return m_shape;
@@ -226,7 +246,7 @@ namespace Molsketch {
   bool Atom::hasLabel() const
   {
     MolScene* molScene = dynamic_cast<MolScene*>(scene());
-    Q_CHECK_PTR(molScene);
+    if (!molScene) return true ;
 
     if ((m_elementSymbol == "C") && !molScene->carbonVisible() && (numBonds() > 1) && ((charge() == 0) || !molScene->chargeVisible()))
       return false;
@@ -238,8 +258,9 @@ namespace Molsketch {
   {
     MolScene* molScene = dynamic_cast<MolScene*>(scene());
 
-    painter->save();
+    painter->save(); // TODO mit computeBoundingRect zusammenfuehren
     QFont symbolFont = molScene->atomSymbolFont();
+    symbolFont.setPointSizeF(symbolFont.pointSizeF()*relativeWidth());
     QFont subscriptFont = symbolFont;
     subscriptFont.setPointSize(0.75 * symbolFont.pointSize());
     QFontMetrics fmSymbol(symbolFont);
@@ -372,7 +393,7 @@ namespace Molsketch {
     Q_UNUSED(option)
     Q_UNUSED(widget)
     
-    painter->setPen(m_color);
+    painter->setPen(getColor());
     // Save the original painter state
     //painter->save();
     
@@ -384,6 +405,7 @@ namespace Molsketch {
     */
     // Check the scene
     MolScene* molScene = dynamic_cast<MolScene*>(scene());
+    if (!molScene) return ;
     Q_CHECK_PTR(molScene);
 
     int element = Element::strings.indexOf(m_elementSymbol);
@@ -456,6 +478,8 @@ namespace Molsketch {
       lbl += "H";
     if ((hCount > 1) && !leftAligned)
       lbl += QString::number(hCount);
+
+    painter->setPen(getColor());
 
     drawAtomLabel(painter, lbl, alignment);
 
@@ -578,13 +602,40 @@ namespace Molsketch {
 
 
       painter->save();
-      painter->setBrush(Qt::black);
+//      painter->setBrush(Qt::black);
 
       for (int i = 0; i < unboundElectrons; i++)
         painter->drawEllipse(layoutList[i]);
 
       painter->restore();
     }
+  }
+
+  qreal Atom::annotationDirection() const
+  {
+    // Determine optimum direction if angleDirection negative
+    //   No preference & no bonds => downward
+    if (m_bonds.isEmpty())
+      return 270 ;
+    if (m_bonds.size() == 1)
+      return Molecule::toDegrees(m_bonds.first()->bondAngle(this)+180.) ;
+    //   Have bonds? determine largest free angle
+    QVector<qreal> angles ;
+    foreach (Bond *bond, m_bonds)
+      angles << bond->bondAngle(this) ;
+    qSort(angles) ;
+    angles << angles.first() + 360. ;
+    qreal maxAngleGap = -1, result = 270 ;
+    for (int i = 0 ; i < angles.size()-1 ; ++i)
+    {
+      qreal gap = angles[i+1] - angles[i] ;
+      if (gap > maxAngleGap)
+      {
+        maxAngleGap = gap ;
+        result = (angles[i+1]+angles[i]) / 2. ;
+      }
+    }
+    return Molecule::toDegrees(result) ;
   }
 
   QVariant Atom::itemChange(GraphicsItemChange change, const QVariant &value)
@@ -630,21 +681,21 @@ namespace Molsketch {
   void Atom::mousePressEvent( QGraphicsSceneMouseEvent* event )
   {
     // Execute default behavior
-    QGraphicsItem::mousePressEvent( event );
+    graphicsItem::mousePressEvent( event );
   }
 
   void Atom::hoverEnterEvent( QGraphicsSceneHoverEvent * event )
   {
     m_hidden = false;
     // Execute default behavior
-    QGraphicsItem::hoverEnterEvent( event );
+    graphicsItem::hoverEnterEvent( event );
   }
 
   void Atom::hoverLeaveEvent( QGraphicsSceneHoverEvent * event )
   {
     m_hidden = true;
     // Execute default behavior
-    QGraphicsItem::hoverLeaveEvent( event );
+    graphicsItem::hoverLeaveEvent( event );
   }
 
 
@@ -854,6 +905,17 @@ namespace Molsketch {
     return m_hidden;
   }
 
+  void Atom::setCoordinates(const QVector<QPointF> &c)
+  {
+    if (c.size() != 1) return ;
+    setPos(c.first());
+  }
+
+  QPolygonF Atom::coordinates() const
+  {
+    return QVector<QPointF>() << pos() ;
+  }
+
   void Atom::enableImplicitHydrogens(bool enabled)
   {
     m_implicitHydrogens = enabled/* && (m_elementSymbol == "C" || m_elementSymbol == "N" || m_elementSymbol == "O")*/;
@@ -862,8 +924,8 @@ namespace Molsketch {
   void Atom::addBond(Bond *bond)
   {
     Q_CHECK_PTR(bond);
-    Q_CHECK_PTR(bond->beginAtom());
-    Q_CHECK_PTR(bond->endAtom());
+//    Q_CHECK_PTR(bond->beginAtom());
+//    Q_CHECK_PTR(bond->endAtom());
 
     if (!m_bonds.contains(bond))
       m_bonds.append(bond);

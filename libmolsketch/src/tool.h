@@ -57,6 +57,10 @@ namespace Molsketch {
        * Reimplement this function to handle mouse double click events. The default implementation does nothing.
        */
       virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+      /**
+       * Reimplement this function to handle loss of focus. Default does nothing.
+       */
+      virtual void leaveSceneEvent(QEvent *event) ;
 
     protected:
       MolScene *m_scene;

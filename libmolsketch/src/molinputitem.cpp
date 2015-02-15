@@ -19,25 +19,29 @@
 #include "graphsymitem.h"
 #include "molscene.h"
 #include "mimemolecule.h"
+#include "atom.h"
 
 #include <QPainter>
-#include <QGraphicsSceneDragDropEvent>
 #include <QDebug>
 
 
 namespace Molsketch {
 
-  MolInputItem::MolInputItem(OutputType output) : m_output(output), m_molecule(0), m_rect(QRectF(0, 0, 150, 100))
+  MolInputItem::MolInputItem(OutputType output) : m_output(output), m_rect(QRectF(0, 0, 150, 100))
   {
     setAcceptDrops(true);
     setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable);
   }
 
+  Molecule *MolInputItem::molecule() const
+  {
+     return dynamic_cast<Molecule*>(parentItem());
+  }
+
   QRectF MolInputItem::boundingRect() const
   {
-    if (m_molecule) {
-      QRectF molRect = m_molecule->boundingRect();
-      return QRectF(mapFromItem(m_molecule, molRect.topLeft()), mapFromItem(m_molecule, molRect.bottomRight())) | m_rect;
+    if (molecule()) {
+      return QRectF() ; // TODO
     } else
       return defaultBoundingRect();
   }
@@ -45,7 +49,7 @@ namespace Molsketch {
   QPainterPath MolInputItem::shape() const
   {
     QPainterPath path;
-    if (m_molecule)
+    if (molecule())
       path.addRect(m_rect);
     else
       path.addRect(defaultBoundingRect());
@@ -56,7 +60,7 @@ namespace Molsketch {
   {
     Q_UNUSED(option);
     Q_UNUSED(widget);
-    if (m_molecule) {
+    if (molecule()) {
 
       QFontMetrics fm = painter->fontMetrics();
       m_rect = QRectF(0, 0, fm.width(label()), fm.height());
@@ -66,20 +70,35 @@ namespace Molsketch {
     }
   }
 
-  void MolInputItem::dropEvent(QGraphicsSceneDragDropEvent *event)
+  QPointF getRectangleIntersectionVector(const QRectF& rectangle, qreal angle)
   {
-    const MimeMolecule *mimeMol = dynamic_cast<const MimeMolecule*>(event->mimeData());
-    if (!mimeMol)
-      return;
+    if (!rectangle.isValid()) return QPointF(0,0) ;
+    QLineF diagonal(rectangle.center(), rectangle.topRight()) ;
+    diagonal.setLength(diagonal.length()*1.5);
+    diagonal.setAngle(angle);
+    QVector<QLineF> sides ;
+    sides << QLineF(rectangle.bottomRight(), rectangle.topRight())
+          << QLineF(rectangle.topRight(), rectangle.topLeft())
+          << QLineF(rectangle.topLeft(), rectangle.bottomLeft())
+          << QLineF(rectangle.bottomLeft(), rectangle.bottomRight()) ;
+    QPointF interPoint ;
+    foreach(const QLineF side, sides)
+      if (QLineF::BoundedIntersection == side.intersect(diagonal, &interPoint))
+        return interPoint - rectangle.center() ;
+    return QPointF() ;
+  }
 
-    m_molecule = mimeMol->molecule();
-    QRectF rect = m_molecule->boundingRect();
-    setPos(rect.bottomLeft());
+  void MolInputItem::drawTextNearAtom(QPainter *painter, Atom *atom, const QString &text, const Molecule* mol)
+  {
+    QRectF textRect(painter->fontMetrics().boundingRect(text)) ;
+    qreal direction = atom->annotationDirection() ;
+    QPointF offset(-textRect.center()) ;
+    offset += 1.5*getRectangleIntersectionVector(textRect, direction) ;
 
-//    m_molecule->addToGroup(this);
+    if (atom->isDrawn())
+      offset += 1.5*getRectangleIntersectionVector(atom->boundingRect(), direction) ;
 
-    if (scene())
-      scene()->update();
+    painter->drawText(mapFromItem(mol, atom->pos()) + offset, text);
   }
 
 

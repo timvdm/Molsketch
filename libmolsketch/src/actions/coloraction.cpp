@@ -24,7 +24,7 @@
 
 namespace Molsketch {
 
-  colorAction::colorAction(QObject *parent) :
+  colorAction::colorAction(MolScene *parent) :
     abstractItemAction(parent)
   {
     setText(tr("Color...")) ;

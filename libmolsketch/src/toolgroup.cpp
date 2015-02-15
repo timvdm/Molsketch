@@ -12,7 +12,6 @@
 #include "tools/connecttool.h"
 #include "tools/hydrogentool.h"
 #include "tools/chargetool.h"
-#include "tools/electrontool.h"
 #include "tools/reactionarrowtool.h"
 #include "tools/mechanismarrowtool.h"
 

@@ -54,7 +54,8 @@ namespace Molsketch {
        */
       Atom(const QPointF & position = QPointF(), const QString & element = QString(),
           bool implicitHydrogens = true, QGraphicsItem* parent = 0 GRAPHICSSCENEHEADER ) ;
-
+      Atom(const Atom& other GRAPHICSSCENEHEADER); // TODO copy constructor fuer graphicsItem
+      ~Atom() ;
       //@name Inherited drawing methods
       //@{
       /** 
@@ -66,15 +67,17 @@ namespace Molsketch {
        */
       void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget);
       //@}
+      qreal annotationDirection() const ;
 
       // Query methods
       /** Returns whether the atom is drawn. */
       bool isDrawn() const;
       /** Returns whether the atom is hidden. */
       bool isHidden() const;
-
-	  void setColor (QColor col) {m_color = col;}
-	  QColor getColor () {return m_color;}
+      /** set coordinate */
+      void setCoordinates(const QVector<QPointF> &c) ;
+      /** get coordinate */
+      QPolygonF coordinates() const ;
 
       //@name Chemistry methods
       //@{
@@ -219,6 +222,10 @@ namespace Molsketch {
        */
       void computeBoundingRect();
 
+      void initialize(const QPointF & position,
+                      const QString & element,
+                      bool implicitHydrogens);
+
       // Internal representation
       /** Represents the atom's element symbol. */
       QString m_elementSymbol;
@@ -231,11 +238,6 @@ namespace Molsketch {
       int m_userElectrons;
 
       int m_number;
-	  
-	  //color of the atom
-	  QColor m_color;
-	  
-	  //identifies the atom in a molecule. set with molecule::numberAtoms ()
 
       /**
        * Stores the list of atoms connected to this atom by a bond

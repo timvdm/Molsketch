@@ -36,7 +36,7 @@ namespace Molsketch {
   {
     Q_OBJECT
   public:
-    explicit lineWidthAction(QObject *parent = 0);
+    explicit lineWidthAction(MolScene *parent = 0);
 
   private:
     void execute() ;

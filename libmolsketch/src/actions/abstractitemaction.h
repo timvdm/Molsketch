@@ -31,41 +31,43 @@
 #ifndef ABSTRACTITEMACTION_H
 #define ABSTRACTITEMACTION_H
 
-#include <QAction>
+#include "genericaction.h"
 #include <QList>
 
-class QUndoStack ;
+class QGraphicsItem;
 
 namespace Molsketch
 {
   class graphicsItem ;
 
-class abstractItemAction : public QAction
+class abstractItemAction : public genericAction
 {
   Q_OBJECT
 public:
-  explicit abstractItemAction(QObject *parent = 0);
+  explicit abstractItemAction(MolScene *parent = 0);
+  ~abstractItemAction();
+
   /** set an item  (convenience function) */
   void setItem(graphicsItem*) ;
   /** set multiple items for the action (previously set items are discarded) */
-  void setItems(const QList<graphicsItem *> &) ;
+  void setItems(const QList<QGraphicsItem *> &) ;
   /** convenience function */
   void removeItem(graphicsItem*) ;
   /** remove items (e.g. because they have been deleted) */
   void removeItems(const QList<graphicsItem*>&) ;
   /** remove all items */
   void clearItems() ;
+  /** add one item */
+  void addItem(graphicsItem*);
+  void setMinimumItemCount(const int& count);
 protected:
   /** obtain items currently associated with this action */
   QList<graphicsItem*> items() const ;
-  /** obtain undoStack pointer */
-  QUndoStack *undoStack() const ;
-private:
-  QList<graphicsItem *> itemList ;
-  QUndoStack *UndoStack ;
-  void checkItems() ;
   /** will be executed, when action is triggered */
   virtual void execute() = 0 ;
+private:
+  class privateData;
+  privateData *d;
 private slots:
   void gotTrigger() ;
 };

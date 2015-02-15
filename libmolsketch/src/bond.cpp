@@ -22,6 +22,7 @@
 #include <QPainter>
 #include <QMenu>
 #include <QAction>
+#include <QGraphicsSceneMouseEvent>
 
 #include <math.h>
 
@@ -82,7 +83,19 @@ namespace Molsketch {
     qreal w = m_endAtom->x() - m_beginAtom->x();
     qreal h = m_endAtom->y() - m_beginAtom->y();
 
-    return QRectF(mapFromParent(m_beginAtom->pos()) - QPointF(5,5), QSizeF(w+10,h+10));
+    return QRectF(mapFromParent(m_beginAtom->pos()) - QPointF(5,5), QSizeF(w+10,h+10)).normalized();
+  }
+
+  qreal Bond::bondAngle(const Atom *origin) const
+  {
+    if (!m_endAtom || !m_beginAtom) return 0 ;
+    return Molecule::toDegrees(bondAxis().angle() + (origin == endAtom()) * 180.) ;
+  }
+
+  QLineF Bond::bondAxis() const
+  {
+    return QLineF(mapFromParent(m_beginAtom->pos()),
+                  mapFromParent(m_endAtom->pos())) ;
   }
 
   // draw single, double and triple bonds
@@ -329,6 +342,11 @@ namespace Molsketch {
     return QGraphicsItem::itemChange(change, value);
   }
 
+  void Bond::mousePressEvent(QGraphicsSceneMouseEvent *event)
+  {
+    event->ignore();
+  }
+
   QPainterPath Bond::shape() const
   {
     CHECKFORATOMS return QPainterPath() ;
@@ -449,6 +467,20 @@ namespace Molsketch {
     return QLineF(rx1,ry1,rx2,ry2);
   }
 
+  void Bond::setCoordinates(const QVector<QPointF> &c)
+  {
+    if (c.size() != 2) return ;
+    m_beginAtom->setCoordinates(c.mid(0,1)) ;
+    m_endAtom->setCoordinates(c.mid(1,1));
+  }
+
+  QPolygonF Bond::coordinates() const
+  {
+    return QVector<QPointF>()
+        << m_beginAtom->coordinates()
+        << m_endAtom->coordinates() ;
+  }
+
   QXmlStreamAttributes Bond::graphicAttributes() const
   {
     QXmlStreamAttributes attributes ;
@@ -481,9 +513,9 @@ namespace Molsketch {
     QStringList atomIndexes = attributes.value("atomRefs2").toString().split(" ") ;
     if (atomIndexes.size() != 2) return ;
 
-    m_beginAtom = molecule()->atom(atomIndexes.first()) ;
-    m_endAtom = molecule()->atom(atomIndexes.last()) ;
-    m_bondOrder = attributes.value("order").toString().toInt() ;
+    setAtoms(molecule()->atom(atomIndexes.first()),
+             molecule()->atom(atomIndexes.last())) ;
+    setOrder(attributes.value("order").toString().toInt()) ;
     if (attributes.hasAttribute("bondStereo"))
     {
       if (attributes.value("bondStereo") == "W")
@@ -497,5 +529,8 @@ namespace Molsketch {
   {
     return QStringList() << "bondStereo" ;
   }
+
+  qreal Bond::defaultLength = 40 ; // TODO modifiable
+  qreal Bond::defaultAngle = 30 ; // TODO modifiable
 
 } // namespace

@@ -1,0 +1,258 @@
+#include "arrow.h"
+#include <QPen>
+#include <QPainter>
+#include <QGraphicsSceneHoverEvent>
+#include <QDialog>
+#include <QDebug>
+#include <QUndoCommand>
+
+#include "molscene.h"
+#include "math2d.h"
+
+namespace Molsketch {
+
+  class ArrowDialog : public QDialog
+  {
+  public:
+    ArrowDialog(Arrow* parent){}
+  };
+
+  struct Arrow::privateData
+  {
+    Arrow::ArrowType arrowType;
+    QVector<QPointF> points;
+    bool spline ;
+    ArrowDialog *dialog;
+  };
+
+  Arrow::Arrow()
+    : arrowGraphicsItem(),
+      d(new privateData)
+  {
+    d->arrowType = LowerBackward | UpperBackward ;
+    d->points << QPointF(0,0) << QPointF(50.0, 0.0),
+    d->dialog = 0 ;
+    d->spline = true ;
+  }
+
+  Arrow::~Arrow()
+  {
+    if (d->dialog)
+      d->dialog->deleteLater() ;
+    delete d ;
+  }
+
+  void Arrow::setArrowType(Arrow::ArrowType type)
+  {
+    d->arrowType = type ;
+  }
+
+  void Arrow::setCoordinates(const QVector<QPointF> &c)
+  {
+    d->points = c ;
+  }
+
+  QPolygonF Arrow::coordinates() const
+  {
+    return d->points ;
+  }
+
+  inline QPainterPath generateArrowTip(const QPointF& target,
+                                       const QPointF& origin,
+                                       const QPointF& translate,
+                                       bool up,
+                                       bool down,
+                                       qreal scaling)
+  {
+    QPainterPath path ;
+    QPointF line(normalized(target - origin) * scaling) ;
+    QPointF orthogonal(line.y(), -line.x()) ;
+    path.moveTo(target) ;
+    if (up) path.lineTo(target - 15*line + 5*orthogonal);
+    path.lineTo(target - 12*line);
+    if (down) path.lineTo(target - 15*line - 5*orthogonal);
+    path.lineTo(target);
+    path.translate(-translate);
+    return path ;
+  }
+
+  void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+  {
+    Q_UNUSED(option);
+    Q_UNUSED(widget);
+
+    if (d->points.size() < 2) return ;
+
+    // draw the bounding rect if the arrow is selected
+    if (isSelected() /* && !m_hoverBegin && !m_hoverEnd */) {
+      painter->save();
+      painter->setPen(Qt::blue);
+      painter->drawRect(boundingRect());
+      painter->restore();
+    }
+
+    if (d->points.isEmpty()) return ;
+
+    // prepare pen and brush
+    painter->save();
+    QPen pen;
+    pen.setWidthF(lineWidth()) ;
+    pen.setCapStyle(Qt::RoundCap) ;
+    pen.setJoinStyle(Qt::RoundJoin) ;
+    pen.setColor(getColor()) ;
+    painter->setPen(pen) ;
+
+    QPainterPath path ;
+    // draw the line
+    path.moveTo(d->points.first()) ;
+    if (d->spline && !((d->points.size()-1) % 3))
+    {
+      for (int i = 1 ; i+2 < d->points.size() ; i += 3) // TODO: alternatively: straight connection
+        path.cubicTo(d->points[i],
+                     d->points[i+1],
+            d->points[i+2]);
+      if (isSelected()) // Draw help lines
+      {
+        painter->save();
+        painter->setPen(Qt::gray) ;
+        QPointF previous(d->points.first()) ;
+        for (int i = 1 ; i+2 < d->points.size() ; i += 3)
+        {
+          painter->drawLine(previous, d->points[i]) ;
+          painter->drawLine(d->points[i+1], d->points[i+2]);
+          previous = d->points[i+2] ;
+        }
+        painter->restore();
+      }
+    }
+    else
+      foreach(const QPointF p, d->points.mid(1))
+        path.lineTo(p) ;
+
+    path.translate(-pos());
+    painter->drawPath(path) ;
+
+    // draw arrow tips
+    painter->setBrush(pen.color());
+    if ((UpperBackward | LowerBackward) & d->arrowType)
+      painter->drawPath(generateArrowTip(d->points.last(),
+                                         d->points[d->points.size()-2],
+                        pos(),
+                        UpperBackward & d->arrowType,
+                        LowerBackward & d->arrowType,
+                        relativeWidth()
+                        ));
+    if ((UpperForward | LowerForward) & d->arrowType)
+      painter->drawPath(generateArrowTip(d->points.first(),
+                                         d->points[1],
+                        pos(),
+                        LowerForward & d->arrowType,
+                        UpperForward & d->arrowType,
+                        relativeWidth()
+                        )) ;
+
+    // draw red circles when hovering above one of the points
+    painter->setPen(Qt::red);
+    painter->setBrush(QBrush());
+    if (selectedPoint() >= 0 && selectedPoint() < d->points.size())
+        painter->drawEllipse(d->points[selectedPoint()], 5,5) ;
+    painter->restore();
+  }
+
+  QRectF Arrow::boundingRect() const
+  {
+    QRectF result ;
+    foreach(const QPointF& p, d->points)
+      result |= QRectF(p,QSizeF(1,1)) ;
+    return result.adjusted(-10,-10,10,10) ;
+  }
+
+  void Arrow::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+  {
+    Q_UNUSED(event)
+    if (!d->dialog) d->dialog = new ArrowDialog(this) ;
+    d->dialog->show() ;
+  }
+
+  void Arrow::setPoint(const int &index, const QPointF &p)
+  {
+    if (index == d->points.size()) setPos(p) ;
+    if (index > d->points.size() || index < 0) return ;
+    d->points[index] = p ;
+  }
+
+  void Arrow::setPoints(const QPolygonF &polygon)
+  {
+    d->points = polygon;
+  }
+
+  QPointF Arrow::getPoint(const int &index) const
+  {
+    if (index == d->points.size()) return pos() ;
+    if (index > d->points.size() || index < 0) return QPointF() ;
+    return d->points[index] ;
+  }
+
+  QPointF Arrow::lastPoint() const
+  {
+    if (d->points.isEmpty()) return QPointF();
+    return d->points.last();
+  }
+
+  QPointF Arrow::firstPoint() const
+  {
+    if (d->points.isEmpty()) return QPointF();
+    return d->points.first();
+  }
+
+  int Arrow::coordinateCount() const
+  {
+    return d->points.size() + 1 ;
+  }
+
+  void Arrow::swapPoint(const int &index, QPointF &p)
+  {
+    if (index == d->points.size())
+    {
+      QPointF t = pos() ;
+      setPos(p) ;
+      p = t ;
+      return ;
+    }
+    if (index >= 0 && index < d->points.size())
+      qSwap(d->points[index], p) ;
+  }
+
+#define POINTNAMEMACRO(POINTINDEX) "p" + QString::number(i)
+  void Arrow::readGraphicAttributes(const QXmlStreamAttributes &attributes)
+  {
+    d->arrowType = (ArrowType) (attributes.value("arrowType").toInt()) ;
+    QVector<QPointF> newCoords ;
+    int i = 0 ;
+    while (attributes.hasAttribute(POINTNAMEMACRO(i)+"x"))
+      newCoords << QPointF(attributes.value(POINTNAMEMACRO(i)+"x").toDouble(),
+                           attributes.value(POINTNAMEMACRO(i)+"y").toDouble()) ;
+    setCoordinates(newCoords) ;
+  }
+
+  QXmlStreamAttributes Arrow::graphicAttributes() const
+  {
+    QXmlStreamAttributes attributes ;
+    attributes.append("arrowType", QString::number(d->arrowType)) ;
+    int i = 0 ;
+    foreach(const QPointF& p, coordinates())
+    {
+      attributes.append(POINTNAMEMACRO(i) + "x", QString::number(p.x())) ;
+      attributes.append(POINTNAMEMACRO(i) + "y", QString::number(p.y())) ;
+      ++i;
+    }
+    return attributes ;
+  }
+
+  // TODO (maybe) highlight points if covered by other bounding rect (probably in scene class)
+  // TODO shift responsibility for move to item level, remove move tool
+  // TODO move as whole
+  // TODO funny when moved while other tool active
+  // TODO funny when first or last point moved
+  // TODO change arrow tip, coords -> undo
+} // namespace

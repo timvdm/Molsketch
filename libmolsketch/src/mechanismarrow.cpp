@@ -44,12 +44,6 @@ namespace Molsketch {
       m_hoverP4(false),
       m_dialog(0)
   {
-    setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable);
-#if QT_VERSION < 0x050000
-    setAcceptsHoverEvents(true);
-#else
-    setAcceptHoverEvents(true) ;
-#endif
     setZValue(1.0);
   }
   
@@ -66,12 +60,6 @@ namespace Molsketch {
       m_hoverP4(false),
       m_dialog(0)
   {
-    setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable);
-#if QT_VERSION < 0x050000
-    setAcceptsHoverEvents(true);
-#else
-    setAcceptHoverEvents(true) ;
-#endif
     setZValue(1.0);
   }
 
@@ -84,7 +72,21 @@ namespace Molsketch {
       
   void MechanismArrow::setArrowType(ArrowType t)
   {
-    m_arrowType = t;  
+    m_arrowType = t;
+  }
+
+  void MechanismArrow::setCoordinates(const QVector<QPointF> &c)
+  {
+    if (c.size() != 4) return ;
+    m_p1 = c[0] ;
+    m_p2 = c[1] ;
+    m_p3 = c[2] ;
+    m_p4 = c[3] ;
+  }
+
+  QPolygonF MechanismArrow::coordinates() const
+  {
+    return QVector<QPointF>() << m_p1 << m_p2 << m_p3 << m_p4 ;
   }
 
   QRectF MechanismArrow::boundingRect() const

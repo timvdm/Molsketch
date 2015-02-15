@@ -37,7 +37,6 @@ HEADERS += \
     tools/chargetool.h \
     tools/connecttool.h \
     tools/drawtool.h \
-    tools/electrontool.h \
     tools/hydrogentool.h \
     tools/lassotool.h \
     tools/mechanismarrowtool.h \
@@ -45,11 +44,26 @@ HEADERS += \
     tools/movetool.h \
     tools/reactionarrowtool.h \
     tools/rotatetool.h \
-    coloraction.h \
+    actions/coloraction.h \
     graphicsitem.h \
-    linewidthaction.h \
-    abstractitemaction.h \
-    abstractxmlobject.h
+    actions/linewidthaction.h \
+    actions/abstractitemaction.h \
+    abstractxmlobject.h \
+    actions/genericaction.h \
+    actions/multiaction.h \
+    actions/incdecaction.h \
+    actions/connectaction.h \
+    actions/minimizeaction.h \
+    actions/rotateaction.h \
+    actions/transformcommand.h \
+    actions/reactionarrowaction.h \
+    arrow.h \
+    actions/periodictablewidget.h \
+    actions/bondtypewidget.h \
+    actions/drawaction.h \
+    actions/ringaction.h \
+    actions/mechanismarrowaction.h \
+    actions/pluginaction.h
 
 SOURCES += \
     atom.cpp \
@@ -82,7 +96,6 @@ SOURCES += \
     tools/chargetool.cpp \
     tools/connecttool.cpp \
     tools/drawtool.cpp \
-    tools/electrontool.cpp \
     tools/hydrogentool.cpp \
     tools/lassotool.cpp \
     tools/mechanismarrowtool.cpp \
@@ -90,11 +103,26 @@ SOURCES += \
     tools/movetool.cpp \
     tools/reactionarrowtool.cpp \
     tools/rotatetool.cpp \
-    coloraction.cpp \
+    actions/coloraction.cpp \
     graphicsitem.cpp \
-    linewidthaction.cpp \
-    abstractitemaction.cpp \
-    abstractxmlobject.cpp
+    actions/linewidthaction.cpp \
+    actions/abstractitemaction.cpp \
+    abstractxmlobject.cpp \
+    actions/genericaction.cpp \
+    actions/multiaction.cpp \
+    actions/incdecaction.cpp \
+    actions/connectaction.cpp \
+    actions/minimizeaction.cpp \
+    actions/rotateaction.cpp \
+    actions/transformcommand.cpp \
+    actions/reactionarrowaction.cpp \
+    arrow.cpp \
+    actions/periodictablewidget.cpp \
+    actions/bondtypewidget.cpp \
+    actions/drawaction.cpp \
+    actions/ringaction.cpp \
+    actions/mechanismarrowaction.cpp \
+    actions/pluginaction.cpp
 
 FORMS += \
     mechanismarrowdialog.ui \
