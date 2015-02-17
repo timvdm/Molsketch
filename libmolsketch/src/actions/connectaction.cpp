@@ -3,6 +3,7 @@
 #include "mimemolecule.h"
 #include "molscene.h"
 #include <QDrag>
+#include <QGraphicsSceneMouseEvent>
 
 namespace Molsketch {
 

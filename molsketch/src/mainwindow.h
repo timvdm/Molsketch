@@ -55,7 +55,6 @@ namespace Molsketch {
   class Molecule;
   class MolScene;
   class MolView;
-  class ToolGroup;
 }
 
 /**
@@ -205,8 +204,6 @@ protected:
   QListWidget* customLib;
   /** The library widget with common molecules. */
   QListWidget* genericLib;
-
-  Molsketch::ToolGroup *m_toolGroup;
 
   // Widgets
   /** The scene that contains the document's molecules. */

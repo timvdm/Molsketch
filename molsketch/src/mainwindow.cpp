@@ -48,8 +48,6 @@
 #include "fileio.h"
 #include "mollibitem.h"
 #include "itemplugin.h"
-#include "tool.h"
-#include "toolgroup.h"
 
 #include "obabeliface.h"
 
@@ -99,16 +97,13 @@ MainWindow::MainWindow()
   createStatusBar();
   initializeAssistant();
 
-  m_toolGroup = m_scene->toolGroup();
-  QList<Tool*> tools = m_toolGroup->tools();
-
   /*
   QToolBar *toolbar = addToolBar(tr("Tools"));
   toolbar->setObjectName("drawToolBar"); // needed for saveState (window state)
   toolbar->show();
   */
 
-  QHash<QString, QToolBar*> toolbars;
+/*  QHash<QString, QToolBar*> toolbars;
   foreach (Tool *tool, tools) {
     foreach (QAction *action, tool->actions()) {
       QString toolbarName = tool->toolbarName(action);
@@ -121,7 +116,7 @@ MainWindow::MainWindow()
 
       toolbars[toolbarName]->addAction(action);
     }
-  }
+  }*/
 
   // Set icon
   QIcon icon;

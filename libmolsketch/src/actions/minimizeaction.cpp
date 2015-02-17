@@ -2,6 +2,8 @@
 #include "../minimise.h"
 #include "molscene.h"
 
+#include <QGraphicsSceneMouseEvent>
+
 namespace Molsketch {
 
   minimizeAction::minimizeAction(MolScene *scene) :

@@ -32,18 +32,6 @@ HEADERS += \
     smilesitem.h \
     stereocenteritem.h \
     TextInputItem.h \
-    tool.h \
-    toolgroup.h \
-    tools/chargetool.h \
-    tools/connecttool.h \
-    tools/drawtool.h \
-    tools/hydrogentool.h \
-    tools/lassotool.h \
-    tools/mechanismarrowtool.h \
-    tools/minimizetool.h \
-    tools/movetool.h \
-    tools/reactionarrowtool.h \
-    tools/rotatetool.h \
     actions/coloraction.h \
     graphicsitem.h \
     actions/linewidthaction.h \
@@ -91,18 +79,6 @@ SOURCES += \
     smilesitem.cpp \
     stereocenteritem.cpp \
     TextInputItem.cpp \
-    tool.cpp \
-    toolgroup.cpp \
-    tools/chargetool.cpp \
-    tools/connecttool.cpp \
-    tools/drawtool.cpp \
-    tools/hydrogentool.cpp \
-    tools/lassotool.cpp \
-    tools/mechanismarrowtool.cpp \
-    tools/minimizetool.cpp \
-    tools/movetool.cpp \
-    tools/reactionarrowtool.cpp \
-    tools/rotatetool.cpp \
     actions/coloraction.cpp \
     graphicsitem.cpp \
     actions/linewidthaction.cpp \
