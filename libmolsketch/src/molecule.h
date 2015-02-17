@@ -253,7 +253,7 @@ class Molecule : public graphicsItem
     // Internal representation
     /** A list of pointers to the atoms of the molecule. Used as internal reprentation. */
    template<class T>
-   class moleculeItemListClass : public QList<T*>, public abstractXmlObject
+   class moleculeItemListClass : public QList<T*>, public abstractXmlObject // Crash bei foreach
    {
    private:
      Molecule* p ;

@@ -1023,7 +1023,7 @@ void MainWindow::initializeAssistant()
   assistantClient->setArguments(arguments);
 #else
   qDebug() << "Starting assistant with argumetns:" << file.absoluteFilePath() << app ;
-  assistantClient->start(app, QStringList() << QLatin1String("-enableRemoteControl")) ;
+//  assistantClient->start(app, QStringList() << QLatin1String("-enableRemoteControl")) ;
   QTextStream stream(assistantClient) ;
   stream << QLatin1String("register ")
          << file.absoluteFilePath()

@@ -940,8 +940,9 @@ namespace Molsketch {
 
   void Atom::removeBond(Bond *bond)
   {
-    Q_CHECK_PTR(bond);
+    if (!m_bonds.contains(bond)) return ;
     m_bonds.removeAll(bond);
+    if (bond) bond->removeAtom(this) ;
     computeBoundingRect();
   }
 
