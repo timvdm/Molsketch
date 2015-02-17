@@ -137,7 +137,6 @@ class Bond : public graphicsItem
 	Atom* otherAtom(const Atom *atom) const;
 
 	void setAtoms(Atom* A, Atom* B) ;
-	void removeAtom(Atom* a) ;
 
 	/** Returns the molecule this bond is part of. */
 	Molecule* molecule() const;
