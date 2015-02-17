@@ -3,6 +3,7 @@
 #include "molscene.h"
 #include "commands.h"
 #include <QDebug>
+#include <QGraphicsSceneMouseEvent>
 
 namespace Molsketch {
 

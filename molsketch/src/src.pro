@@ -1,4 +1,4 @@
-include(../../findOpenBabel.pri)
+include(../../settings.pri)
 
 TEMPLATE = app
 
@@ -18,7 +18,9 @@ SOURCES += \
     mainwindow.cpp \
     settings.cpp
 
-INCLUDEPATH += ../../libmolsketch/src
+INCLUDEPATH += \
+        ../../libmolsketch/src \
+        ../../obabeliface
 
 LIBS += -L../../lib -lmolsketch
 

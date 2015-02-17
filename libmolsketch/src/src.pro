@@ -1,6 +1,9 @@
 include(../../findOpenBabel.pri)
+include(../../settings.pri)
 
 TEMPLATE = lib
+
+INCLUDEPATH += ../../obabeliface
 
 HEADERS += \
     atom.h \
@@ -10,7 +13,6 @@ HEADERS += \
     electronsystem.h \
     element.h \
     fileio.h \
-    graphicsitemtypes.h \
     graphsymitem.h \
     itemplugin.h \
     math2d.h \
@@ -23,7 +25,6 @@ HEADERS += \
     mollibitem.h \
     molscene.h \
     molview.h \
-    osra.h \
     reactionarrow.h \
     reactionarrowdialog.h \
     residue.h \
@@ -31,18 +32,6 @@ HEADERS += \
     smilesitem.h \
     stereocenteritem.h \
     TextInputItem.h \
-    tool.h \
-    toolgroup.h \
-    tools/chargetool.h \
-    tools/connecttool.h \
-    tools/drawtool.h \
-    tools/hydrogentool.h \
-    tools/lassotool.h \
-    tools/mechanismarrowtool.h \
-    tools/minimizetool.h \
-    tools/movetool.h \
-    tools/reactionarrowtool.h \
-    tools/rotatetool.h \
     actions/coloraction.h \
     graphicsitem.h \
     actions/linewidthaction.h \
@@ -83,25 +72,13 @@ SOURCES += \
     mollibitem.cpp \
     molscene.cpp \
     molview.cpp \
-    osra.cpp \
     reactionarrow.cpp \
     reactionarrowdialog.cpp \
     residue.cpp \
+    ring.cpp \
     smilesitem.cpp \
     stereocenteritem.cpp \
     TextInputItem.cpp \
-    tool.cpp \
-    toolgroup.cpp \
-    tools/chargetool.cpp \
-    tools/connecttool.cpp \
-    tools/drawtool.cpp \
-    tools/hydrogentool.cpp \
-    tools/lassotool.cpp \
-    tools/mechanismarrowtool.cpp \
-    tools/minimizetool.cpp \
-    tools/movetool.cpp \
-    tools/reactionarrowtool.cpp \
-    tools/rotatetool.cpp \
     actions/coloraction.cpp \
     graphicsitem.cpp \
     actions/linewidthaction.cpp \

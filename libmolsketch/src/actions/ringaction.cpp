@@ -1,5 +1,6 @@
 #include "ringaction.h"
 
+#include <QGraphicsSceneMouseEvent>
 #include <QPen>
 #include <bond.h>
 #include <cmath>

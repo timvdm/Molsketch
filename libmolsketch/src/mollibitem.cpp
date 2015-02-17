@@ -25,17 +25,19 @@
 #include "molscene.h"
 #include "mollibitem.h"
 #include "fileio.h"
+#include "obabeliface.h"
 
 namespace Molsketch {
 
   MolLibItem::MolLibItem( Molecule* molecule, const QString & name )
+      : m_molecule(molecule)
   {
     // pre: molecule is a valid molecule
     Q_CHECK_PTR(molecule);
     //Q_ASSERT(!molecule->atoms().isEmpty());
 
     // Copying the molecule
-    m_molecule = new Molecule(molecule);
+//     m_molecule = new Molecule(molecule);
     m_molecule->setPos(0, 0);
 
     // Creating pixmap
@@ -68,8 +70,8 @@ namespace Molsketch {
    * and then check again whether they exist. 
    */
     if (!m_fileName.exists()) {
-      m_fileName.setFile(QDir::homePath() + "/.molsketch/library/custom/" + name + ".mol");
-      Molsketch::saveFile(m_fileName.filePath(),&renderScene);
+      m_fileName.setFile(QDir::homePath() + "/.molsketch/library/custom/" + name + ".msk");
+      writeMskFile(m_fileName.filePath(),&renderScene);
     }
 
     setText(m_fileName.baseName());

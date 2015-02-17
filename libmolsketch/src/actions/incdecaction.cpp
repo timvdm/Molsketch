@@ -1,5 +1,6 @@
 #include "incdecaction.h"
 
+#include <QGraphicsSceneMouseEvent>
 #include <QUndoCommand>
 #include "atom.h"
 #include "bond.h"

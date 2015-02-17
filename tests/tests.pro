@@ -1,6 +1,6 @@
 include(../findOpenBabel.pri)
 
-QT += testlib
+QT += testlib widgets
 
 INCLUDEPATH += ../libmolsketch/src
 

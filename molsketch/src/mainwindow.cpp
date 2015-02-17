@@ -18,6 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
+#include <QLibrary>
 #include <QtGui>
 #include <QToolBar>
 #include <QMessageBox>
@@ -47,13 +48,8 @@
 #include "fileio.h"
 #include "mollibitem.h"
 #include "itemplugin.h"
-#include "osra.h"
-#include "tool.h"
-#include "toolgroup.h"
 
-#include <openbabel/mol.h>
-
-using namespace OpenBabel;
+#include "obabeliface.h"
 
 // widgets
 #include "settings.h"
@@ -72,6 +68,20 @@ using namespace OpenBabel;
 #define GRAPHIC_DEFAULT_FORMAT "Portable Network Graphics (*.png)"
 #define OSRA_GRAPHIC_FILE_FORMATS "All supported types (*.*);;Images (*.png *.bmp *.jpg *.jpeg *.gif *.tif *.tiff);;Documents (*.pdf *.ps)"
 
+#define PREPARELOADFILE \
+  QLibrary obabeliface("obabeliface") ; \
+  obabeliface.load() ; \
+  loadFileFunctionPointer loadFilePtr = 0 ; \
+  if (obabeliface.isLoaded()) \
+    loadFilePtr = (loadFileFunctionPointer) (obabeliface.resolve("loadFile")) ;
+  
+#define PREPARESAVEFILE \
+  QLibrary obabeliface("obabeliface") ; \
+  obabeliface.load() ; \
+  saveFileFunctionPointer saveFilePtr = 0 ; \
+  if (obabeliface.isLoaded()) \
+    saveFilePtr = (saveFileFunctionPointer) (obabeliface.resolve("saveFile")) ;
+
 // Constructor
 
 using namespace Molsketch;
@@ -87,16 +97,13 @@ MainWindow::MainWindow()
   createStatusBar();
   initializeAssistant();
 
-  m_toolGroup = m_scene->toolGroup();
-  QList<Tool*> tools = m_toolGroup->tools();
-
   /*
   QToolBar *toolbar = addToolBar(tr("Tools"));
   toolbar->setObjectName("drawToolBar"); // needed for saveState (window state)
   toolbar->show();
   */
 
-  QHash<QString, QToolBar*> toolbars;
+/*  QHash<QString, QToolBar*> toolbars;
   foreach (Tool *tool, tools) {
     foreach (QAction *action, tool->actions()) {
       QString toolbarName = tool->toolbarName(action);
@@ -109,7 +116,7 @@ MainWindow::MainWindow()
 
       toolbars[toolbarName]->addAction(action);
     }
-  }
+  }*/
 
   // Set icon
   QIcon icon;
@@ -125,21 +132,35 @@ MainWindow::MainWindow()
   QRegExp rx("^[^\\-]");
   QStringList loadedFiles;
 
-  foreach(QString fileName, args.filter(rx)) {
-    if (fileName.endsWith(".msk")) {
+  PREPARELOADFILE
+  bool openBabelNeeded = false ;
+  foreach(QString fileName, args.filter(rx))
+  {
+    if (fileName.endsWith(".msk"))
+    {
       readMskFile(fileName, m_scene);
       loadedFiles << fileName;
-    } else {
-      Molecule *mol = Molsketch::loadFile(fileName);
-      if (mol) {
+    }
+    else
+    {
+      openBabelNeeded = true ;
+      if (!loadFilePtr) continue ;
+      Molecule *mol = loadFilePtr(fileName);
+      if (mol)
+      {
         m_scene->addMolecule(mol);
         loadedFiles << fileName;
-      } else {
+      }
+      else
+      {
         // Display error message if load fails
         QMessageBox::critical(this,tr(PROGRAM_NAME),tr("Error while loading file"),QMessageBox::Ok,QMessageBox::Ok);
       }
     }
   }
+  if (openBabelNeeded)
+    QMessageBox::critical(this, tr(PROGRAM_NAME), tr("Some files could not be loaded because support for OpenBabel is missing.")) ;
+  
   setCurrentFile("");
   if (loadedFiles.count() == 1) setCurrentFile(loadedFiles.first());
 
@@ -149,25 +170,6 @@ MainWindow::MainWindow()
   connect(m_scene,SIGNAL(editModeChange(int)),this,SLOT(updateEditMode(int)));
 
 }
-
-// Molecuul manipulation methods
-// Molecule* MainWindow::newMolecule(const QPointF& position, const QString& element)
-// {
-//   // Creating a new molecule object
-//   Molecule* mol = new Molecule(0,m_scene);
-// 
-//   // Adding the molecule to the scene
-//   //   m_scene->addItem(mol);
-//   mol->setPos(position);
-// 
-//   // Adding a atom to the molecule
-//   mol->addAtom(element,position);
-// 
-//   //   cerr << "Molecule added \n";
-// 
-//   return mol;
-// }
-
 
 // Event handlers
 
@@ -207,72 +209,80 @@ void MainWindow::newFile()
 void MainWindow::open()
 {
   if (maybeSave())
-    {
-//       QFileDialog dialog(this);
-//       dialog.(tr("Open - Molsketch"));
-//       dialog.setFilter(tr(OB_FILE_FORMATS));
-//       dialog.selectFilter(tr("Chemical Markup Language (*.mol)"));
-//       dialog.setFileMode(QFileDialog::ExistingFile);
-//       QString fileName;
-//       if (dialog.exec()) fileName = dialog.selectedFiles()[0];
-      QString fileName = QFileDialog::getOpenFileName(this,tr("Open - Molsketch"), m_lastAccessedPath,
+  {
+    QString fileName = QFileDialog::getOpenFileName(this,tr("Open - Molsketch"), m_lastAccessedPath,
       tr(OB_FILE_FORMATS));
-      if (fileName.isEmpty()) return;
+    if (fileName.isEmpty()) return;
 
-        // Save accessed path
-        m_lastAccessedPath = QFileInfo(fileName).path();
+    // Save accessed path
+    m_lastAccessedPath = QFileInfo(fileName).path();
 
-          // Start a new document
-          m_scene->clear();
+    // Start a new document
+    m_scene->clear();
 
-          Molecule* mol;
-          if (fileName.endsWith(".msk")) {
-             readMskFile(fileName, m_scene);
-             return;
-          } else {
-
-            mol = saveAs3DAct->isChecked() ? Molsketch::loadFile3D(fileName) : Molsketch::loadFile(fileName);
-          }
-
-          if (mol)
-            {
-              // Add molecule to scene
-              if (mol->canSplit())
-                {
-                  QList<Molecule*> molList = mol->split();
-                  foreach(Molecule* mol,molList) m_scene->addItem(mol);
-                }
-              else
-                {
-                  m_scene->addItem(mol);
-                }
-
-              // Updating view
-              setCurrentFile(fileName);
-//               setWindowModified(false);
-            }
-          else
-            {
-              // Display error message if load fails
-              QMessageBox::critical(this,tr(PROGRAM_NAME),tr("Error while loading file"),QMessageBox::Ok,QMessageBox::Ok);
-            }
+    Molecule* mol;
+    PREPARELOADFILE
+    if (fileName.endsWith(".msk"))
+    {
+      readMskFile(fileName, m_scene);
+      return;
     }
+    else if (loadFilePtr)
+    {
+      mol = loadFilePtr(fileName);
+    }
+    else
+    {
+      QMessageBox::critical(this, tr(PROGRAM_NAME), tr("Could not open file. OpenBabel support is missing")) ;
+    }
+
+    if (mol)
+    {
+      // Add molecule to scene
+      if (mol->canSplit())
+      {
+        QList<Molecule*> molList = mol->split();
+        foreach(Molecule* mol,molList)
+          m_scene->addItem(mol);
+      }
+      else
+      {
+        m_scene->addItem(mol);
+      }
+
+      // Updating view
+      setCurrentFile(fileName);
+//               setWindowModified(false);
+    }
+    else
+    {
+      // Display error message if load fails
+      QMessageBox::critical(this,tr(PROGRAM_NAME),tr("Error while loading file"),QMessageBox::Ok,QMessageBox::Ok);
+    }
+  }
 }
 
 bool MainWindow::save()
 {
-  if (m_curFile.isEmpty()) {
+  if (m_curFile.isEmpty())
       return saveAs();
-  } else {
-    if (m_curFile.endsWith(".msk"))
+  if (m_curFile.endsWith(".msk"))
+  {
       writeMskFile(m_curFile, m_scene);
-    else if (saveAs3DAct->isChecked() ? Molsketch::saveFile3D(m_curFile, m_scene) : Molsketch::saveFile(m_curFile, m_scene))	{
-      m_scene->stack()->setClean();
-    } else
-      return false;
-    }
-//   setWindowModified(false);
-  return false;
+      m_scene->stack()->setClean() ;
+      return true ;
+  }
+  PREPARESAVEFILE
+  if (!saveFilePtr)
+  {
+    QMessageBox::critical(this, tr(PROGRAM_NAME),
+                          tr("Saving failed. OpenBabel support unavailable.")) ;
+    return false ;
+  }
+  if (!saveFilePtr(m_curFile, m_scene, saveAs3DAct->isChecked() ? 3 : 2))
+    return false ;
+  m_scene->stack()->setClean();
+  return true ;
 }
 
 bool MainWindow::autoSave()
@@ -284,23 +294,28 @@ bool MainWindow::autoSave()
 
   // Else construct the filename
   if (!fileName.exists())
-   {
-     fileName = QDir::homePath() + tr("/untitled.backup.mdl");
-   }
+    fileName = QDir::homePath() + tr("/untitled.backup.msk");
   else
-   {
-     fileName = QFileInfo(m_curFile).path() + QFileInfo(m_curFile).baseName() +  ".backup." + QFileInfo(m_curFile).completeSuffix();
-   }
-
+    fileName = QFileInfo(m_curFile).path() + QFileInfo(m_curFile).baseName() +  ".backup." + QFileInfo(m_curFile).completeSuffix();
   // And save the file
-  if (saveAs3DAct->isChecked() ? Molsketch::saveFile3D(fileName.absoluteFilePath(), m_scene) : Molsketch::saveFile(fileName.absoluteFilePath(), m_scene)) {
-    statusBar()->showMessage(tr("Document autosaved"), 10000);
-    return true;
+  if (fileName.suffix() == "msk")
+    writeMskFile(fileName.absoluteFilePath(), m_scene) ;
+  else
+  {
+    PREPARESAVEFILE
+    if (!saveFilePtr)
+    {
+      statusBar()->showMessage(tr("Autosave failed! OpenBabel unavailable."), 10000);
+      return false ;
+    }
+    if (!saveFilePtr(fileName.absoluteFilePath(), m_scene, saveAs3DAct->isChecked() ? 3 : 2))
+    {
+      statusBar()->showMessage(tr("Autosave failed!"), 10000);
+      return false;
+    }
   }
-
-  // or display a waring on failure
-  statusBar()->showMessage(tr("Autosave failed!"), 10000);
-  return false;
+  statusBar()->showMessage(tr("Document autosaved"), 10000);
+  return true;
 }
 
 bool MainWindow::saveAs()
@@ -324,25 +339,28 @@ bool MainWindow::saveAs()
   }
   qDebug() << "Trying to save as " << fileName << "\n";
 
-  if (fileName.endsWith(".msk")) {
+  if (fileName.endsWith(".msk"))
+  {
     writeMskFile(fileName, m_scene);
     setCurrentFile(fileName);
-
-
-  // Try to save the document
-  } else if (Molsketch::saveFile(fileName,m_scene))
+    return true ;
+  }
+  else
+  {
+    PREPARESAVEFILE
+    if (!saveFilePtr)
+    {
+      QMessageBox::critical(this, tr(PROGRAM_NAME), tr("OpenBabel support not available. Cannot save in this format.")) ;
+      return false ;
+    }
+    if(saveFilePtr(fileName, m_scene, 2))
     {
       setCurrentFile(fileName);
       m_scene->stack()->setClean();
       return true;
     }
-  else
-    {
-      // Display error message if saving fails
-      QMessageBox::critical(this,tr(PROGRAM_NAME),tr("Invalid name or unknown file type"),QMessageBox::Ok,QMessageBox::Ok);
-      return false;
-    }
-
+  }
+  QMessageBox::critical(this,tr(PROGRAM_NAME),tr("Invalid name or unknown file type"),QMessageBox::Ok,QMessageBox::Ok);
   return false;
 }
 
@@ -350,6 +368,14 @@ bool MainWindow::saveAs()
 
   bool MainWindow::importDoc()
   {
+    QLibrary obabeliface("obabeliface") ;
+    obabeliface.load() ;
+    callOsraFunctionPointer callOsraPtr = (callOsraFunctionPointer) obabeliface.resolve("call_osra") ;
+    if (!callOsraPtr)
+    {
+      QMessageBox::critical(this, tr("Import error"), tr("Could not import: OpenBabel support missing.")) ;
+      return false ;
+    }
     QString fileName = QFileDialog::getOpenFileName(this, tr("Import - molsKetch"), m_lastAccessedPath, tr(OSRA_GRAPHIC_FILE_FORMATS));
 
     if (!fileName.isEmpty()) {
@@ -360,7 +386,7 @@ bool MainWindow::saveAs()
       QProgressBar *pb = new QProgressBar(this);
       pb->setMinimum(0);
       pb->setMaximum(0);
-      Molecule* mol=call_osra(fileName);
+      Molecule* mol=callOsraPtr(fileName);
       if (mol) {
         if (mol->canSplit()) {
           QList<Molecule*> molList = mol->split();
@@ -377,20 +403,6 @@ bool MainWindow::saveAs()
 	return false;
       }
 
-      /*
-      Molecule* mol = Molsketch::loadFile(fileName);
-      if (mol)
-        {
-          m_scene->addMolecule(mol);
-          return true;
-        }
-      else
-        {
-          // Display error message if load fails
-          QMessageBox::critical(this,tr(PROGRAM_NAME),tr("Error while loading file"),QMessageBox::Ok,QMessageBox::Ok);
-          return false;
-        }
-        */
     }
     
     return false;
@@ -537,7 +549,7 @@ void MainWindow::about()
                         "<A>GPL</A>."
                         "<P> Special thanks to: <UL>"
                         "<LI>Prof. Dr. H. Zantema (coach of the initial version)</LI>"
-                        "<LI> Davy van der Vaart (tester)</LI>"
+                        "<LI>Davy van der Vaart (tester)</LI>"
                         "<LI>Frans Visscher (tester)</LI>"
                         "<LI>Carsten Niehaus (reviewer)</LI>"
                         "</UL>Copyright 2007 - 2008, Harm van Eersel"
@@ -847,64 +859,30 @@ void MainWindow::createToolBoxes()
   Molecule* mol;
 
   // Loading generic molecules
-  dir.setPath(ALT_LIB_PATH);
-  for (unsigned int i = 0; i < dir.count(); i++)
+  QStringList pathList ;
+  pathList << ALT_LIB_PATH
+           << QDir::homePath() + "/.molsketch/library"
+           << QApplication::applicationDirPath() + "/../share/molsketch/library"
+           << QApplication::applicationDirPath() + "/library"
+           << ALT_CUSTOM_LIB_PATH
+           << QDir::homePath() + "/.molsketch/library/custom"
+           << QApplication::applicationDirPath() + "/../share/molsketch/library/custom"
+           << QApplication::applicationDirPath() + "/library/custom" ;
+  PREPARELOADFILE
+  if (loadFilePtr)
+  {
+    foreach(const QString& path, pathList)
     {
-      mol = Molsketch::loadFile(dir.filePath(dir[i]));
-      if (mol) genericLib->addItem(new MolLibItem(mol,dir.filePath(dir[i])));
+      dir.setPath(path) ;
+      foreach(const QString& entry, dir.entryList())
+      {
+        mol = loadFilePtr(dir.filePath(entry)) ;
+        if (mol) genericLib->addItem(new MolLibItem(mol, dir.filePath(entry))) ;
+      }
     }
-  
-  dir.setPath(QDir::homePath() + "/.molsketch/library");
-  for (unsigned int i = 0; i < dir.count(); i++)
-    {
-      mol = Molsketch::loadFile(dir.filePath(dir[i]));
-      if (mol) genericLib->addItem(new MolLibItem(mol,dir.filePath(dir[i])));
-    }
-
-  dir.setPath(QApplication::applicationDirPath() + "/../share/molsketch/library");
-  for (unsigned int i = 0; i < dir.count(); i++)
-    {
-      mol = Molsketch::loadFile(dir.filePath(dir[i]));
-      if (mol) genericLib->addItem(new MolLibItem(mol,dir.filePath(dir[i])));
-    }
-
-  dir.setPath(QApplication::applicationDirPath() + "/library");
-  for (unsigned int i = 0; i < dir.count(); i++)
-    {
-      mol = Molsketch::loadFile(dir.filePath(dir[i]));
-      if (mol) genericLib->addItem(new MolLibItem(mol,dir.filePath(dir[i])));
-    }
-
-  // Loading custom molecules
-  dir.setPath(ALT_CUSTOM_LIB_PATH);
-  for (unsigned int i = 0; i < dir.count(); i++)
-    {
-      mol = Molsketch::loadFile(dir.filePath(dir[i]));
-      if (mol) customLib->addItem(new MolLibItem(mol,dir.filePath(dir[i])));
-    }
-  
-  dir.setPath(QDir::homePath() + "/.molsketch/library/custom");
-  for (unsigned int i = 0; i < dir.count(); i++)
-    {
-      mol = Molsketch::loadFile(dir.filePath(dir[i]));
-      if (mol) customLib->addItem(new MolLibItem(mol,dir.filePath(dir[i])));
-    }
-
-  dir.setPath(QApplication::applicationDirPath() + "/../share/molsketch/library/custom");
-  for (unsigned int i = 0; i < dir.count(); i++)
-    {
-      mol = Molsketch::loadFile(dir.filePath(dir[i]));
-      if (mol) customLib->addItem(new MolLibItem(mol,dir.filePath(dir[i])));
-    }
-
-  dir.setPath(QApplication::applicationDirPath() + "/library/custom");
-  for (unsigned int i = 0; i < dir.count(); i++)
-    {
-      mol = Molsketch::loadFile(dir.filePath(dir[i]));
-      if (mol) customLib->addItem(new MolLibItem(mol,dir.filePath(dir[i])));
-    }
-
-
+  }
+  else
+    QMessageBox::critical(this, tr(PROGRAM_NAME), tr("Molecule library could not be loaded because OpenBabel support is missing.")) ;
 
   // Composing customLib
   QHBoxLayout* hLayoutCL = new QHBoxLayout;
@@ -1142,17 +1120,11 @@ void MainWindow::setCurrentFile(const QString &fileName)
   if (m_curFile.isEmpty())
     shownName = tr("untitled.mol");
   else
-    shownName = strippedName(m_curFile);
+    shownName = QFileInfo(m_curFile).fileName();
 
   // Setting the windowtitle
   setWindowTitle(tr("%1[*] - %2").arg(shownName).arg(tr(PROGRAM_NAME)));
 }
-
-QString MainWindow::strippedName(const QString &fullFileName)
-{
-  return QFileInfo(fullFileName).fileName();
-}
-
 
 void MainWindow::editPreferences( )
 {

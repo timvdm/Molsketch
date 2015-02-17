@@ -50,19 +50,12 @@ class QProcess ;
 #endif
 class QSettings;
 class QTimer;
-class OBMol;
 
 namespace Molsketch {
   class Molecule;
   class MolScene;
   class MolView;
-  class ToolGroup;
 }
-
-namespace OpenBabel {
-	class OBMol;
-}
-
 
 /**
  * The main application window of molsKetch.
@@ -181,10 +174,6 @@ protected:
 
   /** Set the current file name to @p fileName. */
   void setCurrentFile(const QString &fileName);
-  /** Return the stripped file name of @p fullFileName. */
-  QString strippedName(const QString &fullFileName);
-  /** Saves the current document as OpenBabel file under the name @p fileName. */
-  bool saveToOB(const QString &fileName);
 
   // Global settings
   /** The path of the molecule library */
@@ -215,8 +204,6 @@ protected:
   QListWidget* customLib;
   /** The library widget with common molecules. */
   QListWidget* genericLib;
-
-  Molsketch::ToolGroup *m_toolGroup;
 
   // Widgets
   /** The scene that contains the document's molecules. */

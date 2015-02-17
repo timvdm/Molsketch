@@ -30,7 +30,6 @@ set(libmolsketch_HDRS
     molscene.h
     molinputitem.h
     molview.h
-    osra.h
     residue.h
     smilesitem.h
 
@@ -94,7 +93,6 @@ set(libmolsketch_SRCS
     fileio.cpp
     minimise.cpp
     TextInputItem.cpp
-    osra.cpp
     electronsystem.cpp
     residue.cpp
     # connect tool items
@@ -106,6 +104,7 @@ set(libmolsketch_SRCS
     smilesitem.cpp
     atomnumberitem.cpp
     stereocenteritem.cpp
+    ring.cpp
     reactionarrowdialog.cpp
     mechanismarrowdialog.cpp
     graphsymitem.cpp

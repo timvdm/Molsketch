@@ -17,67 +17,20 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "molecule.h"
-#include "fileio.h"
-#include "atom.h"
 
 #if QT_VERSION < 0x050000
-#include <QDesktopServices>
+#define STRINGCONVERSION toAscii()
 #else
-#include <QStandardPaths>
+#define STRINGCONVERSION toLatin1()
 #endif
-#include <QProcess>
-#include <QDir>
-#include <QFile>
 
-namespace Molsketch {
-
-  Molecule* call_osra(QString fileName)
-  {
-    int n=0;
 #if QT_VERSION < 0x050000
-    QString tmpresult = QDesktopServices::storageLocation(QDesktopServices::TempLocation) + QDir::separator() + "osra";
+#define GRAPHICSSCENEHEADER , QGraphicsScene * scene = 0
+#define GRAPHICSSCENESOURCE , QGraphicsScene *scene
+#define GRAPHICSSCENEINIT , scene
 #else
-    QString tmpresult = QStandardPaths::writableLocation(QStandardPaths::TempLocation) + QDir::separator() + "osra";
+#define GRAPHICSSCENEHEADER
+#define GRAPHICSSCENESOURCE
+#define GRAPHICSSCENEINIT
 #endif
-    tmpresult += ".sdf";
-    QString command;
-    char *env = getenv("OSRA");
-    if (env != NULL)
-      command = env;
-    else 
-      command = "osra";
-    
-    command += " -f sdf " + fileName + ">" + tmpresult;
 
-    QStringList arguments;
-    arguments << "-f";
-    arguments << "sdf";
-    arguments << fileName;
-    arguments << ">";
-    arguments << tmpresult;
-
-    if (QProcess::execute(command, arguments))
-      return 0;
-
-    Molecule* mol = loadFile(tmpresult);
-    if (mol) {
-      qreal x_avg = 0, y_avg = 0;
-
-      foreach(Atom* atom, mol->atoms()) {
-        x_avg += atom->x();
-        y_avg += atom->y();
-        n++;
-      }
-      if (n > 0) {
-        x_avg /= n;
-        y_avg /= n;
-        foreach(Atom* atom, mol->atoms()) 
-          atom->setPos(atom->x() - x_avg, y_avg - atom->y());
-      }
-    }
-    QFile::remove(tmpresult);
-    return mol;
-  }
-
-}

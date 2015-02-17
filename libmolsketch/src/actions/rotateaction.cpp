@@ -3,6 +3,7 @@
 #include "molscene.h"
 #include "transformcommand.h"
 
+#include <QGraphicsSceneMouseEvent>
 #include <QToolTip>
 
 namespace Molsketch {

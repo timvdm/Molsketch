@@ -23,12 +23,8 @@
 
 #include "element.h"
 
-#include <openbabel/data.h>
-
-OpenBabel::OBElementTable eTable;
-
 namespace Molsketch {
-
+  
   QColor elementColor(int element)
   {
     //@todo: Add more colors....
@@ -44,25 +40,6 @@ namespace Molsketch {
       default:
         return QColor(0, 0, 0);    
     }  
-  }
-
-  QString number2symbol( int number )
-  {
-    return eTable.GetSymbol(number);
-  }
-
-  int symbol2number( const QString &symbol )
-  {
-#if QT_VERSION >= 0x050000
-    return eTable.GetAtomicNum(symbol.toLatin1()) ;
-#else
-    return eTable.GetAtomicNum(symbol.toAscii()) ;
-#endif
-  }
-
-  double weightOfElement( int number )
-  {
-    return  eTable.GetMass(number);
   }
 
   int elementGroup(int element)

@@ -34,18 +34,12 @@ class QListWidgetItem;
 class QTableWidgetItem;
 class QUndoStack;
 
-namespace OpenBabel {
-  class OBMol;
-}
-
 namespace Molsketch {
 
   class Molecule;
   class Atom;
   class Bond;
   class TextInputItem;
-  class MolLibItem;
-  class ToolGroup;
   class genericAction;
 
   class MolSceneOptions
@@ -91,9 +85,7 @@ namespace Molsketch {
       };
 
       /**
-       * Creates a new MolScene with @p toolGroup and @p parent. ToolGroup may be 0 if
-       * the scene is only used for rendering. When interactive behaviour is required,
-       * a ToolGroup should be created first.
+       * Creates a new MolScene with @p parent.
        */
       MolScene(QObject* parent = 0);
       /** 
@@ -102,11 +94,6 @@ namespace Molsketch {
       ~MolScene();
 
       void addResidue (QPointF pos = QPointF (0, 0), QString name = "");	
-
-
-
-      QImage toImage (OpenBabel::OBMol *obmol);
-      Molecule *toMol (OpenBabel::OBMol *obmol);
 
       // Queries
       /** 
@@ -188,11 +175,6 @@ namespace Molsketch {
       /** Access to the stack */
       QUndoStack * stack();
 
-      ToolGroup* toolGroup() const
-      {
-        return m_toolGroup;
-      }
-
       QList<Molsketch::genericAction *> sceneActions() const;
 
       // Advanced queries
@@ -257,15 +239,6 @@ namespace Molsketch {
       /** Generic event handler. Reimplementation for sceneChanged signals. */
       bool event (QEvent* event);
 
-      // Event handlers
-      /** Event handler for mouse press events. */
-      virtual void mousePressEvent(QGraphicsSceneMouseEvent* event);
-      /** Event handler for mouse move events. */
-      virtual void mouseMoveEvent(QGraphicsSceneMouseEvent* event);
-      /** Event handler fot mouse release events. */
-      virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent* event);
-      /** Event handler for double click events. */
-      virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event);
       /** Event handler for keyboard interaction */
       virtual void keyPressEvent(QKeyEvent* keyEvent);
       /** Event handler to display context menu */
@@ -308,15 +281,13 @@ namespace Molsketch {
       /** Stores the current bond width. */
       qreal m_bondWidth;
       /** Stores the current arrow line width. */
-      qreal m_arrowLineWidth ;
+      qreal m_arrowLineWidth ; // TODO add to XML
       /** Stores the current bond order. */
       //int m_bondOrder;
       /** Stores the current bond type. */
       //Bond::BondType m_bondType;
       /** Strores the bond angle. */
       //int m_bondAngle;
-
-      ToolGroup *m_toolGroup;
 
       qreal m_atomSize; //!< Stores the current atom size.
       QFont m_atomSymbolFont; //!< Stores the current atomsymbol font.

@@ -17,37 +17,67 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef MSK_RING_H
-#define MSK_RING_H
-
-#include "atom.h"
+#include <QSet>
+#include "ring.h"
+#include "bond.h"
 
 namespace Molsketch {
-
-  class Molecule;
-
-  /**
-   * Ring class
-   */
-  class Ring
+  
+  QList<Atom*> Ring::atoms() const 
   {
-    friend class Molecule;
-    public:
-      QList<Atom*> atoms() const;
-      int size() const ;
-      QPointF center() const ;
-      
-      int numberOfDoubleBonds() const ;
-      QSet<Bond*> bonds() const ;
-      void refreshBonds() ;
-    protected:
-      Ring() {}
-      void setAtoms(const QList<Atom*> &atoms) ;
-
-    private:
-      QList<Atom*> m_atoms;
-  };
-
+    return m_atoms ;
+  }
+  
+  int Ring::size() const
+  {
+    return m_atoms.size();
+  }
+  
+  QPointF Ring::center() const
+  {
+    QPointF c(0.0, 0.0);
+    foreach (Atom *atom, m_atoms)
+      c += atom->pos();
+    c /= m_atoms.size();
+    return c;
+  }
+  
+  QSet<Bond*> Ring::bonds() const
+  {
+    // Determine "our" bonds
+    QSet<Bond*> ringBonds ;
+    foreach(Atom* atom, m_atoms)
+      foreach(Bond* bond, atom->bonds())
+        if (m_atoms.contains(bond->otherAtom(atom)))
+          ringBonds << bond ;
+    return ringBonds ;
+  }
+  
+  int Ring::numberOfDoubleBonds() const
+  {
+        // Count number of double bonds for this ring
+    int numDoubleBonds = 0 ;
+    foreach(Bond* bond, bonds())
+      if (bond->bondOrder() == 2)
+        ++ numDoubleBonds ;
+    return numDoubleBonds ;
+  }
+  
+  void Ring::refreshBonds()
+  {
+    int numDoubleBonds = numberOfDoubleBonds() ;
+    // compare to other rings of those bonds
+    foreach(Bond* bond, bonds())
+      if (!bond->ring() 
+        || bond->ring()->numberOfDoubleBonds() < numDoubleBonds)
+        bond->setRing(this) ;
+  }
+  
+  void Ring::setAtoms(const QList<Atom*>& atoms)
+  {
+    m_atoms = atoms;
+    refreshBonds() ;
+  }
+  
+  
 } // namespace
-
-#endif

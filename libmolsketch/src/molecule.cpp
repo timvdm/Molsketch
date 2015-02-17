@@ -32,10 +32,6 @@
 
 #include "electronsystem.h"
 
-#include <openbabel/mol.h>
-#include <openbabel/obconversion.h>
-#include <openbabel/obiter.h>
-
 namespace Molsketch {
 
   template <>
@@ -240,7 +236,7 @@ namespace Molsketch {
     //  if (scene()) scene()->addItem(bond);
 
     m_electronSystemsUpdate = true;
-    perceiveRings();
+    refreshRings();
     return bond;
   }
 
@@ -281,6 +277,14 @@ namespace Molsketch {
     return delList;
   }
 
+  QPointF Molecule::graphicalCenterOfMass() const
+  {
+    QPointF com ;
+    foreach(Atom* atom, m_atomList)
+      com += atom->pos() ;
+    return com / m_atomList.size() ;
+  }
+  
   void Molecule::delBond(Bond* bond)
   {
     Q_CHECK_PTR(bond);
@@ -303,7 +307,7 @@ namespace Molsketch {
       scene()->removeItem(bond);
 
     m_electronSystemsUpdate = true;
-    perceiveRings();
+    refreshRings();
     //  bond->undoValency();
     //  /// Superseded by undo
     //delete bond;
@@ -515,21 +519,6 @@ namespace Molsketch {
 
     // Return the formula
     return formula;
-  }
-
-  double Molecule::weight( ) const
-  {
-    //pre: true
-    //ret: weigth of the molecule
-
-    double weight = 0;
-
-    foreach(Atom* atom, m_atomList)
-    {
-      weight += atom->weight();
-    }
-
-    return weight;
   }
 
   QString Molecule::chargeID( ) const
@@ -825,159 +814,25 @@ namespace Molsketch {
     return static_cast<MolScene*>(QGraphicsItem::scene());
   }
 
-  OpenBabel::OBMol* Molecule::OBMol() const
+  void Molecule::refreshRings()
   {
-    // Create the output molecule
-    OpenBabel::OBMol* obmol = new OpenBabel::OBMol;
-    obmol->SetDimension(2);
-
-    QHash<Atom*,OpenBabel::OBAtom*> hash;
-
-    obmol->BeginModify();
-    foreach (Atom* atom, m_atomList) {
-      OpenBabel::OBAtom* obatom = obmol->NewAtom();
-      obatom->SetVector(atom->scenePos().x()/40,atom->scenePos().y()/40,0);
-      std::string element = atom->element().toStdString();
-      obatom->SetAtomicNum(Molsketch::symbol2number(atom->element()));
-      hash.insert(atom,obatom);
-    }
-    foreach (Bond* bond, m_bondList) {
-      Atom* a1 = bond->beginAtom();
-      Atom* a2 = bond->endAtom();
-
-      unsigned int beginIdx = hash.value(a1)->GetIdx();
-      unsigned int endIdx = hash.value(a2)->GetIdx();
-      unsigned int swapIdx = beginIdx;
-      int flags = 0;
-
-      // Setting bondtype
-      switch (bond->bondType()) {
-      case Bond::Wedge:
-        flags |= OB_WEDGE_BOND;
-        break;
-      case Bond::InvertedWedge:
-        flags |= OB_WEDGE_BOND;
-        beginIdx = endIdx;
-        endIdx = swapIdx;
-        break;
-      case Bond::Hash:
-        flags |= OB_HASH_BOND;
-        break;
-      case Bond::InvertedHash:
-        flags |= OB_HASH_BOND;
-        beginIdx = endIdx;
-        endIdx = swapIdx;
-        break;
-      default:
-        break;
-      }
-      obmol->AddBond(beginIdx, endIdx, bond->bondOrder(), flags);
-    }
-    obmol->EndModify();
-
-    return obmol;
-  }
-
-  /**
-   * Helper function to make sure double bonds are drawn in the ring with the 
-   * most double bonds. Looks nicer!
-   */
-  int numDoubleBondsInRing(const Molecule *molecule, Ring *ring)
-  {
-    int count = 0;
-    QList<Atom*> atoms = ring->atoms();
-    for (int i = 0; i < atoms.size(); ++i) {
-      Atom *ringAtom = atoms.at(i);
-
-      Bond *ringBond; 
-      if (i+1 < atoms.size()) {
-        ringBond = molecule->bondBetween(ringAtom, atoms.at(i+1));
-      } else {
-        ringBond = molecule->bondBetween(ringAtom, atoms.at(0));
-      }
-
-      if (ringBond->bondOrder() == 2)
-        count++;
-    }
-
-    return count;
-  }
-
-  using OpenBabel::OBRing;
-
-  void Molecule::perceiveRings()
-  {
-    OpenBabel::OBMol *obmol = OBMol();
-
     // clear ring info
     foreach (Bond *bond, m_bondList)
       bond->setRing(0);
     foreach (Ring *ring, m_rings)
       delete ring;
     m_rings.clear();
-
-    QHash<Bond*, QList<Ring*> > ringBonds;
-
-    std::vector<OBRing*> rings = obmol->GetSSSR();
-    for (std::vector<OBRing*>::iterator r = rings.begin(); r != rings.end(); ++r) {
-      unsigned int ringSize = (*r)->_path.size();
+    
+    // create minimum list of smallest rings
+    QList<Atom*> atomList = m_atomList ;
+    while (!atomList.empty()) {
+      QList<Atom*> minRing = smallestRing(QList<Atom*>() << atomList.takeLast()) ;
+      if (minRing.empty()) continue ; // atom not part of a ring
       Ring *ring = new Ring;
-      QList<Atom*> atoms;
-      for (unsigned int i = 0; i < ringSize; ++i) {
-        Atom *ringAtom = m_atomList.at((*r)->_path[i] - 1);
-
-        Bond *ringBond; 
-        if (i+1 < ringSize) {
-          ringBond = bondBetween(ringAtom, m_atomList.at((*r)->_path[i+1] - 1));
-        } else {
-          ringBond = bondBetween(ringAtom, m_atomList.at((*r)->_path[0] - 1));
-        }
-        
-        if (!ringBonds.contains(ringBond))
-          ringBonds[ringBond] = QList<Ring*>();
-        if (!ringBonds[ringBond].contains(ring))
-          ringBonds[ringBond].append(ring);
-        
-        atoms.append(ringAtom);
-
-
-      }
-
-      ring->setAtoms(atoms);
-      m_rings.append(ring);
+      ring->setAtoms(minRing) ;
+      m_rings << ring ;
     }
-
-    foreach (Bond *bond, ringBonds.keys()) {
-      QList<Ring*> rings = ringBonds.value(bond);
-
-      if (rings.size() == 1) {
-        bond->setRing(rings.at(0));
-      } else {
-        int numDoubleBonds = 0;
-        foreach (Ring *r, rings) {
-          int n = numDoubleBondsInRing(this, r);
-          if (n > numDoubleBonds) {
-            numDoubleBonds = n;
-            bond->setRing(r);
-          }
-        }
-      }
-    }
-
   }
-
-  QString Molecule::smiles() const
-  {
-    OpenBabel::OBConversion conv;
-    if (!conv.SetOutFormat("can"))
-      return QString();
-
-    OpenBabel::OBMol *mol = OBMol();
-    QString smiles = conv.WriteString(mol).c_str();
-    return smiles;
-  }
-
-
 
   bool NumAtomsLessThan(const ElectronSystem *es1, const ElectronSystem *es2)
   {
@@ -1166,6 +1021,25 @@ namespace Molsketch {
   }
   PRODUCECHILDTEMPLATEMACRO(Atom, "atom")
   PRODUCECHILDTEMPLATEMACRO(Bond, "bond")
+  
+  QList<Atom*> Molecule::smallestRing(QList<Atom*> atomList) const // TODO test
+  { // TODO JAVA-style iterators for clarity
+    if (atomList.empty()) return atomList ;
+    int size = INFINITY ;
+    QList<Atom*> ring ;
+    foreach (Atom* next, atomList.last()->neighbours())
+    {
+      if (atomList.size() > 2 && atomList.first() == next) return atomList ;
+      if (atomList.contains(next)) continue ;
+      QList<Atom*> minRing = smallestRing(atomList << next) ;
+      if (minRing.size() < size && !minRing.empty())
+      {
+        size = minRing.size() ;
+        ring = minRing ;
+      }
+    }
+    return ring ;
+  }
 
 
 } // namespace

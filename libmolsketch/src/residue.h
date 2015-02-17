@@ -20,11 +20,9 @@
 #ifndef RESIDUE_H
 #define RESIDUE_H
 
-#include "graphicsitemtypes.h"
-
-#include <QGraphicsItem>
+#include <QGraphicsScene>
 #include <QList>
-#include <qgraphicsscene.h>
+#include "graphicsitem.h"
 
 
 namespace Molsketch {
@@ -42,12 +40,7 @@ namespace Molsketch {
 				 * @param position the position of the new residue
 				 * @param residue the residue string to be displayed.
 				 */
-				Residue(const QPointF & position, const QString & residue, 
-					  QGraphicsItem* parent = 0
-		#if QT_VERSION < 0x050000
-				      , QGraphicsScene *scene = 0
-		#endif
-);
+				Residue(const QPointF & position, const QString & residue, QGraphicsItem* parent = 0 GRAPHICSSCENEHEADER);
 				
 				void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget);
 				QRectF boundingRect() const;
@@ -55,7 +48,7 @@ namespace Molsketch {
 				void setColor (QColor col) {m_color = col;}
 				QColor getColor () {return m_color;}
 				
-        enum { Type = GraphicsItemTypes::ResidueType };
+        enum { Type = graphicsItem::ResidueType };
 				/** Returns the type of the class. Needed fro Qt typecasting. */
 				virtual int type() const {return Residue::Type;};
 				

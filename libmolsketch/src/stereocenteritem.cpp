@@ -16,20 +16,14 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#include <QPainter>
+#include <QDebug>
+#include <QLibrary>
+
+#include "obabeliface.h"
 #include "stereocenteritem.h"
 #include "molscene.h"
 #include "mimemolecule.h"
-
-#include <QPainter>
-#include <QDebug>
-
-#ifdef OPENBABEL2_TRUNK
-#include <openbabel/stereo/stereo.h>
-#include <openbabel/graphsym.h>
-#include <openbabel/mol.h>
-#else
-#include <openbabel/mol.h>
-#endif
 
 namespace Molsketch {
 
@@ -51,40 +45,15 @@ namespace Molsketch {
       return;
     }
 
-    const QList<Atom*> &atoms = mol->atoms();
-    OpenBabel::OBMol *obmol = mol->OBMol();
-    QPointF offset(-5.0, 5.0);
-
-#ifdef OPENBABEL2_TRUNK
-    // need to calculate symmetry first
-    std::vector<unsigned int> symmetry_classes;
-    OpenBabel::OBGraphSym graphsym(obmol);
-    graphsym.GetSymmetry(symmetry_classes);
-
-    //std::vector<unsigned long> atomIds = FindTetrahedralAtoms(obmol, symmetry_classes);
-    OpenBabel::OBStereoUnitSet units = FindStereogenicUnits(obmol, symmetry_classes);
+    QLibrary obabeliface("obabeliface") ;
+    obabeliface.load() ;
+    chiralAtomsFunctionPointer chiralAtomsPtr = (chiralAtomsFunctionPointer) obabeliface.resolve("chiralAtoms") ;
+    if (chiralAtomsPtr)
+      foreach(Atom* atom, chiralAtomsPtr(mol))
+        painter->drawEllipse(mapFromItem(mol, atom->pos()), 10, 10);
+    else
+      painter->drawText(mapFromItem(mol, mol->graphicalCenterOfMass()), "OpenBabel unavailable") ;
     
-    for (unsigned int i = 0; i < units.size(); ++i) {
-      if (units.at(i).type == OpenBabel::OBStereo::Tetrahedral) {
-        OpenBabel::OBAtom *obatom = obmol->GetAtomById(units.at(i).id);
-        painter->drawEllipse(mapFromItem(mol, atoms[obatom->GetIndex()]->pos()), 10, 10);
-      } else 
-      if (units.at(i).type == OpenBabel::OBStereo::CisTrans) {
-        OpenBabel::OBBond *obbond = obmol->GetBondById(units.at(i).id);
-        OpenBabel::OBAtom *obatom1 = obbond->GetBeginAtom();
-        OpenBabel::OBAtom *obatom2 = obbond->GetEndAtom();
-        painter->drawEllipse(mapFromItem(mol, atoms[obatom1->GetIndex()]->pos()), 10, 10);
-        painter->drawEllipse(mapFromItem(mol, atoms[obatom2->GetIndex()]->pos()), 10, 10);
-      } 
- 
-    }
-#else
-    using OpenBabel::OBMolAtomIter;
-    FOR_ATOMS_OF_MOL(atom, obmol)
-      if (atom->IsChiral())
-        painter->drawEllipse(mapFromItem(mol, atoms[atom->GetIdx()-1]->pos()), 10, 10);
-#endif
-
     // default behavious (draw the label())
     MolInputItem::paint(painter, option, widget);
     painter->restore();

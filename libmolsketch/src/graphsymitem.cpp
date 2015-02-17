@@ -22,13 +22,9 @@
 
 #include <QPainter>
 #include <QDebug>
+#include <QLibrary>
 
-#ifdef OPENBABEL2_TRUNK
-#include <openbabel/graphsym.h>
-#else
-#include <openbabel/mol.h>
-#include <openbabel/canon.h>
-#endif
+#include "obabeliface.h"
 
 namespace Molsketch {
 
@@ -38,45 +34,37 @@ namespace Molsketch {
 
   void GraphSymItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
   {
-    Molecule *mol = molecule();
-    
-    painter->save();
-    painter->setPen(Qt::red);
+	Molecule *mol = molecule();
 
-    if (!mol) {
-      // not connected: default behaviour (draw connectable box)
-      MolInputItem::paint(painter, option, widget);
-      painter->restore();
-      return;
-    }
+	painter->save();
+	painter->setPen(Qt::red);
 
-    const QList<Atom*> &atoms = mol->atoms();
+	if (!mol) {
+	  // not connected: default behaviour (draw connectable box)
+	  MolInputItem::paint(painter, option, widget);
+	  painter->restore();
+	  return;
+	}
 
-    OpenBabel::OBMol *obmol = mol->OBMol();
-    std::vector<unsigned int> symmetry_classes;
+	const QList<Atom*> &atoms = mol->atoms();
 
-#ifdef OPENBABEL2_TRUNK      
-    OpenBabel::OBGraphSym graphsym(obmol);
-    graphsym.GetSymmetry(symmetry_classes);
-#else
-    OpenBabel::OBBitVec fragatoms(obmol->NumAtoms());
+	std::vector<unsigned int> symmetry_classes;
+	QLibrary obabeliface("obabeliface") ;
+	obabeliface.load() ;
+	getSymmetryClassesFunctionPointer getSymmetryClassesPtr = (getSymmetryClassesFunctionPointer) obabeliface.resolve("getSymmetryClasses") ;
+	if (getSymmetryClassesPtr)
+	{
+	  getSymmetryClassesPtr(mol, symmetry_classes) ;
+	  for (int i = 0; i < atoms.size(); ++i) {
+		painter->drawText(mapFromItem(mol, atoms[i]->pos()), QString::number(symmetry_classes.at(i)));
+	  }
+	}
+	else
+	  painter->drawText(mapFromItem(mol, mol->graphicalCenterOfMass()), "OpenBabel unavailable") ;
 
-    using OpenBabel::OBMolAtomIter;
-    FOR_ATOMS_OF_MOL(a, obmol)
-      fragatoms.SetBitOn(a->GetIdx());
-
-
-    std::vector<unsigned int> canonical_labels;
-    OpenBabel::CanonicalLabels(obmol, symmetry_classes, canonical_labels);
-#endif
-
-    int i = 0 ;
-    foreach(Atom* atom, atoms)
-      drawTextNearAtom(painter, atom, QString::number(symmetry_classes.at(i)), mol);
-
-    // default behavious (draw the label())
-    MolInputItem::paint(painter, option, widget);
-    painter->restore();
+	// default behaviour (draw the label())
+	MolInputItem::paint(painter, option, widget);
+	painter->restore();
   }
 
   GraphSymItemFactory theGraphSymItemFactory;

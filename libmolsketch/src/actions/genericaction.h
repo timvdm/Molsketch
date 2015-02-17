@@ -2,7 +2,6 @@
 #define GENERICACTION_H
 
 #include <QAction>
-#include "tool.h"
 
 class QGraphicsSceneMouseEvent ;
 class QUndoStack ;
@@ -11,7 +10,7 @@ namespace Molsketch {
 
   class MolScene ;
 
-  class genericAction : public QAction, public Tool // TODO obsolete Tool
+  class genericAction : public QAction
   {
     Q_OBJECT
   public:
@@ -22,7 +21,7 @@ namespace Molsketch {
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent* event) { Q_UNUSED(event) }
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) { Q_UNUSED(event) }
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) { Q_UNUSED(event) }
-
+    virtual void leaveSceneEvent(QEvent *event) { Q_UNUSED(event) }
     // OBSOLETE
     QList<QAction*> actions() ;
     QString toolbarName(QAction *action) ;
@@ -30,6 +29,7 @@ namespace Molsketch {
   protected:
     MolScene *scene() const ;
     QUndoStack* undoStack() const ;
+    bool eventFilter(QObject *object, QEvent *event);
   public: // TODO Should be protected
     virtual void deactivated() {}
     virtual void activated() {}

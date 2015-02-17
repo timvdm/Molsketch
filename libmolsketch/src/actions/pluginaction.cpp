@@ -3,6 +3,8 @@
 #include "molscene.h"
 #include "commands.h"
 
+#include <QGraphicsSceneMouseEvent>
+
 namespace Molsketch {
 
   struct pluginAction::privateData

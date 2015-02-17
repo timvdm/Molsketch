@@ -1,5 +1,5 @@
 message("Welcome to molsKetch build")
-message("current dir: $$PWD COPY $(COPY)")
+message("current dir: $$PWD")
 
 TEMPLATE = subdirs
 CONFIG += ordered
@@ -8,6 +8,7 @@ CONFIG += ordered
 SUBDIRS += \
 	libmolsketch/src \
 	molsketch/src \
+	obabeliface \
 	tests
 
 program.files=bin/molsketch

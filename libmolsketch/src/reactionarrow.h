@@ -19,7 +19,6 @@
 #ifndef REACTIONARROW_H
 #define REACTIONARROW_H
 
-#include "graphicsitemtypes.h"
 #include <QXmlStreamWriter>
 
 #include "graphicsitem.h"
@@ -35,7 +34,7 @@ namespace Molsketch {
   {
     public:
       // Public enums
-      enum { Type = GraphicsItemTypes::ReactionArrowType };
+      enum { Type = graphicsItem::ReactionArrowType };
       /**
        * @return the QGraphicsItem type of the class. Needed for Qt type casting.
        */

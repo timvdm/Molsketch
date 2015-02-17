@@ -23,15 +23,9 @@
 
 namespace Molsketch {
 	Residue::Residue (const QPointF & position, const QString & residue, 
-					  QGraphicsItem* parent
-#if QT_VERSION < 0x050000
-			       , QGraphicsScene *scene
-#endif
-			       ) : QGraphicsItem (parent
-#if QT_VERSION < 0x050000
-						  , scene
-#endif
-						  ), residueString (residue) {
+					  QGraphicsItem* parent GRAPHICSSCENESOURCE)
+        : QGraphicsItem (parent GRAPHICSSCENEINIT),
+          residueString (residue) {
     //pre: position is a valid position in scene coordinates
     setPos(position);
 	setColor (QColor (0, 0, 255));

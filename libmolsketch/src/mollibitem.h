@@ -40,7 +40,8 @@ class MolLibItem : public QListWidgetItem
   public:
   /** Creates a new library item.
    *
-   * @param molecule a pointer to the molecule that should be copied to the library
+   * @param molecule a pointer to the molecule to base the item on
+   * (MolLibItem assumes ownership of that molecule)
    * @param name the name of the library item
    */
   MolLibItem(Molecule* molecule, const QString & name);
