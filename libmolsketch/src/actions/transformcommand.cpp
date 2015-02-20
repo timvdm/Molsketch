@@ -1,6 +1,7 @@
 #include "graphicsitem.h"
 
 #include "transformcommand.h"
+#include "molscene.h"
 
 namespace Molsketch {
 
@@ -46,6 +47,7 @@ namespace Molsketch {
     QVector<QPointF> temp(d->item->coordinates()) ;
     d->item->setCoordinates(d->coordinates) ;
     d->coordinates.swap(temp);
+    if (d->item->scene()) d->item->scene()->update();
   }
 
   bool transformCommand::mergeWith(const QUndoCommand *other)

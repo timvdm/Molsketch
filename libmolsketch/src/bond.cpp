@@ -71,7 +71,6 @@ namespace Molsketch {
   
   Bond::~Bond()
   {
-    setAtoms(0,0);
   }
 
   // Inherited methods

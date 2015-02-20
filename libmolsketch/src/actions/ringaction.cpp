@@ -46,7 +46,7 @@ namespace Molsketch {
     void insertRing(QUndoStack* undostack, bool aromatic)
     {
       undostack->beginMacro(tr("Add molecule"));
-      Molecule *newMolecule = new Molecule();
+      Molecule *newMolecule = new Molecule(); // TODO redo (this has turned ugly)
       undostack->push(new Commands::AddItem(newMolecule, parent->scene()));
 
       // create/find atoms
@@ -54,14 +54,19 @@ namespace Molsketch {
       foreach(const QPointF& hintPoint, hintRingPoints)
       {
         QPointF vertex(hintMoleculeItems.mapToScene(hintPoint));
-        Atom *atom = parent->scene()->atomAt(vertex); // TODO check (no mapping)
+        Atom *atom = parent->scene()->atomAt(vertex); // TODO check (no mapping) TODO
         if (!atom)
         {
           atom = new Atom(vertex, "C", autoAddHydrogen);
           undostack->push(new Commands::AddAtom(atom, newMolecule));
         }
-        else
-          *newMolecule += *(atom->molecule()); // TODO remove old molecule?
+        else if (atom->molecule() != newMolecule)
+        {
+          int index = newMolecule->atoms().size() + atom->molecule()->atomIndex(atom);
+          *newMolecule += *(atom->molecule());
+          undostack->push(new Commands::DelItem(atom->molecule()));
+          atom = newMolecule->atom(index);
+        }
         ringAtoms << atom;
       }
 
@@ -79,7 +84,11 @@ namespace Molsketch {
         ringBonds << bond;
       }
 
-      if (!aromatic) return;
+      if (!aromatic)
+      {
+        undostack->endMacro();
+        return;
+      }
       // create aromatic bonds
       // TODO check!
       foreach(Bond* bond, ringBonds)
@@ -90,6 +99,7 @@ namespace Molsketch {
         if (!canBeDouble) continue;
         undostack->push(new Commands::IncOrder(bond));
       }
+      undostack->endMacro();
     }
 
     void alignRingWithAtom(Atom *atom) // TODO partial merge with alignRingWithBond()
@@ -157,6 +167,7 @@ namespace Molsketch {
     : multiAction(scene),
       d(new privateData(this))
   {
+    setText(tr("Ring"));
     QAction *newAction = 0 ;
     QString c;
     ADDRINGSUBACTION("Cyclopropyl", 3);

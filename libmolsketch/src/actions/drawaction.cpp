@@ -174,7 +174,7 @@ namespace Molsketch {
         && endAtom)
     {
       if (beginAtom == endAtom) return; // or the same (here: alternatively insert additional neighbor TODO )
-      if (beginAtom->neighbours().contains(endAtom)) return;
+      if (beginAtom->neighbours().contains(endAtom)) return; // TODO change bond type
     }
 
     // Ok, let's get to business...

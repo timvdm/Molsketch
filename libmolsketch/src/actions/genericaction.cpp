@@ -89,6 +89,7 @@ namespace Molsketch{
     if (!molscene || !molscene->stack()) return;
     molscene->stack()->endMacro();
   }
+
   void genericAction::activationSlot(const bool &b)
   {
     if (!scene()) return;

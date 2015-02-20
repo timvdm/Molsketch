@@ -90,8 +90,6 @@ namespace Molsketch {
 
   Atom::~Atom()
   {
-    foreach (Bond* bond, m_bonds)
-      delete bond ; // TODO rethink
   }
 
 
