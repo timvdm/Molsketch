@@ -99,7 +99,7 @@ namespace Molsketch {
     refreshIcon(); // TODO
     if (parentWidget())
       qobject_cast<QMainWindow*>(parentWidget())->addDockWidget(Qt::LeftDockWidgetArea, d->dock);
-    d->dock->show();
+    d->dock->hide();
   }
 
   drawAction::~drawAction()
@@ -121,43 +121,9 @@ namespace Molsketch {
 
     // TODO move to bond!!
     //    Bond *clickedBond = scene()->bondAt(downPos);
-    Atom *clickedAtom = scene()->atomAt(downPos);
+//    Atom *clickedAtom = scene()->atomAt(downPos);
 
-    // Check for bond click
-    //    if (clickedBond && !clickedAtom) {
-    //      if (m_hintMoleculeItems)
-    //        return;
-
-    //      switch (m_bondType) {
-    //        case Bond::InPlane:
-    //          if (clickedBond->bondType() == Bond::InPlane)
-    //            undostack->push(new IncOrder(clickedBond, QObject::tr("Change Bond Order")));
-    //          else
-    //            undostack->push(new SetBondType(clickedBond, Bond::InPlane));
-    //          break;
-    //        case Bond::Wedge:
-    //          if (clickedBond->bondType() == Bond::Wedge)
-    //            undostack->push(new SetBondType(clickedBond, Bond::InvertedWedge, QObject::tr("Change Wedge Bond")));
-    //          else
-    //            undostack->push(new SetBondType(clickedBond, Bond::Wedge, QObject::tr("Change Wedge Bond")));
-    //          break;
-    //        case Bond::Hash:
-    //          if (clickedBond->bondType() == Bond::Hash)
-    //            undostack->push(new SetBondType(clickedBond, Bond::InvertedHash, QObject::tr("Change Hash Bond")));
-    //          else
-    //            undostack->push(new SetBondType(clickedBond, Bond::Hash, QObject::tr("Change Hash Bond")));
-    //          break;
-    //        case Bond::CisOrTrans:
-    //          undostack->push(new SetBondType(clickedBond, Bond::CisOrTrans, QObject::tr("Change Hash Bond")));
-    //          break;
-    //        case Bond::WedgeOrHash:
-    //          undostack->push(new SetBondType(clickedBond, Bond::WedgeOrHash, QObject::tr("Change Hash Bond")));
-    //          break;
-    //        default:
-    //          break;
-    //      };
-
-    //    return;
+    // TODO Check for bond click
 
     // Show hinting
     // hint points
@@ -171,44 +137,12 @@ namespace Molsketch {
     d->hintLine.setLine(QLineF(downPos, event->scenePos()));
     scene()->addItem(&(d->hintLine)); // TODO attn: scene takes ownership...
     d->hintLine.setVisible(true);
-
-    if (!clickedAtom)
-    {
-      //
-      // mousePress in empty space
-      //
-//      if (d->hintMoleculeItems) {
-//        // insert the hinted molecule if it exists
-//        if (d->hintRingPoints.isEmpty())
-//        {
-//          Molecule* mol = new Molecule;
-//          mol->setPos(downPos);
-//          undoStack()->beginMacro(tr("Add Molecule"));
-//          undoStack()->push(new Commands::AddItem(mol, scene()));
-
-//          Q_CHECK_PTR(d->hintMolecule);
-//          foreach (Atom *hintAtom, d->hintMolecule->atoms())
-//            undoStack()->push(
-//                  new Commands::AddAtom(
-//                    new Atom(hintAtom->scenePos(),
-//                             hintAtom->element(),
-//                             d->autoAddHydrogen),
-//                    mol));
-//          undoStack()->endMacro();
-//        }
-      ;
-      }
-      else
-        scene()->addItem(new Atom(downPos,
-                                  d->periodicTable->currentElement(),
-                                  d->autoAddHydrogen)); // TODO how does this end up on the undoStack?
   }
 
   void drawAction::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
   {
      // Check hinting conditions
     if (!(event->buttons() & Qt::LeftButton)) return;
-    if (!scene()->atomAt(event->buttonDownScenePos(Qt::LeftButton))) return;
 
     // Set hinting
     d->hintLine.setLine(QLineF(
@@ -216,109 +150,91 @@ namespace Molsketch {
                           d->nearestPoint(event->scenePos())));
   }
 
+  // TODO test cases: insert single atom on blank
+  //                  insert atom with existing beginAtom
+  //                  insert atom with existing endAtom
+  //                  link two existing atoms from different molecules
+  //                  link two existing atoms from the same molecule
   void drawAction::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
-  { // TODO rewrite
+  {
     // Remove the hinting
     if (d->hintLine.scene())
       d->hintLine.scene()->removeItem(&(d->hintLine));
     if (d->hintPointsGroup.scene())
       d->hintPointsGroup.scene()->removeItem(&(d->hintPointsGroup));
 
-    // Get position
-    QPointF downPos = event->buttonDownScenePos(event->button());
-    QPointF upPos = d->nearestPoint(event->scenePos());
-    // Get pointer the undo stack
-    QUndoStack *undostack = undoStack();
+    // Get atoms
+    QPointF beginPos = event->buttonDownScenePos(event->button());
+    Atom *beginAtom = scene()->atomAt(beginPos);
+    QPointF endPos = event->scenePos();
+    Atom *endAtom = scene()->atomAt(endPos);
 
-    // Check possible targets
-    Atom* a1 = scene()->atomAt(downPos);
-    Atom* a2 = scene()->atomAt(upPos);
-    Bond* b = scene()->bondAt(downPos);
-    Molecule* m1 = a1 ? a1->molecule() : 0;
-    Molecule* m2 = a2 ? a2->molecule() : 0;
-
-    if (a1 != a2)
-      undostack->beginMacro("Draw");
-
-    // Make sure both molecules are valid
-    if (m1 && !m2 && a2) {
-      m2 = m1;
-      a2->setMolecule(m2);
-      undostack->push(new Commands::AddAtom(a2, m2));
-    } else if (m2 && !m1 && a1) {
-      m1 = m2;
-      a1->setMolecule(m1);
-      undostack->push(new Commands::AddAtom(a1, m1));
+    // check if they are already connected
+    if (beginAtom
+        && endAtom)
+    {
+      if (beginAtom == endAtom) return; // or the same (here: alternatively insert additional neighbor TODO )
+      if (beginAtom->neighbours().contains(endAtom)) return;
     }
 
-    if (!a1 && !b) return;
-    if (b && !a1) return;
+    // Ok, let's get to business...
+    attemptBeginMacro(tr("Draw"));
+    Molecule *newMolecule = new Molecule();
+    attemptUndoPush(new Commands::AddItem(newMolecule, scene()));
 
-    // Check for atom release
-    if (a2) {
+    // At this point: check if no first atom exists, then insert new and add to molecule
+    // otherwise merge first atom's molecule into newly created molecule.
+    if (!beginAtom)
+    {
+      beginAtom = new Atom(beginPos,
+                          d->periodicTable->currentElement(),
+                          d->autoAddHydrogen);
+      attemptUndoPush(new Commands::AddAtom(beginAtom, newMolecule));
+    }
+    else
+    {
+      *newMolecule += *(beginAtom->molecule());
+      attemptUndoPush(new Commands::DelItem(beginAtom->molecule()));
+      beginAtom = scene()->atomAt(beginPos); // TODO redo this...
+      endAtom = scene()->atomAt(endPos); // Refresh...
+    }
 
-      // Check for atom click
-      if (a1 == a2) {
-        if (a1->element() != d->periodicTable->currentElement()) {
-          // Press + Release with different symbol -> Change Element
-          undostack->push(new Commands::ChangeElement(a1, d->periodicTable->currentElement(), QObject::tr("Change Element")));
-        } else {
-          if (!m1) {
-            m1 = new Molecule;
-            //m_stack->beginMacro("Add Atom");
-            undostack->push(new Commands::AddItem(m1, scene()));
-            undostack->push(new Commands::AddAtom(a1,m1));
-            undostack->endMacro();
-          }
-        }
-        return;
+    // Now: If we don't have an end atom, check that it would not coincide with the
+    // atom we just inserted, then insert and add to molecule
+    if (!endAtom && scene()->atomAt(endPos) != beginAtom)
+    {
+      endAtom = new Atom(d->nearestPoint(endPos),
+                         d->periodicTable->currentElement(),
+                         d->autoAddHydrogen);
+      attemptUndoPush(new Commands::AddAtom(endAtom, newMolecule));
+    }
+
+    // If we have an end atom at this point...
+    if (endAtom)
+    {
+      // make sure it's part of the same molecule
+      // (It may already be, if endAtom and beginAtom were initially part of the same molecule)
+      if (endAtom->molecule() != newMolecule)
+      {
+        *newMolecule += *(endAtom->molecule());
+        attemptUndoPush(new Commands::DelItem(endAtom->molecule())); // TODO: new function "absorb other molecule"
+        endAtom = scene()->atomAt(endPos); // Refresh...
       }
-
-
-      // Check for merge
-      if (m1 && m2 && (m1 != m2)) {
-        undostack->push(new Commands::MergeMol(m1, m2, m1));
-        a1 = m1->atomAt(a1->scenePos());
-        a2 = m1->atomAt(a2->scenePos());
-        m1->setFocus();
-      }
-
-      // Adding bond
-      Bond* bond = new Bond(a1,a2);
-      undostack->push(new Commands::AddBond(bond));
-      for (int i = 0; i < d->bondType->bondOrder() - 1; i++)
-        undostack->push(new Commands::IncOrder(bond));
-      undostack->push(new Commands::SetBondType(bond, d->bondType->legacyType())); // TODO bond anpassen.
-
-      // End adding macro
-      undostack->endMacro();
-      return;
+      // Add bond
+      attemptUndoPush(new Commands::AddBond(new Bond(beginAtom, endAtom,
+                                                     d->bondType->bondOrder(),
+                                                     d->bondType->legacyType())));
     }
 
-    // Else scene release
-    //m_stack->beginMacro(tr("Add Atoms"));
-    if (!m1) {
-      m1 = new Molecule;
-      undostack->push(new Commands::AddItem(m1,scene()));
-      undostack->push(new Commands::AddAtom(a1,m1));
-    }
-
-    Atom* atom = new Atom(upPos,d->periodicTable->currentElement(),d->autoAddHydrogen);
-    undostack->push(new Commands::AddAtom(atom,m1));
-    Bond* bond = new Bond(a1,atom);
-    undostack->push(new Commands::AddBond(bond));
-    for (int i = 0; i < d->bondType->bondOrder() - 1; i++)
-      undostack->push(new Commands::IncOrder(bond));
-    undostack->push(new Commands::SetBondType(bond, d->bondType->legacyType()));
-
-    undostack->endMacro();
+    // That should've been it...
+    attemptEndEndMacro();
 
     scene()->update();
 
   }
 
   void drawAction::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
-  {
+  {// TODO make part of mouseRelease (see above)
     QUndoStack *stack = undoStack();
     QPointF downPos = event->buttonDownScenePos(event->button());
 
