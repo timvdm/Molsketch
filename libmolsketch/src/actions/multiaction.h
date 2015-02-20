@@ -19,6 +19,7 @@ namespace Molsketch {
     privateData *d ;
   private slots:
     void changeIcon();
+    void checkActivation(QAction *subaction);
   };
 
 } // namespace

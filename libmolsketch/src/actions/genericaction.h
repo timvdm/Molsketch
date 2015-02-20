@@ -5,6 +5,7 @@
 
 class QGraphicsSceneMouseEvent ;
 class QUndoStack ;
+class QUndoCommand;
 
 namespace Molsketch {
 
@@ -30,6 +31,9 @@ namespace Molsketch {
     MolScene *scene() const ;
     QUndoStack* undoStack() const ;
     bool eventFilter(QObject *object, QEvent *event);
+    void attemptUndoPush(QUndoCommand* command) ;
+    void attemptBeginMacro(const QString& text);
+    void attemptEndEndMacro();
   public: // TODO Should be protected
     virtual void deactivated() {}
     virtual void activated() {}

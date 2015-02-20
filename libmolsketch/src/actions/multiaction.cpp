@@ -21,7 +21,7 @@ namespace Molsketch {
     connect(d->actionGroup, SIGNAL(triggered(QAction*)),
             this, SLOT(changeIcon()));
     connect(d->actionGroup, SIGNAL(triggered(QAction*)),
-            this, SLOT(trigger()));
+            this, SLOT(checkActivation(QAction*)));
   }
 
   multiAction::~multiAction()
@@ -57,6 +57,11 @@ namespace Molsketch {
     QIcon activeIcon = d->actionGroup->checkedAction()->icon();
     if (!activeIcon.isNull())
       setIcon(activeIcon);
+  }
+
+  void multiAction::checkActivation(QAction *subaction)
+  {
+    setChecked(subaction && subaction->isChecked());
   }
 
 }

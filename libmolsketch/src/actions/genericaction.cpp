@@ -9,6 +9,7 @@ namespace Molsketch{
   genericAction::genericAction(MolScene *scene)
     : QAction(scene)
   {
+    setProperty("exclusiveAction",1);
     setCheckable(true) ;
     connect(this, SIGNAL(toggled(bool)), this, SLOT(activationSlot(bool))) ;
   }
@@ -39,6 +40,7 @@ namespace Molsketch{
   bool genericAction::eventFilter(QObject *object, QEvent *event)
   {
     if (scene() != object) return false;
+    event->ignore();
     switch(event->type())
     {
       case QEvent::GraphicsSceneMousePress:
@@ -59,13 +61,49 @@ namespace Molsketch{
       default: ;
     }
     if (event->isAccepted()) return true;
-    return QAction::eventFilter(object, event);
+    return false;
   }
 
+  void genericAction::attemptUndoPush(QUndoCommand *command)
+  {// TODO merge with graphisitem
+    MolScene *molscene = dynamic_cast<MolScene*>(scene());
+    if (!molscene || !molscene->stack())
+    {
+      command->redo();
+      delete command;
+    }
+    else
+      molscene->stack()->push(command) ;
+  }
+
+  void genericAction::attemptBeginMacro(const QString &text)
+  {
+    MolScene *molscene = dynamic_cast<MolScene*>(scene());
+    if (!molscene || !molscene->stack()) return;
+    molscene->stack()->beginMacro(text);
+  }
+
+  void genericAction::attemptEndEndMacro()
+  {
+    MolScene *molscene = dynamic_cast<MolScene*>(scene());
+    if (!molscene || !molscene->stack()) return;
+    molscene->stack()->endMacro();
+  }
   void genericAction::activationSlot(const bool &b)
   {
     if (!scene()) return;
-    if (b) scene()->installEventFilter(this);
+    if (b)
+    {
+      int exclusivity = property("exclusiveAction").toInt();
+      if (exclusivity)
+        foreach(QAction* other, scene()->findChildren<QAction*>())
+          if (other != this
+              && other->isCheckable()
+              && other->isChecked()
+              && other->property("exclusiveAction").toInt())
+            other->setChecked(false);
+      scene()->installEventFilter(this);
+    }
     else   scene()->removeEventFilter(this);
   }
 

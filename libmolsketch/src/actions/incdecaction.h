@@ -37,12 +37,6 @@ namespace Molsketch {
   public:
     explicit hydrogenAction(MolScene *scene) ;
   } ;
-
-  class bondOrderAction : public incDecAction<Atom>
-  {
-  public:
-    explicit bondOrderAction(MolScene *scene) ;
-  } ;
 } //namespace
 
 #endif // INCDECACTION_H
