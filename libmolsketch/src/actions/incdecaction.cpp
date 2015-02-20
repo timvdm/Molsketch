@@ -128,6 +128,7 @@ namespace Molsketch {
   chargeAction::chargeAction(MolScene *scene)
     : incDecAction(scene)
   {
+    setText(tr("Charge"));
     initialize(QIcon(":images/incCharge.png"),
                QIcon(":images/decCharge.png"),
                tr("Increase charge"),
@@ -139,6 +140,7 @@ namespace Molsketch {
   hydrogenAction::hydrogenAction(MolScene *scene)
     : incDecAction(scene)
   {
+    setText(tr("Hydrogens"));
     initialize(QIcon(":images/incHydrogens.png"),
                QIcon(":images/decHydrogens.png"),
                tr("Add implicit hydrogen"),

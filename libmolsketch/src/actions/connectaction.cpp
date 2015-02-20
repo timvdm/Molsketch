@@ -11,7 +11,7 @@ namespace Molsketch {
     genericAction(scene)
   {
     setIcon(QIcon(":images/connect.png"));
-    setText(tr("Connect to item")) ;
+    setText(tr("Connect to plugin")) ;
   }
 
   void connectAction::mousePressEvent(QGraphicsSceneMouseEvent *event)

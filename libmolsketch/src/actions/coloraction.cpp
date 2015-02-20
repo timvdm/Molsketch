@@ -24,20 +24,39 @@
 
 namespace Molsketch {
 
+  struct colorAction::privateData
+  {
+    QColor color;
+  };
+
   colorAction::colorAction(MolScene *parent) :
-    abstractItemAction(parent)
+    abstractItemAction(parent),
+    d(new privateData)
   {
     setText(tr("Color...")) ;
     setToolTip(tr("Set color")) ;
     setWhatsThis(tr("Displays the color chooser dialog")) ;
+    QPixmap newicon(22,22);
+    newicon.fill(Qt::black);
+    d->color = QColor(Qt::black);
+    setIcon(newicon);
+    setCheckable(false);
+  }
+
+  colorAction::~colorAction()
+  {
+    delete d;
   }
 
   void colorAction::execute()
   {
-    QColor newColor = QColorDialog::getColor(items().size() == 1
-                                             ? items().first()->getColor()
-                                             : QColor()) ;
+    QColor newColor = QColorDialog::getColor(d->color) ;
     if (!newColor.isValid()) return ;
+
+    d->color = newColor;
+    QPixmap newicon(22,22);
+    newicon.fill(d->color);
+    setIcon(newicon);
 
     ITERATEOVERITEMSMACRO("Change color", changeColor, newColor)
   }

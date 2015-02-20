@@ -10,9 +10,7 @@
         <file>images/move.png</file>
         <file>images/lasso.png</file>
         <file>images/rotate.png</file>
-        <file>images/ring8.png</file>
         <file>images/C1CC1.png</file>
-        <file>images/ring7.png</file>
         <file>images/C1CCC1.png</file>
         <file>images/a1aaaa1.png</file>
         <file>images/a1aaaaa1.png</file>
@@ -29,5 +27,15 @@
         <file>images/incCharge.png</file>
         <file>images/decCharge.png</file>
         <file>images/decHydrogens.png</file>
+        <file>images/curveddoublearrow.png</file>
+        <file>images/curvedhalfarrow.png</file>
+        <file>images/doublearrow.png</file>
+        <file>images/simplearrow.png</file>
+        <file>images/halfarrow.png</file>
+        <file>images/plugin.png</file>
+        <file>images/linewidth.png</file>
+        <file>images/minimize.png</file>
+        <file>images/C1CCCCCCC1.png</file>
+        <file>images/C1CCCCCC1.png</file>
     </qresource>
 </RCC>

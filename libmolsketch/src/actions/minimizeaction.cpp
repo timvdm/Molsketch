@@ -9,8 +9,9 @@ namespace Molsketch {
   minimizeAction::minimizeAction(MolScene *scene) :
     genericAction(scene)
   {
-    setIcon(QIcon(":images/min.png")) ;
+    setIcon(QIcon(":images/minimize.png")) ;
     setText(tr("Minimize energy")) ;
+    setCheckable(false);
   }
 
   void minimizeAction::mousePressEvent(QGraphicsSceneMouseEvent *event)

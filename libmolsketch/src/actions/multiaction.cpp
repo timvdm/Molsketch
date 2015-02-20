@@ -38,7 +38,7 @@ namespace Molsketch {
     if (!d->actionGroup->checkedAction())
     {
       a->setChecked(true);
-      setIcon(a->icon());
+      changeIcon();
     }
   }
 
@@ -54,7 +54,9 @@ namespace Molsketch {
 
   void multiAction::changeIcon()
   {
-    setIcon(d->actionGroup->checkedAction()->icon());
+    QIcon activeIcon = d->actionGroup->checkedAction()->icon();
+    if (!activeIcon.isNull())
+      setIcon(activeIcon);
   }
 
 }

@@ -55,6 +55,7 @@ namespace Molsketch {
       virtual ~ItemPluginFactory() {}
       virtual QString input() const = 0;
       virtual QString output() const = 0;
+      virtual QIcon icon() const;
  
       static QStringList outputs();
       static QList<ItemPluginFactory*> factories() { return instanceList(); }

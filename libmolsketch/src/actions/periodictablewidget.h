@@ -12,6 +12,7 @@ namespace Molsketch {
     void setAdditionalElements(const QString&elements);
     QString currentElement() const ;
     ~periodicTableWidget();
+    QPixmap currentIcon() const;
   signals:
     void elementChanged(const QString& element) ;
   private:

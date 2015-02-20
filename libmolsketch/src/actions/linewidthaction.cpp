@@ -28,8 +28,10 @@ namespace Molsketch {
     abstractItemAction(parent)
   {
     setText(tr("Line width...")) ;
+    setIcon(QIcon(":images/linewidth.png"));
     setToolTip(tr("Set line width")) ;
     setWhatsThis(tr("Set the relative line width for the selected item(s)"));
+    setCheckable(false);
   }
 
   void lineWidthAction::execute()

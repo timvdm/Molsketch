@@ -17,10 +17,12 @@ namespace Molsketch {
       d(new privateData)
   {
     d->currentPlugin = 0;
+    setText(tr("Insert plugin"));
+    setIcon(QIcon(":images/plugin.png"));
     // from mainwindow::createMenus()
     foreach(ItemPluginFactory *factory, ItemPluginFactory::factories())
     {
-      QAction *newAction = new QAction(factory->input() + " -> " + factory->output(), this);
+      QAction *newAction = new QAction(factory->icon(), factory->output(), this);
       newAction->setData(factory->output());
       addSubAction(newAction);
     }

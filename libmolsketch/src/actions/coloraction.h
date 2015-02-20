@@ -39,8 +39,11 @@ namespace Molsketch {
     Q_OBJECT
   public:
     explicit colorAction(MolScene *parent = 0);
+    ~colorAction();
   private:
     void execute() ;
+    class privateData;
+    privateData *d;
   };
 } // namespace
 

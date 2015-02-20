@@ -90,9 +90,9 @@ namespace Molsketch {
     return Bond::NoType;
   }
 
-  QIcon bondTypeWidget::bondIcon() const
+  QPixmap bondTypeWidget::bondIcon() const
   {
-    return d->buttonGroup->checkedButton()->icon() ;
+    return d->buttonGroup->checkedButton()->icon().pixmap(d->buttonGroup->checkedButton()->size()) ;
   }
 
   int bondTypeWidget::bondOrder() const

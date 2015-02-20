@@ -18,6 +18,7 @@
  ***************************************************************************/
 
 #include <QGraphicsSceneDragDropEvent>
+#include <QIcon>
 #include <QPainter>
 #include <QUndoCommand>
 
@@ -154,6 +155,11 @@ namespace Molsketch {
   {
     static QList<ItemPluginFactory*> list = QList<ItemPluginFactory*>();
     return list;  
+  }
+
+  QIcon ItemPluginFactory::icon() const
+  {
+    return QIcon();
   }
 
   QStringList ItemPluginFactory::outputs()

@@ -98,9 +98,6 @@ private slots:
 	//used for print preview
 	void paintSceneOn (QPrinter *);
 
-	void changeColor ();
-
-
   /** Open the preferences editor. */
   void editPreferences();
 
@@ -240,6 +237,10 @@ protected:
   QToolBar* editToolBar;
   /** The zoom toolbar. */
   QToolBar* zoomToolBar;
+  /** The draw toolbar. */
+  QToolBar* drawToolBar;
+  /** The modify toolbar */
+  QToolBar* modifyToolBar;
 
   // File actions
   /** Open a new empty file action. */
@@ -284,8 +285,6 @@ protected:
   QAction* prefAct;
   /** Minimiser **/
   QAction *minimiseModeAct;	
-  //change color
-  QAction *colorAct;
 
   // Tools actions
   QAction *insertSmilesAct;

@@ -5,7 +5,22 @@ namespace Molsketch {
   mechanismArrowAction::mechanismArrowAction(MolScene* scene)
     : reactionArrowAction(scene)
   {
-    // TODO icons
+    // TODO make arrow action with all arrow tips available
+    // TODO arrow action manipulates selected arrow items
+    setText(tr("Curved arrow"));
+    foreach(QAction* action, findChildren<QAction*>())
+    {
+      if (action->text() == tr("Single arrow"))
+      {
+        action->setIcon(QIcon(":images/mechanismarrow.png"));
+        action->trigger();
+      }
+      if (action->text() == tr("Double arrow"))
+        action->setIcon(QIcon(":images/curveddoublearrow.png"));
+      if (action->text() == tr("Half arrow"))
+        action->setIcon(QIcon(":images/curvedhalfarrow.png"));
+    }
+    setChecked(false);
   }
 
   mechanismArrowAction::~mechanismArrowAction()

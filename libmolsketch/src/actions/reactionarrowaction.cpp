@@ -12,14 +12,13 @@ namespace Molsketch {
   public:
     privateData(QObject* parent)
 #define ARROWACTION(NAME,DESCRIPTION,ICON) NAME(new QAction(QIcon(":images/" ICON ".png"), tr(DESCRIPTION), parent))
-      : ARROWACTION(normalArrow, "Reaction arrow", "reactionarrow"),
-        ARROWACTION(doubleArrow, "Resonance arrow", "resonancearrow"),
+      : ARROWACTION(normalArrow, "Single arrow", "simplearrow"),
+        ARROWACTION(doubleArrow, "Double arrow", "doublearrow"),
         ARROWACTION(hookArrow, "Half arrow", "halfarrow"),
         currentArrow(0)
     {}
     ~privateData()
     {
-
     }
     QAction *normalArrow,
     *doubleArrow,
@@ -32,6 +31,7 @@ namespace Molsketch {
     : multiAction(scene),
       d(new privateData(this))
   {
+    setText(tr("Arrow"));
     addSubAction(d->normalArrow) ;
     addSubAction(d->doubleArrow) ;
     addSubAction(d->hookArrow) ;

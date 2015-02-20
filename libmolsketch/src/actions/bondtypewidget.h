@@ -26,7 +26,7 @@ namespace Molsketch {
     bool backward() const ;
     BondType bondType() const ;
     Bond::BondType legacyType() const;
-    QIcon bondIcon() const ;
+    QPixmap bondIcon() const ;
     int bondOrder() const ;
 
   signals:

@@ -2,6 +2,7 @@
 #include <QToolButton>
 #include <QGridLayout>
 #include <QButtonGroup>
+#include <QPainter>
 
 namespace Molsketch {
 
@@ -120,6 +121,20 @@ namespace Molsketch {
   periodicTableWidget::~periodicTableWidget()
   {
     delete d ;
+  }
+
+  QPixmap periodicTableWidget::currentIcon() const
+  {
+    QAbstractButton *button = d->buttonGroup->checkedButton();
+    if (!button) return QPixmap();
+    QFont font = button->font();
+    font.setPixelSize(2*font.pixelSize());
+    QPixmap pixmap(QFontMetrics(font).boundingRect(currentElement()).size() + QSize(2,2)); // TODO why do we have to add (2,2)?
+    pixmap.fill(Qt::transparent);
+    QPainter painter(&pixmap);
+    painter.setFont(font);
+    painter.drawText(QRectF(0,0, pixmap.width(), pixmap.height()), currentElement());
+    return pixmap;
   }
 
   void periodicTableWidget::changeElement()

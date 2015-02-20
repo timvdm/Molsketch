@@ -387,7 +387,21 @@ namespace Molsketch {
   }
 
   void drawAction::refreshIcon()
-  {
+  {// TODO redo
+    QPixmap elementIcon = d->periodicTable->currentIcon(),
+        bondIcon = d->bondType->bondIcon();
+    QSize elementSize = elementIcon.size();
+    QSize bondSize = bondIcon.size();
+    QSize totalSize(bondSize + elementSize);
+    totalSize.setWidth(qMax(totalSize.width(), totalSize.height()));
+    totalSize.setHeight(totalSize.width());
+    QPixmap pixmap(totalSize);
+    pixmap.fill(Qt::transparent);
+    QPainter painter(&pixmap);
+    painter.drawPixmap(0, elementSize.height(), bondIcon);
+    painter.drawPixmap(bondSize.width(), 0, elementIcon);
+    setIcon(pixmap);
+    /*
     QIcon bondIcon(d->bondType->bondIcon()) ;
     QString element = d->periodicTable->currentElement();
     int height = 0, width = 0;
@@ -412,7 +426,7 @@ namespace Molsketch {
     atomRect.moveTopLeft(QPointF(width,0));
     qDebug() << "AtomRect" << atomRect << atomRect.height()<< width << compoundIcon.size();
     painter.drawText(atomRect, element);
-    setIcon(QPixmap::fromImage(compoundIcon));
+    setIcon(QPixmap::fromImage(compoundIcon));*/
   }
 
   void drawAction::toggleVisibility(bool visible)

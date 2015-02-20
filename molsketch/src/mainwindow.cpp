@@ -25,7 +25,6 @@
 #include <QFileDialog>
 #include <QStatusBar>
 #include <QProgressBar>
-#include <QColorDialog>
 #include <QPrintPreviewDialog>
 #include <QMenuBar>
 #include <QMenu>
@@ -38,6 +37,17 @@
 #include <QProcess>
 #endif
 #include <QGridLayout>
+
+#include <actions/coloraction.h>
+#include <actions/connectaction.h>
+#include <actions/drawaction.h>
+#include <actions/incdecaction.h>
+#include <actions/linewidthaction.h>
+#include <actions/mechanismarrowaction.h>
+#include <actions/minimizeaction.h>
+#include <actions/pluginaction.h>
+#include <actions/ringaction.h>
+#include <actions/rotateaction.h>
 
 #include "mainwindow.h"
 
@@ -447,18 +457,6 @@ bool MainWindow::exportDoc()
     }
 }
 
-void MainWindow::changeColor () {
-	QColor new_color = QColorDialog::getColor(m_scene ->color(), this );
-	if ( new_color.isValid () ) {
-		m_scene ->setColor (new_color);
-	}
-	QPixmap pix(24, 24);
-    pix.fill(new_color);
-    colorAct->setIcon(pix);
-	
-}
-
-
 void MainWindow::paintSceneOn (QPrinter *printer) {
 	Molsketch::printFile(*printer,m_scene);
 }
@@ -679,12 +677,6 @@ void MainWindow::createActions()
 //	textModeAct->setStatusTip(tr("Go to the minimise mode"));
 	connect(minimiseModeAct, SIGNAL(triggered()), this, SLOT(setMinimiseMode()));
 
-    colorAct = new QAction (tr("Color"), this);;
-	QPixmap pix(24, 24);
-    pix.fill(m_scene ->color());
-    colorAct->setIcon(pix);
-	connect (colorAct, SIGNAL (triggered ()), this, SLOT (changeColor ()));
-
 
   // Zoom actions
   zoomInAct = new QAction(QIcon(":/images/zoom-in.png"),tr("Zoom &In"), this);
@@ -814,7 +806,6 @@ void MainWindow::createToolBars()
   editToolBar->addAction(copyAct);
   editToolBar->addAction(pasteAct);
   editToolBar->addSeparator();
-	editToolBar ->addAction (colorAct);
   editToolBar->addSeparator();
 	
 	
@@ -826,6 +817,29 @@ void MainWindow::createToolBars()
   zoomToolBar->addAction(zoomOutAct);
   zoomToolBar->addAction(zoomResetAct);
   zoomToolBar->addAction(zoomFitAct);
+
+  drawToolBar = addToolBar(tr("Drawing"));
+  drawToolBar->setObjectName("drawing-toolbar");
+  drawToolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon); // TODO configurable
+  drawToolBar->setIconSize(QSize(22,22));
+  drawToolBar->addAction(new drawAction(m_scene));
+  drawToolBar->addAction(new ringAction(m_scene));
+  drawToolBar->addAction(new reactionArrowAction(m_scene));
+  drawToolBar->addAction(new mechanismArrowAction(m_scene));
+  drawToolBar->addAction(new pluginAction(m_scene));
+
+  modifyToolBar = addToolBar(tr("Modify"));
+  modifyToolBar->setObjectName("modify-toolbar");
+  modifyToolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon); // TODO configurable
+  modifyToolBar->setIconSize(QSize(22,22));
+  modifyToolBar->addAction(new rotateAction(m_scene));
+  modifyToolBar->addAction(new colorAction(m_scene));
+  modifyToolBar->addAction(new lineWidthAction(m_scene));
+  modifyToolBar->addAction(new chargeAction(m_scene));
+  modifyToolBar->addAction(new hydrogenAction(m_scene));
+  modifyToolBar->addAction(new connectAction(m_scene));
+  modifyToolBar->addAction(new minimizeAction(m_scene));
+
 }
 
 void MainWindow::createStatusBar()
