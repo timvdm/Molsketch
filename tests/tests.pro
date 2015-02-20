@@ -4,7 +4,8 @@ QT += testlib widgets
 
 INCLUDEPATH += ../libmolsketch/src
 
-SOURCES += valencetest.cpp
+SOURCES += valencetest.cpp \
+    #drawingtest.cpp
 
 LIBS += -L../lib -lmolsketch
 
@@ -14,3 +15,5 @@ equals(QT_MAJOR_VERSION, 5) {
 	LIBS -= -lmolsketch
 	LIBS += -lmolsketch-qt5
 }
+
+HEADERS +=
