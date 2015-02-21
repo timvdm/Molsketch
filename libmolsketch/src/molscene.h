@@ -261,6 +261,7 @@ namespace Molsketch {
       abstractXmlObject* produceChild(const QString &childName, const QString& type) ;
       QList<const abstractXmlObject*> children() const ;
       void readAttributes(const QXmlStreamAttributes &attributes) ;
+      QXmlStreamAttributes xmlAttributes() const;
 
   private:
 

@@ -517,8 +517,17 @@ namespace Molsketch {
 
   void MolScene::readAttributes(const QXmlStreamAttributes &attributes)
   {
-        Q_UNUSED(attributes)
-        clear();
+    foreach(const QXmlStreamAttribute& attribute, attributes)
+      setProperty(attribute.name().toLatin1(), attribute.value().toString());
+    clear();
+  }
+
+  QXmlStreamAttributes MolScene::xmlAttributes() const
+  {
+    QXmlStreamAttributes attributes;
+    foreach (const QByteArray& name, dynamicPropertyNames()) // TODO handle int, double, bool appropriately
+      attributes.append(name, property(name).toString());
+    return attributes;
   }
 
   qreal MolScene::bondWidth() const
