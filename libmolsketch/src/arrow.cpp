@@ -227,25 +227,12 @@ namespace Molsketch {
   void Arrow::readGraphicAttributes(const QXmlStreamAttributes &attributes)
   {
     d->arrowType = (ArrowType) (attributes.value("arrowType").toInt()) ;
-    QVector<QPointF> newCoords ;
-    int i = 0 ;
-    while (attributes.hasAttribute(POINTNAMEMACRO(i)+"x"))
-      newCoords << QPointF(attributes.value(POINTNAMEMACRO(i)+"x").toDouble(),
-                           attributes.value(POINTNAMEMACRO(i)+"y").toDouble()) ;
-    setCoordinates(newCoords) ;
   }
 
   QXmlStreamAttributes Arrow::graphicAttributes() const
   {
     QXmlStreamAttributes attributes ;
     attributes.append("arrowType", QString::number(d->arrowType)) ;
-    int i = 0 ;
-    foreach(const QPointF& p, coordinates())
-    {
-      attributes.append(POINTNAMEMACRO(i) + "x", QString::number(p.x())) ;
-      attributes.append(POINTNAMEMACRO(i) + "y", QString::number(p.y())) ;
-      ++i;
-    }
     return attributes ;
   }
 

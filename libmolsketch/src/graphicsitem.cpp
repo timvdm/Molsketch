@@ -203,6 +203,13 @@ namespace Molsketch {
       lineWidthScaling = attributes.value("scalingParameter").toString().toFloat() ;
     else
       lineWidthScaling = 1.0 ;
+    if (attributes.hasAttribute("coordinates"))
+    {
+      QPolygonF coords;
+      foreach(const QString& coordinate, attributes.value("coordinates").toString().split(";"))
+        coords << QPointF(coordinate.section(",",0,0).toDouble(), coordinate.section(",",1,1).toDouble());
+      setCoordinates(coords);
+    }
   }
 
   QXmlStreamAttributes graphicsItem::xmlAttributes() const
@@ -212,6 +219,10 @@ namespace Molsketch {
     attributes.append("colorG", QString::number(getColor().green())) ;
     attributes.append("colorB", QString::number(getColor().blue())) ;
     attributes.append("scalingParameter", QString::number(lineWidthScaling));
+    QStringList coords;
+    foreach(const QPointF& coordinate, coordinates())
+      coords << QString::number(coordinate.x()) << "," << QString::number(coordinate.y());
+    attributes.append("coordinates", coords.join(";"));
     return attributes ;
   }
 
