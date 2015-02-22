@@ -222,7 +222,6 @@ namespace Molsketch {
 #else
     setAcceptHoverEvents(true) ;
 #endif
-    setAcceptedMouseButtons(Qt::LeftButton | Qt::MidButton);
 
     // Setting private fields
     m_elementSymbol = element;

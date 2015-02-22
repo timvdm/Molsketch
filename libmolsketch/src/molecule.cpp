@@ -61,7 +61,6 @@ namespace Molsketch {
   {
     m_electronSystemsUpdate = true;
     // Setting properties
-    setAcceptedMouseButtons(Qt::LeftButton|Qt::MidButton);
     setHandlesChildEvents(false);
 #if QT_VERSION < 0x050000
     setAcceptsHoverEvents(true);
@@ -82,8 +81,6 @@ namespace Molsketch {
   {
     m_electronSystemsUpdate = true;
     // Setting properties
-    setAcceptedMouseButtons(Qt::LeftButton|Qt::MidButton);
-
     setHandlesChildEvents(false);
 #if QT_VERSION < 0x050000
     setAcceptsHoverEvents(true);
@@ -116,7 +113,6 @@ namespace Molsketch {
   {
     m_electronSystemsUpdate = true;
     // Setting properties
-    setAcceptedMouseButtons(Qt::LeftButton|Qt::MidButton);
     setHandlesChildEvents(false);
 #if QT_VERSION < 0x050000
     setAcceptsHoverEvents(true);
