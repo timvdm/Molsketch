@@ -184,6 +184,7 @@ namespace Molsketch {
 
   ringAction::~ringAction()
   {
+    if(d->hintMoleculeItems.scene()) d->hintMoleculeItems.scene()->removeItem(&(d->hintMoleculeItems));
     delete d;
   }
 
@@ -214,12 +215,16 @@ namespace Molsketch {
   void ringAction::leaveSceneEvent(QEvent *event)
   {
     Q_UNUSED(event)
-    d->hintMoleculeItems.hide();
+    scene()->removeItem(&(d->hintMoleculeItems));
+//    d->hintMoleculeItems.hide();
   }
 
   void ringAction::changeRing() // TODO virtual function in multiaction
   {
+    if (isChecked())
       d->createHintRing(qAbs(activeSubAction()->data().toInt()), false);
+    else
+      scene()->removeItem(&(d->hintMoleculeItems));
   }
 
 } // namespace Molsketch
