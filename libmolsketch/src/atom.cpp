@@ -201,13 +201,7 @@ namespace Molsketch {
     setPos(position);
     setZValue(3);
 
-    MolScene *molScene = dynamic_cast<MolScene*>(
-#if QT_VERSION < 0x050000
-          scene
-#else
-          scene()
-#endif
-          ); // @todo qobject_cast is faster
+    MolScene *molScene = dynamic_cast<MolScene*>(scene()); // @todo qobject_cast is faster
 
     if (molScene) {
       setColor (molScene ->color());    // Setting initial parameters

@@ -14,46 +14,62 @@ get_directory_property(tmp_include_dirs INCLUDE_DIRECTORIES)
 set_directory_properties(PROPERTIES INCLUDE_DIRECTORIES
         "${CMAKE_CURRENT_BINARY_DIR}/include;${tmp_include_dirs}")
 include_directories(${OPENBABEL2_INCLUDE_DIR} 
-                    ${CMAKE_CURRENT_BINARY_DIR})
+		    ${CMAKE_CURRENT_BINARY_DIR}
+		    ${CMAKE_CURRENT_BINARY_DIR}/../../obabeliface/include/molsketch
+)
 
 set(libmolsketch_HDRS
+    abstractxmlobject.h
+    arrow.h
     atom.h
+    atomnumberitem.h
     bond.h
+    commands.h
+    electronsystem.h
     element.h
-    itemplugin.h
     fileio.h
-    graphicsitemtypes.h
-    reactionarrowdialog.h
+    graphicsitem.h
+    graphsymitem.h
+    itemplugin.h
+    math2d.h
     mechanismarrowdialog.h
+    mechanismarrow.h
+    mimemolecule.h
+    minimise.h
     molecule.h
+    molinputitem.h
     mollibitem.h
     molscene.h
-    molinputitem.h
     molview.h
+    qtversionmacros.h
+    reactionarrowdialog.h
+    reactionarrow.h
     residue.h
+    ring.h
     smilesitem.h
-
-    tool.h
-    toolgroup.h
+    stereocenteritem.h
+    TextInputItem.h
    )
 
-set(tool_HDRS
-    tools/drawtool.h
-    tools/movetool.h
-    tools/lassotool.h
-    tools/rotatetool.h
-    tools/minimizetool.h
-    tools/connecttool.h
-    tools/chargetool.h
-    tools/hydrogentool.h
-    tools/reactionarrowtool.h
-    tools/mechanismarrowtool.h
-    coloraction.h
-    graphicsitem.h
-    linewidthaction.h
-    abstractitemaction.h
-    abstractxmlobject.h
-    )
+set(action_HDRS
+    actions/abstractitemaction.h
+    actions/bondtypewidget.h
+    actions/coloraction.h
+    actions/connectaction.h
+    actions/drawaction.h
+    actions/genericaction.h
+    actions/incdecaction.h
+    actions/linewidthaction.h
+    actions/mechanismarrowaction.h
+    actions/minimizeaction.h
+    actions/multiaction.h
+    actions/periodictablewidget.h
+    actions/pluginaction.h
+    actions/reactionarrowaction.h
+    actions/ringaction.h
+    actions/rotateaction.h
+    actions/transformcommand.h
+   )
 
 
 # Set up the include directory and symlink/copy all headers to it.
@@ -82,49 +98,51 @@ endif(FORCEQt4)
 
 # Source files
 set(libmolsketch_SRCS 
-    molecule.cpp	
-    atom.cpp 
-    mollibitem.cpp
-    bond.cpp
-    element.cpp	
-    molview.cpp
-    molscene.cpp
-    commands.cpp	
-    fileio.cpp
-    minimise.cpp
-    TextInputItem.cpp
-    electronsystem.cpp
-    residue.cpp
-    # connect tool items
-    itemplugin.cpp
-    molinputitem.cpp
-    mimemolecule.cpp
-    reactionarrow.cpp
-    mechanismarrow.cpp
-    smilesitem.cpp
-    atomnumberitem.cpp
-    stereocenteritem.cpp
-    ring.cpp
-    reactionarrowdialog.cpp
-    mechanismarrowdialog.cpp
-    graphsymitem.cpp
-    tool.cpp
-    toolgroup.cpp
-    tools/drawtool.cpp
-    tools/movetool.cpp
-    tools/lassotool.cpp
-    tools/rotatetool.cpp
-    tools/minimizetool.cpp
-    tools/connecttool.cpp
-    tools/chargetool.cpp
-    tools/hydrogentool.cpp
-    tools/reactionarrowtool.cpp
-    tools/mechanismarrowtool.cpp
-    coloraction.cpp
-    graphicsitem.cpp
-    linewidthaction.cpp
-    abstractitemaction.cpp
     abstractxmlobject.cpp
+    arrow.cpp
+    atom.cpp
+    atomnumberitem.cpp
+    bond.cpp
+    commands.cpp
+    electronsystem.cpp
+    element.cpp
+    fileio.cpp
+    graphicsitem.cpp
+    graphsymitem.cpp
+    itemplugin.cpp
+    mechanismarrow.cpp
+    mechanismarrowdialog.cpp
+    mimemolecule.cpp
+    minimise.cpp
+    molecule.cpp
+    molinputitem.cpp
+    mollibitem.cpp
+    molscene.cpp
+    molview.cpp
+    reactionarrow.cpp
+    reactionarrowdialog.cpp
+    residue.cpp
+    ring.cpp
+    smilesitem.cpp
+    stereocenteritem.cpp
+    TextInputItem.cpp
+    actions/abstractitemaction.cpp
+    actions/bondtypewidget.cpp
+    actions/coloraction.cpp
+    actions/connectaction.cpp
+    actions/drawaction.cpp
+    actions/genericaction.cpp
+    actions/incdecaction.cpp
+    actions/linewidthaction.cpp
+    actions/mechanismarrowaction.cpp
+    actions/minimizeaction.cpp
+    actions/multiaction.cpp
+    actions/periodictablewidget.cpp
+    actions/pluginaction.cpp
+    actions/reactionarrowaction.cpp
+    actions/ringaction.cpp
+    actions/rotateaction.cpp
+    actions/transformcommand.cpp
     )
 
 set(toolicon_RCS tools/toolicons.qrc)
@@ -142,7 +160,7 @@ endif(FORCEQt4)
 
 
 # MOC-ing headers
-set(molsketch_LIB_MOC_HDRS ${libmolsketch_HDRS} ${tool_HDRS})
+set(molsketch_LIB_MOC_HDRS ${libmolsketch_HDRS} ${action_HDRS})
 set(molsketch_MOC_HDRS mainwindow.h settings.h drawwidget.h reactionarrowdialog.h mechanismarrowdialog.h)
 if(FORCEQt4)
 	qt4_wrap_cpp(libmolsketch_SRCS ${molsketch_LIB_MOC_HDRS})

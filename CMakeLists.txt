@@ -93,6 +93,13 @@ else(Qt5Core_FOUND AND Qt5Widgets_FOUND AND Qt5Gui_FOUND AND Qt5PrintSupport_FOU
 	set(FORCEQt4 TRUE)
 	message(STATUS "Using Qt4.")
 endif(Qt5Core_FOUND AND Qt5Widgets_FOUND AND Qt5Gui_FOUND AND Qt5PrintSupport_FOUND AND Qt5Svg_FOUND)
+
+if(FORCEQt4)
+	add_definitions(-DQTVERSIONSUFFIX="")
+else(FORCEQt4)
+	add_definitions(-DQTVERSIONSUFFIX="\\\"-qt5\\\"")
+endif(FORCEQt4)
+
 # and OpenBabel2
 find_package(PkgConfig)
 find_package(OpenBabel2 REQUIRED)
@@ -108,9 +115,9 @@ endif (EXISTS ${OPENBABEL2_INCLUDE_DIR}/openbabel/graphsym.h)
 find_package(KDE4)
 
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libmolsketch/src)
+add_subdirectory(obabeliface)
 add_subdirectory(libmolsketch)
 add_subdirectory(molsketch)
-#add_subdirectory(src)
 
   
 if(ENABLE_TESTS)

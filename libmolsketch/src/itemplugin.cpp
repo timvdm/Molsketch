@@ -126,8 +126,8 @@ namespace Molsketch {
 
   void ItemPlugin::readAttributes(const QXmlStreamAttributes &attributes)
   {
-    setPos(attributes.value("posX").toDouble(), attributes.value("posY").toDouble());
-    QGraphicsItem *possibleParent = scene()->items().at(attributes.value("molecule").toInt()); // TODO doesn't work if plugin was created before molecule
+    setPos(attributes.value("posX").toString().toDouble(), attributes.value("posY").toString().toDouble());
+    QGraphicsItem *possibleParent = scene()->items().at(attributes.value("molecule").toString().toInt()); // TODO doesn't work if plugin was created before molecule
     if (possibleParent) setParentItem(possibleParent);
   }
 

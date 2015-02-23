@@ -224,19 +224,19 @@ namespace Molsketch
 #ifdef OPENBABEL2_TRUNK
     // need to calculate symmetry first
     std::vector<unsigned int> symmetry_classes;
-    OpenBabel::OBGraphSym graphsym(obmol);
+    OpenBabel::OBGraphSym graphsym(&obmol);
     graphsym.GetSymmetry(symmetry_classes);
 
     //std::vector<unsigned long> atomIds = FindTetrahedralAtoms(obmol, symmetry_classes);
-    OpenBabel::OBStereoUnitSet units = FindStereogenicUnits(obmol, symmetry_classes);
+    OpenBabel::OBStereoUnitSet units = FindStereogenicUnits(&obmol, symmetry_classes);
     
     for (unsigned int i = 0; i < units.size(); ++i) {
       if (units.at(i).type == OpenBabel::OBStereo::Tetrahedral) {
-        OpenBabel::OBAtom *obatom = obmol->GetAtomById(units.at(i).id);
+        OpenBabel::OBAtom *obatom = obmol.GetAtomById(units.at(i).id);
         result << atoms[obatom->GetIndex()] ;
       } else 
       if (units.at(i).type == OpenBabel::OBStereo::CisTrans) {
-        OpenBabel::OBBond *obbond = obmol->GetBondById(units.at(i).id);
+        OpenBabel::OBBond *obbond = obmol.GetBondById(units.at(i).id);
         OpenBabel::OBAtom *obatom1 = obbond->GetBeginAtom();
         OpenBabel::OBAtom *obatom2 = obbond->GetEndAtom();
         result << atoms[obatom1->GetIndex()]

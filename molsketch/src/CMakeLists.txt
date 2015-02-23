@@ -13,7 +13,10 @@ endif(FORCEQt4)
 get_directory_property(tmp_include_dirs INCLUDE_DIRECTORIES)
 set_directory_properties(PROPERTIES INCLUDE_DIRECTORIES 
     "${CMAKE_CURRENT_BINARY_DIR}/../../libmolsketch/src/include;${tmp_include_dirs}")
-include_directories(${OPENBABEL2_INCLUDE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
+include_directories(${OPENBABEL2_INCLUDE_DIR}
+		    ${CMAKE_CURRENT_BINARY_DIR}
+		    ${CMAKE_CURRENT_BINARY_DIR}/../../obabeliface/include/molsketch
+)
 
 #if (OPENBABEL2_TRUNK)
 #  set(libmolsketch_SRCS 

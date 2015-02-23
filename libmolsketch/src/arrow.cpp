@@ -226,7 +226,7 @@ namespace Molsketch {
 #define POINTNAMEMACRO(POINTINDEX) "p" + QString::number(i)
   void Arrow::readGraphicAttributes(const QXmlStreamAttributes &attributes)
   {
-    d->arrowType = (ArrowType) (attributes.value("arrowType").toInt()) ;
+    d->arrowType = (ArrowType) (attributes.value("arrowType").toString().toInt()) ;
   }
 
   QXmlStreamAttributes Arrow::graphicAttributes() const
