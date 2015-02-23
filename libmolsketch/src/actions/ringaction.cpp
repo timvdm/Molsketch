@@ -43,65 +43,6 @@ namespace Molsketch {
       parent->scene()->addItem(&hintMoleculeItems); // TODO scene takes ownership
     }
 
-    void insertRing(QUndoStack* undostack, bool aromatic)
-    {
-      undostack->beginMacro(tr("Add molecule"));
-      Molecule *newMolecule = new Molecule(); // TODO redo (this has turned ugly)
-      undostack->push(new Commands::AddItem(newMolecule, parent->scene()));
-
-      // create/find atoms
-      QList<Atom*> ringAtoms;
-      foreach(const QPointF& hintPoint, hintRingPoints)
-      {
-        QPointF vertex(hintMoleculeItems.mapToScene(hintPoint));
-        Atom *atom = parent->scene()->atomAt(vertex); // TODO check (no mapping) TODO
-        if (!atom)
-        {
-          atom = new Atom(vertex, "C", autoAddHydrogen);
-          undostack->push(new Commands::AddAtom(atom, newMolecule));
-        }
-        else if (atom->molecule() != newMolecule)
-        {
-          int index = newMolecule->atoms().size() + atom->molecule()->atomIndex(atom);
-          *newMolecule += *(atom->molecule());
-          undostack->push(new Commands::DelItem(atom->molecule()));
-          atom = newMolecule->atom(index);
-        }
-        ringAtoms << atom;
-      }
-
-      // create bonds
-      QList<Bond*> ringBonds;
-      for (int i = 0 ; i < ringAtoms.size() ; ++i)
-      {
-        int next = (i == ringAtoms.size()-1 ? 0 : i+1);
-        Bond* bond = newMolecule->bondBetween(ringAtoms[i], ringAtoms[next]);
-        if (!bond)
-        {
-          bond = new Bond(ringAtoms[i], ringAtoms[next]);
-          undostack->push(new Commands::AddBond(bond));
-        }
-        ringBonds << bond;
-      }
-
-      if (!aromatic)
-      {
-        undostack->endMacro();
-        return;
-      }
-      // create aromatic bonds
-      // TODO check!
-      foreach(Bond* bond, ringBonds)
-      {
-        bool canBeDouble = true;
-        foreach(Bond* otherBond, bond->beginAtom()->bonds() + bond->endAtom()->bonds())
-          canBeDouble = canBeDouble && otherBond->bondOrder() < 2 ;
-        if (!canBeDouble) continue;
-        undostack->push(new Commands::IncOrder(bond));
-      }
-      undostack->endMacro();
-    }
-
     void alignRingWithAtom(Atom *atom) // TODO partial merge with alignRingWithBond()
     {
 
@@ -178,7 +119,7 @@ namespace Molsketch {
     ADDRINGSUBACTION("Cyclooctyl", 8);
     ADDRINGSUBACTION("Cyclopentadienyl", -5);
     ADDRINGSUBACTION("Aryl group", -6);
-    connect(this, SIGNAL(triggered()), this, SLOT(changeRing()));
+    connect(this, SIGNAL(changed()), this, SLOT(changeRing()));
     changeRing();
   }
 
@@ -209,14 +150,72 @@ namespace Molsketch {
   void ringAction::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
   {
     Q_UNUSED(event)
-    d->insertRing(undoStack(), activeSubAction()->data().toInt() < 0); // TODO merge???
+    attemptBeginMacro(tr("Add molecule"));
+    Molecule *newMolecule = new Molecule();
+    attemptUndoPush(new Commands::AddItem(newMolecule, scene()));
+
+    // create/find atoms
+    QList<Atom*> ringAtoms;
+    foreach(const QPointF& hintPoint, d->hintRingPoints)
+    {
+      QPointF vertex(d->hintMoleculeItems.mapToScene(hintPoint));
+      Atom *atom = scene()->atomAt(vertex);
+      if (atom)
+      {
+        if (atom->molecule() != newMolecule) // merge other molecule
+        {
+          int index = newMolecule->atoms().size() + atom->molecule()->atomIndex(atom);
+          *newMolecule += *(atom->molecule());
+          attemptUndoPush(new Commands::DelItem(atom->molecule()));
+          atom = newMolecule->atom(index);
+        }
+      }
+      else
+      {
+        atom = new Atom(vertex, "C", d->autoAddHydrogen);
+        newMolecule->addAtom(atom);
+      }
+      ringAtoms << atom;
+    }
+
+    // create bonds
+    QList<Bond*> ringBonds;
+    for (int i = 0 ; i < ringAtoms.size() ; ++i)
+    {
+      Atom *atom = ringAtoms[i];
+      Atom *next = ringAtoms[(ringAtoms.size() == i+1) ? 0 : i+1];
+      Bond* bond = newMolecule->bondBetween(atom, next);
+      if (!bond) bond = newMolecule->addBond(atom, next);
+      ringBonds << bond;
+    }
+
+    // add aromatic bonds
+    if (activeSubAction()->data().toInt() < 0) // Test for aromaticity
+    {
+      foreach(Bond* bond, ringBonds)
+      {
+        if (bond->bondOrder() > 1) continue;
+        bool canBeDouble = true;
+        foreach(Bond* otherBond, bond->beginAtom()->bonds() + bond->endAtom()->bonds())
+          canBeDouble = canBeDouble && otherBond->bondOrder() < 2;
+        if (!canBeDouble) continue;
+        bond->setOrder(2);
+      }
+    }
+
+    attemptEndEndMacro();
   }
 
   void ringAction::leaveSceneEvent(QEvent *event)
   {
     Q_UNUSED(event)
     scene()->removeItem(&(d->hintMoleculeItems));
-//    d->hintMoleculeItems.hide();
+  }
+
+  void ringAction::enterSceneEvent(QEvent *event)
+  {
+    Q_UNUSED(event)
+    scene()->addItem(&(d->hintMoleculeItems));
   }
 
   void ringAction::changeRing() // TODO virtual function in multiaction

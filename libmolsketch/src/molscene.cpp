@@ -89,10 +89,10 @@ namespace Molsketch {
 
 
 	// Create the TextInputItem that will be shown to edit text in the scene
-	m_inputTextItem = new TextInputItem();
-	addItem(m_inputTextItem);
+//	m_inputTextItem = new TextInputItem();
+//	addItem(m_inputTextItem);
 	// hide it for now...
-	m_inputTextItem->hide();
+//	m_inputTextItem->hide();
 
 
 	//Initializing properties
@@ -343,10 +343,10 @@ namespace Molsketch {
 	//initHintItems();
 	setEditMode(MolScene::DrawMode);
 
-	m_inputTextItem = new TextInputItem();
-	addItem(m_inputTextItem);
+//	m_inputTextItem = new TextInputItem();
+//	addItem(m_inputTextItem);
 	// hide it for now...
-	m_inputTextItem->hide();
+//	m_inputTextItem->hide();
 
   }
 
@@ -550,7 +550,7 @@ namespace Molsketch {
   bool MolScene::textEditItemAt (const QPointF &pos)
   {
                 foreach(QGraphicsItem* item,items(pos))
-                if (item->type() == TextInputItem::Type) return true;
+//                if (item->type() == TextInputItem::Type) return true;
                         return false;
   }
 
@@ -609,12 +609,12 @@ namespace Molsketch {
 
 	void MolScene::textModePress(QGraphicsSceneMouseEvent* event) {
 		if (textEditItemAt (event ->scenePos())) {
-			m_inputTextItem ->setFocus();
+//			m_inputTextItem ->setFocus();
 		}
 		else {
 		Atom * atom = atomAt(event->scenePos());
 		if (atom) {
-			m_inputTextItem ->clickedOn (atom);
+//			m_inputTextItem ->clickedOn (atom);
 
 				}
 /*
@@ -677,133 +677,133 @@ namespace Molsketch {
 
   void MolScene::keyPressEvent(QKeyEvent* keyEvent)
   {
-          if ( !m_inputTextItem ->hasFocus ()) {
-        // Declare item
-        QGraphicsItem* item;
-        Atom* atom;
-        //   Bond* bond;
-        //   Molecule* mol;
-        QSet<Molecule*> molSet;
+//          if ( !m_inputTextItem ->hasFocus ()) {
+//        // Declare item
+//        QGraphicsItem* item;
+//        Atom* atom;
+//        //   Bond* bond;
+//        //   Molecule* mol;
+//        QSet<Molecule*> molSet;
 
-	switch (keyEvent->key())
-	{
-	  case Qt::Key_Delete:
-		m_stack->beginMacro(tr("removing item(s)"));
-		// First delete all selected molecules
-		foreach (item, selectedItems())
-		  if (item->type() == Molecule::Type)
-		  {
-			m_stack->push(new DelItem(item));
-		  }
-		//       // Then delete
-		//       foreach (item, selectedItems())
-		//         if (item->type() == Bond::Type)
-		//         {
-		//           bond = dynamic_cast<Bond*>(item);
-		//           mol = bond->molecule();
-		//           m_stack->push(new DelBond(bond));
-		//           if (mol->canSplit()) m_stack->push(new SplitMol(mol));
-		//         };
+//	switch (keyEvent->key())
+//	{
+//	  case Qt::Key_Delete:
+//		m_stack->beginMacro(tr("removing item(s)"));
+//		// First delete all selected molecules
+//		foreach (item, selectedItems())
+//		  if (item->type() == Molecule::Type)
+//		  {
+//			m_stack->push(new DelItem(item));
+//		  }
+//		//       // Then delete
+//		//       foreach (item, selectedItems())
+//		//         if (item->type() == Bond::Type)
+//		//         {
+//		//           bond = dynamic_cast<Bond*>(item);
+//		//           mol = bond->molecule();
+//		//           m_stack->push(new DelBond(bond));
+//		//           if (mol->canSplit()) m_stack->push(new SplitMol(mol));
+//		//         };
 
-		// Then delete all selected atoms
-		foreach (item, selectedItems())
-		  if (item->type() == Atom::Type)
-		  {
-			atom = dynamic_cast<Atom*>(item);
-			molSet << atom->molecule();
-			m_stack->push(new DelAtom(atom));
-		  }
+//		// Then delete all selected atoms
+//		foreach (item, selectedItems())
+//		  if (item->type() == Atom::Type)
+//		  {
+//			atom = dynamic_cast<Atom*>(item);
+//			molSet << atom->molecule();
+//			m_stack->push(new DelAtom(atom));
+//		  }
 
-		// Cleanup the affected molecules
-		foreach (Molecule* mol, molSet)
-		{
-		  if (mol->canSplit()) m_stack->push(new SplitMol(mol));
-		  if (mol->atoms().isEmpty()) m_stack->push(new DelItem(mol));
-		}
+//		// Cleanup the affected molecules
+//		foreach (Molecule* mol, molSet)
+//		{
+//		  if (mol->canSplit()) m_stack->push(new SplitMol(mol));
+//		  if (mol->atoms().isEmpty()) m_stack->push(new DelItem(mol));
+//		}
 
-		// Finally delete all the residues
-		foreach (item, selectedItems()) m_stack->push(new DelItem(item));
+//		// Finally delete all the residues
+//		foreach (item, selectedItems()) m_stack->push(new DelItem(item));
 
-		m_stack->endMacro();
-		keyEvent->accept();
-		break;
-		case Qt::Key_Backspace:
-			m_stack->beginMacro(tr("removing item(s)"));
-			// First delete all selected molecules
-			foreach (item, selectedItems())
-			if (item->type() == Molecule::Type)
-			{
-				m_stack->push(new DelItem(item));
-			}
-			//       // Then delete
-			//       foreach (item, selectedItems())
-			//         if (item->type() == Bond::Type)
-			//         {
-			//           bond = dynamic_cast<Bond*>(item);
-			//           mol = bond->molecule();
-			//           m_stack->push(new DelBond(bond));
-			//           if (mol->canSplit()) m_stack->push(new SplitMol(mol));
-			//         };
+//		m_stack->endMacro();
+//		keyEvent->accept();
+//		break;
+//		case Qt::Key_Backspace:
+//			m_stack->beginMacro(tr("removing item(s)"));
+//			// First delete all selected molecules
+//			foreach (item, selectedItems())
+//			if (item->type() == Molecule::Type)
+//			{
+//				m_stack->push(new DelItem(item));
+//			}
+//			//       // Then delete
+//			//       foreach (item, selectedItems())
+//			//         if (item->type() == Bond::Type)
+//			//         {
+//			//           bond = dynamic_cast<Bond*>(item);
+//			//           mol = bond->molecule();
+//			//           m_stack->push(new DelBond(bond));
+//			//           if (mol->canSplit()) m_stack->push(new SplitMol(mol));
+//			//         };
 
-			// Then delete all selected atoms
-			foreach (item, selectedItems())
-			if (item->type() == Atom::Type)
-			{
-				atom = dynamic_cast<Atom*>(item);
-				molSet << atom->molecule();
-				m_stack->push(new DelAtom(atom));
-			}
+//			// Then delete all selected atoms
+//			foreach (item, selectedItems())
+//			if (item->type() == Atom::Type)
+//			{
+//				atom = dynamic_cast<Atom*>(item);
+//				molSet << atom->molecule();
+//				m_stack->push(new DelAtom(atom));
+//			}
 
-			// Cleanup the affected molecules
-			foreach (Molecule* mol, molSet)
-		{
-			if (mol->canSplit()) m_stack->push(new SplitMol(mol));
-			if (mol->atoms().isEmpty()) m_stack->push(new DelItem(mol));
-		}
+//			// Cleanup the affected molecules
+//			foreach (Molecule* mol, molSet)
+//		{
+//			if (mol->canSplit()) m_stack->push(new SplitMol(mol));
+//			if (mol->atoms().isEmpty()) m_stack->push(new DelItem(mol));
+//		}
 
-			// Finally delete all the residues
-			foreach (item, selectedItems()) m_stack->push(new DelItem(item));
+//			// Finally delete all the residues
+//			foreach (item, selectedItems()) m_stack->push(new DelItem(item));
 
-			m_stack->endMacro();
-			keyEvent->accept();
-			break;
+//			m_stack->endMacro();
+//			keyEvent->accept();
+//			break;
 
 
-	  case Qt::Key_Up:
-		m_stack->beginMacro("moving item(s)");
-		foreach (item, selectedItems())
-		  m_stack->push(new MoveItem(item,QPointF(0,-10)));
-		m_stack->endMacro();
-		keyEvent->accept();
-		break;
-	  case Qt::Key_Down:
-		m_stack->beginMacro("moving item(s)");
-		foreach (item, selectedItems())
-		  m_stack->push(new MoveItem(item,QPointF(0,10)));
-		m_stack->endMacro();
-		keyEvent->accept();
-		break;
-	  case Qt::Key_Left:
-		m_stack->beginMacro("moving item(s)");
-		foreach (item, selectedItems())
-		  m_stack->push(new MoveItem(item,QPointF(-10,0)));
-		m_stack->endMacro();
-		keyEvent->accept();
-		break;
-	  case Qt::Key_Right:
-		m_stack->beginMacro("moving item(s)");
-		foreach (item, selectedItems())
-		  m_stack->push(new MoveItem(item,QPointF(10,0)));
-		m_stack->endMacro();
-		keyEvent->accept();
-		break;
-	  case Qt::Key_Escape:
-		clearSelection();
-		break;
-	  default:
-		keyEvent->ignore();
-	}
-	  }
+//	  case Qt::Key_Up:
+//		m_stack->beginMacro("moving item(s)");
+//		foreach (item, selectedItems())
+//		  m_stack->push(new MoveItem(item,QPointF(0,-10)));
+//		m_stack->endMacro();
+//		keyEvent->accept();
+//		break;
+//	  case Qt::Key_Down:
+//		m_stack->beginMacro("moving item(s)");
+//		foreach (item, selectedItems())
+//		  m_stack->push(new MoveItem(item,QPointF(0,10)));
+//		m_stack->endMacro();
+//		keyEvent->accept();
+//		break;
+//	  case Qt::Key_Left:
+//		m_stack->beginMacro("moving item(s)");
+//		foreach (item, selectedItems())
+//		  m_stack->push(new MoveItem(item,QPointF(-10,0)));
+//		m_stack->endMacro();
+//		keyEvent->accept();
+//		break;
+//	  case Qt::Key_Right:
+//		m_stack->beginMacro("moving item(s)");
+//		foreach (item, selectedItems())
+//		  m_stack->push(new MoveItem(item,QPointF(10,0)));
+//		m_stack->endMacro();
+//		keyEvent->accept();
+//		break;
+//	  case Qt::Key_Escape:
+//		clearSelection();
+//		break;
+//	  default:
+//		keyEvent->ignore();
+//	}
+//	  }
 
 	// execute default behaviour (needed for text tool)
 		  QGraphicsScene::keyPressEvent(keyEvent);

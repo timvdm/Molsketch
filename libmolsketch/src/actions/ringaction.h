@@ -15,7 +15,8 @@ namespace Molsketch {
 
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-    void leaveSceneEvent(QEvent *event) ;
+    void leaveSceneEvent(QEvent *event);
+    void enterSceneEvent(QEvent *event);
 
   private:
     class privateData;

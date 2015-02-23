@@ -23,6 +23,7 @@ namespace Molsketch {
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) { Q_UNUSED(event) }
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) { Q_UNUSED(event) }
     virtual void leaveSceneEvent(QEvent *event) { Q_UNUSED(event) }
+    virtual void enterSceneEvent(QEvent *event) { Q_UNUSED(event) }
     // OBSOLETE
     QList<QAction*> actions() ;
     QString toolbarName(QAction *action) ;

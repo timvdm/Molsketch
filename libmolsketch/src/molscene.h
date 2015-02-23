@@ -39,7 +39,7 @@ namespace Molsketch {
   class Molecule;
   class Atom;
   class Bond;
-  class TextInputItem;
+//  class TextInputItem;
   class genericAction;
 
   class MolSceneOptions
@@ -247,7 +247,7 @@ namespace Molsketch {
       void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
   public:
       //item to accept input for text tool
-      TextInputItem *m_inputTextItem;
+//      TextInputItem *m_inputTextItem;
       void setColor (QColor);
       QColor color() const;
 

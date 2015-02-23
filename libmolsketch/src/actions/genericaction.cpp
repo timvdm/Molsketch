@@ -58,6 +58,9 @@ namespace Molsketch{
       case QEvent::Leave:
         leaveSceneEvent(event);
         break;
+      case QEvent::Enter:
+        enterSceneEvent(event);
+        break;
       default: ;
     }
     if (event->isAccepted()) return true;
