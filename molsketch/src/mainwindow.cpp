@@ -79,14 +79,14 @@
 #define OSRA_GRAPHIC_FILE_FORMATS "All supported types (*.*);;Images (*.png *.bmp *.jpg *.jpeg *.gif *.tif *.tiff);;Documents (*.pdf *.ps)"
 
 #define PREPARELOADFILE \
-  QLibrary obabeliface("obabeliface") ; \
+  QLibrary obabeliface("obabeliface" QTVERSIONSUFFIX); \
   obabeliface.load() ; \
   loadFileFunctionPointer loadFilePtr = 0 ; \
   if (obabeliface.isLoaded()) \
     loadFilePtr = (loadFileFunctionPointer) (obabeliface.resolve("loadFile")) ;
   
 #define PREPARESAVEFILE \
-  QLibrary obabeliface("obabeliface") ; \
+  QLibrary obabeliface("obabeliface" QTVERSIONSUFFIX); \
   obabeliface.load() ; \
   saveFileFunctionPointer saveFilePtr = 0 ; \
   if (obabeliface.isLoaded()) \
@@ -378,7 +378,7 @@ bool MainWindow::saveAs()
 
   bool MainWindow::importDoc()
   {
-    QLibrary obabeliface("obabeliface") ;
+    QLibrary obabeliface("obabeliface" QTVERSIONSUFFIX);
     obabeliface.load() ;
     callOsraFunctionPointer callOsraPtr = (callOsraFunctionPointer) obabeliface.resolve("call_osra") ;
     if (!callOsraPtr)
@@ -494,8 +494,9 @@ bool MainWindow::print()
     }
 	 
 	 */
-	return true;
+        return true;
 }
+
 
 void MainWindow::zoomIn()
 {

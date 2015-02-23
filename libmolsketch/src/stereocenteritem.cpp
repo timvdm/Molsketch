@@ -45,7 +45,7 @@ namespace Molsketch {
       return;
     }
 
-    QLibrary obabeliface("obabeliface") ;
+    QLibrary obabeliface("obabeliface" QTVERSIONSUFFIX);
     obabeliface.load() ;
     chiralAtomsFunctionPointer chiralAtomsPtr = (chiralAtomsFunctionPointer) obabeliface.resolve("chiralAtoms") ;
     if (chiralAtomsPtr)

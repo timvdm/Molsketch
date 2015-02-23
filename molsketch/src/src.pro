@@ -22,11 +22,6 @@ INCLUDEPATH += \
         ../../libmolsketch/src \
         ../../obabeliface
 
-LIBS += -L../../lib -lmolsketch
+LIBS += -L../../lib -lmolsketch$$qtVersionSuffix
 
-TARGET = ../../bin/molsketch
-equals(QT_MAJOR_VERSION, 5) {
-	TARGET = ../../bin/molsketch-qt5
-	LIBS -= -lmolsketch
-	LIBS += -lmolsketch-qt5
-}
+TARGET = ../../bin/molsketch$$qtVersionSuffix

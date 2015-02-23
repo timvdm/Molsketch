@@ -42,7 +42,7 @@ namespace Molsketch {
       // Methods needed for qt typecasting
       enum { Type = graphicsItem::AtomType };
       /**
-       * @return The QGraphicsItem type of the class. Needed fro Qt typecasting. */
+       * @return The QGraphicsItem type of the class. Needed for Qt typecasting. */
       int type() const { return Type; }
 
       /**

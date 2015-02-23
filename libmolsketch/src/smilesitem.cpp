@@ -50,7 +50,7 @@ namespace Molsketch {
 
     if (m_molecule) {
       QFontMetrics fm = painter->fontMetrics();
-      QLibrary obabeliface("obabeliface") ;
+      QLibrary obabeliface("obabeliface" QTVERSIONSUFFIX);
       obabeliface.load() ;
       smilesFunctionPointer smilesPtr = (smilesFunctionPointer) (obabeliface.resolve("smiles")) ;
       QString smilesText = smilesPtr ? smilesPtr(m_molecule) : QString("OpenBabel unavailable");

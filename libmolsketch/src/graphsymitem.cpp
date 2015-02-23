@@ -49,7 +49,7 @@ namespace Molsketch {
 	const QList<Atom*> &atoms = mol->atoms();
 
 	std::vector<unsigned int> symmetry_classes;
-	QLibrary obabeliface("obabeliface") ;
+        QLibrary obabeliface("obabeliface" QTVERSIONSUFFIX) ;
 	obabeliface.load() ;
 	getSymmetryClassesFunctionPointer getSymmetryClassesPtr = (getSymmetryClassesFunctionPointer) obabeliface.resolve("getSymmetryClasses") ;
 	if (getSymmetryClassesPtr)

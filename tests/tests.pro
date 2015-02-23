@@ -1,4 +1,5 @@
 include(../findOpenBabel.pri)
+include(../settings.pri)
 
 QT += testlib widgets
 
@@ -7,13 +8,8 @@ INCLUDEPATH += ../libmolsketch/src
 SOURCES += valencetest.cpp \
     #drawingtest.cpp
 
-LIBS += -L../lib -lmolsketch
+LIBS += -L../lib -lmolsketch$$qtVersionSuffix
 
-TARGET = ../bin/molsketch-test
-equals(QT_MAJOR_VERSION, 5) {
-	TARGET = ../bin/molsketch-test-qt5
-	LIBS -= -lmolsketch
-	LIBS += -lmolsketch-qt5
-}
+TARGET = ../bin/molsketch-test$$qtVersionSuffix
 
 HEADERS +=

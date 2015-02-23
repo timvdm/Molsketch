@@ -109,5 +109,4 @@ RESOURCES += \
 
 QT += svg
 
-TARGET = ../../lib/molsketch
-equals(QT_MAJOR_VERSION, 5) : TARGET = ../../lib/molsketch-qt5
+TARGET = ../../lib/molsketch$$qtVersionSuffix

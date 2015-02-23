@@ -311,7 +311,7 @@ namespace Molsketch {
         QImage img = clipboard->image();
         if (img.isNull()) return ;
 
-	QLibrary obabeliface("obabeliface") ;
+        QLibrary obabeliface("obabeliface" QTVERSIONSUFFIX);
 	obabeliface.load() ;
 	callOsraFunctionPointer callOsraPtr = (callOsraFunctionPointer) obabeliface.resolve("call_osra") ;
 	if (!callOsraPtr)
