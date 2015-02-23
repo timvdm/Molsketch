@@ -232,7 +232,9 @@ namespace Molsketch {
       /** Slot to convert image to mol using OSRA */
       void convertImage();
 
-
+#ifdef QT_DEBUG
+  void debugScene();
+#endif
 
 
     protected:

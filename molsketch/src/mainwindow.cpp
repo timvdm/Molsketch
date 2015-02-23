@@ -819,6 +819,12 @@ void MainWindow::createToolBars()
   zoomToolBar->addAction(zoomResetAct);
   zoomToolBar->addAction(zoomFitAct);
 
+#ifdef QT_DEBUG
+  QAction *debugAction = new QAction("debug scene", this);
+  connect(debugAction, SIGNAL(triggered()), m_scene, SLOT(debugScene()));
+  zoomToolBar->addAction(debugAction);
+#endif
+
   drawToolBar = addToolBar(tr("Drawing"));
   drawToolBar->setObjectName("drawing-toolbar");
   drawToolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon); // TODO configurable

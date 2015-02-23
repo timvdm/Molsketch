@@ -334,8 +334,32 @@ namespace Molsketch {
 	}
 	else
 	  QMessageBox::critical(0, tr("Error"), tr("OSRA conversion failed. Is OSRA installed?")) ;
-	QFile::remove(tmpimg);
+        QFile::remove(tmpimg);
   }
+
+#ifdef QT_DEBUG
+  void MolScene::debugScene()
+  {
+    qDebug() << "================= Scene debug =================";
+    foreach(QGraphicsItem *item, items())
+    {
+      qDebug() << "Item:" << item
+               << "Type:" << item->type()
+               << "Pos:"  << item->pos()
+               << "Scene Pos:" << item->scenePos()
+               << "Bounds:" << item->boundingRect()
+               << "Children:" << item->childItems() ;
+    }
+    qDebug() << "============== Undo stack debug ===============";
+    qDebug() << "position:" << stack()->index();
+    for (int i = 0 ; i < stack()->count() ; ++i)
+    {
+      const QUndoCommand* command = stack()->command(i);
+      qDebug() << i << command << command->id() << command->text();
+    }
+    qDebug() << "===============================================";
+  }
+#endif
 
   void MolScene::clear()
   {

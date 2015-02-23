@@ -75,6 +75,9 @@ namespace Molsketch {
     privateData *d;
     virtual qreal sceneLineWidth(MolScene* scene) const ;
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event) ;
+#ifdef QT_DEBUG
+    QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+#endif
   };
 
   class arrowGraphicsItem : public graphicsItem
