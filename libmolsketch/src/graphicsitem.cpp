@@ -15,30 +15,34 @@ namespace Molsketch {
   {
   private:
     int index ;
-    QPointF point ;
-    graphicsItem *item ;
+    QPointF shift ;
+    QSet<graphicsItem *> items ;
   public:
     movePointCommand(const int& i,
                      const QPointF& p,
-                     graphicsItem *a,
+                     QSet<graphicsItem *> a,
                      QUndoCommand *parent = 0)
       : QUndoCommand(parent),
         index(i),
-        point(p), // if index <0: implicitly the position of the first point
-        item(a)
-    {}
+        shift(p), // if index <0: implicitly the position of the first point
+        items(a)
+    {
+      setText(QObject::tr("Move command"));
+    }
     void redo()
     {
-      if (index < 0)
+      foreach(graphicsItem* item, items)
       {
         QPolygonF coords = item->coordinates();
-        QPointF shift = point - coords.first();
-        point = coords.first();
-        coords.translate(shift);
+        if (index < 0)
+          for (int i = 0 ; i < coords.size() ; ++i)
+            coords[i] += shift;
+        else
+          coords[index] += shift;
         item->setCoordinates(coords);
       }
-      else
-        item->swapPoint(index, point) ;
+
+      shift *= -1;
     }
     void undo()
     {
@@ -48,9 +52,9 @@ namespace Molsketch {
     {
       const movePointCommand* mpc = dynamic_cast<const movePointCommand*>(other) ;
       if (!mpc) return false ;
-      if (mpc->item  != item)  return false ;
+      if (mpc->items != items)  return false ;
       if (mpc->index != index) return false ;
-//      if (index < 0) point += mpc->point;
+      shift += mpc->shift;
       return true ;
     }
     int id() const { return 5000; } // TODO define command IDs in central place
@@ -147,37 +151,18 @@ namespace Molsketch {
   }
 
   void graphicsItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
-  {
-//    if (event->button() != Qt::LeftButton) return;
-//    if (event->modifiers()) return;
-    qDebug() << "Button scene pos:" << event->scenePos() << event->buttonDownScenePos(Qt::LeftButton) << "added shift" << event->scenePos() - event->buttonDownScenePos(Qt::LeftButton);
-    if (d->selectedPoint < 0)
-    {
-      QPointF shift = event->scenePos() - event->lastScenePos();
-      QList<QGraphicsItem*> selection;
-      if (scene()) selection = scene()->selectedItems();
-      if (!selection.empty())
-      {
-        attemptBeginMacro(QObject::tr("Move"));
-        foreach(QGraphicsItem* gItem, selection)
-        {
-          graphicsItem *item = dynamic_cast<graphicsItem*>(gItem);
-          if (!item) continue;
-          attemptUndoPush(new movePointCommand(-1,
-                                               item->firstPoint() + shift,
-                                               item));
-        }
-        attemptEndEndMacro();
-      }
-      else
-        attemptUndoPush(new movePointCommand(d->selectedPoint,
-                                             shift + firstPoint(),
-                                             this));
-    }
-    else
-      attemptUndoPush(new movePointCommand(d->selectedPoint,
-                                           event->scenePos(),
-                                           this));
+  {    
+    QPointF shift = event->scenePos() - event->lastScenePos();
+    QSet<graphicsItem*> selection;
+    if (d->selectedPoint < 0 && scene())
+      foreach(QGraphicsItem* gItem, scene()->selectedItems())
+        selection << dynamic_cast<graphicsItem*>(gItem);
+    selection.remove(0);
+    if (selection.isEmpty())
+      selection << this;
+    attemptUndoPush(new movePointCommand(d->selectedPoint,
+                                         shift,
+                                         selection));
     event->accept();
   }
 
