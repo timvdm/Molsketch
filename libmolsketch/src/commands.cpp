@@ -65,7 +65,6 @@ void AddAtom::redo()
   Q_CHECK_PTR(m_molecule->scene());
 
   m_molecule->addAtom(m_atom);
-  m_atom->setFlag(QGraphicsItem::ItemIsSelectable, m_molecule->scene()->editMode() == MolScene::MoveMode);
   m_undone = false;
 }
 
@@ -225,7 +224,6 @@ DelAtom::~DelAtom()
 void DelAtom::undo()
 {
   m_molecule->addAtom(m_atom);
-  m_atom->setFlag(QGraphicsItem::ItemIsSelectable, m_molecule->scene()->editMode()==MolScene::MoveMode);
   for (int i = 0; i < m_bondList.size(); i++) m_molecule->addBond(m_bondList.at(i));
   m_undone = true;
 }
@@ -355,13 +353,7 @@ void MergeMol::undo()
 {
   m_scene->removeItem(m_molC);
   m_scene->addItem(m_molA);
-  m_molA->setFlag(QGraphicsItem::ItemIsSelectable, m_scene->editMode()==MolScene::MoveMode);
-  foreach(Atom* atom, m_molC->atoms()) 
-    atom->setFlag(QGraphicsItem::ItemIsSelectable, m_scene->editMode()==MolScene::MoveMode);
   m_scene->addItem(m_molB);
-  m_molB->setFlag(QGraphicsItem::ItemIsSelectable, m_scene->editMode()==MolScene::MoveMode);
-  foreach(Atom* atom, m_molC->atoms()) 
-    atom->setFlag(QGraphicsItem::ItemIsSelectable, m_scene->editMode()==MolScene::MoveMode);
   m_undone = true;
 }
 
@@ -370,9 +362,6 @@ void MergeMol::redo()
   m_scene->removeItem(m_molA);
   m_scene->removeItem(m_molB);
   m_scene->addItem(m_molC);
-  m_molC->setFlag(QGraphicsItem::ItemIsSelectable, m_scene->editMode()==MolScene::MoveMode);  
-  foreach(Atom* atom, m_molC->atoms()) 
-    atom->setFlag(QGraphicsItem::ItemIsSelectable, m_scene->editMode()==MolScene::MoveMode);
   m_undone = false;
 }
 
@@ -424,9 +413,6 @@ void SplitMol::undo()
 {
   foreach(Molecule* mol,m_newMolList) m_scene->removeItem(mol);
   m_scene->addItem(m_oldMol);
-  m_oldMol->setFlag(QGraphicsItem::ItemIsSelectable, m_scene->editMode()==MolScene::MoveMode);
-  foreach(Atom* atom, m_oldMol->atoms()) 
-    atom->setFlag(QGraphicsItem::ItemIsSelectable, m_scene->editMode()==MolScene::MoveMode);
   m_undone = true;
 }
 void SplitMol::redo()
@@ -435,9 +421,6 @@ void SplitMol::redo()
   foreach(Molecule* mol,m_newMolList) 
   {
     m_scene->addItem(mol);
-	mol->setFlag(QGraphicsItem::ItemIsSelectable, m_scene->editMode()==MolScene::MoveMode);
-	foreach(Atom* atom, mol->atoms()) 
-      atom->setFlag(QGraphicsItem::ItemIsSelectable, m_scene->editMode()==MolScene::MoveMode);
   }
   m_undone = false;
 }
@@ -482,9 +465,6 @@ DelItem::~DelItem()
 void DelItem::undo()
 {
   m_scene->addItem(m_item);
-  m_item->setFlag(QGraphicsItem::ItemIsSelectable, m_scene->editMode()==MolScene::MoveMode);
-  if (m_item->type() == Molecule::Type) foreach(Atom* atom, dynamic_cast<Molecule*>(m_item)->atoms()) 
-    atom->setFlag(QGraphicsItem::ItemIsSelectable, m_scene->editMode()==MolScene::MoveMode);
   m_scene->update();
   m_undone = true;
 }

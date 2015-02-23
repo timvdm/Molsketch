@@ -200,8 +200,6 @@ namespace Molsketch {
     //pre: position is a valid position in scene coordinates
     setPos(position);
     setZValue(3);
-    //setFlag(QGraphicsItem::ItemIsMovable);
-    //setFlag(QGraphicsItem::ItemIgnoresTransformations);
 
     MolScene *molScene = dynamic_cast<MolScene*>(
 #if QT_VERSION < 0x050000
@@ -212,7 +210,6 @@ namespace Molsketch {
           ); // @todo qobject_cast is faster
 
     if (molScene) {
-      setFlag(QGraphicsItem::ItemIsSelectable, molScene->editMode() == MolScene::MoveMode);
       setColor (molScene ->color());    // Setting initial parameters
     }
     else setColor (QColor (0, 0, 0));
@@ -644,10 +641,10 @@ namespace Molsketch {
 
 // 	    setGroup(dynamic_cast<Molecule*>(parentItem()));
     };
-    if (change == ItemSelectedChange && molecule()) {
+//    if (change == ItemSelectedChange && molecule()) {
 //       molecule()->setSm_elementSymbolected(isSm_elementSymbolected());
-      molecule()->setFlag(ItemIsSelectable, isSelected());
-    }
+//      molecule()->setFlag(ItemIsSelectable, isSelected());
+//    }
     
     return QGraphicsItem::itemChange(change, value);
   }

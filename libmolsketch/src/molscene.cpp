@@ -116,37 +116,6 @@ namespace Molsketch {
 	// Set initial size
 	QRectF sizerect(-5000,-5000,10000,10000);
 	setSceneRect(sizerect);
-
-	/////////////// Test
-	Arrow *a = new Arrow ;
-	a->setCoordinates(QVector<QPointF>()
-					  << QPointF(0,0)
-					  << QPointF(0,50)
-					  << QPointF(50,50)
-					  << QPointF(50,0)
-					  << QPointF(50,-50)
-					  << QPointF(100,-50)
-					  << QPointF(100,0)
-					  );
-	Arrow *b = new Arrow ;
-	b->setCoordinates(QVector<QPointF>()
-					  << QPointF(-50,0)
-					  << QPointF(-100,-50)) ;
-	b->setArrowType(Arrow::LowerBackward
-					| Arrow::UpperBackward
-					| Arrow::LowerForward
-					| Arrow::UpperForward);
-	a->setArrowType(Arrow::NoArrow);
-	addItem(a);
-	addItem(b);
-	Arrow *c = new Arrow ;
-	c->setArrowType(Arrow::UpperBackward | Arrow::UpperForward);
-	c->setColor(Qt::red);
-	c->setCoordinates(QVector<QPointF>()
-					  << QPointF(-50,-50)
-					  << QPointF(0,0)) ;
-	addItem(c);
-	/////////////// End Test
   }
 
   MolScene::~MolScene()
@@ -221,14 +190,15 @@ namespace Molsketch {
 
   void MolScene::setEditMode(int mode)
   {
-        // Reset moveflag (movebug)
-        foreach(QGraphicsItem* item, items())
-          item->setFlag(QGraphicsItem::ItemIsMovable, false);
+    // TODO
+//        // Reset moveflag (movebug)
+//        foreach(QGraphicsItem* item, items())
+//          item->setFlag(QGraphicsItem::ItemIsMovable, false);
 
-	// enable moving for all Molecule and atom items
-	foreach(QGraphicsItem* item, items())
-	  if (item->type() == Molecule::Type || item->type() == Atom::Type)
-		item->setFlag(QGraphicsItem::ItemIsSelectable,mode == MolScene::MoveMode);
+//	// enable moving for all Molecule and atom items
+//	foreach(QGraphicsItem* item, items())
+//	  if (item->type() == Molecule::Type || item->type() == Atom::Type)
+//		item->setFlag(QGraphicsItem::ItemIsSelectable,mode == MolScene::MoveMode);
 
 
 
@@ -837,6 +807,7 @@ namespace Molsketch {
 
 	// execute default behaviour (needed for text tool)
 		  QGraphicsScene::keyPressEvent(keyEvent);
+                  update();
   }
 
   void MolScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)

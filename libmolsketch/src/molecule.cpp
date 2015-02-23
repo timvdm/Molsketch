@@ -64,12 +64,8 @@ namespace Molsketch {
     setHandlesChildEvents(false);
 #if QT_VERSION < 0x050000
     setAcceptsHoverEvents(true);
-    if (scene)
-      setFlag(QGraphicsItem::ItemIsSelectable, qobject_cast<MolScene*>(scene)->editMode()==MolScene::MoveMode);
 #else
     setAcceptHoverEvents(true) ;
-    if (qobject_cast<MolScene*>(scene()))
-      setFlag(QGraphicsItem::ItemIsSelectable, qobject_cast<MolScene*>(scene())->editMode()==MolScene::MoveMode);
 #endif
   }
 
@@ -84,11 +80,8 @@ namespace Molsketch {
     setHandlesChildEvents(false);
 #if QT_VERSION < 0x050000
     setAcceptsHoverEvents(true);
-    if (scene) setFlag(QGraphicsItem::ItemIsSelectable, qobject_cast<MolScene*>(scene)->editMode()==MolScene::MoveMode);
 #else
     setAcceptHoverEvents(true) ;
-    if (qobject_cast<MolScene*>(scene()))
-        setFlag(QGraphicsItem::ItemIsSelectable, qobject_cast<MolScene*>(scene())->editMode()==MolScene::MoveMode);
 #endif
 
     // Add the new atoms
@@ -116,12 +109,8 @@ namespace Molsketch {
     setHandlesChildEvents(false);
 #if QT_VERSION < 0x050000
     setAcceptsHoverEvents(true);
-    if (scene)
-      setFlag(QGraphicsItem::ItemIsSelectable, qobject_cast<MolScene*>(scene)->editMode()==MolScene::MoveMode);
 #else
     setAcceptHoverEvents(true) ;
-    if (qobject_cast<MolScene*>(scene()))
-      setFlag(QGraphicsItem::ItemIsSelectable, qobject_cast<MolScene*>(scene())->editMode()==MolScene::MoveMode);
 #endif
 
     // Add the new atoms
@@ -972,7 +961,7 @@ namespace Molsketch {
     foreach(const Bond* bond, other.m_bondList)
       addBond(m_atomList[offset+other.m_atomList.indexOf(bond->beginAtom())],
           m_atomList[offset+other.m_atomList.indexOf(bond->endAtom())],
-          bond->bondOrder(), bond->type(), bond->getColor());
+          bond->bondOrder(), bond->bondType(), bond->getColor());
     return *this;
   }
 
