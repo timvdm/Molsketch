@@ -14,13 +14,19 @@ Short instructions for building the source with CMake:
 - make package
 
 2. Using qmake:
-The binary will be in the bin/ subdirectory, the library part in the lib/ subdirectory.
-2.1. Qt4
+2.1 QMake
+You may change the installation path by setting the PREFIX variable:
+- qmake PREFIX=<Your install dir> ..
+Or you may omit this:
 - qmake ..
+For Qt5, it may be necessary to use "qmake-qt5" instead of "qmake", depending on your platform.
+2.2 Make
+Then run
 - make
-2.2. Qt5
-- qmake-qt5 ..
-- make
+The binary will be in the bin/ subdirectory, the library part in the lib/ subdirectory.
+2.3 Installing
+- make install
+Files will be copied into "bin", "doc", "include", and "lib" directories, relative to PREFIX.
 
 3. Notes on Qt5 vs. Qt4
 If Qt5 is used, library and executable names will be appended with "-qt5" (both cmake and qmake).

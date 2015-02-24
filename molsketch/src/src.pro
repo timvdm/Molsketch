@@ -25,3 +25,6 @@ INCLUDEPATH += \
 LIBS += -L../../lib -lmolsketch$$qtVersionSuffix
 
 TARGET = ../../bin/molsketch$$qtVersionSuffix
+
+target.path=$$PREFIX/bin
+INSTALLS += target

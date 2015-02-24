@@ -1,5 +1,8 @@
+include(settings.pri)
 message("Welcome to molsKetch build")
-message("current dir: $$PWD")
+message("Current dir: $$PWD")
+message("Install dir: $$PREFIX")
+message("To change, use \"qmake PREFIX=<your install dir>\"")
 
 TEMPLATE = subdirs
 CONFIG += ordered
@@ -11,16 +14,12 @@ SUBDIRS += \
 	obabeliface \
 	tests
 
-program.files=bin/molsketch
-program.path=$(bindir)
+INSTALLS += documentation_en documentation_cs documentation_nl
 
-library.files=lib/*
-library.path=$(libdir)
+documentation_en.files = $$PWD/doc/en/*
+documentation_cs.files = $$PWD/doc/cs/*
+documentation_nl.files = $$PWD/doc/nl/*
 
-includes.files=library/src/*.h
-includes.path=$(includedir)/molsketch
-
-documentation.files=doc/*
-documentation.path=$(docdir)/molsketch
-
-INSTALLS += program library includes documentation
+documentation_en.path = $$PREFIX/doc/molsketch/en
+documentation_cs.path = $$PREFIX/doc/molsketch/cs
+documentation_nl.path = $$PREFIX/doc/molsketch/nl

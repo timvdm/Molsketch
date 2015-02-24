@@ -110,3 +110,10 @@ RESOURCES += \
 QT += svg
 
 TARGET = ../../lib/molsketch$$qtVersionSuffix
+
+INSTALLS += target includes
+
+target.path=$$PREFIX/lib
+
+includes.files = $$PWD/*.h
+includes.path = $$PREFIX/include/molsketch
