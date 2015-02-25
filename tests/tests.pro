@@ -1,15 +1,15 @@
-include(../findOpenBabel.pri)
 include(../settings.pri)
 
 QT += testlib widgets
 
-INCLUDEPATH += ../libmolsketch/src
+INCLUDEPATH += $$topLevelDir/libmolsketch/src
 
 SOURCES += valencetest.cpp \
     #drawingtest.cpp
 
-LIBS += -L../lib -lmolsketch$$qtVersionSuffix
+LIBS += -L$$topLevelDir/lib -lmolsketch$$qtVersionSuffix
 
-TARGET = ../bin/molsketch-test$$qtVersionSuffix
+TARGET = molsketch-test$$qtVersionSuffix
+DESTDIR = $$topLevelDir/bin
 
 HEADERS +=

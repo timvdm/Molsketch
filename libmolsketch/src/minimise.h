@@ -40,6 +40,7 @@
 #include <assert.h>
 #include <cmath>
 #include <cfloat>
+#include <ctime>
 
 
 #ifndef M_PI
@@ -374,7 +375,7 @@ namespace Molsketch {
 	//class to adjust the geometry of 2D molecules and scenes
 	class Minimise  {
 	public:
-		Minimise (qreal bl=40) : bondLength (bl) { srand((unsigned)time(0)); };
+                Minimise (qreal bl=40) : bondLength (bl) { srand((unsigned)std::time(0)); };
 		~Minimise () {clear ();}
 		void initialise (Molecule *molecule);
 		void minimiseMolecule (Molecule *molecule);

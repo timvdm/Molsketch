@@ -9,12 +9,12 @@ HEADERS += \
 SOURCES += \
     obabeliface.cpp
 
-INCLUDEPATH += ../libmolsketch/src
-LIBS += -L../lib -lmolsketch$$qtVersionSuffix
-TARGET = ../lib/obabeliface$$qtVersionSuffix
+INCLUDEPATH += $$topLevelDir/libmolsketch/src
+LIBS += -L$$topLevelDir/lib -lmolsketch$$qtVersionSuffix
+TARGET = obabeliface$$qtVersionSuffix
+DESTDIR = $$topLevelDir/lib
 
 QT += widgets
 
 target.path=$$PREFIX/lib/molsketch
 INSTALLS += target
-message("obabeliface prefix: $$PREFIX")

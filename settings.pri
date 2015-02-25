@@ -14,3 +14,5 @@ isEmpty(PREFIX) {
 	unix : PREFIX = /usr/local
 	win32 : PREFIX = "C:/Program Files/MolsKetch"
 }
+
+topLevelDir = $$relative_path($$PWD, $$_PRO_FILE_PWD_)

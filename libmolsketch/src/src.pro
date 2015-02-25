@@ -1,9 +1,8 @@
-include(../../findOpenBabel.pri)
 include(../../settings.pri)
 
 TEMPLATE = lib
 
-INCLUDEPATH += ../../obabeliface
+INCLUDEPATH += $$topLevelDir/obabeliface
 
 HEADERS += \
     atom.h \
@@ -109,7 +108,8 @@ RESOURCES += \
 
 QT += svg
 
-TARGET = ../../lib/molsketch$$qtVersionSuffix
+TARGET = molsketch$$qtVersionSuffix
+DESTDIR = $$topLevelDir/lib
 
 INSTALLS += target includes
 
