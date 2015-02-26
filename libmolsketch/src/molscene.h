@@ -222,8 +222,6 @@ namespace Molsketch {
       void setEditMode(int mode);
       /** Slot to select all contents of the scene. */
       void selectAll();
-
-
       /** Slot to add a copy of molecule @p mol. */
       void addMolecule(Molecule* mol);
       /** Slot to align the molecules of the scene to the grid. */
@@ -245,6 +243,12 @@ namespace Molsketch {
       virtual void keyPressEvent(QKeyEvent* keyEvent);
       /** Event handler to display context menu */
       void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
+      /** Event handler for mouse clicks */
+      void mousePressEvent(QGraphicsSceneMouseEvent *event);
+      /** Event handler for mouse moves */
+      void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+      /** event handler for mouse button releases */
+      void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
   public:
       //item to accept input for text tool
 //      TextInputItem *m_inputTextItem;
@@ -304,6 +308,8 @@ namespace Molsketch {
 
       QColor m_color;
 
+      class privateData;
+      privateData *d;
 
       // Internal clipboard
       /** Internal clipboard for scene items.*/

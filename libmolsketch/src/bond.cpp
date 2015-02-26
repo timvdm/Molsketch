@@ -340,7 +340,7 @@ namespace Molsketch {
   QVariant Bond::itemChange(GraphicsItemChange change, const QVariant &value)
   {
     if (change == ItemPositionChange && parentItem()) parentItem()->update();
-    return QGraphicsItem::itemChange(change, value);
+    return graphicsItem::itemChange(change, value);
   }
 
   QPainterPath Bond::shape() const

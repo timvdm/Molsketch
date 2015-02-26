@@ -640,7 +640,7 @@ namespace Molsketch {
 //      molecule()->setFlag(ItemIsSelectable, isSelected());
 //    }
     
-    return QGraphicsItem::itemChange(change, value);
+    return graphicsItem::itemChange(change, value);
   }
 
   void Atom::readGraphicAttributes(const QXmlStreamAttributes &attributes)

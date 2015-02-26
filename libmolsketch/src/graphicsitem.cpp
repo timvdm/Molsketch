@@ -286,16 +286,19 @@ namespace Molsketch {
     event->accept();
   }
 
-#ifdef QT_DEBUG
   QVariant graphicsItem::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant &value)
   {
-    qDebug() << "--- Item change:" << this
-             << change << value;
     QVariant retVal = QGraphicsItem::itemChange(change, value);
-    qDebug() << "+++ Item after change:" << this;
+    if (change == QGraphicsItem::ItemSelectedChange)
+    {
+      if (parentItem() && parentItem()->isSelected())
+        retVal.setValue(false);
+      if (value.toBool())
+        foreach(QGraphicsItem* child, childItems())
+          child->setSelected(false);
+    }
     return retVal;
   }
-#endif
 
   arrowGraphicsItem::arrowGraphicsItem(QGraphicsItem *parent GRAPHICSSCENESOURCE )
     : graphicsItem(parent GRAPHICSSCENEINIT )

@@ -70,6 +70,19 @@
 
 namespace Molsketch {
 
+  struct MolScene::privateData
+  {
+    QGraphicsRectItem *selectionRectangle;
+    privateData()
+      : selectionRectangle(new QGraphicsRectItem)
+    {
+      selectionRectangle->setPen(QPen(Qt::blue,0,Qt::DashLine));
+    }
+
+    ~privateData()
+    { delete selectionRectangle; }
+  };
+
   using namespace Commands;
 
 
@@ -82,7 +95,8 @@ namespace Molsketch {
   MolScene::MolScene(QObject* parent)
         : QGraphicsScene(parent),
           m_bondWidth(2),
-          m_arrowLineWidth(1.5)
+          m_arrowLineWidth(1.5),
+          d(new privateData)
   {
         // Set the default color to black
         m_color = QColor(0, 0, 0);
@@ -120,6 +134,7 @@ namespace Molsketch {
 
   MolScene::~MolScene()
   {
+    delete d;
         // Clear the scene
         clear();
   }
@@ -828,7 +843,41 @@ namespace Molsketch {
 	}
 
 	contextMenu.exec(event->screenPos());
-	event->accept();
+        event->accept();
+  }
+
+  void MolScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
+  {
+    event->ignore();
+    QGraphicsScene::mousePressEvent(event);
+    if (event->isAccepted()) return;
+    if (event->button() != Qt::LeftButton || event->modifiers()) return;
+    d->selectionRectangle->setRect(QRectF(event->scenePos(), event->scenePos()));
+    addItem(d->selectionRectangle);
+    d->selectionRectangle->show();
+    event->accept();
+  }
+
+  void MolScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+  {
+    event->ignore();
+    QGraphicsScene::mouseMoveEvent(event);
+    if (event->isAccepted()) return;
+    if (!d->selectionRectangle->scene()) return;
+    d->selectionRectangle->setRect(QRectF(event->buttonDownScenePos(Qt::LeftButton), event->scenePos()));
+    QPainterPath selectArea;
+    selectArea.addRect(d->selectionRectangle->rect());
+    setSelectionArea(selectArea);
+    event->accept();
+  }
+
+  void MolScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+  {
+    event->ignore();
+    QGraphicsScene::mouseReleaseEvent(event);
+    if(event->isAccepted()) return;
+    removeItem(d->selectionRectangle);
+    event->accept();
   }
 
 

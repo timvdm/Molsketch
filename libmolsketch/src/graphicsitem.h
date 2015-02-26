@@ -86,6 +86,7 @@ namespace Molsketch {
     void attemptEndEndMacro();
     int selectedPoint() const;
     virtual void prepareItemContextMenu(QMenu* contextMenu);
+    QVariant itemChange(GraphicsItemChange change, const QVariant &value);
   private:
     QColor m_color ;
     qreal lineWidthScaling ;
@@ -93,9 +94,6 @@ namespace Molsketch {
     privateData *d;
     virtual qreal sceneLineWidth(MolScene* scene) const ;
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event) ;
-#ifdef QT_DEBUG
-    QVariant itemChange(GraphicsItemChange change, const QVariant &value);
-#endif
   };
 
   class arrowGraphicsItem : public graphicsItem

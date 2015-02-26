@@ -571,7 +571,7 @@ namespace Molsketch {
   {
     if (change == ItemTransformHasChanged) rebuild();
 
-    return QGraphicsItem::itemChange(change, value);
+    return graphicsItem::itemChange(change, value);
   }
 
   void Molecule::rebuild()
