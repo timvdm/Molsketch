@@ -403,7 +403,7 @@ namespace Molsketch {
 	// Mark all atoms as selected
 	foreach (QGraphicsItem* item, items())
 	{
-	  if (item->type() == Atom::Type)
+          if (item->type() == Molecule::Type || item->type() == Arrow::Type)
 		item->setSelected(true);
 	}
   }

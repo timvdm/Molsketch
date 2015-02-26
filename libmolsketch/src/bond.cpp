@@ -65,6 +65,8 @@ namespace Molsketch {
     else 
       setColor(QColor(0, 0, 0));
 
+    setZValue(2);
+
   //   setFlag(QGraphicsItem::ItemIsSelectable);
   //   setAcceptedMouseButtons(Qt::LeftButton);
   }
@@ -339,11 +341,6 @@ namespace Molsketch {
   {
     if (change == ItemPositionChange && parentItem()) parentItem()->update();
     return QGraphicsItem::itemChange(change, value);
-  }
-
-  void Bond::mousePressEvent(QGraphicsSceneMouseEvent *event)
-  {
-    event->ignore();
   }
 
   QPainterPath Bond::shape() const

@@ -83,11 +83,11 @@ class Bond : public graphicsItem
 	 * @param order the bond order (@c Bond::Single for single, @c Bond::Double for double, @c Bond::Triple for tripple)
 	 * @param type the bond type (@c Bond::Normal, @c Bond::Up, @c Bond::Down, e.g.)
 	 */
-	Bond(Atom* atomA = 0, // TODO check usage
-		 Atom* atomB = 0,
-		 int order = 1,
-		 Bond::BondType type = InPlane,
-		 QGraphicsItem* parent = 0 GRAPHICSSCENEHEADER ) ;
+        explicit Bond(Atom* atomA = 0, // TODO check usage
+                      Atom* atomB = 0,
+                      int order = 1,
+                      Bond::BondType type = InPlane,
+                      QGraphicsItem* parent = 0 GRAPHICSSCENEHEADER ) ;
 	/**
 	 * Destructor.
 	 */
@@ -98,7 +98,6 @@ class Bond : public graphicsItem
 	void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget);
 	/** Event handler for changes in the bond. Needed for Qt painting. */
 	QVariant itemChange(GraphicsItemChange change, const QVariant & value);
-	void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
 	// Inherited query methods
 	/** Returns the shape of the bond. Needed for Qt event handling. */

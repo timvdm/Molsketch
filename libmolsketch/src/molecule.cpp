@@ -656,7 +656,7 @@ namespace Molsketch {
     Q_UNUSED(option)
         Q_UNUSED(widget)
 
-        // draw a yellow rectangle if this molecule is selected
+        // draw a blue rectangle if this molecule is selected
         if(isSelected()) {
       painter->setPen(Qt::blue);
       //painter->setBrush(Qt::yellow);
