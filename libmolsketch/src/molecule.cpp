@@ -196,7 +196,7 @@ namespace Molsketch {
     Q_ASSERT(m_atomList.contains(bond->beginAtom()));
     Q_ASSERT(m_atomList.contains(bond->endAtom()));
 
-    if (scene ())	bond ->setColor (dynamic_cast<MolScene *> (scene ()) ->color());
+    if (scene ())	bond ->setColor (dynamic_cast<MolScene *> (scene ()) ->color()); // TODO ??
     // Checking if and altering when a bond exists
     Bond* bondX = bondBetween(bond->beginAtom(), bond->endAtom());
     if (bondX) {
@@ -217,6 +217,7 @@ namespace Molsketch {
     m_bondList.append(bond);
     bond->setParentItem(this);
 
+    bond->setAtoms(bond->beginAtom(), bond->endAtom());
     //  /// Work-around qt-bug
     //  if (scene()) scene()->addItem(bond);
 
@@ -279,7 +280,7 @@ namespace Molsketch {
     //post: bond has been removed from the molecule
 
     Atom *begin = bond->beginAtom();
-    Atom *end = bond->beginAtom();
+    Atom *end = bond->endAtom();
     if (begin)
       begin->removeBond(bond);
     if (end)
