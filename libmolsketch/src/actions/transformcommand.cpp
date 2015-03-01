@@ -21,34 +21,63 @@
 #include "transformcommand.h"
 #include "molscene.h"
 
+#include <QSet>
+
 namespace Molsketch {
 
   struct transformCommand::privateData
   {
-    QVector<QPointF> coordinates ;
-    graphicsItem *item ;
+    typedef QPair<graphicsItem*, QPolygonF> itemCoordPair;
+    QList<itemCoordPair> Items;
     int originalTrafoType ;
+    privateData(const QList<graphicsItem*>& items, const QTransform& trafo, const QPointF& center)
+    {
+      if (items.isEmpty()) return;
+      QTransform transformation;
+      transformation.translate(center.x(), center.y());
+      transformation = transformation.inverted() *
+          trafo * transformation;
+      foreach(graphicsItem* item, items)
+        Items << qMakePair(item, transformation.map(item->coordinates()));
+      originalTrafoType = trafo.type();
+    }
+    void exchangeCoords()
+    {
+      for (QList<itemCoordPair>::iterator it = Items.begin() ; it != Items.end() ; ++it)
+      {
+        QPolygonF coords = it->first->coordinates();
+        it->first->setCoordinates(it->second);
+        it->second.swap(coords);
+      }
+      if (!Items.isEmpty() && Items.first().first->scene())
+        Items.first().first->scene()->update();
+    }
+    bool operator!=(const privateData& other)
+    {
+      QSet<graphicsItem*> itemSet, otherSet;
+      foreach(const itemCoordPair& icp, Items)
+        itemSet << icp.first;
+      foreach(const itemCoordPair& icp, other.Items)
+        otherSet << icp.first;
+      return itemSet != otherSet;
+    }
   };
 
   transformCommand::transformCommand(graphicsItem *item,
                                      const QTransform& trafo,
-                                     const QPointF& itemCenter,
+                                     const QPointF& center,
                                      QUndoCommand* parent)
     : QUndoCommand(parent),
-      d(new transformCommand::privateData)
-  {
-    d->item = item ;
-    QTransform transformation ;
-    transformation.translate(itemCenter.x(), itemCenter.y()) ;
-    transformation =
-        transformation.inverted() *
-        trafo *
-        transformation
-        ;
-    foreach(const QPointF& p, item->coordinates())
-      d->coordinates << transformation.map(p) ;
-    d->originalTrafoType = trafo.type() ;
-  }
+      d(new transformCommand::privateData(QList<graphicsItem*>() << item, trafo, center))
+  {}
+
+  transformCommand::transformCommand(const QList<graphicsItem *>& items,
+                                     const QTransform &trafo,
+                                     const QPointF& center,
+                                     QUndoCommand *parent)
+    : QUndoCommand(parent),
+      d(new transformCommand::privateData(items, trafo, center))
+  {}
 
   transformCommand::~transformCommand()
   {
@@ -62,18 +91,14 @@ namespace Molsketch {
 
   void transformCommand::redo()
   {
-    QVector<QPointF> temp(d->item->coordinates()) ;
-    d->item->setCoordinates(d->coordinates) ;
-    d->coordinates.swap(temp);
-    if (d->item->scene()) d->item->scene()->update();
+    d->exchangeCoords();
   }
 
   bool transformCommand::mergeWith(const QUndoCommand *other)
   {
     const transformCommand* otherTrafo = dynamic_cast<const transformCommand*>(other) ;
     if (!otherTrafo) return false ;
-    if (d->item != otherTrafo->d->item) return false ;
-    if (d->coordinates.size() != otherTrafo->d->coordinates.size()) return false ;
+    if ((*d) != *(otherTrafo->d)) return false;
     return true ;
   }
 

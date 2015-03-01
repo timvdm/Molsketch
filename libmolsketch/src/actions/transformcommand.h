@@ -29,6 +29,7 @@ namespace Molsketch {
   {
   public:
     transformCommand(graphicsItem *item, const QTransform &trafo, const QPointF &center, QUndoCommand *parent= 0);
+    transformCommand(const QList<Molsketch::graphicsItem *> &items, const QTransform &trafo, const QPointF &center, QUndoCommand *parent= 0);
     ~transformCommand() ;
     void undo() ;
     void redo() ;

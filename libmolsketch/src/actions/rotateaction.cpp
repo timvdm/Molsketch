@@ -28,7 +28,7 @@ namespace Molsketch {
 
   struct transformAction::privateData
   {
-    graphicsItem *transformItem;
+    QList<graphicsItem*> transformItems;
     QLineF originalLine ;
   };
 
@@ -36,33 +36,47 @@ namespace Molsketch {
     genericAction(scene),
     d(new privateData)
   {
-    d->transformItem = 0;
   }
 
   void transformAction::mousePressEvent(QGraphicsSceneMouseEvent *event)
   {
     if (event->button() != Qt::LeftButton) return ;
-    QGraphicsItem * item = scene()->itemAt(event->buttonDownScenePos(Qt::LeftButton)
+    // Get items (from selection or by being clicked on
+    QList<QGraphicsItem*> items = scene()->selectedItems();
+    if (items.isEmpty())
+      items << scene()->itemAt(event->buttonDownScenePos(Qt::LeftButton)
                                        #if QT_VERSION >= 0x050000
                                            , QTransform()
                                        #endif
                                            );
-    if (!item) return;
+    // Get items we actually care about
+    d->transformItems.clear();
+    foreach(QGraphicsItem* item, items)
+    {
+      graphicsItem *gItem = dynamic_cast<graphicsItem*>(item);
+      if (!gItem) continue;
+      if (gItem->type() == graphicsItem::AtomType
+          || gItem->type() == graphicsItem::BondType)
+        gItem = dynamic_cast<graphicsItem*>(gItem->parentItem());
+      if (!gItem) continue;
+      if (!d->transformItems.contains(gItem))
+        d->transformItems << gItem;
+    }
+    if (d->transformItems.isEmpty()) return;
 
-    if (item->type() == graphicsItem::AtomType
-        || item->type() == graphicsItem::BondType)
-      item = item->parentItem();
-    d->transformItem = dynamic_cast<graphicsItem*>(item) ;
-    if (!d->transformItem) return;
+    // Get bounding rect of all items
+    QRectF combinedBoundingRect = d->transformItems.first()->boundingRect();
+    foreach(graphicsItem* item, d->transformItems)
+      combinedBoundingRect |= item->boundingRect();
 
-    d->originalLine = QLineF(item->mapToScene(item->boundingRect().center()),
+    d->originalLine = QLineF(combinedBoundingRect.center(),
                             event->buttonDownScenePos(Qt::LeftButton)) ;
     event->accept();
   }
 
   void transformAction::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
   {
-    if (!d->transformItem) return;
+    if (d->transformItems.isEmpty()) return;
 
     // Calculate the rotation angle
     QLineF newLine(d->originalLine.p1(), event->scenePos()) ;
@@ -73,21 +87,21 @@ namespace Molsketch {
                        cursorLabel(QLineF(d->originalLine.p1(), event->buttonDownScenePos(Qt::LeftButton)), newLine),
                        parentWidget(),
                        QRect());
-    transformCommand *cmd = new transformCommand(d->transformItem,
+    transformCommand *cmd = new transformCommand(d->transformItems,
                                                  generateTransform(d->originalLine,
                                                                    newLine), // TODO doesn't work
                                                  d->originalLine.p1());
     cmd->setText(text());
-    scene()->stack()->push(cmd) ;
+    attemptUndoPush(cmd);
     d->originalLine = newLine ;
     event->accept();
   }
 
   void transformAction::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
   {
-    Q_UNUSED(event)
-    d->transformItem = 0 ;
+    if (d->transformItems.isEmpty()) return;
     event->accept();
+    d->transformItems.clear();
   }
 
   QString transformAction::cursorLabel(const QLineF &originalLine, QLineF &currentLine)
