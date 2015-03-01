@@ -153,6 +153,7 @@ namespace Molsketch {
 
   void ringAction::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
   {
+    event->accept();
     d->hintMoleculeItems.show();
     d->hintMoleculeItems.setPos(event->scenePos());
     d->hintMoleculeItems.setTransform(QTransform()); // TODO get rid of transforms
@@ -171,7 +172,7 @@ namespace Molsketch {
 
   void ringAction::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
   {
-    Q_UNUSED(event)
+    event->accept();
     attemptBeginMacro(tr("Add molecule"));
     Molecule *newMolecule = new Molecule();
     attemptUndoPush(new Commands::AddItem(newMolecule, scene()));

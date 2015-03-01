@@ -64,6 +64,7 @@ namespace Molsketch {
   {
     if (event->button() != Qt::LeftButton) return ;
     if (event->modifiers() != Qt::NoModifier) return ;
+    event->accept();
     if (d->currentArrow) delete d->currentArrow ;
     d->currentArrow = new Arrow() ;
     if (activeSubAction() == d->doubleArrow)
@@ -82,6 +83,7 @@ namespace Molsketch {
 
   void reactionArrowAction::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
   {
+    event->accept();
     if (!d->currentArrow) return ;
     d->currentArrow->setPoints(
           makePolygon(QLineF(
@@ -93,7 +95,7 @@ namespace Molsketch {
 
   void reactionArrowAction::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
   {
-    Q_UNUSED(event)
+    event->accept();
     if (!d->currentArrow) return ;
     if (!scene() || !scene()->stack()) return ; // TODO
     scene()->stack()->push(new Commands::AddItem(d->currentArrow, scene())) ;

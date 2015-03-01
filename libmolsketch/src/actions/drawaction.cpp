@@ -122,6 +122,7 @@ namespace Molsketch {
     if (parentWidget())
       qobject_cast<QMainWindow*>(parentWidget())->addDockWidget(Qt::LeftDockWidgetArea, d->dock);
     d->dock->hide();
+    setText(tr("Draw"));
   }
 
   drawAction::~drawAction()
@@ -159,6 +160,7 @@ namespace Molsketch {
     d->hintLine.setLine(QLineF(downPos, event->scenePos()));
     scene()->addItem(&(d->hintLine)); // TODO attn: scene takes ownership...
     d->hintLine.setVisible(true);
+    event->accept();
   }
 
   void drawAction::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
@@ -170,6 +172,7 @@ namespace Molsketch {
     d->hintLine.setLine(QLineF(
                           d->nearestPoint(event->buttonDownScenePos(Qt::LeftButton)),
                           d->nearestPoint(event->scenePos())));
+    event->accept();
   }
 
   // TODO test cases: insert single atom on blank
@@ -179,6 +182,7 @@ namespace Molsketch {
   //                  link two existing atoms from the same molecule
   void drawAction::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
   {
+    event->accept();
     // Remove the hinting
     if (d->hintLine.scene())
       d->hintLine.scene()->removeItem(&(d->hintLine));
@@ -257,6 +261,7 @@ namespace Molsketch {
 
   void drawAction::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
   {// TODO make part of mouseRelease (see above)
+    event->accept();
     QUndoStack *stack = undoStack();
     QPointF downPos = event->buttonDownScenePos(event->button());
 

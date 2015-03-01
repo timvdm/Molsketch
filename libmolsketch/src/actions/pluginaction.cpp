@@ -53,6 +53,7 @@ namespace Molsketch {
 
   void pluginAction::mousePressEvent(QGraphicsSceneMouseEvent *event)
   {
+    event->accept();
     d->currentPlugin = ItemPluginFactory::createInstance(activeSubAction()->data().toString());
     if (!d->currentPlugin) return;
     scene()->addItem(d->currentPlugin);
@@ -61,13 +62,14 @@ namespace Molsketch {
 
   void pluginAction::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
   {
+    event->accept();
     if (!d->currentPlugin) return;
     d->currentPlugin->setPos(event->scenePos());
   }
 
   void pluginAction::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
   {
-    Q_UNUSED(event)
+    event->accept();
     if (!d->currentPlugin) return;
     undoStack()->push(new Commands::AddItem(d->currentPlugin, scene(),
                                             tr("Add ") + activeSubAction()->data().toString() + tr(".")));
