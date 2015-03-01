@@ -50,7 +50,8 @@ HEADERS += \
     actions/drawaction.h \
     actions/ringaction.h \
     actions/mechanismarrowaction.h \
-    actions/pluginaction.h
+    actions/pluginaction.h \
+    actions/deleteaction.h
 
 SOURCES += \
     atom.cpp \
@@ -97,7 +98,8 @@ SOURCES += \
     actions/drawaction.cpp \
     actions/ringaction.cpp \
     actions/mechanismarrowaction.cpp \
-    actions/pluginaction.cpp
+    actions/pluginaction.cpp \
+    actions/deleteaction.cpp
 
 FORMS += \
     mechanismarrowdialog.ui \

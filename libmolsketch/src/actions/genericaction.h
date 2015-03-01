@@ -46,10 +46,6 @@ namespace Molsketch {
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) { Q_UNUSED(event) }
     virtual void leaveSceneEvent(QEvent *event) { Q_UNUSED(event) }
     virtual void enterSceneEvent(QEvent *event) { Q_UNUSED(event) }
-    // OBSOLETE
-    QList<QAction*> actions() ;
-    QString toolbarName(QAction *action) ;
-
   protected:
     MolScene *scene() const ;
     QUndoStack* undoStack() const ;
@@ -57,9 +53,6 @@ namespace Molsketch {
     void attemptUndoPush(QUndoCommand* command) ;
     void attemptBeginMacro(const QString& text);
     void attemptEndEndMacro();
-  public: // TODO Should be protected
-    virtual void deactivated() {}
-    virtual void activated() {}
   private slots:
     void activationSlot(const bool& b) ;
   };

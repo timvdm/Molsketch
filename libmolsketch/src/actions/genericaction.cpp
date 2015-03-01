@@ -32,17 +32,6 @@ namespace Molsketch{
     connect(this, SIGNAL(toggled(bool)), this, SLOT(activationSlot(bool))) ;
   }
 
-  QList<QAction *> genericAction::actions()
-  {
-    return QList<QAction *>() << this ;
-  }
-
-  QString genericAction::toolbarName(QAction *action)
-  {
-    Q_UNUSED(action)
-    return text() ;
-  }
-
   MolScene *genericAction::scene() const
   {
     return parentWidget()->findChild<MolScene*>() ;

@@ -40,6 +40,7 @@
 
 #include <actions/coloraction.h>
 #include <actions/connectaction.h>
+#include <actions/deleteaction.h>
 #include <actions/drawaction.h>
 #include <actions/incdecaction.h>
 #include <actions/linewidthaction.h>
@@ -846,6 +847,7 @@ void MainWindow::createToolBars()
   modifyToolBar->addAction(new hydrogenAction(m_scene));
   modifyToolBar->addAction(new connectAction(m_scene));
   modifyToolBar->addAction(new minimizeAction(m_scene));
+  modifyToolBar->addAction(new deleteAction(m_scene));
 
 }
 
