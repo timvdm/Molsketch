@@ -93,7 +93,7 @@ namespace Molsketch {
     //    setCacheMode(QGraphicsItem::NoCache);
     setFlags(QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable);
     setAcceptHoverEvents(true);
-    setAcceptedMouseButtons(Qt::LeftButton);
+    setAcceptedMouseButtons(Qt::LeftButton | Qt::RightButton);
   }
 
   graphicsItem::graphicsItem(const graphicsItem &other GRAPHICSSCENESOURCE)
@@ -104,7 +104,7 @@ namespace Molsketch {
   {
     setFlags(QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable);
     setAcceptHoverEvents(true);
-    setAcceptedMouseButtons(Qt::LeftButton);
+    setAcceptedMouseButtons(Qt::LeftButton | Qt::RightButton);
   }
 
   void graphicsItem::setColor(const QColor& color)
@@ -187,6 +187,7 @@ namespace Molsketch {
   void graphicsItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
   {
     QGraphicsItem::mousePressEvent(event);
+    event->accept(); // to prevent scene from clearing selection
     if (event->button() != Qt::LeftButton) return;
     if (event->modifiers()) return;
     event->accept();

@@ -61,10 +61,18 @@ namespace Molsketch {
     d->itemList << item;
   }
 
+  QList<QGraphicsItem*> getFamily(const QList<QGraphicsItem*>& list)
+  {
+    QList<QGraphicsItem*> family(list);
+    foreach(QGraphicsItem* item, list)
+      family += getFamily(item->childItems());
+    return family;
+  }
+
   void abstractItemAction::setItems(const QList<QGraphicsItem *>& list)
   {
     d->itemList.clear();
-    foreach(QGraphicsItem* item, list)
+    foreach(QGraphicsItem* item, getFamily(list))
     {
       graphicsItem *gItem = dynamic_cast<graphicsItem*>(item);
       if (gItem) d->itemList << gItem;

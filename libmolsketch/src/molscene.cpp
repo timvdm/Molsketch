@@ -877,6 +877,7 @@ namespace Molsketch {
     event->ignore();
     QGraphicsScene::mouseReleaseEvent(event);
     if(event->isAccepted()) return;
+    if (event->button() != Qt::LeftButton) return;
     removeItem(d->selectionRectangle);
     event->accept();
   }
