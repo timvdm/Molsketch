@@ -25,12 +25,14 @@
 #include <QPainter>
 #include <QSettings>
 #include <QDebug>
+#include <QGraphicsSceneMouseEvent>
 
 #include "bond.h"
 #include "molecule.h"
 
 #include "element.h"
 #include "molscene.h"
+#include "TextInputItem.h"
 #include <iostream>
 #include <cmath>
 
@@ -641,6 +643,17 @@ namespace Molsketch {
 //    }
     
     return graphicsItem::itemChange(change, value);
+  }
+
+  void Atom::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+  {
+    if (event->button() != Qt::LeftButton) return;
+    MolScene* sc = dynamic_cast<MolScene*>(scene());
+    if(!sc || !sc->inputItem()) return;
+    event->accept();
+    TextInputItem *inputItem = sc->inputItem();
+    sc->addItem(inputItem);
+    inputItem->clickedOn(this);
   }
 
   void Atom::readGraphicAttributes(const QXmlStreamAttributes &attributes)

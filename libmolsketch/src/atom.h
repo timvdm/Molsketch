@@ -202,6 +202,8 @@ namespace Molsketch {
       void mousePressEvent(QGraphicsSceneMouseEvent* event);
       /** Event handler to handle element changes. */
       QVariant itemChange(GraphicsItemChange change, const QVariant & value);
+      /** Event handler to edit element (double click) */
+      void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
       /**
        * Set the number for this atom.

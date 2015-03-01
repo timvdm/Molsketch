@@ -39,7 +39,7 @@ namespace Molsketch {
   class Molecule;
   class Atom;
   class Bond;
-//  class TextInputItem;
+  class TextInputItem;
   class genericAction;
 
   class MolSceneOptions
@@ -189,6 +189,8 @@ namespace Molsketch {
 
       /** Calculates the nearest magnetic point around @p curPos. */
       QPointF nearestPoint(const QPointF &curPos);
+
+      TextInputItem *inputItem() ;
 
     signals:
       /** Signal emitted if copy becomes available. */

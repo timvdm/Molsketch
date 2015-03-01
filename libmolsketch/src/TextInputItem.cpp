@@ -22,83 +22,91 @@
 #include <iostream>
 #include <QKeyEvent>
 #include <QPainter>
+#include "commands.h"
 
 namespace Molsketch {
 
 
 
-TextInputItem::TextInputItem (QGraphicsItem *parent): QGraphicsTextItem ( parent ), _atom (NULL)
-	{
-		setZValue(1); //draw on top
-		setFlag(QGraphicsItem::ItemIsMovable, false);
-		setTextInteractionFlags (Qt::TextEditable);
-		setFlag(QGraphicsItem::ItemIsSelectable);
-		setTextInteractionFlags(Qt::TextEditorInteraction);
-	}
+  TextInputItem::TextInputItem (QGraphicsItem *parent): QGraphicsTextItem ( parent ), _atom (NULL)
+  {
+    setZValue(4); //draw on top
+    setFlag(QGraphicsItem::ItemIsMovable, false);
+    setTextInteractionFlags (Qt::TextEditable);
+    setFlag(QGraphicsItem::ItemIsSelectable);
+    setTextInteractionFlags(Qt::TextEditorInteraction);
+  }
 
 
-	void TextInputItem::applyString () {
-		if (_atom) {
-			_atom ->setElement (toPlainText());
-			_atom ->hoverOut();
-			_atom  ->show ();
-			hide ();
-		}
-	}
-	void TextInputItem::focusOutEvent ( QFocusEvent * event ) {
-	//	std::cerr << " focuse" << std::endl;
-		if (_atom) {
-		_atom ->hoverOut();
-		_atom ->show();
-		hide ();
-		}
-		QGraphicsItem::focusOutEvent ( event );
-	}
-	
-	void TextInputItem::clickedOn (Atom *at) {		
-		setAtom (at);
-		setPos (at ->mapToScene (at ->boundingRect ().topLeft ()));
+  void TextInputItem::applyString () {
+    if (!_atom) return;
+    MolScene *mscene = dynamic_cast<MolScene*>(scene());
+    if (!mscene) return;
+    Commands::ChangeElement *ceCommand = new Commands::ChangeElement(_atom, toPlainText());
+    if (!mscene->stack())
+    {
+      ceCommand->redo();
+      delete ceCommand;
+    }
+    else
+      mscene->stack()->push(ceCommand);
+  }
 
-		setPlainText(at ->string ());
-		at ->hide ();
+  void TextInputItem::cleanUp()
+  {
+    if (_atom)
+    {
+      _atom->hoverOut();
+      _atom->show();
+    }
+    _atom = 0;
+    if (scene()) scene()->removeItem(this);
+  }
 
-		show ();
+  void TextInputItem::focusOutEvent ( QFocusEvent * event ) {
+    applyString();
+    cleanUp();
+    QGraphicsTextItem::focusOutEvent ( event );
+  }
 
-		setSelected(true);
+  void TextInputItem::clickedOn (Atom *at) {
+    setAtom (at);
+    setPos (at->scenePos());
+    setPlainText(at ->element());
+    if (scene()) setFont(scene()->font());
+    at ->hide ();
+    show ();
+    setSelected(true);
+    setFocus ();
+  }
 
-		setFocus ();
-		
-		
-	}
-	
-	void TextInputItem::paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget ) {
-		painter ->save ();
-		painter ->setBrush (Qt::white);
-		
-		painter ->setPen (Qt::white);
-		painter ->setBackgroundMode (Qt::OpaqueMode);
-		painter ->setBackground (Qt::white);
-		painter->drawRect(boundingRect());
-		painter->restore();
+  void TextInputItem::paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget ) {
+    painter ->save ();
+    painter ->setBrush (Qt::white);
 
-		QGraphicsTextItem::paint (painter, option, widget);
-	} 
-	
-	void TextInputItem::keyPressEvent ( QKeyEvent * event ) {
-		switch (event->key()) {
-			case Qt::Key_Return:
-				applyString ();
-				break;
-			default :
-				break;
-		}
+    painter ->setPen (Qt::white);
+    painter ->setBackgroundMode (Qt::OpaqueMode);
+    painter ->setBackground (Qt::white);
+    painter->drawRect(boundingRect());
+    painter->restore();
 
-		
-		QGraphicsTextItem::keyPressEvent (event);
-	}
+    QGraphicsTextItem::paint (painter, option, widget);
+  }
+
+  void TextInputItem::keyPressEvent ( QKeyEvent * event ) {
+    switch (event->key()) {
+      case Qt::Key_Escape:
+        cleanUp();
+      case Qt::Key_Return:
+        clearFocus();
+      default: ;
+    }
+
+    QGraphicsTextItem::keyPressEvent (event);
+  }
 
 
-void TextInputItem::setAtom (Atom *at) {
-	_atom = at;
-}
+  void TextInputItem::setAtom (Atom *at) {
+    _atom = at;
+  }
 }//namespace

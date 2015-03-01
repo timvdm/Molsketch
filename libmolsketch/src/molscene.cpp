@@ -73,8 +73,10 @@ namespace Molsketch {
   struct MolScene::privateData
   {
     QGraphicsRectItem *selectionRectangle;
+    TextInputItem *inputItem;
     privateData()
-      : selectionRectangle(new QGraphicsRectItem)
+      : selectionRectangle(new QGraphicsRectItem),
+        inputItem(new TextInputItem)
     {
       selectionRectangle->setPen(QPen(Qt::blue,0,Qt::DashLine));
     }
@@ -566,7 +568,12 @@ namespace Molsketch {
   {
                 foreach(QGraphicsItem* item,items(pos))
 //                if (item->type() == TextInputItem::Type) return true;
-                        return false;
+                  return false;
+  }
+
+  TextInputItem *MolScene::inputItem()
+  {
+    return d->inputItem;
   }
 
   void MolScene::selectionSlot()
