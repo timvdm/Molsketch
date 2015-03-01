@@ -864,6 +864,7 @@ namespace Molsketch {
     QGraphicsScene::mouseMoveEvent(event);
     if (event->isAccepted()) return;
     if (!d->selectionRectangle->scene()) return;
+    if (!(event->buttons() & Qt::LeftButton)) return;
     d->selectionRectangle->setRect(QRectF(event->buttonDownScenePos(Qt::LeftButton), event->scenePos()));
     QPainterPath selectArea;
     selectArea.addRect(d->selectionRectangle->rect());
