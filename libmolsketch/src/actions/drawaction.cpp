@@ -247,9 +247,9 @@ namespace Molsketch {
         endAtom = scene()->atomAt(endPos); // Refresh...
       }
       // Add bond
+      if (d->bondType->backward()) qSwap(beginAtom, endAtom);
       attemptUndoPush(new Commands::AddBond(new Bond(beginAtom, endAtom,
-                                                     d->bondType->bondOrder(),
-                                                     d->bondType->legacyType())));
+                                                     d->bondType->bondType())));
     }
 
     // That should've been it...
@@ -318,12 +318,10 @@ namespace Molsketch {
         stack->beginMacro("Add Bond");
         Atom* atom = new Atom(new_atom_pos,d->periodicTable->currentElement(),d->autoAddHydrogen);
         stack->push(new Commands::AddAtom(atom,at1 ->molecule()));
+        if (d->bondType->backward()) qSwap(at1, atom);
         Bond* bond = new Bond(at1,atom);
         stack->push(new Commands::AddBond(bond));
-        for (int i = 0; i < d->bondType->bondOrder() - 1; i++) // TODO this is repetitive (see mouseReleaseEvent()) -> make function
-          stack->push(new Commands::IncOrder(bond));
-
-        stack->push(new Commands::SetBondType(bond, d->bondType->legacyType()));
+        stack->push(new Commands::SetBondType(bond, d->bondType->bondType()));
         stack->endMacro();
       }
     }

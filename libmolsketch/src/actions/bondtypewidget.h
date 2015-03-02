@@ -28,22 +28,13 @@ namespace Molsketch {
   {
     Q_OBJECT
   public:
-    enum BondType
-    {
-      Single = 10,
-      Wedge  = 11,
-      Hash   = 12,
-      WedgeOrHash = 13,
-      Double = 20,
-      CisOrTrans = 21,
-      Triple = 30
-    };
+    typedef Bond::BondType BondType;
 
     explicit bondTypeWidget(QWidget *parent = 0);
     ~bondTypeWidget();
     bool backward() const ;
     BondType bondType() const ;
-    Bond::BondType legacyType() const;
+    void setBondType(BondType type) const;
     QPixmap bondIcon() const ;
     int bondOrder() const ;
 

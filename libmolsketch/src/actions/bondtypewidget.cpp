@@ -38,14 +38,14 @@ namespace Molsketch {
         parent(p)
     {
       buttonGroup->setExclusive(true) ;
-      createButton("single", Single) ;
-      createButton("hash", Hash, true) ;
-      createButton("wedge", Wedge, true) ;
-      createButton("hashOrWedge", WedgeOrHash) ;
-      createButton("double", Double) ;
-      createButton("cistrans", CisOrTrans) ;
-      createButton("triple", Triple) ;
-      buttonGroup->button(Single)->setChecked(true) ;
+      createButton("single", Bond::Single) ;
+      createButton("hash", Bond::Hash, true) ;
+      createButton("wedge", Bond::Wedge, true) ;
+      createButton("hashOrWedge", Bond::WedgeOrHash) ;
+      createButton("double", Bond::Double) ;
+      createButton("cistrans", Bond::CisOrTrans) ;
+      createButton("triple", Bond::Triple) ;
+      buttonGroup->button(Bond::Single)->setChecked(true) ;
     }
   };
 
@@ -66,13 +66,14 @@ namespace Molsketch {
     button->setAutoRaise(true);
     button->setCheckable(true);
     layout->addWidget(button);
+    layout->setMargin(0);
   }
 
   bondTypeWidget::bondTypeWidget(QWidget *parent)
     : QWidget(parent),
       d(new privateData(this))
   {
-    connect(d->buttonGroup, SIGNAL(buttonToggled(int,bool)),
+    connect(d->buttonGroup, SIGNAL(buttonClicked(int)),
             this, SLOT(changeType())) ;
   }
 
@@ -91,21 +92,10 @@ namespace Molsketch {
     return (BondType) qAbs(d->buttonGroup->checkedId()) ;
   }
 
-  Bond::BondType bondTypeWidget::legacyType() const
+  void bondTypeWidget::setBondType(bondTypeWidget::BondType type) const
   {
-    switch (bondType())
-    {
-      case Triple:
-      case Double:
-      case Single: return Bond::InPlane;
-      case CisOrTrans: return Bond::CisOrTrans;
-      case WedgeOrHash: return Bond::WedgeOrHash;
-      case Wedge:
-        return backward() ? Bond::InvertedWedge : Bond::Wedge;
-      case Hash:
-        return backward() ? Bond::InvertedHash : Bond::Hash;
-    }
-    return Bond::NoType;
+    QAbstractButton *button = d->buttonGroup->button(type);
+    if (button) button->setChecked(true);
   }
 
   QPixmap bondTypeWidget::bondIcon() const
@@ -115,7 +105,7 @@ namespace Molsketch {
 
   int bondTypeWidget::bondOrder() const
   {
-    return d->buttonGroup->checkedId() / 10;
+    return Bond::orderFromType((BondType) d->buttonGroup->checkedId());
   }
 
   void bondTypeWidget::changeType()

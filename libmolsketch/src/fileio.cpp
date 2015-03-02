@@ -144,13 +144,7 @@ namespace Molsketch
             case Bond::Wedge:
               out << svgPolygon(line);
               break;
-            case Bond::InvertedWedge:
-              out << svgPolygon(line);
-              break;
             case Bond::Hash:
-              out << svgPolygon(line,true);
-              break;
-            case Bond::InvertedHash:
               out << svgPolygon(line,true);
               break;
             case Bond::WedgeOrHash:

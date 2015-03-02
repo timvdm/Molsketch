@@ -295,43 +295,24 @@ void DelBond::redo()
 // Set Bond Type Command
 ////////////////////////////////////////////////////////////
 
-SetBondType::SetBondType(Bond* bond, Bond::BondType newType, const QString & text) : QUndoCommand(text), m_bond(bond)
+SetBondType::SetBondType(Bond* bond, Bond::BondType newType, const QString & text)
+  : QUndoCommand(text),
+    m_bond(bond),
+    m_type(newType)
 {
-  m_newType = newType;
-  m_oldType = bond->bondType();
-  m_oldOrder = bond->bondOrder();
 }
 
 void SetBondType::undo()
 {
-  m_bond->setType(m_oldType);
-  m_bond->setOrder(m_oldOrder);
-  m_bond->update();
+  redo();
 }
 
 void SetBondType::redo()
 {
-  if (m_newType == Bond::CisOrTrans)
-    m_bond->setOrder(2);
-  m_bond->setType(m_newType);
+  Bond::BondType type = m_bond->bondType();
+  m_bond->setType(m_type);
+  m_type = type;
   m_bond->update();
-}
-
-////////////////////////////////////////////////////////////
-// Increment bond Type
-////////////////////////////////////////////////////////////
-
-IncOrder::IncOrder(Bond* incBond, const QString & text) : QUndoCommand(text), m_bond(incBond)
-{}
-void IncOrder::undo()
-{
-  m_bond->decOrder();
-  m_undone = true;
-}
-void IncOrder::redo()
-{
-  m_bond->incOrder();
-  m_undone = false;
 }
 
 MergeMol::MergeMol(Molecule* moleculeA, Molecule* moleculeB, Molecule*& mergedMolecule, const QString & text) :  QUndoCommand(text), m_molA(moleculeA), m_molB(moleculeB), m_molC(mergedMolecule), m_scene(moleculeA->scene())
@@ -384,7 +365,7 @@ void MergeMol::redo()
     }
     foreach (Bond* b, molA->bonds())
     {
-      molC->addBond( molC->atomAt(b->beginAtom()->scenePos()), molC->atomAt(b->endAtom()->scenePos()), b->bondOrder(), b->bondType(), b->getColor ());
+      molC->addBond( molC->atomAt(b->beginAtom()->scenePos()), molC->atomAt(b->endAtom()->scenePos()), b->bondType(), b->getColor ());
     }
     foreach (Atom* a, molB->atoms())
     {
@@ -392,7 +373,7 @@ void MergeMol::redo()
     }
     foreach (Bond* b, molB->bonds())
     {
-      molC->addBond( molC->atomAt(b->beginAtom()->scenePos()), molC->atomAt(b->endAtom()->scenePos()), b->bondOrder(), b->bondType(), b->getColor ());
+      molC->addBond( molC->atomAt(b->beginAtom()->scenePos()), molC->atomAt(b->endAtom()->scenePos()), b->bondType(), b->getColor ());
     }
 
     //         molC->setPos(molA->scenePos());
@@ -541,4 +522,22 @@ void changeRelativeWidth::undo()
 void changeRelativeWidth::redo()
 {
   undo() ;
+}
+
+
+SwapBondAtoms::SwapBondAtoms(Molsketch::Bond *bond, const QString &text)
+  : QUndoCommand(text),
+    m_bond(bond)
+{
+}
+
+void SwapBondAtoms::redo()
+{
+  m_bond->setAtoms(m_bond->endAtom(), m_bond->beginAtom());
+  m_bond->update();
+}
+
+void SwapBondAtoms::undo()
+{
+  redo();
 }

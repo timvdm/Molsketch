@@ -86,13 +86,9 @@ namespace Molsketch
       int flags = 0 ;
       // Setting bondtype
       switch (bond->bondType()) {
-      case Bond::InvertedWedge:
-        qSwap(a1, a2) ;
       case Bond::Wedge:
         flags |= OB_WEDGE_BOND;
         break;
-      case Bond::InvertedHash:
-        qSwap(a1, a2) ;
       case Bond::Hash:
         flags |= OB_HASH_BOND;
         break;

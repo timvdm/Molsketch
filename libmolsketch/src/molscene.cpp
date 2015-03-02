@@ -566,7 +566,7 @@ namespace Molsketch {
 
   bool MolScene::textEditItemAt (const QPointF &pos)
   {
-                foreach(QGraphicsItem* item,items(pos))
+//                foreach(QGraphicsItem* item,items(pos))
 //                if (item->type() == TextInputItem::Type) return true;
                   return false;
   }

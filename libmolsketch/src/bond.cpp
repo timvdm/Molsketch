@@ -42,15 +42,18 @@
 
 namespace Molsketch {
 
-  Bond::Bond(Atom* atomA, Atom* atomB, int order, Bond::BondType type, QGraphicsItem* parent GRAPHICSSCENESOURCE )
-    : graphicsItem (parent GRAPHICSSCENEINIT ),
-      m_beginAtom(0),
-      m_endAtom(0)
+  int Bond::orderFromType(const Bond::BondType &type)
   {
-    m_bondType = type;
-    m_bondOrder = order;
-    m_ring = 0;
+    return type / 10;
+  }
 
+  Bond::Bond(Atom* atomA, Atom* atomB, Bond::BondType type, QGraphicsItem* parent GRAPHICSSCENESOURCE )
+    : graphicsItem (parent GRAPHICSSCENEINIT ),
+      m_bondType(type),
+      m_beginAtom(0),
+      m_endAtom(0),
+      m_ring(0)
+  {
     setAtoms(atomA, atomB);
   
     MolScene* molScene = dynamic_cast<MolScene*>(
@@ -102,7 +105,7 @@ namespace Molsketch {
   // draw single, double and triple bonds
   void Bond::drawSimpleBond(QPainter *painter)
   {
-    if (m_ring && (m_bondOrder == 2)) {
+    if (m_ring && (bondOrder() == 2)) { // TODO eliminate in favor of asymmetric double bond
       // draw double bond inside ring
       drawRingBond(painter);
       return;
@@ -121,7 +124,7 @@ namespace Molsketch {
     if (m_endAtom->hasLabel())
       end -= 0.20 * uvb * 40/*molScene->bondLength()*/; // FIXME
 
-    switch (m_bondOrder) {
+    switch (bondOrder()) {
       case 1:
         painter->drawLine(QLineF(begin, end));
         break;
@@ -189,17 +192,12 @@ namespace Molsketch {
 
   }
 
-  void Bond::drawHashBond(QPainter *painter, bool inverted)
+  void Bond::drawHashBond(QPainter *painter)
   {
     qreal m_bondSpacing = 4.0;
 
     QPointF begin = mapFromParent(m_beginAtom->pos());
     QPointF end = mapFromParent(m_endAtom->pos());
-    if (inverted) {
-      QPointF swap = begin;
-      begin = end;
-      end = swap;
-    }
     QPointF vb = end - begin;
 
     QPointF uvb = vb / sqrt(vb.x()*vb.x() + vb.y()*vb.y());
@@ -216,7 +214,7 @@ namespace Molsketch {
     }
   }
 
-  void Bond::drawWedgeBond(QPainter *painter, bool inverted)
+  void Bond::drawWedgeBond(QPainter *painter)
   {
     qreal m_bondSpacing = 4.0;
 
@@ -231,36 +229,17 @@ namespace Molsketch {
     int i = 0;
     QPointF points[4];
     if (m_beginAtom->hasLabel()) {
-      if (!inverted) {
         points[i++] = begin + 0.25 * (vb - orthogonal);
         points[i++] = begin + 0.25 * (vb + orthogonal);
-      } else {
-        points[i++] = begin + 0.25 * vb + 0.75 * orthogonal;
-        points[i++] = begin + 0.25 * vb - 0.75 * orthogonal;
-      }
     } else {
-      if (!inverted) {
         points[i++] = begin;
-      } else {
-        points[i++] = begin + orthogonal;
-        points[i++] = begin - orthogonal;
-      }
     }
     if (m_endAtom->hasLabel()) {
-      if (inverted) {
-        points[i++] = end - 0.25 * (vb + orthogonal);
-        points[i++] = end - 0.25 * (vb - orthogonal);
-      } else {
         points[i++] = end - 0.25 * vb + 0.75 * orthogonal;
         points[i++] = end - 0.25 * vb - 0.75 * orthogonal;
-      }
     } else {
-      if (inverted) {
-        points[i++] = end;
-      } else {
         points[i++] = end + orthogonal;
         points[i++] = end - orthogonal;
-      }
     }
 
     painter->setBrush( QBrush(getColor()) );
@@ -292,10 +271,7 @@ namespace Molsketch {
     switch ( m_bondType )
     {
       case Bond::Hash:
-        drawHashBond(painter, false);
-        break;
-      case Bond::InvertedHash:
-        drawHashBond(painter, true);
+        drawHashBond(painter);
         break;
       case Bond::WedgeOrHash:
         pen.setDashPattern(dash);
@@ -303,12 +279,8 @@ namespace Molsketch {
         painter->drawLine(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())));
         break;
       case Bond::Wedge:
-        drawWedgeBond(painter, false);
+        drawWedgeBond(painter);
         break;
-      case Bond::InvertedWedge:
-        drawWedgeBond(painter, true);
-        break;
-
       default:
         drawSimpleBond(painter);
     }
@@ -361,36 +333,9 @@ namespace Molsketch {
 
   // Manipulation methods
 
-  void Bond::setOrder(int order)
-  {
-    //pre: order>0
-    //post: m_bondOrder=order
-
-    Q_ASSERT( order > 0 );
-    m_bondOrder = order;
-    molecule()->refreshRings();
-    molecule()->invalidateElectronSystems();
-    update();
-  }
-
-  void Bond::incOrder()
-  {
-    // Calculating the new order
-    setOrder( m_bondOrder % 3 + 1 );
-  }
-
-  void Bond::decOrder()
-  {
-    // Calculating the new order // TODO check
-    setOrder( (m_bondOrder + 1) % 3 + 1 );
-  }
-
   void Bond::setType(Bond::BondType t)
   {
-    Q_ASSERT(0 <= t && t < Bond::NoType);
-
-    m_bondType = (BondType) qBound(0,(int) t,Bond::NoType-1);
-
+    m_bondType = t;
     update();
   }
 
@@ -399,7 +344,7 @@ namespace Molsketch {
 
   int Bond::bondOrder() const
   {
-    return m_bondOrder;
+    return orderFromType(bondType());
   }
 
   Bond::BondType Bond::bondType() const
@@ -483,23 +428,9 @@ namespace Molsketch {
 
     QString atomOne = molecule()->atomId(m_beginAtom),
         atomTwo = molecule()->atomId(m_endAtom) ;
-    if ((bondType() == Bond::InvertedHash) || (bondType() == Bond::InvertedWedge))
-      atomOne.swap(atomTwo) ;
 
     attributes.append("atomRefs2", atomOne + " " + atomTwo) ;
-    attributes.append("order", QString::number(bondOrder()));
-    switch (bondType()) {
-      case Bond::InvertedWedge:
-      case Bond::Wedge:
-        attributes.append("bondStereo", "W");
-        break;
-      case Bond::InvertedHash:
-      case Bond::Hash:
-        attributes.append("bondStereo", "H");
-        break;
-      default:
-        break;
-    }
+    attributes.append("type", QString::number(m_bondType));
 
     return attributes ;
   }
@@ -511,14 +442,7 @@ namespace Molsketch {
 
     setAtoms(molecule()->atom(atomIndexes.first()),
              molecule()->atom(atomIndexes.last())) ;
-    setOrder(attributes.value("order").toString().toInt()) ;
-    if (attributes.hasAttribute("bondStereo"))
-    {
-      if (attributes.value("bondStereo") == "W")
-        setType(Wedge);
-      if (attributes.value("bondStereo") == "H")
-        setType(Hash) ;
-    }
+    m_bondType = (BondType) (attributes.value("type").toInt());
   }
 
   QStringList Bond::textItemAttributes() const

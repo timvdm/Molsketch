@@ -381,37 +381,18 @@ class SetBondType : public  QUndoCommand
     virtual void redo();
   private:
     Bond* m_bond; //!< The bond of this command.
-    Bond::BondType m_newType, m_oldType;
-    int m_oldOrder;
+    Bond::BondType m_type;
   };
 
-
-/**
- * Command to increase the bond order
- *
- * @author Harm van Eersel
- */
-class IncOrder : public  QUndoCommand
-  {
-  public:
-    /**
-     * Constructor
-     *
-     * @param incBond bond to increase the order of 
-     * @param text a description of the command
-     */
-    IncOrder(Bond* incBond, const QString & text = "");
-    /** Undo this command. */
-    virtual void undo();
-    /** Redo this command. */
-    virtual void redo();
-  private:
-    /** Undo state of the command. */
-    bool m_undone;
-    /** The bond of this command. */
-    Bond* m_bond;
-  };
-
+class SwapBondAtoms : public QUndoCommand
+{
+public:
+  SwapBondAtoms(Bond* bond, const QString& text = "");
+  void redo();
+  void undo();
+private:
+  Bond* m_bond;
+};
 
 // Molecule commands
 

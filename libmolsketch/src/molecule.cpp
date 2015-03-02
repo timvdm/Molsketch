@@ -93,7 +93,7 @@ namespace Molsketch {
 
     // ...and bonds
     foreach(Bond* bond, bondSet) {
-      Bond *b = new Bond(atomAt(bond->beginAtom()->scenePos()),atomAt(bond->endAtom()->scenePos()),bond->bondOrder(),bond->bondType());
+      Bond *b = new Bond(atomAt(bond->beginAtom()->scenePos()),atomAt(bond->endAtom()->scenePos()),bond->bondType());
       b ->setColor (bond ->getColor ());
       addBond(b);
     }
@@ -123,7 +123,7 @@ namespace Molsketch {
     // ...and bonds
     foreach(Bond* bond, mol.bonds())
     {
-      Bond *b = new Bond(atomAt(bond->beginAtom()->pos()),atomAt(bond->endAtom()->pos()),bond->bondOrder(),bond->bondType());
+      Bond *b = new Bond(atomAt(bond->beginAtom()->pos()),atomAt(bond->endAtom()->pos()),bond->bondType());
       b ->setColor (bond ->getColor ());
       addBond(b);
     }
@@ -171,7 +171,7 @@ namespace Molsketch {
     return atom;
   }
 
-  Bond* Molecule::addBond(Atom* atomA, Atom* atomB, int order, int type, QColor c)
+  Bond* Molecule::addBond(Atom* atomA, Atom* atomB, int type, QColor c)
   {
     //pre: atomA and atomB are existing different atoms in the molecule
     Q_ASSERT (m_atomList.contains(atomA));
@@ -183,7 +183,7 @@ namespace Molsketch {
     //post: a bond of type has been added between atomA and atomB
 
     // Creating a new bond
-    Bond* bond = new Bond(atomA,atomB,order,static_cast<Bond::BondType>(type));
+    Bond* bond = new Bond(atomA,atomB,static_cast<Bond::BondType>(type));
     bond ->setColor(c);
     return addBond(bond);
   }
@@ -962,7 +962,7 @@ namespace Molsketch {
     foreach(const Bond* bond, other.m_bondList)
       addBond(m_atomList[offset+other.m_atomList.indexOf(bond->beginAtom())],
           m_atomList[offset+other.m_atomList.indexOf(bond->endAtom())],
-          bond->bondOrder(), bond->bondType(), bond->getColor());
+          bond->bondType(), bond->getColor());
     return *this;
   }
 

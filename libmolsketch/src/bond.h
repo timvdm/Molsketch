@@ -55,22 +55,26 @@ class Bond : public graphicsItem
 	/**
 	 * Enum for the different bond types
 	 */
-	enum BondType { // TODO replace with unified version from bondTypeWidget
-	  InPlane = 0,
-	  Wedge,
-	  InvertedWedge,
-	  Hash,
-	  InvertedHash,
-	  WedgeOrHash,
-	  CisOrTrans,
-	  NoType,
-	};
-	/** Enum for the different bondorders. */
-	enum bondOrders {
-	  Single = 1, /**< Single bond */
-	  Double = 2, /**< Double bond */
-	  Triple = 3 /**< Triple bond */
-	};
+        enum BondType
+        {
+          Invalid = 0,
+          DativeDot = 1,
+          DativeDash = 2,
+          Single = 10,
+          Wedge  = 11,
+          Hash   = 12,
+          WedgeOrHash = 13,
+          SingleBroken = 14,
+          Double = 20,
+          CisOrTrans = 21,
+          DoubleAsymmetric = 22,
+          DoubleBroken = 23,
+          Triple = 30,
+          TripleAsymmetric = 31,
+          TripleBroken = 32,
+        };
+
+        static int orderFromType(const BondType& type);
 
 	static qreal defaultLength ;
 	static qreal defaultAngle ;
@@ -85,8 +89,7 @@ class Bond : public graphicsItem
 	 */
         explicit Bond(Atom* atomA = 0, // TODO check usage
                       Atom* atomB = 0,
-                      int order = 1,
-                      Bond::BondType type = InPlane,
+                      Bond::BondType type = Single,
                       QGraphicsItem* parent = 0 GRAPHICSSCENEHEADER ) ;
 	/**
 	 * Destructor.
@@ -112,13 +115,6 @@ class Bond : public graphicsItem
 	// Manipulation methods
 	/** Sets the bond type to @p type. */
 	void setType(Bond::BondType type);
-
-	/** Sets the bond order to @p order. */
-	void setOrder(int order);
-	/** Cycle forward through the bond orders. */
-	void incOrder();
-	/** Cycle backward through the bond orders. */
-	void decOrder();
 
 	// Query methods
 	/** Returns the bond order. */
@@ -175,14 +171,12 @@ class Bond : public graphicsItem
   private:
 	void drawSimpleBond(QPainter *painter);
 	void drawRingBond(QPainter *painter);
-	void drawHashBond(QPainter *painter, bool inverted);
-	void drawWedgeBond(QPainter *painter, bool inverted);
+        void drawHashBond(QPainter *painter);
+        void drawWedgeBond(QPainter *painter);
 
 	// Internal representation
 	/** Stores the bond type as integer. */
 	Bond::BondType m_bondType;
-	/** Stores the bond order as integer. */
-	int m_bondOrder;
 	/** Stores a pointer to the first atom. */
 	Atom* m_beginAtom;
 	/** Stores a pointer to the second atom. */
