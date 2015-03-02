@@ -36,6 +36,8 @@
 
 #include <QDebug>
 
+#include <actions/bondtypeaction.h>
+
 #define CHECKFORATOMS if (!m_beginAtom || !m_endAtom)
 
 // Constructor
@@ -448,6 +450,20 @@ namespace Molsketch {
   QStringList Bond::textItemAttributes() const
   {
     return QStringList() << "bondStereo" ;
+  }
+
+  void Bond::prepareContextMenu(QMenu *contextMenu)
+  {
+    // Prepare bond menu
+    MolScene *sc = qobject_cast<MolScene*>(scene());
+    if (!sc) return;
+    bondTypeAction* action = sc->findChild<bondTypeAction*>();
+    if (action)
+    {
+      contextMenu->addAction(action);
+      QObject::connect(action, SIGNAL(triggered()), contextMenu, SLOT(close())); // TODO check if "changed()" event can accomplish this
+    }
+    graphicsItem::prepareContextMenu(contextMenu);
   }
 
   qreal Bond::defaultLength = 40 ; // TODO modifiable

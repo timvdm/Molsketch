@@ -167,6 +167,7 @@ class Bond : public graphicsItem
 	QXmlStreamAttributes graphicAttributes() const ;
 	void readGraphicAttributes(const QXmlStreamAttributes &attributes) ;
 	QStringList textItemAttributes() const ;
+        void prepareContextMenu(QMenu *contextMenu);
 
   private:
 	void drawSimpleBond(QPainter *painter);
