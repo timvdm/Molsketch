@@ -38,6 +38,7 @@ namespace Molsketch {
     {
       itemList.remove(0) ;
       parent->setEnabled(itemList.size() >= minItemCount);
+      emit parent->itemsChanged();
     }
   };
 
@@ -46,6 +47,7 @@ namespace Molsketch {
     d(new privateData(this))
   {
     connect(this, SIGNAL(triggered()), this, SLOT(gotTrigger())) ;
+    connect(parent, SIGNAL(selectionChanged()), this, SLOT(updateItems()));
   }
 
   abstractItemAction::~abstractItemAction()
@@ -57,8 +59,7 @@ namespace Molsketch {
 
   void abstractItemAction::setItem(graphicsItem * item)
   {
-    d->itemList.clear();
-    d->itemList << item;
+    setItems(QList<QGraphicsItem*>() << item);
   }
 
   QList<QGraphicsItem*> getFamily(const QList<QGraphicsItem*>& list)
@@ -120,6 +121,12 @@ namespace Molsketch {
     if (d->itemList.size() < d->minItemCount) return ;
     qDebug() << "itemaction" << scene() ;
     execute();
+  }
+
+  void abstractItemAction::updateItems()
+  {
+    if (!scene()) return;
+    setItems(scene()->selectedItems());
   }
 
 } // namespace

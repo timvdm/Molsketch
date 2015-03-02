@@ -284,6 +284,11 @@ namespace Molsketch {
     }
 
     contextMenu.exec(event->screenPos()) ;
+    foreach(QAction* action, contextMenu.actions())
+    {
+      abstractItemAction *itemAction = dynamic_cast<abstractItemAction*>(action);
+      if (itemAction) itemAction->removeItem(this);
+    }
     event->accept();
   }
 

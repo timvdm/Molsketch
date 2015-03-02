@@ -60,6 +60,8 @@ public:
   /** add one item */
   void addItem(graphicsItem*);
   void setMinimumItemCount(const int& count);
+signals:
+  void itemsChanged();
 protected:
   /** obtain items currently associated with this action */
   QList<graphicsItem*> items() const ;
@@ -70,6 +72,7 @@ private:
   privateData *d;
 private slots:
   void gotTrigger() ;
+  void updateItems();
 };
 
 } // namespace
