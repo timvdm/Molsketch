@@ -200,7 +200,13 @@ namespace Molsketch {
         && endAtom)
     {
       if (beginAtom == endAtom) return; // or the same (here: alternatively insert additional neighbor TODO )
-      if (beginAtom->neighbours().contains(endAtom)) return; // TODO change bond type
+      if (beginAtom->neighbours().contains(endAtom))
+      {
+        Bond *bond = beginAtom->molecule()->bondBetween(beginAtom, endAtom);
+        if (!bond) return;
+        attemptUndoPush(new Commands::SetBondType(bond, d->bondType->bondType(), tr("Change bond")));
+        return;
+      }
     }
 
     // Ok, let's get to business...
