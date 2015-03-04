@@ -114,7 +114,7 @@ class Bond : public graphicsItem
 
 	// Manipulation methods
 	/** Sets the bond type to @p type. */
-	void setType(Bond::BondType type);
+        void setType(const Bond::BondType& type);
 
 	// Query methods
 	/** Returns the bond order. */

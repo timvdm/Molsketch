@@ -335,7 +335,7 @@ namespace Molsketch {
 
   // Manipulation methods
 
-  void Bond::setType(Bond::BondType t)
+  void Bond::setType(const BondType &t)
   {
     m_bondType = t;
     update();

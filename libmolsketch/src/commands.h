@@ -39,14 +39,14 @@ class QGraphicsScene;
 class QTransform;
 
 #include "bond.h"
+#include "arrow.h"
 
 namespace Molsketch {
 
-  class Atom;
+class Atom;
 class Molecule;
-class Bond;
 class MolScene;
-	class Residue;
+class Residue;
 
 namespace Commands {
 
@@ -364,25 +364,33 @@ class DelBond : public  QUndoCommand
 /**
  * Command to set the bond type.
  */
-class SetBondType : public  QUndoCommand
+
+template<class ItemClass,
+         class ItemTypeEnum,
+         void (ItemClass::*setFunction)(const ItemTypeEnum&),
+         ItemTypeEnum (ItemClass::*getFunction)()const>
+class setItemTypeCommand : public QUndoCommand
+{
+private:
+  ItemClass *item;
+  ItemTypeEnum type;
+public:
+  setItemTypeCommand(ItemClass *Item, ItemTypeEnum newType, const QString& text = "")
+    : QUndoCommand(text),
+      item(Item),
+      type(newType){}
+  void redo()
   {
-  public:
-    /**
-     * Constructor
-     *
-     * @param bond bond of which the type should be changed
-     * @param newType The new Bond::BondType
-     * @param text a description of the command
-     */
-    SetBondType(Bond* incBond, Bond::BondType newType, const QString & text = "");
-    /** Undo this command. */
-    virtual void undo();
-    /** Redo this command. */
-    virtual void redo();
-  private:
-    Bond* m_bond; //!< The bond of this command.
-    Bond::BondType m_type;
-  };
+    ItemTypeEnum temp = (item->*getFunction)();
+    (item->*setFunction)(type);
+    type = temp;
+    item->update();
+  }
+  void undo() { redo(); }
+};
+
+typedef setItemTypeCommand<Bond, Bond::BondType, &Bond::setType, &Bond::bondType> SetBondType;
+typedef setItemTypeCommand<Arrow, Arrow::ArrowType, &Arrow::setArrowType, &Arrow::getArrowType> SetArrowType;
 
 class SwapBondAtoms : public QUndoCommand
 {

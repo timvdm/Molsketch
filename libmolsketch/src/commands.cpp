@@ -295,26 +295,6 @@ void DelBond::redo()
 // Set Bond Type Command
 ////////////////////////////////////////////////////////////
 
-SetBondType::SetBondType(Bond* bond, Bond::BondType newType, const QString & text)
-  : QUndoCommand(text),
-    m_bond(bond),
-    m_type(newType)
-{
-}
-
-void SetBondType::undo()
-{
-  redo();
-}
-
-void SetBondType::redo()
-{
-  Bond::BondType type = m_bond->bondType();
-  m_bond->setType(m_type);
-  m_type = type;
-  m_bond->update();
-}
-
 MergeMol::MergeMol(Molecule* moleculeA, Molecule* moleculeB, Molecule*& mergedMolecule, const QString & text) :  QUndoCommand(text), m_molA(moleculeA), m_molB(moleculeB), m_molC(mergedMolecule), m_scene(moleculeA->scene())
 {
   //pre: molA.scene = molB.scene

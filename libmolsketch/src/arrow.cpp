@@ -64,9 +64,14 @@ namespace Molsketch {
     delete d ;
   }
 
-  void Arrow::setArrowType(Arrow::ArrowType type)
+  void Arrow::setArrowType(const ArrowType &type)
   {
     d->arrowType = type ;
+  }
+
+  Arrow::ArrowType Arrow::getArrowType() const
+  {
+    return d->arrowType;
   }
 
   void Arrow::setCoordinates(const QVector<QPointF> &c)

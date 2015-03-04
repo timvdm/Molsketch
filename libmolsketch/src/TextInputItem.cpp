@@ -71,7 +71,7 @@ namespace Molsketch {
 
   void TextInputItem::clickedOn (Atom *at) {
     setAtom (at);
-    setPos (at->scenePos());
+    setPos (at->scenePos()); // TODO fix
     setPlainText(at ->element());
     if (scene()) setFont(scene()->font());
     at ->hide ();

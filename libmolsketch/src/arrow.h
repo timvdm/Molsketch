@@ -42,7 +42,8 @@ namespace Molsketch {
     Arrow();
     ~Arrow();
 
-    void setArrowType(ArrowType type);
+    void setArrowType(const ArrowType& type);
+    ArrowType getArrowType() const;
     void setCoordinates(const QVector<QPointF> &c) ;
     QPolygonF coordinates() const ;
 
