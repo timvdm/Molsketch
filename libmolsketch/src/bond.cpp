@@ -456,12 +456,14 @@ namespace Molsketch {
   {
     // Prepare bond menu
     MolScene *sc = qobject_cast<MolScene*>(scene());
-    if (!sc) return;
-    bondTypeAction* action = sc->findChild<bondTypeAction*>();
-    if (action)
+    if (sc)
     {
-      contextMenu->addAction(action);
-      QObject::connect(action, SIGNAL(triggered()), contextMenu, SLOT(close())); // TODO check if "changed()" event can accomplish this
+      bondTypeAction* action = sc->findChild<bondTypeAction*>();
+      if (action)
+      {
+        contextMenu->addAction(action);
+        QObject::connect(action, SIGNAL(triggered()), contextMenu, SLOT(close())); // TODO check if "changed()" event can accomplish this
+      }
     }
     graphicsItem::prepareContextMenu(contextMenu);
   }

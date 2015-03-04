@@ -38,6 +38,7 @@
 #endif
 #include <QGridLayout>
 
+#include <actions/arrowtypeaction.h>
 #include <actions/bondtypeaction.h>
 #include <actions/coloraction.h>
 #include <actions/connectaction.h>
@@ -850,6 +851,7 @@ void MainWindow::createToolBars()
   modifyToolBar->addAction(new minimizeAction(m_scene));
   modifyToolBar->addAction(new deleteAction(m_scene));
 
+  new arrowTypeAction(m_scene);
   new bondTypeAction(m_scene);
 
 }

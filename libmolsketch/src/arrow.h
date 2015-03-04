@@ -63,6 +63,7 @@ namespace Molsketch {
 protected:
     void readGraphicAttributes(const QXmlStreamAttributes &attributes) ;
     QXmlStreamAttributes graphicAttributes() const ;
+    void prepareContextMenu(QMenu *contextMenu);
 
   private:
     class privateData ;

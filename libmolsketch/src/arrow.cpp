@@ -27,9 +27,11 @@
 #include <QDialog>
 #include <QDebug>
 #include <QUndoCommand>
+#include <QMenu>
 
 #include "molscene.h"
 #include "math2d.h"
+#include "actions/arrowtypeaction.h"
 
 namespace Molsketch {
 
@@ -261,6 +263,21 @@ namespace Molsketch {
     QXmlStreamAttributes attributes ;
     attributes.append("arrowType", QString::number(d->arrowType)) ;
     return attributes ;
+  }
+
+  void Arrow::prepareContextMenu(QMenu *contextMenu)
+  {
+    MolScene *sc = qobject_cast<MolScene*>(scene());
+    if (sc)
+    {
+      arrowTypeAction *action = sc->findChild<arrowTypeAction*>();
+      if (action)
+      {
+        contextMenu->addAction(action);
+        QObject::connect(action, SIGNAL(triggered()), contextMenu, SLOT(close()));
+      }
+    }
+    graphicsItem::prepareContextMenu(contextMenu);
   }
 
   // TODO (maybe) highlight points if covered by other bounding rect (probably in scene class)
