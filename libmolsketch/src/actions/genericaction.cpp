@@ -74,7 +74,7 @@ namespace Molsketch{
     return false;
   }
 
-  void genericAction::attemptUndoPush(QUndoCommand *command)
+  void genericAction::attemptUndoPush(QUndoCommand *command) const
   {// TODO merge with graphisitem
     MolScene *molscene = dynamic_cast<MolScene*>(scene());
     if (!molscene || !molscene->stack())
@@ -86,14 +86,14 @@ namespace Molsketch{
       molscene->stack()->push(command) ;
   }
 
-  void genericAction::attemptBeginMacro(const QString &text)
+  void genericAction::attemptBeginMacro(const QString &text) const
   {
     MolScene *molscene = dynamic_cast<MolScene*>(scene());
     if (!molscene || !molscene->stack()) return;
     molscene->stack()->beginMacro(text);
   }
 
-  void genericAction::attemptEndEndMacro()
+  void genericAction::attemptEndEndMacro() const
   {
     MolScene *molscene = dynamic_cast<MolScene*>(scene());
     if (!molscene || !molscene->stack()) return;

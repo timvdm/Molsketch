@@ -52,7 +52,9 @@ HEADERS += \
     actions/mechanismarrowaction.h \
     actions/pluginaction.h \
     actions/deleteaction.h \
-    actions/bondtypeaction.h
+    actions/bondtypeaction.h \
+    actions/itemtypewidget.h \
+    actions/itemtypeaction.h \
 
 SOURCES += \
     atom.cpp \
@@ -101,7 +103,9 @@ SOURCES += \
     actions/mechanismarrowaction.cpp \
     actions/pluginaction.cpp \
     actions/deleteaction.cpp \
-    actions/bondtypeaction.cpp
+    actions/bondtypeaction.cpp \
+    actions/itemtypewidget.cpp \
+    actions/itemtypeaction.cpp \
 
 FORMS += \
     mechanismarrowdialog.ui \

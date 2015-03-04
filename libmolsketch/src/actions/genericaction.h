@@ -50,9 +50,9 @@ namespace Molsketch {
     MolScene *scene() const ;
     QUndoStack* undoStack() const ;
     bool eventFilter(QObject *object, QEvent *event);
-    void attemptUndoPush(QUndoCommand* command) ;
-    void attemptBeginMacro(const QString& text);
-    void attemptEndEndMacro();
+    void attemptUndoPush(QUndoCommand* command) const ;
+    void attemptBeginMacro(const QString& text) const;
+    void attemptEndEndMacro() const;
   private slots:
     void activationSlot(const bool& b) ;
   };

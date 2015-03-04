@@ -109,12 +109,12 @@ namespace Molsketch {
     QVBoxLayout *layout = new QVBoxLayout(d->dock->widget()) ;
     layout->setAlignment(Qt::AlignLeft | Qt::AlignTop) ;
     d->periodicTable = new periodicTableWidget(d->dock) ;
-    d->bondType = new bondTypeWidget(d->dock) ;
+    d->bondType = new bondTypeWidget(true, d->dock) ;
     d->dock->widget()->layout()->addWidget(d->periodicTable);
     d->dock->widget()->layout()->addWidget(d->bondType);
     connect(d->periodicTable, SIGNAL(elementChanged(QString)),
             this, SLOT(refreshIcon()));
-    connect(d->bondType, SIGNAL(bondTypeChanged(const bondTypeWidget::BondType&)),
+    connect(d->bondType, SIGNAL(currentTypeChanged(int)),
             this, SLOT(refreshIcon()));
     connect(this, SIGNAL(toggled(bool)),
             this, SLOT(toggleVisibility(bool)));
@@ -336,7 +336,7 @@ namespace Molsketch {
   void drawAction::refreshIcon()
   {// TODO redo
     QPixmap elementIcon = d->periodicTable->currentIcon(),
-        bondIcon = d->bondType->bondIcon();
+        bondIcon = d->bondType->currentIcon();
     QSize elementSize = elementIcon.size();
     QSize bondSize = bondIcon.size();
     QSize totalSize(bondSize + elementSize);

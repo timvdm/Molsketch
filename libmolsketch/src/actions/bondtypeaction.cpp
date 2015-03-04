@@ -8,69 +8,38 @@
 
 namespace Molsketch {
 
-  struct bondTypeAction::privateData
-  {
-    bondTypeWidget *typeWidget;
-    QMenu *menu;
-    bool transferingBondType;
-  };
-
   bondTypeAction::bondTypeAction(MolScene *scene)
-    : abstractItemAction(scene),
-      d(new privateData)
+    : ItemTypeAction(scene)
   {
-    d->menu = new QMenu;
-    d->typeWidget = new bondTypeWidget(d->menu);
-    QVBoxLayout *layout = new QVBoxLayout(d->menu);
-    d->menu->setLayout(layout);
-    layout->addWidget(d->typeWidget);
-    connect(d->typeWidget, SIGNAL(bondTypeChanged(bondTypeWidget::BondType)), d->menu, SLOT(close()));
-    connect(d->typeWidget, SIGNAL(bondTypeChanged(bondTypeWidget::BondType)), this, SLOT(trigger()));
-    connect(this, SIGNAL(itemsChanged()), this, SLOT(checkBondType()));
-    setMinimumItemCount(1);
+    setItemTypeWidget(new bondTypeWidget(false));
     setText(tr("Bond type"));
-    setMenu(d->menu);
-    setCheckable(false);
-    d->transferingBondType = false;
   }
 
-  bondTypeAction::~bondTypeAction()
+  Bond *getBond(graphicsItem* item)
   {
-    delete d->menu;
-    delete d;
+    if (item->type() != Bond::Type) return 0;
+    Bond *bond = dynamic_cast<Bond*>(item);
+    return bond;
   }
 
-  void bondTypeAction::execute()
+  void bondTypeAction::applyTypeToItem(graphicsItem *item, int type) const
   {
-    if (d->transferingBondType) return;
-    qDebug() << "Beginning change bond type";
-    attemptBeginMacro(tr("change bond type"));
-    foreach(graphicsItem *item, items())
-    {
-      if (item->type() != Bond::Type) continue;
-      Bond *bond = dynamic_cast<Bond*>(item);
-      if (!bond) continue; // TODO shouldn't happen
-      attemptUndoPush(new Commands::SetBondType(bond, d->typeWidget->bondType()));
-      if (d->typeWidget->backward())
-        attemptUndoPush(new Commands::SwapBondAtoms(bond));
-    }
-    attemptEndEndMacro();
+    Bond *bond = getBond(item);
+    if (!bond) return ;
+    attemptUndoPush(new Commands::SetBondType(bond, (Bond::BondType) type));
   }
 
-  void bondTypeAction::checkBondType()
+  bool bondTypeAction::getTypeFromItem(graphicsItem *item, int &type) const
   {
-    d->transferingBondType = true;
-    d->typeWidget->setBondType(Bond::Single);
-    foreach(graphicsItem* item, items())
-    {
-      Bond *bond = dynamic_cast<Bond*>(item);
-      if (bond)
-      {
-        d->typeWidget->setBondType(bond->bondType());
-        break;
-      }
-    }
-    d->transferingBondType = false;
+    Bond *bond = getBond(item);
+    if (!bond) return false;
+    type = bond->bondType();
+    return true;
+  }
+
+  int bondTypeAction::defaultType() const
+  {
+    return Bond::Single;
   }
 
 } // namespace Molsketch

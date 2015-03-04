@@ -16,23 +16,35 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef BONDTYPEWIDGET_H
-#define BONDTYPEWIDGET_H
+#ifndef MOLSKETCH_ITEMTYPEACTION_H
+#define MOLSKETCH_ITEMTYPEACTION_H
 
-#include "itemtypewidget.h"
-#include "bond.h"
+#include "abstractitemaction.h"
 
 namespace Molsketch {
 
-  class bondTypeWidget : public ItemTypeWidget
+  class ItemTypeWidget;
+
+  class ItemTypeAction : public abstractItemAction
   {
+    Q_OBJECT
   public:
-    explicit bondTypeWidget(bool withInversion, QWidget *parent = 0);
-    bool backward() const ;
-    Bond::BondType bondType() const ;
-    void setBondType(Bond::BondType type) const;
+    explicit ItemTypeAction(MolScene* scene = 0);
+    ~ItemTypeAction();
+  protected:
+    void setItemTypeWidget(ItemTypeWidget* widget);
+    virtual QString undoName() const;
+    virtual void applyTypeToItem(graphicsItem* item, int type) const = 0;
+    virtual bool getTypeFromItem(graphicsItem* item, int& type) const = 0;
+    virtual int defaultType() const;
+  private:
+    class privateData;
+    privateData *d;
+    void execute();
+  private slots:
+    void checkItemType();
   };
 
-} // namespace
+} // namespace Molsketch
 
-#endif // BONDTYPEWIDGET_H
+#endif // MOLSKETCH_ITEMTYPEACTION_H

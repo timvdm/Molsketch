@@ -23,94 +23,44 @@
 
 namespace Molsketch {
 
-  class bondTypeWidget::privateData
+  bondTypeWidget::typeIconPair tipGen(int t, const QString& name, bool invert = false)
   {
-    void createButton(const QString& IconName,
-                      const bondTypeWidget::BondType& type,
-                      bool forwardAndBackward = false) ;
-  public:
-    QButtonGroup *buttonGroup ;
-    QHBoxLayout *layout ;
-    bondTypeWidget *parent;
-    privateData(bondTypeWidget* p)
-      : buttonGroup(new QButtonGroup(p)),
-        layout(new QHBoxLayout(p)),
-        parent(p)
-    {
-      buttonGroup->setExclusive(true) ;
-      createButton("single", Bond::Single) ;
-      createButton("hash", Bond::Hash, true) ;
-      createButton("wedge", Bond::Wedge, true) ;
-      createButton("hashOrWedge", Bond::WedgeOrHash) ;
-      createButton("double", Bond::Double) ;
-      createButton("cistrans", Bond::CisOrTrans) ;
-      createButton("triple", Bond::Triple) ;
-      buttonGroup->button(Bond::Single)->setChecked(true) ;
-    }
-  };
-
-  void bondTypeWidget::privateData::createButton(const QString &IconName, const BondType &type, bool forwardAndBackward)
-  {
-    QToolButton *button = new QToolButton(parent) ;
-    buttonGroup->addButton(button, type) ;
-    QImage icon(":images/" + IconName + ".png") ;
-    button->setIcon(QPixmap::fromImage(icon)) ;
-    button->setAutoRaise(true);
-    button->setCheckable(true);
-    layout->addWidget(button);
-
-    if (!forwardAndBackward) return;
-    button = new QToolButton(parent);
-    buttonGroup->addButton(button, -(int) type);
-    button->setIcon(QPixmap::fromImage(icon.mirrored(true, true)));
-    button->setAutoRaise(true);
-    button->setCheckable(true);
-    layout->addWidget(button);
-    layout->setMargin(0);
+    QImage icon(":images/" + name + ".png");
+    return bondTypeWidget::typeIconPair(t, QPixmap::fromImage(icon.mirrored(invert, invert)));
   }
 
-  bondTypeWidget::bondTypeWidget(QWidget *parent)
-    : QWidget(parent),
-      d(new privateData(this))
+  bondTypeWidget::bondTypeWidget(bool withInversion, QWidget *parent)
+    : ItemTypeWidget(parent)
   {
-    connect(d->buttonGroup, SIGNAL(buttonClicked(int)),
-            this, SLOT(changeType())) ;
-  }
-
-  bondTypeWidget::~bondTypeWidget()
-  {
-    delete d ;
+    QList<typeIconPair> buttonList;
+    buttonList
+        << tipGen(Bond::Single, "single")
+        << tipGen(Bond::Hash, "hash");
+    if (withInversion) buttonList << tipGen(- Bond::Hash, "hash", true);
+    buttonList
+        << tipGen(Bond::Wedge, "wedge");
+    if (withInversion) buttonList << tipGen(- Bond::Wedge, "wedge", true);
+    buttonList
+               << tipGen(Bond::WedgeOrHash, "hashOrWedge")
+               << tipGen(Bond::Double, "double")
+               << tipGen(Bond::CisOrTrans, "cistrans")
+               << tipGen(Bond::Triple, "triple");
+    setButtons(buttonList);
   }
 
   bool bondTypeWidget::backward() const
   {
-    return d->buttonGroup->checkedId() < 0 ;
+    return currentType() < 0 ;
   }
 
-  bondTypeWidget::BondType bondTypeWidget::bondType() const
+  Bond::BondType bondTypeWidget::bondType() const
   {
-    return (BondType) qAbs(d->buttonGroup->checkedId()) ;
+    return (Bond::BondType) qAbs(currentType()) ;
   }
 
-  void bondTypeWidget::setBondType(bondTypeWidget::BondType type) const
+  void bondTypeWidget::setBondType(Bond::BondType type) const
   {
-    QAbstractButton *button = d->buttonGroup->button(type);
-    if (button) button->setChecked(true);
-  }
-
-  QPixmap bondTypeWidget::bondIcon() const
-  {
-    return d->buttonGroup->checkedButton()->icon().pixmap(d->buttonGroup->checkedButton()->size()) ;
-  }
-
-  int bondTypeWidget::bondOrder() const
-  {
-    return Bond::orderFromType((BondType) d->buttonGroup->checkedId());
-  }
-
-  void bondTypeWidget::changeType()
-  {
-    emit bondTypeChanged(bondType());
+    setCurrentType(type);
   }
 
 } // namespace
