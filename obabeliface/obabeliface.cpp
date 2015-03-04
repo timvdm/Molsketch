@@ -41,6 +41,8 @@
 #include <openbabel/stereo/stereo.h>
 #include <openbabel/graphsym.h>
 #else
+#include <openbabel/alias.h>
+#include <openbabel/bitvec.h>
 #include <openbabel/canon.h>
 #endif
 
@@ -206,7 +208,8 @@ namespace Molsketch
     FOR_ATOMS_OF_MOL(a, &obmol)
       fragatoms.SetBitOn(a->GetIdx());
     std::vector<unsigned int> canonical_labels;
-    OpenBabel::CanonicalLabels(&obmol, symmetry_classes, canonical_labels);
+    OpenBabel::OBBitVec fragAtoms;
+    OpenBabel::CanonicalLabels(&obmol, fragAtoms, symmetry_classes, canonical_labels);
 #endif
   }
   
