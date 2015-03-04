@@ -147,6 +147,8 @@ namespace Molsketch {
 
       QImage renderMolToImage (Molecule *mol);
 
+      QByteArray toSvg();
+
 
       /** Sets whether neutral carbons are drawn. */
       void setCarbonVisible(bool value);

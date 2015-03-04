@@ -36,6 +36,8 @@
 #include <QDir>
 #include <QLibrary>
 #include <QMessageBox>
+#include <QSvgGenerator>
+#include <QBuffer>
 #if QT_VERSION < 0x050000
 #include <QDesktopServices>
 #else
@@ -379,8 +381,30 @@ namespace Molsketch {
 
 		// Rendering in the image and saving to file
 		render(&painter,QRectF(0,0,rect.width(),rect.height()),QRectF (mol ->mapToScene (rect.topLeft ()), mol ->mapToScene (rect.bottomRight ())));
-		return image;
-	}
+                return image;
+  }
+
+  QByteArray MolScene::toSvg()
+  {
+    QList<QGraphicsItem*> selection(selectedItems());
+    clearSelection();
+    QByteArray ba;
+    QBuffer buffer(&ba);
+    buffer.open(QBuffer::WriteOnly);
+    QSvgGenerator svgGenerator;
+    svgGenerator.setTitle(tr("MolsKetch Drawing"));
+    QRectF bounds(itemsBoundingRect());
+    svgGenerator.setSize(bounds.size().toSize()); // TODO round up
+    svgGenerator.setViewBox(bounds);
+    svgGenerator.setOutputDevice(&buffer);
+    QPainter painter;
+    painter.begin(&svgGenerator);
+    render(&painter, bounds, bounds);
+    painter.end();
+    buffer.close();
+    // TODO reselect items
+    return ba;
+  }
 
 
   QImage MolScene::renderImage(const QRectF &rect)
