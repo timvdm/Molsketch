@@ -227,7 +227,7 @@ namespace Molsketch {
     attributes.append("scalingParameter", QString::number(lineWidthScaling));
     QStringList coords;
     foreach(const QPointF& coordinate, coordinates())
-      coords << QString::number(coordinate.x()) << "," << QString::number(coordinate.y());
+      coords << QString::number(coordinate.x()) + "," + QString::number(coordinate.y());
     attributes.append("coordinates", coords.join(";"));
     return attributes ;
   }

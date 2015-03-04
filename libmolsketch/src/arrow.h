@@ -23,7 +23,7 @@
 
 namespace Molsketch {
 
-  class Arrow : public arrowGraphicsItem
+  class Arrow : public graphicsItem
   {
   public:
     enum {Type = GeneralArrowType} ;
@@ -60,7 +60,8 @@ namespace Molsketch {
     int coordinateCount() const ;
     void swapPoint(const int& index, QPointF &p) ;
 
-protected:
+    QString xmlName() const;
+  protected:
     void readGraphicAttributes(const QXmlStreamAttributes &attributes) ;
     QXmlStreamAttributes graphicAttributes() const ;
     void prepareContextMenu(QMenu *contextMenu);
@@ -68,6 +69,7 @@ protected:
   private:
     class privateData ;
     privateData *d ;
+    qreal sceneLineWidth(MolScene *scene) const;
   };
 
 } // namespace

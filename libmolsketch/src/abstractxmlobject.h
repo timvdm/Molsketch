@@ -34,6 +34,7 @@ namespace Molsketch {
     virtual QList<const abstractXmlObject*> children() const { return QList<const abstractXmlObject*>() ; }
     virtual QXmlStreamAttributes xmlAttributes() const { return QXmlStreamAttributes() ; }
     virtual QStringList textItemAttributes() const ;
+    virtual void afterReadFinalization();
   public:
     virtual QString xmlName() const = 0 ;
     abstractXmlObject();

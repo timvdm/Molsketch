@@ -29,6 +29,9 @@ namespace Molsketch {
     return QStringList() ;
   }
 
+  void abstractXmlObject::afterReadFinalization()
+  {}
+
   abstractXmlObject::abstractXmlObject()
   {
   }
@@ -54,6 +57,7 @@ namespace Molsketch {
       if (!child) continue ;
       child->readXml(in) ;
     }
+    afterReadFinalization();
     return in ;
   }
 

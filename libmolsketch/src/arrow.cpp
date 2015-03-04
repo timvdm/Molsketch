@@ -50,7 +50,7 @@ namespace Molsketch {
   };
 
   Arrow::Arrow()
-    : arrowGraphicsItem(),
+    : graphicsItem(),
       d(new privateData)
   {
     d->arrowType = LowerBackward | UpperBackward ;
@@ -252,6 +252,11 @@ namespace Molsketch {
       qSwap(d->points[index], p) ;
   }
 
+  QString Arrow::xmlName() const
+  {
+    return "arrow";
+  }
+
 #define POINTNAMEMACRO(POINTINDEX) "p" + QString::number(i)
   void Arrow::readGraphicAttributes(const QXmlStreamAttributes &attributes)
   {
@@ -278,6 +283,11 @@ namespace Molsketch {
       }
     }
     graphicsItem::prepareContextMenu(contextMenu);
+  }
+
+  qreal Arrow::sceneLineWidth(MolScene *scene) const
+  {
+    return scene->arrowLineWidth();
   }
 
   // TODO (maybe) highlight points if covered by other bounding rect (probably in scene class)

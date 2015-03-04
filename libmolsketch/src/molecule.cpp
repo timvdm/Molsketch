@@ -953,6 +953,12 @@ namespace Molsketch {
     return 0 ;
   }
 
+  void Molecule::afterReadFinalization()
+  {
+    refreshRings();
+    updateElectronSystems();
+  }
+
   Molecule &Molecule::operator+=(const Molecule &other)
   {
     if (&other == this) return *this;

@@ -242,7 +242,7 @@ class Molecule : public graphicsItem
 
    QList<const abstractXmlObject*> children() const ;
    abstractXmlObject* produceChild(const QString &name, const QString &type) ;
-
+   void afterReadFinalization();
   private:
 	// Internal representation
 	/** A list of pointers to the atoms of the molecule. Used as internal reprentation. */

@@ -519,34 +519,31 @@ namespace Molsketch {
 
   abstractXmlObject *MolScene::produceChild(const QString &childName, const QString &type)
   {
-        if (childName == "molecule") // TODO move those names to their classes.
-        {
-          Molecule *molecule = new Molecule ;
-          addItem(molecule) ;
-          return molecule ;
-        }
-        graphicsItem *object = 0 ;
-        if (childName == "object")
-        {
-          if (type == "ReactionArrow") object = new ReactionArrow ;
-          if (type == "MechanismArrow") object = new MechanismArrow ;
-        }
-        if (childName == "plugin")
-          object = ItemPluginFactory::createInstance(type);
-        qDebug() << "Adding:" << object << items() ;
-        if (object) addItem(object) ;
-        qDebug() << "added:" << items() ;
-        return object ;
+    graphicsItem *object = 0 ;
+    if (childName == "molecule") // TODO move those names to their classes.
+      object = new Molecule;
+    if (childName == "arrow")
+      object = new Arrow;
+    if (childName == "object")
+    {
+      if (type == "ReactionArrow") object = new ReactionArrow ;
+      if (type == "MechanismArrow") object = new MechanismArrow ;
+    }
+    if (childName == "plugin")
+      object = ItemPluginFactory::createInstance(type);
+    if (object) addItem(object) ;
+    return object ;
   }
 
   QList<const abstractXmlObject *> MolScene::children() const
   {
         QList<const abstractXmlObject*> childrenList ;
         foreach(QGraphicsItem* item, items())
-          if (item->type() == graphicsItem::MoleculeType
-                  || item->type() == graphicsItem::ReactionArrowType
-                  || item->type() == graphicsItem::MechanismArrowType)
+        {
+          graphicsItem *gItem = dynamic_cast<graphicsItem*>(item);
+          if (gItem && gItem->parentItem()) continue;
           childrenList << dynamic_cast<const abstractXmlObject*>(item) ;
+        }
         return childrenList ;
   }
 
