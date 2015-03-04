@@ -30,6 +30,7 @@
 
 #include "graphicsitem.h"
 #include "abstractxmlobject.h"
+#include "bond.h"
 
 #include <QList>
 #include <QGraphicsItemGroup>
@@ -41,7 +42,6 @@ class QPainter;
 namespace Molsketch {
 
   class Atom;
-  class Bond;
   class Ring;
   class MolScene;
   class ElectronSystem; // under construction
@@ -123,7 +123,7 @@ class Molecule : public graphicsItem
 
 
 	/** Adds a bond between @p atomA and @p atomB with @p order and @p type. */
-	Bond* addBond(Atom* atomA, Atom* atomB, int type = 0, QColor c = QColor (0, 0, 0));
+        Bond* addBond(Atom* atomA, Atom* atomB, Bond::BondType type = Bond::Single, QColor c = QColor (0, 0, 0));
 	/** Adds existing bond @p bond to the molecule. */
 	Bond* addBond(Bond* bond);
 	/** Deletes @p bond from the molecule. */

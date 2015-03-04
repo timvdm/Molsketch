@@ -29,6 +29,7 @@
 #include <commands.h>
 #include "molscene.h"
 #include "math2d.h"
+#include "molecule.h"
 
 namespace Molsketch {
 

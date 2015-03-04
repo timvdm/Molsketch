@@ -171,7 +171,7 @@ namespace Molsketch {
     return atom;
   }
 
-  Bond* Molecule::addBond(Atom* atomA, Atom* atomB, int type, QColor c)
+  Bond* Molecule::addBond(Atom* atomA, Atom* atomB, Bond::BondType type, QColor c)
   {
     //pre: atomA and atomB are existing different atoms in the molecule
     Q_ASSERT (m_atomList.contains(atomA));

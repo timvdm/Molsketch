@@ -33,6 +33,7 @@
 #include "element.h"
 #include "molscene.h"
 #include "math2d.h"
+#include "molecule.h"
 
 #include <QDebug>
 
@@ -48,6 +49,17 @@ namespace Molsketch {
   int Bond::orderFromType(const Bond::BondType &type)
   {
     return type / 10;
+  }
+
+  Bond::BondType Bond::simpleTypeFromOrder(const int &order)
+  {
+    switch (order)
+    {
+      case 1: return Single;
+      case 2: return Double;
+      case 3: return Triple;
+      default: return Invalid;
+    }
   }
 
   Bond::Bond(Atom* atomA, Atom* atomB, Bond::BondType type, QGraphicsItem* parent GRAPHICSSCENESOURCE )

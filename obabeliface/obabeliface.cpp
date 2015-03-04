@@ -180,7 +180,7 @@ namespace Molsketch
     {
       Bond* bond  = mol->addBond(atomHash[obbond->GetBeginAtom()],
                                  atomHash[obbond->GetEndAtom()],
-                                 obbond->GetBondOrder());
+                                 Bond::simpleTypeFromOrder(obbond->GetBondOrder()));
       // Set special bond types
       if (obbond->IsWedge()) 
         bond->setType( Bond::Wedge );

@@ -29,7 +29,6 @@
 #define BOND_H
 
 #include "atom.h"
-#include "molecule.h"
 #include "graphicsitem.h"
 
 
@@ -75,6 +74,7 @@ class Bond : public graphicsItem
         };
 
         static int orderFromType(const BondType& type);
+        static BondType simpleTypeFromOrder(const int& order);
 
 	static qreal defaultLength ;
 	static qreal defaultAngle ;

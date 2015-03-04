@@ -20,6 +20,7 @@
 #include "molscene.h"
 #include "mimemolecule.h"
 #include "atom.h"
+#include "molecule.h"
 
 #include <QPainter>
 #include <QDebug>

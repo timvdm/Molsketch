@@ -24,6 +24,7 @@
 #include "stereocenteritem.h"
 #include "molscene.h"
 #include "mimemolecule.h"
+#include "molecule.h"
 
 namespace Molsketch {
 
