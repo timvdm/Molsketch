@@ -37,6 +37,7 @@
 #include <QDebug>
 
 #include <actions/bondtypeaction.h>
+#include <actions/flipbondaction.h>
 
 #define CHECKFORATOMS if (!m_beginAtom || !m_endAtom)
 
@@ -464,6 +465,8 @@ namespace Molsketch {
         contextMenu->addAction(action);
         QObject::connect(action, SIGNAL(triggered()), contextMenu, SLOT(close())); // TODO check if "changed()" event can accomplish this
       }
+      flipBondAction *flipAction = sc->findChild<flipBondAction*>();
+      if (flipAction) contextMenu->addAction(flipAction);
     }
     graphicsItem::prepareContextMenu(contextMenu);
   }
