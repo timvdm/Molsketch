@@ -817,6 +817,8 @@ namespace Molsketch {
       Ring *ring = new Ring;
       ring->setAtoms(minRing) ;
       m_rings << ring ;
+      foreach(Atom* ringatom, ring->atoms())
+        atomList.removeAll(ringatom);
     }
   }
 
@@ -1023,7 +1025,7 @@ namespace Molsketch {
     {
       if (atomList.size() > 2 && atomList.first() == next) return atomList ;
       if (atomList.contains(next)) continue ;
-      QList<Atom*> minRing = smallestRing(atomList << next) ;
+      QList<Atom*> minRing = smallestRing(QList<Atom*>(atomList) << next) ;
       if (minRing.size() < size && !minRing.empty())
       {
         size = minRing.size() ;
