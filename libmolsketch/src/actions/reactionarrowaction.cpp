@@ -105,7 +105,8 @@ namespace Molsketch {
 
   QPolygonF reactionArrowAction::makePolygon(const QLineF &line)
   {
-    return QPolygonF() << line.p1() << line.p2() ;
+    return QPolygonF() << scene()->snapToGrid(line.p1())
+                       << scene()->snapToGrid(line.p2()) ;
   }
 
 } // namespace

@@ -48,7 +48,7 @@ public:
   ~abstractItemAction();
 
   /** set an item  (convenience function) */
-  void setItem(graphicsItem*) ;
+  void setItem(graphicsItem*) ; // TODO do this via scene's selectionChanged slot
   /** set multiple items for the action (previously set items are discarded) */
   void setItems(const QList<QGraphicsItem *> &) ;
   /** convenience function */

@@ -59,6 +59,7 @@
 #include "TextInputItem.h"
 #include "math2d.h"
 #include "obabeliface.h"
+#include "grid.h"
 
 #include "reactionarrow.h"
 #include "mechanismarrow.h"
@@ -76,15 +77,22 @@ namespace Molsketch {
   {
     QGraphicsRectItem *selectionRectangle;
     TextInputItem *inputItem;
+    grid *Grid;
     privateData()
       : selectionRectangle(new QGraphicsRectItem),
-        inputItem(new TextInputItem)
+        inputItem(new TextInputItem),
+        Grid(new grid)
     {
       selectionRectangle->setPen(QPen(Qt::blue,0,Qt::DashLine));
     }
 
     ~privateData()
-    { delete selectionRectangle; }
+    {
+      delete selectionRectangle;
+      if (!Grid->scene()) delete Grid;
+    }
+
+    bool gridOn()const { return Grid->scene(); }
   };
 
   using namespace Commands;
@@ -199,6 +207,7 @@ namespace Molsketch {
 
   void MolScene::alignToGrid()
   {
+    setGrid(true);
         m_stack->beginMacro(tr("aligning to grid"));
         foreach(QGraphicsItem* item,items())
           if (item->type() == Molecule::Type)
@@ -514,7 +523,24 @@ namespace Molsketch {
 
   void MolScene::setArrowLineWidth(const qreal &arrowLineWidth)
   {
-        m_arrowLineWidth = arrowLineWidth;
+    m_arrowLineWidth = arrowLineWidth;
+  }
+
+  QPointF MolScene::snapToGrid(const QPointF &point, bool force)
+  {
+    if (!d->gridOn() && !force) return point;
+    return d->Grid->alignPoint(point);
+  }
+
+  bool MolScene::snappingToGrid() const
+  {
+    return d->gridOn();
+  }
+
+  void MolScene::setGrid(bool on)
+  {
+    if (on) addItem(d->Grid);
+    else removeItem(d->Grid);
   }
 
   abstractXmlObject *MolScene::produceChild(const QString &childName, const QString &type)

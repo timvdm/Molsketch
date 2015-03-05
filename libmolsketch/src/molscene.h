@@ -213,7 +213,6 @@ namespace Molsketch {
       void setHintPointSize(int size);
 
     public slots:
-      void selectionSlot();
       /** Slot to cut the current selection to the clipboard. */
       void cut();
       /** Slot to copy the current selection to the clipboard. */
@@ -233,6 +232,8 @@ namespace Molsketch {
 
       /** Slot to convert image to mol using OSRA */
       void convertImage();
+      /** enable/disable grid */
+      void setGrid(bool on = true);
 
 #ifdef QT_DEBUG
   void debugScene();
@@ -267,6 +268,8 @@ namespace Molsketch {
       void setArrowLineWidth(const qreal &arrowLineWidth);
 
       QString xmlName() const { return "div" ; }
+      QPointF snapToGrid(const QPointF& point, bool force = false);
+      bool snappingToGrid() const;
   protected:
       abstractXmlObject* produceChild(const QString &childName, const QString& type) ;
       QList<const abstractXmlObject*> children() const ;
@@ -342,8 +345,7 @@ namespace Molsketch {
       QGraphicsPathItem* m_hoverRect;
   private slots:
       void updateAll() ;
-
-
+      void selectionSlot();
 };
 
 } // namespace

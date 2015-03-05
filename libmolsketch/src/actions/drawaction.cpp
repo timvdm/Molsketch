@@ -77,7 +77,7 @@ namespace Molsketch {
 
     QPointF nearestPoint(const QPointF& currentPosition)
     {
-      QPointF nPoint = currentPosition ;
+      QPointF nPoint = parent->scene()->snapToGrid(currentPosition) ;
 
       // Check the hinting points
       qreal minDistance = bondLength / 4.;
@@ -153,7 +153,7 @@ namespace Molsketch {
     Atom* hintAtom = scene()->atomAt(downPos);
     d->hintPointsGroup.setPos(hintAtom
                               ? hintAtom->scenePos()
-                              : downPos);
+                              : scene()->snapToGrid(downPos));
     scene()->addItem(&(d->hintPointsGroup)); // TODO attn: scene takes ownership...
 
     // hint line
@@ -218,7 +218,7 @@ namespace Molsketch {
     // otherwise merge first atom's molecule into newly created molecule.
     if (!beginAtom)
     {
-      beginAtom = new Atom(beginPos,
+      beginAtom = new Atom(d->nearestPoint(beginPos),
                           d->periodicTable->currentElement(),
                           d->autoAddHydrogen);
       attemptUndoPush(new Commands::AddAtom(beginAtom, newMolecule));

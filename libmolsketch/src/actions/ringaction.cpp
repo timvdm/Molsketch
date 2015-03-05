@@ -31,6 +31,8 @@
 #include "math2d.h"
 #include "molecule.h"
 
+#include <QDebug>
+
 namespace Molsketch {
 
   class ringAction::privateData
@@ -60,7 +62,7 @@ namespace Molsketch {
       hintRingPoints.clear();
       qreal radius = bondLength / (2*sin(M_PI/size));
       for (int i = 0; i < size ; ++i)
-        hintRingPoints.append(QLineF::fromPolar(radius, 360.*i/size).p2());
+        hintRingPoints.append(QLineF::fromPolar(radius, 90+(360.*i)/size).p2());
 
       hintMoleculeItems.setPolygon(hintRingPoints);
       parent->scene()->addItem(&hintMoleculeItems); // TODO scene takes ownership
@@ -152,11 +154,35 @@ namespace Molsketch {
     delete d;
   }
 
+  qreal pointLength(const QPointF& p)
+  {
+    return sqrt(pow(p.x(),2) + pow(p.y(),2));
+  }
+
   void ringAction::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
   {
     event->accept();
     d->hintMoleculeItems.show();
-    d->hintMoleculeItems.setPos(event->scenePos());
+    d->hintMoleculeItems.setPos(event->scenePos()); // TODO snap vertices to grid instead of center
+    // optimize position on grid
+    if (scene()->snappingToGrid())
+    {
+      QList<QPointF> vectors;
+      QList<int> counts;
+      foreach(QPointF point, d->hintMoleculeItems.polygon().translated(d->hintMoleculeItems.pos()))
+      {
+        QPointF vector = scene()->snapToGrid(point)-point;
+        if (vectors.contains(vector)) ++ counts[vectors.indexOf(vector)];
+        else { vectors << vector; counts << 1;}
+      }
+      int maxIndex = 0;
+      for (int i = 0 ; i < counts.size() ; ++i)
+        if (counts[i] > counts[maxIndex] ||
+            (counts[i] == counts[maxIndex]
+                 && pointLength(vectors[i]) < pointLength(vectors[maxIndex])))
+           maxIndex = i;
+      d->hintMoleculeItems.moveBy(vectors[maxIndex].x(), vectors[maxIndex].y());
+    }
     d->hintMoleculeItems.setTransform(QTransform()); // TODO get rid of transforms
 
     // Get the position

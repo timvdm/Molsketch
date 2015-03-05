@@ -17,6 +17,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "mechanismarrowaction.h"
+#include "molscene.h"
 
 namespace Molsketch {
 
@@ -47,8 +48,12 @@ namespace Molsketch {
 
   QPolygonF mechanismArrowAction::makePolygon(const QLineF &line)
   {
-    return QPolygonF() << line.p1() << line.normalVector().p2()
-                       << line.normalVector().translated(line.p2()-line.p1()).p2() << line.p2();
+    QLineF normalVector = line.normalVector();
+    normalVector.setLength(normalVector.length()/2);
+    return QPolygonF() << scene()->snapToGrid(line.p1())
+                       << scene()->snapToGrid(normalVector.p2())
+                       << scene()->snapToGrid(normalVector.translated(line.p2()-line.p1()).p2())
+                       << scene()->snapToGrid(line.p2());
   }
 
 } // namespace Molsketch

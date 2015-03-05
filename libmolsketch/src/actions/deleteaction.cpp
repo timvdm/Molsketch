@@ -37,6 +37,7 @@ namespace Molsketch {
         default:
           attemptUndoPush(new Commands::DelItem(item));
       }
+      // TODO check if molecule is split
     }
     attemptEndEndMacro();
   }

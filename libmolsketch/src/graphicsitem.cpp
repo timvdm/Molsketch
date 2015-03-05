@@ -169,7 +169,7 @@ namespace Molsketch {
   }
 
   void graphicsItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
-  {    
+  {
     QPointF shift = event->scenePos() - event->lastScenePos();
     QSet<graphicsItem*> selection;
     if (d->selectedPoint < 0 && scene())
@@ -178,6 +178,21 @@ namespace Molsketch {
     selection.remove(0);
     if (selection.isEmpty())
       selection << this;
+    // Snap shift to grid
+    MolScene *sc = qobject_cast<MolScene*>(scene());
+    if (sc && sc->snappingToGrid())
+    {
+      if (d->selectedPoint < 0)
+      {
+        QRectF br;
+        foreach(graphicsItem* item, selection)
+          br |= item->boundingRect();
+        shift = sc->snapToGrid(event->scenePos()) - br.center();
+      }
+      else
+        shift = sc->snapToGrid(event->scenePos()) - getPoint(d->selectedPoint);
+    }
+
     attemptUndoPush(new movePointCommand(d->selectedPoint,
                                          shift,
                                          selection));

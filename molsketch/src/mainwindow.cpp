@@ -668,7 +668,8 @@ void MainWindow::createActions()
 
   alignAct = new QAction(QIcon(""), tr("Align to grid"), this);
   alignAct->setStatusTip(tr("Align all elements on the scene to the grid"));
-  connect(alignAct, SIGNAL(triggered()), m_scene, SLOT(alignToGrid()));
+  alignAct->setCheckable(true);
+  connect(alignAct, SIGNAL(toggled(bool)), m_scene, SLOT(setGrid(bool)));
 
   prefAct = new QAction(QIcon(":/images/configure.png"),tr("Edit Pre&ferences..."),this);
   prefAct->setShortcut(tr("Ctrl+F"));
