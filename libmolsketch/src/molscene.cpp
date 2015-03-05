@@ -849,8 +849,21 @@ namespace Molsketch {
 //	  }
 
 	// execute default behaviour (needed for text tool)
-		  QGraphicsScene::keyPressEvent(keyEvent);
-                  update();
+    keyEvent->ignore();
+    QGraphicsScene::keyPressEvent(keyEvent);
+    update();
+    if (keyEvent->isAccepted()) return;
+    switch (keyEvent->key())
+    {
+      case Qt::Key_Escape:
+        keyEvent->accept();
+        clearSelection();
+        foreach(QAction* action, findChildren<QAction*>())
+          if (action->isChecked())
+            action->setChecked(false);
+        break;
+      default:;
+    }
   }
 
   void MolScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)

@@ -94,15 +94,17 @@ namespace Molsketch {
   }
 
   void TextInputItem::keyPressEvent ( QKeyEvent * event ) {
+    QGraphicsTextItem::keyPressEvent (event);
+    if (event->isAccepted()) return;
     switch (event->key()) {
       case Qt::Key_Escape:
         cleanUp();
       case Qt::Key_Return:
         clearFocus();
+        event->accept();
       default: ;
     }
 
-    QGraphicsTextItem::keyPressEvent (event);
   }
 
 

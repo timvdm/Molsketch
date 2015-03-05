@@ -810,8 +810,6 @@ void MainWindow::createToolBars()
   editToolBar->addAction(cutAct);
   editToolBar->addAction(copyAct);
   editToolBar->addAction(pasteAct);
-  editToolBar->addSeparator();
-  editToolBar->addSeparator();
 	
 	
   zoomToolBar = addToolBar(tr("Zoom"));
