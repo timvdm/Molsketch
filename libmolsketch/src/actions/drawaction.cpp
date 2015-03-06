@@ -199,7 +199,13 @@ namespace Molsketch {
     if (beginAtom
         && endAtom)
     {
-      if (beginAtom == endAtom) return; // or the same (here: alternatively insert additional neighbor TODO )
+      if (beginAtom == endAtom)
+      {
+        attemptUndoPush(new Commands::ChangeElement(beginAtom,
+                                                    d->periodicTable->currentElement(),
+                                                    tr("change element")));
+        return;
+      }
       if (beginAtom->neighbours().contains(endAtom))
       {
         Bond *bond = beginAtom->molecule()->bondBetween(beginAtom, endAtom);
