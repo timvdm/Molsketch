@@ -98,7 +98,7 @@ namespace Molsketch {
     event->accept();
     if (!d->currentArrow) return ;
     if (!scene() || !scene()->stack()) return ; // TODO
-    scene()->stack()->push(new Commands::AddItem(d->currentArrow, scene())) ;
+    scene()->stack()->push(new Commands::AddItem(d->currentArrow, scene(), tr("draw arrow"))) ;
     d->currentArrow = 0 ;
     event->accept();
   }

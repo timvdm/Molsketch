@@ -27,7 +27,7 @@ namespace Molsketch {
   lineWidthAction::lineWidthAction(MolScene *parent) :
     abstractItemAction(parent)
   {
-    setText(tr("Line width...")) ;
+    setText(tr("Text/line width scaling...")) ;
     setIcon(QIcon(":images/linewidth.png"));
     setToolTip(tr("Set line width")) ;
     setWhatsThis(tr("Set the relative line width for the selected item(s)"));
