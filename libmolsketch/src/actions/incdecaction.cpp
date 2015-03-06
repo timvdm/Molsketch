@@ -95,6 +95,7 @@ namespace Molsketch {
   template <class T>
   void incDecAction<T>::mousePressEvent(QGraphicsSceneMouseEvent *event)
   {
+    if (event->button() != Qt::LeftButton || event->modifiers()) return;
     // Check possible targets
     T* t = getItem(event->buttonDownScenePos(event->button()));
     if (!t) return;
