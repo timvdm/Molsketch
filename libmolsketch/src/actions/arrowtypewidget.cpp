@@ -28,10 +28,10 @@ namespace Molsketch {
   {
     setButtons(QList<typeIconPair>()
                TIPGEN(Arrow::NoArrow, "line") // --
-               TIPGEN(Arrow::UpperForward | Arrow::LowerForward, "arrow") // ->
+               TIPGEN(Arrow::UpperBackward | Arrow::LowerBackward, "arrow") // ->
                TIPGEN(Arrow::UpperForward | Arrow::LowerForward | Arrow::UpperBackward | Arrow::LowerBackward, "resonanceArrow") // <->
-               TIPGEN(Arrow::UpperForward, "hookUp") // -P
-               TIPGEN(Arrow::LowerForward, "hookDown") // -b
+               TIPGEN(Arrow::UpperBackward, "hookUp") // -P
+               TIPGEN(Arrow::LowerBackward, "hookDown") // -b
                TIPGEN(Arrow::UpperForward | Arrow::UpperBackward, "eqHook") //
                TIPGEN(Arrow::UpperForward | Arrow::LowerBackward, "eqMirrorHook")
                TIPGEN(Arrow::LowerForward | Arrow::UpperBackward, "eqMirrorHookb")

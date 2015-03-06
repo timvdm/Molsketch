@@ -38,5 +38,13 @@
         <file>images/C1CCCCCCC1.png</file>
         <file>images/C1CCCCCC1.png</file>
         <file>images/delete.png</file>
+        <file>images/arrow.png</file>
+        <file>images/line.png</file>
+        <file>images/resonanceArrow.png</file>
+        <file>images/hookDown.png</file>
+        <file>images/hookUp.png</file>
+        <file>images/eqMirrorHook.png</file>
+        <file>images/eqMirrorHookb.png</file>
+        <file>images/eqHook.png</file>
     </qresource>
 </RCC>
