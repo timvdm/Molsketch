@@ -68,10 +68,16 @@
 
 #include <actions/genericaction.h>
 
-
-
+#ifdef QT_STATIC_BUILD
+inline void initToolBarIcons() { Q_INIT_RESOURCE(toolicons); }
+#endif
 
 namespace Molsketch {
+
+#ifdef QT_STATIC_BUILD
+  void initToolBarIconsMsk() { initToolBarIcons(); }
+#endif
+
 
   struct MolScene::privateData
   {

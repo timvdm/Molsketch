@@ -16,3 +16,5 @@ isEmpty(PREFIX) {
 }
 
 topLevelDir = $$relative_path($$PWD, $$_PRO_FILE_PWD_)
+
+contains(CONFIG, static) { QT += svg }

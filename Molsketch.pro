@@ -23,3 +23,5 @@ documentation_nl.files = $$PWD/doc/nl/*
 documentation_en.path = $$PREFIX/doc/molsketch/en
 documentation_cs.path = $$PREFIX/doc/molsketch/cs
 documentation_nl.path = $$PREFIX/doc/molsketch/nl
+
+contains(CONFIG, static) { SUBDIRS -= tests obabeliface }
