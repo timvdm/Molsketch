@@ -457,7 +457,7 @@ namespace Molsketch {
 
     setAtoms(molecule()->atom(atomIndexes.first()),
              molecule()->atom(atomIndexes.last())) ;
-    m_bondType = (BondType) (attributes.value("type").toInt());
+    m_bondType = (BondType) (attributes.value("type").toString().toInt());
   }
 
   QStringList Bond::textItemAttributes() const

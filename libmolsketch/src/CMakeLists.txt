@@ -19,8 +19,6 @@ include_directories(${OPENBABEL2_INCLUDE_DIR}
 )
 
 set(libmolsketch_HDRS
-    abstractxmlobject.h
-    arrow.h
     atom.h
     atomnumberitem.h
     bond.h
@@ -28,12 +26,11 @@ set(libmolsketch_HDRS
     electronsystem.h
     element.h
     fileio.h
-    graphicsitem.h
     graphsymitem.h
     itemplugin.h
     math2d.h
-    mechanismarrowdialog.h
     mechanismarrow.h
+    mechanismarrowdialog.h
     mimemolecule.h
     minimise.h
     molecule.h
@@ -41,34 +38,45 @@ set(libmolsketch_HDRS
     mollibitem.h
     molscene.h
     molview.h
-    qtversionmacros.h
-    reactionarrowdialog.h
     reactionarrow.h
+    reactionarrowdialog.h
     residue.h
     ring.h
     smilesitem.h
     stereocenteritem.h
     TextInputItem.h
+    arrow.h
+    graphicsitem.h
+    xmlfont.h
+    grid.h
    )
 
 set(action_HDRS
-    actions/abstractitemaction.h
-    actions/bondtypewidget.h
     actions/coloraction.h
-    actions/connectaction.h
-    actions/drawaction.h
-    actions/genericaction.h
-    actions/incdecaction.h
     actions/linewidthaction.h
-    actions/mechanismarrowaction.h
-    actions/minimizeaction.h
+    actions/abstractitemaction.h
+    abstractxmlobject.h
+    actions/genericaction.h
     actions/multiaction.h
-    actions/periodictablewidget.h
-    actions/pluginaction.h
-    actions/reactionarrowaction.h
-    actions/ringaction.h
+    actions/incdecaction.h
+    actions/connectaction.h
+    actions/minimizeaction.h
     actions/rotateaction.h
     actions/transformcommand.h
+    actions/reactionarrowaction.h
+    actions/periodictablewidget.h
+    actions/bondtypewidget.h
+    actions/drawaction.h
+    actions/ringaction.h
+    actions/mechanismarrowaction.h
+    actions/pluginaction.h
+    actions/deleteaction.h
+    actions/bondtypeaction.h
+    actions/itemtypewidget.h
+    actions/itemtypeaction.h
+    actions/arrowtypeaction.h
+    actions/arrowtypewidget.h
+    actions/flipbondaction.h
    )
 
 
@@ -98,8 +106,6 @@ endif(FORCEQt4)
 
 # Source files
 set(libmolsketch_SRCS 
-    abstractxmlobject.cpp
-    arrow.cpp
     atom.cpp
     atomnumberitem.cpp
     bond.cpp
@@ -107,7 +113,6 @@ set(libmolsketch_SRCS
     electronsystem.cpp
     element.cpp
     fileio.cpp
-    graphicsitem.cpp
     graphsymitem.cpp
     itemplugin.cpp
     mechanismarrow.cpp
@@ -126,23 +131,35 @@ set(libmolsketch_SRCS
     smilesitem.cpp
     stereocenteritem.cpp
     TextInputItem.cpp
-    actions/abstractitemaction.cpp
-    actions/bondtypewidget.cpp
+    graphicsitem.cpp
+    arrow.cpp
+    xmlfont.cpp
+    grid.cpp
     actions/coloraction.cpp
-    actions/connectaction.cpp
-    actions/drawaction.cpp
-    actions/genericaction.cpp
-    actions/incdecaction.cpp
     actions/linewidthaction.cpp
-    actions/mechanismarrowaction.cpp
-    actions/minimizeaction.cpp
+    actions/abstractitemaction.cpp
+    abstractxmlobject.cpp
+    actions/genericaction.cpp
     actions/multiaction.cpp
-    actions/periodictablewidget.cpp
-    actions/pluginaction.cpp
-    actions/reactionarrowaction.cpp
-    actions/ringaction.cpp
+    actions/incdecaction.cpp
+    actions/connectaction.cpp
+    actions/minimizeaction.cpp
     actions/rotateaction.cpp
     actions/transformcommand.cpp
+    actions/reactionarrowaction.cpp
+    actions/periodictablewidget.cpp
+    actions/bondtypewidget.cpp
+    actions/drawaction.cpp
+    actions/ringaction.cpp
+    actions/mechanismarrowaction.cpp
+    actions/pluginaction.cpp
+    actions/deleteaction.cpp
+    actions/bondtypeaction.cpp
+    actions/itemtypewidget.cpp
+    actions/itemtypeaction.cpp
+    actions/arrowtypeaction.cpp
+    actions/arrowtypewidget.cpp
+    actions/flipbondaction.cpp
     )
 
 set(toolicon_RCS tools/toolicons.qrc)
