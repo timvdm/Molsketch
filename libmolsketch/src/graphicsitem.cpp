@@ -186,7 +186,10 @@ namespace Molsketch {
       {
         QRectF br;
         foreach(graphicsItem* item, selection)
-          br |= item->boundingRect();
+          if (item->parentItem())
+            br |= item->mapToParent(item->boundingRect()).boundingRect();
+          else
+            br |= item->boundingRect();
         shift = sc->snapToGrid(event->scenePos()) - br.center();
       }
       else
