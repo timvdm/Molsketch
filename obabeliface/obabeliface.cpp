@@ -49,6 +49,7 @@
 #include <openbabel/mol.h>
 #include <openbabel/data.h>
 #include <openbabel/obconversion.h>
+#include <openbabel/babelconfig.h>
 
 OpenBabel::OBElementTable eTable ;
 
@@ -208,8 +209,17 @@ namespace Molsketch
     FOR_ATOMS_OF_MOL(a, &obmol)
       fragatoms.SetBitOn(a->GetIdx());
     std::vector<unsigned int> canonical_labels;
+#ifndef OB_VERSION
     OpenBabel::OBBitVec fragAtoms;
     OpenBabel::CanonicalLabels(&obmol, fragAtoms, symmetry_classes, canonical_labels);
+#else
+#if (OB_VERSION_CHECK(2,3,0) > OB_VERSION)
+    OpenBabel::OBBitVec fragAtoms;
+    OpenBabel::CanonicalLabels(&obmol, fragAtoms, symmetry_classes, canonical_labels);
+#else
+    OpenBabel::CanonicalLabels(&obmol, symmetry_classes, canonical_labels);
+#endif
+#endif
 #endif
   }
   
