@@ -168,6 +168,45 @@ namespace Molsketch {
     }
   }
 
+  void Bond::drawSingleBrokenBond(QPainter *painter)
+  {
+          painter->save();
+          QPointF begin = mapFromParent(m_beginAtom->pos());
+          QPointF end = mapFromParent(m_endAtom->pos());
+          QPointF vb = end - begin;
+          QPointF uvb = vb / sqrt(vb.x()*vb.x() + vb.y()*vb.y());
+          const qreal decorationScale = 0.8; // TODO modifiable
+          QLineF bondLine(QPointF(0,0), vb);
+          QPointF
+              x = bondLine.normalVector().unitVector().p2()*decorationScale,
+              y = 2*bondLine.unitVector().p2()*decorationScale;
+
+          if (m_beginAtom->hasLabel())
+            begin += 0.20 * uvb * 40/*molScene->bondLength()*/; // FIXME
+          if (m_endAtom->hasLabel())
+            end -= 0.20 * uvb * 40/*molScene->bondLength()*/; // FIXME
+
+          end -= (end - begin)*.4;
+          painter->drawLine(QLineF(begin, end));
+          QPainterPath path;
+          path.moveTo(-7*x);
+          path.quadTo(-7*x+y, -6*x+y);
+          path.cubicTo(-5*x+y, -5*x, -4*x);
+          path.cubicTo(-3*x, -3*x+y, -2*x+y);
+          path.cubicTo(-x+y, -x, 0*x);
+          path.cubicTo(x, x+y, 2*x+y);
+          path.cubicTo(3*x+y, 3*x, 4*x);
+          path.cubicTo(5*x, 5*x+y, 6*x+y);
+          path.quadTo(7*x+y, 7*x);
+          path.translate(end);
+
+          QPen subPen(painter->pen());
+          subPen.setWidthF(subPen.widthF()* 0.75);
+          painter->setPen(subPen);
+          painter->drawPath(path);
+          painter->restore();
+  }
+
   // draw a double bond with one line inside the ring
   void Bond::drawRingBond(QPainter *painter)
   {
@@ -296,6 +335,9 @@ namespace Molsketch {
       case Bond::Wedge:
         drawWedgeBond(painter);
         break;
+    case Bond::SingleBroken:
+            drawSingleBrokenBond(painter);
+            break;
       default:
         drawSimpleBond(painter);
     }

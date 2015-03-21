@@ -40,6 +40,8 @@ namespace Molsketch {
     buttonList
         << tipGen(Bond::Wedge, "wedge");
     if (withInversion) buttonList << tipGen(- Bond::Wedge, "wedge", true);
+    buttonList << tipGen(Bond::SingleBroken, "brokenbond-odd");
+    if (withInversion) buttonList << tipGen(- Bond::SingleBroken, "brokenbond-odd", true);
     buttonList
                << tipGen(Bond::WedgeOrHash, "hashOrWedge")
                << tipGen(Bond::Double, "double")

@@ -171,6 +171,7 @@ class Bond : public graphicsItem
 
   private:
 	void drawSimpleBond(QPainter *painter);
+        void drawSingleBrokenBond(QPainter *painter); // TODO make all these local and add begin/end to arguments
 	void drawRingBond(QPainter *painter);
         void drawHashBond(QPainter *painter);
         void drawWedgeBond(QPainter *painter);
