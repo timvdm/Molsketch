@@ -25,7 +25,7 @@ namespace Molsketch {
 
   bondTypeWidget::typeIconPair tipGen(int t, const QString& name, bool invert = false)
   {
-    QImage icon(":images/" + name + ".png");
+    QImage icon(":images/" + name + ".svg");
     return bondTypeWidget::typeIconPair(t, QPixmap::fromImage(icon.mirrored(invert, invert)));
   }
 

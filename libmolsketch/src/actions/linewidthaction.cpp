@@ -28,7 +28,7 @@ namespace Molsketch {
     abstractItemAction(parent)
   {
     setText(tr("Text/line width scaling...")) ;
-    setIcon(QIcon(":images/linewidth.png"));
+    setIcon(QIcon(":images/linewidth.svg"));
     setToolTip(tr("Set line width")) ;
     setWhatsThis(tr("Set the relative line width for the selected item(s)"));
     setCheckable(false);

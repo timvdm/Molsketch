@@ -114,7 +114,7 @@ namespace Molsketch {
   rotateAction::rotateAction(MolScene *scene)
     : transformAction(scene)
   {
-    setIcon(QIcon(":images/rotate.png")) ;
+    setIcon(QIcon(":images/rotate.svg")) ;
     setText(tr("Rotate")) ;
   }
 
@@ -138,7 +138,7 @@ namespace Molsketch {
   translateAction::translateAction(MolScene *scene)
     : transformAction(scene)
   {
-    setIcon(QIcon(":images/translate.png")) ;
+    setIcon(QIcon(":images/translate.svg")) ;
     setText(tr("Move")) ;
   }
 

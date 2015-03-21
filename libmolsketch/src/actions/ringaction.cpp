@@ -125,7 +125,7 @@ namespace Molsketch {
 
 #define ADDRINGSUBACTION(NAME, SIZE) \
   c = (SIZE > 0 ? "C" : "a"); \
-  newAction = new QAction(QIcon(":images/" + c + "1" + c.repeated(qAbs(SIZE) -1) + "1.png"), tr(NAME), this); \
+  newAction = new QAction(QIcon(":images/" + c + "1" + c.repeated(qAbs(SIZE) -1) + "1.svg"), tr(NAME), this); \
   newAction->setData(SIZE); \
   addSubAction(newAction);
 

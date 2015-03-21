@@ -148,8 +148,8 @@ namespace Molsketch {
     : incDecAction(scene)
   {
     setText(tr("Charge"));
-    initialize(QIcon(":images/incCharge.png"),
-               QIcon(":images/decCharge.png"),
+    initialize(QIcon(":images/incCharge.svg"),
+               QIcon(":images/decCharge.svg"),
                tr("Increase charge"),
                tr("Decrease charge"),
                &Atom::charge,
@@ -160,8 +160,8 @@ namespace Molsketch {
     : incDecAction(scene)
   {
     setText(tr("Hydrogens"));
-    initialize(QIcon(":images/incHydrogens.png"),
-               QIcon(":images/decHydrogens.png"),
+    initialize(QIcon(":images/incHydrogens.svg"),
+               QIcon(":images/decHydrogens.svg"),
                tr("Add implicit hydrogen"),
                tr("Remove implicit hydrogen"),
                &Atom::numImplicitHydrogens,

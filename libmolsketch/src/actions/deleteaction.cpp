@@ -28,7 +28,7 @@ namespace Molsketch {
     setCheckable(false);
     connect(this, SIGNAL(triggered()), this, SLOT(deleteSelection()));
     setText(tr("Delete"));
-    setIcon(QIcon(":images/delete.png"));
+    setIcon(QIcon(":images/delete.svg"));
     setShortcut(QKeySequence::Delete);
   }
 

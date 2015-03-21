@@ -36,7 +36,7 @@ namespace Molsketch {
   {
     d->currentPlugin = 0;
     setText(tr("Insert plugin"));
-    setIcon(QIcon(":images/plugin.png"));
+    setIcon(QIcon(":images/plugin.svg"));
     // from mainwindow::createMenus()
     foreach(ItemPluginFactory *factory, ItemPluginFactory::factories())
     {
