@@ -207,10 +207,20 @@ namespace Molsketch {
         return;
       }
       if (beginAtom->neighbours().contains(endAtom))
-      {
+      { // TODO check which atom is the first
+        // Test cases:
+        // - new bond
+        // - beginning atom exists
+        // - end atom exists
+        // - both atoms exist, but were not connected
+        // - both atoms exist AND were connected
         Bond *bond = beginAtom->molecule()->bondBetween(beginAtom, endAtom);
         if (!bond) return;
-        attemptUndoPush(new Commands::SetBondType(bond, d->bondType->bondType(), tr("Change bond")));
+        attemptBeginMacro(tr("Change bond"));
+        attemptUndoPush(new Commands::SetBondType(bond, d->bondType->bondType()));
+        if (bond->beginAtom() != (d->bondType->backward() ? endAtom : beginAtom))
+          attemptUndoPush(new Commands::SwapBondAtoms(bond));
+        attemptEndMacro();
         return;
       }
     }
