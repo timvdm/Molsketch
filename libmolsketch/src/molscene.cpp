@@ -94,6 +94,7 @@ namespace Molsketch {
 
     ~privateData()
     {
+      delete inputItem;
       delete selectionRectangle;
       if (!Grid->scene()) delete Grid;
     }
@@ -152,9 +153,8 @@ namespace Molsketch {
 
   MolScene::~MolScene()
   {
-    delete d;
-        // Clear the scene
-        clear();
+    // Clear the scene
+    clear();
   }
 
   void MolScene::addResidue (QPointF pos, QString name)
@@ -369,8 +369,11 @@ namespace Molsketch {
   {
         // Purge the undom_stack
         m_stack->clear();
+        // remove private items
+        delete d;
 
         QGraphicsScene::clear();
+        d = new privateData;
 
 	// Reinitialize the scene
 	//m_hintPoints.clear();
