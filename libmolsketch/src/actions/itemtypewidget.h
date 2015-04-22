@@ -31,8 +31,10 @@ namespace Molsketch {
     typedef QPair<int, QPixmap> typeIconPair;
     explicit ItemTypeWidget(QWidget *parent = 0);
     ~ItemTypeWidget();
-    int currentType() const ;
-    void setCurrentType(const int& type) const;
+    uint currentType() const ;
+    void setCurrentType(const uint &type) const;
+    int fullType() const;
+    void setFullType(const int& type) const;
     QPixmap currentIcon() const ;
     void setDirection(QBoxLayout::Direction);
     void setButtons(QList<typeIconPair > typeButtons);

@@ -50,12 +50,12 @@ namespace Molsketch {
 
   bool bondTypeWidget::backward() const
   {
-    return currentType() < 0 ;
+    return fullType() < 0 ;
   }
 
   Bond::BondType bondTypeWidget::bondType() const
   {
-    return (Bond::BondType) qAbs(currentType()) ;
+    return (Bond::BondType) currentType() ;
   }
 
   void bondTypeWidget::setBondType(Bond::BondType type) const

@@ -62,12 +62,22 @@ namespace Molsketch {
     delete d;
   }
 
-  int ItemTypeWidget::currentType() const
+  uint ItemTypeWidget::currentType() const
   {
-    return qAbs(d->buttonGroup->checkedId());
+    return qAbs(fullType());
   }
 
-  void ItemTypeWidget::setCurrentType(const int &type) const
+  void ItemTypeWidget::setCurrentType(const uint &type) const
+  {
+    setFullType(type);
+  }
+
+  int ItemTypeWidget::fullType() const
+  {
+    return d->buttonGroup->checkedId();
+  }
+
+  void ItemTypeWidget::setFullType(const int &type) const
   {
     QAbstractButton *button = d->buttonGroup->button(type);
     if (button) button->setChecked(true);
