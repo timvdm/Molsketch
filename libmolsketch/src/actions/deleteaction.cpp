@@ -57,7 +57,7 @@ namespace Molsketch {
       }
       // TODO check if molecule is split
     }
-    attemptEndEndMacro();
+    attemptEndMacro();
   }
 
 } // namespace Molsketch

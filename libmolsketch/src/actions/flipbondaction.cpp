@@ -41,7 +41,7 @@ namespace Molsketch {
       attemptUndoPush(new Commands::SwapBondAtoms(bond));
     }
 
-    attemptEndEndMacro();
+    attemptEndMacro();
   }
 
 } // namespace Molsketch

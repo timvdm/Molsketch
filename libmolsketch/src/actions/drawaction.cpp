@@ -265,7 +265,7 @@ namespace Molsketch {
     }
 
     // That should've been it...
-    attemptEndEndMacro();
+    attemptEndMacro();
 
     scene()->update();
 

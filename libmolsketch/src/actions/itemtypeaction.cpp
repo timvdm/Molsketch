@@ -78,7 +78,7 @@ namespace Molsketch {
     attemptBeginMacro(undoName());
     foreach(graphicsItem *item, items())
       applyTypeToItem(item, d->typeWidget->currentType());
-    attemptEndEndMacro();
+    attemptEndMacro();
   }
 
   void ItemTypeAction::checkItemType()

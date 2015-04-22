@@ -52,7 +52,7 @@ namespace Molsketch {
     bool eventFilter(QObject *object, QEvent *event);
     void attemptUndoPush(QUndoCommand* command) const ;
     void attemptBeginMacro(const QString& text) const;
-    void attemptEndEndMacro() const;
+    void attemptEndMacro() const;
   private slots:
     void activationSlot(const bool& b) ;
   };

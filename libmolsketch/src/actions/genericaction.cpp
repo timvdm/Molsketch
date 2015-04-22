@@ -93,7 +93,7 @@ namespace Molsketch{
     molscene->stack()->beginMacro(text);
   }
 
-  void genericAction::attemptEndEndMacro() const
+  void genericAction::attemptEndMacro() const
   {
     MolScene *molscene = dynamic_cast<MolScene*>(scene());
     if (!molscene || !molscene->stack()) return;
