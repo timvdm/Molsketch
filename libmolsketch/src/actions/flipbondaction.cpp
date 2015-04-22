@@ -29,6 +29,7 @@ namespace Molsketch {
     setMinimumItemCount(1);
     setIcon(QIcon(":images/flipbond.png"));
     setText(tr("Flip bond"));
+    setCheckable(false);
   }
 
   void flipBondAction::execute()
