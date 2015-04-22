@@ -200,9 +200,7 @@ namespace Molsketch {
   void ringAction::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
   {
     event->accept();
-    attemptBeginMacro(tr("Add molecule"));
     Molecule *newMolecule = new Molecule();
-    attemptUndoPush(new Commands::AddItem(newMolecule, scene()));
 
     // create/find atoms
     QList<Atom*> ringAtoms;
@@ -253,7 +251,7 @@ namespace Molsketch {
       }
     }
 
-    attemptEndEndMacro();
+    attemptUndoPush(new Commands::AddItem(newMolecule, scene(), tr("Add ring")));
   }
 
   void ringAction::leaveSceneEvent(QEvent *event)
