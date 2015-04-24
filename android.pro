@@ -8,11 +8,6 @@ DEFINES += QMAKEBUILD
 
 CONFIG += silent
 
-qtVersionSuffix=""
-equals(QT_MAJOR_VERSION, 5) {
-    qtVersionSuffix= -qt5
-}
-
 HEADERS += \
     libmolsketch/src/atom.h \
     libmolsketch/src/atomnumberitem.h \
@@ -156,9 +151,14 @@ INCLUDEPATH += \
 	libmolsketch/src \
 	obabeliface
 
-TARGET = molsketch$$qtVersionSuffix
+TARGET = Molsketch
 DESTDIR = bin
 
 target.path=bin
 INSTALLS += target
+
+DISTFILES += \
+    android/AndroidManifest.xml
+
+ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
