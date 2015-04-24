@@ -76,9 +76,6 @@ class Bond : public graphicsItem
         static int orderFromType(const BondType& type);
         static BondType simpleTypeFromOrder(const int& order);
 
-	static qreal defaultLength ;
-	static qreal defaultAngle ;
-
 	/**
 	 * Constructor. Create a new bond between @p atomA and @p atomB.
 	 *

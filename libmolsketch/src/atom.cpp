@@ -249,7 +249,7 @@ namespace Molsketch {
     MolScene* molScene = dynamic_cast<MolScene*>(scene());
 
     painter->save(); // TODO mit computeBoundingRect zusammenfuehren
-    QFont symbolFont = molScene->atomSymbolFont();
+    QFont symbolFont = molScene->atomFont();
     symbolFont.setPointSizeF(symbolFont.pointSizeF()*relativeWidth());
     QFont subscriptFont = symbolFont;
     subscriptFont.setPointSize(0.75 * symbolFont.pointSize());
@@ -484,7 +484,7 @@ namespace Molsketch {
     // Draw charge
     if (molScene->chargeVisible()) {
         QString chargeId = chargeString();
-        QFont superscriptFont = molScene->atomSymbolFont();
+        QFont superscriptFont = molScene->atomFont();
         superscriptFont.setPointSize(0.5 * superscriptFont.pointSize());
         QFontMetrics fmSymbol(superscriptFont);
         int offset = 0.5 * fmSymbol.width("+");

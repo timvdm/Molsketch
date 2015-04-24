@@ -483,7 +483,4 @@ namespace Molsketch {
     graphicsItem::prepareContextMenu(contextMenu);
   }
 
-  qreal Bond::defaultLength = 40 ; // TODO modifiable
-  qreal Bond::defaultAngle = 30 ; // TODO modifiable
-
 } // namespace

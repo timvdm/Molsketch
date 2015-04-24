@@ -1076,18 +1076,21 @@ void MainWindow::readPreferences(const QSettings & settings)
   m_lastAccessedPath = settings.value("last-save-path", QDir::homePath()).toString();
 
   // Load the draw settings
-  m_scene->setAtomSize(settings.value("atom-size",30).toDouble());
-  m_scene->setAutoAddHydrogen(settings.value("auto-add-hydrogen",true).toBool());
-  m_scene->setCarbonVisible(settings.value("carbon-visible",false).toBool());
-  m_scene->setHydrogenVisible(settings.value("hydrogen-visible",true).toBool());
-  m_scene->setChargeVisible(settings.value("charge-visible",true).toBool());
-  m_scene->setElectronSystemsVisible(settings.value("electronSystems-visible", false).toBool());
+  m_scene->setAtomSize(settings.value("atom-size", m_scene->atomSize()).toDouble());
+  m_scene->setAutoAddHydrogen(settings.value("auto-add-hydrogen", m_scene->autoAddHydrogen()).toBool());
+  m_scene->setCarbonVisible(settings.value("carbon-visible", m_scene->carbonVisible()).toBool());
+  m_scene->setHydrogenVisible(settings.value("hydrogen-visible", m_scene->hydrogenVisible()).toBool());
+  m_scene->setChargeVisible(settings.value("charge-visible",m_scene->chargeVisible()).toBool());
+  m_scene->setElectronSystemsVisible(settings.value("electronSystems-visible", m_scene->electronSystemsVisible()).toBool());
 
-  m_scene->setAtomSymbolFont(settings.value("atom-symbol-font").value<QFont>());
+  m_scene->setAtomFont(settings.value("atom-symbol-font", m_scene->atomFont()).value<QFont>());
 
-  //m_scene->setBondLength(settings.value("bond-length",40).toDouble());
-  //m_scene->setBondWidth(settings.value("bond-width",1).toDouble());
-  //m_scene->setBondAngle(settings.value("bond-angle",30).toInt());
+  m_scene->setBondLength(settings.value("bond-length",m_scene->bondLength()).toDouble());
+  m_scene->setBondWidth(settings.value("bond-width",m_scene->bondWidth()).toDouble());
+  m_scene->setBondAngle(settings.value("bond-angle",m_scene->bondAngle()).toInt());
+
+  foreach(QAction *action, m_scene->sceneActions())
+    emit action->changed();
 
   // Update the scene contents
   m_scene->update();

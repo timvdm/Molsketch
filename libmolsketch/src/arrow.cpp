@@ -287,7 +287,7 @@ namespace Molsketch {
 
   qreal Arrow::sceneLineWidth(MolScene *scene) const
   {
-    return scene->arrowLineWidth();
+    return scene->arrowWidth();
   }
 
   // TODO (maybe) highlight points if covered by other bounding rect (probably in scene class)

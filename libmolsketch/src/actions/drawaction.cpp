@@ -48,39 +48,47 @@ namespace Molsketch {
     QGraphicsLineItem hintLine;
     bool autoAddHydrogen;
     QGraphicsItemGroup hintPointsGroup;
-    qreal bondAngle;
-    qreal bondLength;
     drawAction *parent;
 
     privateData(drawAction* p) :
       hintLine(QLineF(0,0,0,0)),
       autoAddHydrogen(false),
-      bondAngle(Bond::defaultAngle),
-      bondLength(Bond::defaultLength),
       parent(p)
     {
       hintLine.setAcceptedMouseButtons(Qt::NoButton);
       hintLine.setZValue(-1);
+      hintPointsGroup.setAcceptedMouseButtons(Qt::NoButton);
+    }
 
+    void initializeHintPoints()
+    {
+      foreach (QGraphicsItem* point, hintPointsGroup.childItems())
+        hintPointsGroup.removeFromGroup(point);
+      MolScene *scene = parent->scene();
+      if (!scene) return;
+
+      hintPointsGroup.setPos(0,0);
       // Initialize hint point circle
-      for (int i = 0; i < 360./bondAngle ; ++i)
+      qreal bondAngle = scene->bondAngle();
+      qreal bondLength = scene->bondLength();
+      for (qreal angle = 0; angle < 360. ; angle += bondAngle)
       {
         QGraphicsEllipseItem* dot = new QGraphicsEllipseItem(-2.5,-2.5,5,5);
         dot->setBrush(Qt::lightGray);
         dot->setPen(Qt::NoPen);
-        dot->setPos(QLineF::fromPolar(bondLength, bondAngle * i).p2());
+        dot->setPos(QLineF::fromPolar(bondLength, angle).p2());
         hintPointsGroup.addToGroup(dot);
       }
-      hintPointsGroup.setAcceptedMouseButtons(Qt::NoButton);
     }
 
 
     QPointF nearestPoint(const QPointF& currentPosition)
     {
-      QPointF nPoint = parent->scene()->snapToGrid(currentPosition) ;
+      MolScene* scene = parent->scene();
+      QPointF nPoint = (scene ? scene->snapToGrid(currentPosition) : currentPosition) ;
 
       // Check the hinting points
-      qreal minDistance = bondLength / 4.;
+      qreal minDistance = (scene ? scene->bondLength()/4. : 10.) ;
       foreach(const QGraphicsItem* hintPoint, hintPointsGroup.childItems())
       {
         qreal distance = QLineF(hintPoint->scenePos(), currentPosition).length();
@@ -89,8 +97,8 @@ namespace Molsketch {
         nPoint = hintPoint->scenePos();
       }
 
-      // Look whether a atom is nearby
-      Atom* atom = parent->scene()->atomAt(currentPosition);
+      // Look whether an atom is nearby
+      Atom* atom = (scene ? scene->atomAt(currentPosition) : 0);
       if (atom) nPoint = atom->scenePos();
 
       return nPoint;
@@ -151,6 +159,7 @@ namespace Molsketch {
     // Show hinting
     // hint points
     Atom* hintAtom = scene()->atomAt(downPos);
+    d->initializeHintPoints();
     d->hintPointsGroup.setPos(hintAtom
                               ? hintAtom->scenePos()
                               : scene()->snapToGrid(downPos));
@@ -295,7 +304,7 @@ namespace Molsketch {
         case 0:
           {
             qreal x = new_atom_pos.x ();
-            new_atom_pos.setX (x + d->bondLength);
+            new_atom_pos.setX (x + (scene() ? scene()->bondLength() : 40));
             break;
           }
         case 1:
@@ -306,14 +315,14 @@ namespace Molsketch {
 
               QPointF rotated_v (v.x()*0.5 - v.y()*sqrt(3)*0.5, v.x()*0.5*sqrt(3) + v.y () *0.5);
               qreal mod = sqrt (rotated_v.x()*rotated_v.x() + rotated_v.y()*rotated_v.y());
-              rotated_v *= d->bondLength/mod;
+              rotated_v *= scene()->bondLength() / mod;
               new_atom_pos = rotated_v + downPos;
             } else {
               Atom *at3 = at2 ->neighbours()[0];
               if (at3 == at1) at3 = at2 ->neighbours()[1];
               QPointF rotated_v = at2 ->pos () - at3 ->pos ();
               qreal mod = sqrt (rotated_v.x()*rotated_v.x() + rotated_v.y()*rotated_v.y());
-              rotated_v *= d->bondLength/mod;
+              rotated_v *= scene()->bondLength() /mod;
 
               new_atom_pos = rotated_v + downPos;
             }
@@ -329,7 +338,7 @@ namespace Molsketch {
             QPointF v4 (v3.x () / 2, v3.y () / 2);
             QPointF v5 =  at1 ->pos () - v4;
             qreal mod = sqrt (v5.x()*v5.x() + v5.y()*v5.y());
-            v5 = QPointF (v5.x()/mod * d->bondLength, v5.y()/mod * d->bondLength);
+            v5 = QPointF (v5.x()/mod * scene()->bondLength(), v5.y()/mod * scene()->bondLength());
             new_atom_pos = v5 + at1->pos();
           }
           break;

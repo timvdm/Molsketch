@@ -330,7 +330,7 @@ namespace Molsketch {
 
   qreal arrowGraphicsItem::sceneLineWidth(MolScene *scene) const
   {
-    return scene->arrowLineWidth() ;
+    return scene->arrowWidth() ;
   }
 
   void graphicsItem::setCoordinate(const int &index, const QPointF &p)

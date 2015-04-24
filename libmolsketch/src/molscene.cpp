@@ -112,43 +112,25 @@ namespace Molsketch {
   //////////////////////////////////////////////////////////////////////////////
 
   MolScene::MolScene(QObject* parent)
-        : QGraphicsScene(parent),
-          m_bondWidth(2),
-          m_arrowLineWidth(1.5),
-          d(new privateData)
+    : QGraphicsScene(parent),
+      d(new privateData)
   {
-        // Set the default color to black
-        m_color = QColor(0, 0, 0);
 
+    //Initializing properties
+    m_editMode = MolScene::DrawMode;
+    m_renderMode = RenderLabels;
 
-	// Create the TextInputItem that will be shown to edit text in the scene
-//	m_inputTextItem = new TextInputItem();
-//	addItem(m_inputTextItem);
-	// hide it for now...
-//	m_inputTextItem->hide();
+    // Prepare undo m_stack
+    m_stack = new QUndoStack(this);
+    connect(m_stack, SIGNAL(indexChanged(int)), this, SIGNAL(documentChange()));
+    connect(m_stack, SIGNAL(indexChanged(int)), this, SIGNAL(selectionChange()));
+    connect(m_stack, SIGNAL(indexChanged(int)), this, SLOT(update()));
+    connect(m_stack, SIGNAL(indexChanged(int)), this, SLOT(updateAll())) ;
+    connect(this, SIGNAL(selectionChanged()), this, SLOT(selectionSlot()));
 
-
-	//Initializing properties
-	m_editMode = MolScene::DrawMode;
-	m_atomSize = 5;
-	m_carbonVisible = false;
-	m_hydrogenVisible = true;
-	m_chargeVisible = true;
-	m_electronSystemsVisible = false;
-	m_autoAddHydrogen = true;
-	m_renderMode = RenderLabels;
-
-	// Prepare undo m_stack
-	m_stack = new QUndoStack(this);
-	connect(m_stack, SIGNAL(indexChanged(int)), this, SIGNAL(documentChange()));
-	connect(m_stack, SIGNAL(indexChanged(int)), this, SIGNAL(selectionChange()));
-	connect(m_stack, SIGNAL(indexChanged(int)), this, SLOT(update()));
-	connect(m_stack, SIGNAL(indexChanged(int)), this, SLOT(updateAll())) ;
-	connect(this, SIGNAL(selectionChanged()), this, SLOT(selectionSlot()));
-
-	// Set initial size
-	QRectF sizerect(-5000,-5000,10000,10000);
-	setSceneRect(sizerect);
+    // Set initial size
+    QRectF sizerect(-5000,-5000,10000,10000);
+    setSceneRect(sizerect);
   }
 
   MolScene::~MolScene()
@@ -171,45 +153,28 @@ namespace Molsketch {
 
   QColor MolScene::color() const
   {
-        return m_color;
+    return defaultColor();
   }
 
-  void MolScene::setColor (QColor c)
+  void MolScene::setColor (const QColor& c)
   {
-                m_color = c;
-                foreach (QGraphicsItem* item, selectedItems()) {
-                        if (item->type() == Atom::Type) {
-                                dynamic_cast<Atom*>(item) ->setColor(c);
-                        }
-                        else if (item->type() == Residue::Type) {
-                                dynamic_cast<Residue*>(item) ->setColor(c);
-                        }
-                }
-                foreach (QGraphicsItem* item, items()) {
-                        if (item->type() == Bond::Type) {
-                                Bond *b = dynamic_cast<Bond*>(item);
-                                if (b-> beginAtom() ->isSelected () && b->endAtom() ->isSelected()) b->setColor(c);
-                        }
-                }
-
-        }
-
-  void MolScene::setCarbonVisible(bool value)
-  {
-        m_carbonVisible = value;
+    foreach (QGraphicsItem* item, selectedItems()) {
+      if (item->type() == Atom::Type) {
+        dynamic_cast<Atom*>(item) ->setColor(c);
+      }
+      else if (item->type() == Residue::Type) {
+        dynamic_cast<Residue*>(item) ->setColor(c);
+      }
+    }
+    foreach (QGraphicsItem* item, items()) {
+      if (item->type() == Bond::Type) {
+        Bond *b = dynamic_cast<Bond*>(item);
+        if (b-> beginAtom() ->isSelected () && b->endAtom() ->isSelected()) b->setColor(c);
+      }
+    }
+    if (selectedItems().isEmpty())
+      setDefaultColor(c);
   }
-
-  void MolScene::setHydrogenVisible(bool value)
-  {
-        m_hydrogenVisible = value;
-  }
-
-  void MolScene::setAtomSize( qreal size )
-  {
-        m_atomSize = size;
-  }
-
-
 
   void MolScene::alignToGrid()
   {
@@ -470,35 +435,14 @@ namespace Molsketch {
 
   void MolScene::setHoverRect( QGraphicsItem* item )
   {
-        if (item) {
+        if (item)
+        {
           m_hoverRect->setPath(item->shape());
           m_hoverRect->setPos(item->scenePos());
-          //       m_hoverRect->setVisible(true);
           addItem(m_hoverRect);
-        } else {
-          //     m_hoverRect->setVisible(false);
-          removeItem(m_hoverRect);
         }
-  }
-
-
-  // Queries
-
-  bool MolScene::carbonVisible( ) const
-  {
-        return m_carbonVisible;
-  }
-
-  bool MolScene::hydrogenVisible( ) const
-  {
-        return m_hydrogenVisible;
-  }
-
-
-
-  qreal MolScene::atomSize( ) const
-  {
-        return m_atomSize;
+        else
+          removeItem(m_hoverRect);
   }
 
   int MolScene::editMode() const
@@ -516,7 +460,7 @@ namespace Molsketch {
         m_renderMode = mode;
   }
 
-  QPointF MolScene::toGrid(const QPointF &position)
+  QPointF MolScene::toGrid(const QPointF &position) // TODO obsolete
   {
         QPointF p = position;
         int factor = 40;
@@ -524,15 +468,6 @@ namespace Molsketch {
         p.ry() = floor(p.y() / factor) * factor;
 
         return p;
-  }
-  qreal MolScene::arrowLineWidth() const
-  {
-        return m_arrowLineWidth;
-  }
-
-  void MolScene::setArrowLineWidth(const qreal &arrowLineWidth)
-  {
-    m_arrowLineWidth = arrowLineWidth;
   }
 
   QPointF MolScene::snapToGrid(const QPointF &point, bool force)
@@ -596,18 +531,6 @@ namespace Molsketch {
       attributes.append(name, property(name).toString());
     return attributes;
   }
-
-  qreal MolScene::bondWidth() const
-  {
-        return m_bondWidth;
-  }
-
-  void MolScene::setBondWidth(const qreal &bondWidth)
-  {
-        m_bondWidth = bondWidth;
-  }
-
-
 
   Molecule* MolScene::moleculeAt(const QPointF &pos)
   {
@@ -967,16 +890,6 @@ namespace Molsketch {
   QList<genericAction *> MolScene::sceneActions() const
   {
         return findChildren<genericAction*>();
-  }
-
-  QFont MolScene::atomSymbolFont() const
-  {
-        return m_atomSymbolFont;
-  }
-
-  void MolScene::setAtomSymbolFont(const QFont & font)
-  {
-        m_atomSymbolFont = font;
   }
 
 } // namespace

@@ -40,13 +40,11 @@ namespace Molsketch {
   public:
     QGraphicsPolygonItem hintMoleculeItems;
     QPolygonF hintRingPoints;
-    qreal bondLength;
     ringAction *parent;
     bool autoAddHydrogen;
 
     privateData(ringAction* p) :
       hintMoleculeItems(0),
-      bondLength(Bond::defaultLength), // TODO here and in draw action: replace with direct access to defaultLength (possibly move to settings object)
       parent(p),
       autoAddHydrogen(false)
     {
@@ -54,13 +52,13 @@ namespace Molsketch {
       hintMoleculeItems.setPen(QPen(Qt::lightGray));
     }
 
-    void createHintRing(int size, bool aromatic) // TODO use real molecule
+    void createHintRing(int size, bool aromatic, const MolScene *scene) // TODO use real molecule
     {
       Q_UNUSED(aromatic) // TODO
       if (size < 3) return;
 
       hintRingPoints.clear();
-      qreal radius = bondLength / (2*sin(M_PI/size));
+      qreal radius = (scene ? scene->bondLength() : 40.) / (2*sin(M_PI/size));
       for (int i = 0; i < size ; ++i)
         hintRingPoints.append(QLineF::fromPolar(radius, 90+(360.*i)/size).p2());
 
@@ -269,7 +267,7 @@ namespace Molsketch {
   void ringAction::changeRing() // TODO virtual function in multiaction
   {
     if (isChecked())
-      d->createHintRing(qAbs(activeSubAction()->data().toInt()), false);
+      d->createHintRing(qAbs(activeSubAction()->data().toInt()), false, scene());
     else
       scene()->removeItem(&(d->hintMoleculeItems));
   }

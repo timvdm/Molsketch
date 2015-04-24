@@ -27,6 +27,7 @@
 
 #include "bond.h"
 #include "abstractxmlobject.h"
+#include "stringify.h"
 
 class QString;
 class QImage;
@@ -99,43 +100,41 @@ namespace Molsketch {
       /** 
        * @return The current EditMode of the scene. 
        */
-      int editMode() const;
-      /** 
-       * @return @c True if neutral carbons are visible, @c false otherwise. 
-       */
-      bool carbonVisible() const;
-      /** 
-       * @returns @c True if hydrogens are visible, @c false otherwise. 
-       */
-      bool hydrogenVisible() const;
-      /** Returns @c true if atom valency is visible, return @c false otherwise. */
-      bool chargeVisible() const
-      {
-        return m_chargeVisible;
-      }
-      bool electronSystemsVisible() const
-      {
-        return m_electronSystemsVisible;
-      }
-      bool lonePairsVisible() const
-      {
-        return false;
-      }
-      /** Returns @c true if hydrogens are automaticly added, return @c false otherwise. */
-      bool autoAddHydrogen() const { return m_autoAddHydrogen; };
+      int editMode() const; // TODO obsolete?
 
-      /** Returns the current atom size. */
-      qreal atomSize() const;
-      /** Returns the current atomsymbol font */
-      QFont atomSymbolFont() const;
-      /** Returns the current dynamic grid radius. */
-      int dynamicGridSize() const;
+#define SCENEPROPERTY(CAPLETTER, LOWERLETTER, PROPNAME, TYPE, DEFAULTVALUE) \
+  void set##CAPLETTER##PROPNAME(const TYPE& value) { setProperty("Molscene" #PROPNAME, value); } \
+  TYPE LOWERLETTER##PROPNAME() const { QVariant value = property("Molscene" #PROPNAME); \
+      if (value.isValid()) return value.value<TYPE>(); \
+      return DEFAULTVALUE; }
+
+#define STRINGIFIEDPROPERTY(CAPLETTER, LOWERLETTER, PROPNAME, TYPE, DEFAULTVALUE) \
+  void set##CAPLETTER##PROPNAME(const TYPE& value) { setProperty("Molscene" #PROPNAME, stringify(value)); } \
+  TYPE LOWERLETTER##PROPNAME() const { QVariant value = property("Molscene" #PROPNAME); \
+      if (value.isValid()) return makeFromString<TYPE>(value.toString()); \
+      return DEFAULTVALUE; }
+
+      SCENEPROPERTY(B,b,ondLength, qreal, 40)
+      SCENEPROPERTY(B,b,ondWidth, qreal, 2)
+      SCENEPROPERTY(A,a,rrowWidth, qreal, 1.5)
+      SCENEPROPERTY(B,b,ondAngle, qreal, 30)
+      SCENEPROPERTY(A,a,tomSize, qreal, 5)
+      STRINGIFIEDPROPERTY(A,a,tomFont, QFont, QFont())
+      SCENEPROPERTY(H,h,ydrogenVisible, bool, true)
+      SCENEPROPERTY(C,c,arbonVisible, bool, false)
+      SCENEPROPERTY(L,l,onePairsVisible, bool, false)
+      SCENEPROPERTY(A,a,utoAddHydrogen, bool, true)
+      SCENEPROPERTY(E,e,lectronSystemsVisible, bool, false)
+      SCENEPROPERTY(C,c,hargeVisible, bool, true)
+      STRINGIFIEDPROPERTY(D,d,efaultColor, QColor, QColor(Qt::black))
       
-      
+      QColor color() const;
+      void setColor(const QColor&);
+
       /**
        * @return The current RenderMode. Default is RnderLabels
        */
-      RenderMode renderMode() const;
+      RenderMode renderMode() const; // TODO do we really need this?
       /**
        * Set the RenderMode.
        */
@@ -148,30 +147,6 @@ namespace Molsketch {
       QImage renderMolToImage (Molecule *mol);
 
       QByteArray toSvg();
-
-
-      /** Sets whether neutral carbons are drawn. */
-      void setCarbonVisible(bool value);
-      /** Sets whether hydrogens are drawn. */
-      void setHydrogenVisible(bool value);
-      /** Sets whether atom charges are drawn. */
-      void setChargeVisible(bool value)
-      {
-        m_chargeVisible = value;
-      }
-      /**
-       * Set whether electron systems are drawn.
-       */
-      void setElectronSystemsVisible(bool value)
-      {
-        m_electronSystemsVisible = value;
-      }
-      /** Sets whether hydrogens are automaticly added. */
-      void setAutoAddHydrogen(bool value) { m_autoAddHydrogen = value; };
-      /** Sets the atomsymbol font */
-      void setAtomSymbolFont(const QFont & font);
-      /** Sets the atom size. */
-      void setAtomSize(qreal size);
 
 
       /** Access to the stack */
@@ -228,7 +203,7 @@ namespace Molsketch {
       /** Slot to add a copy of molecule @p mol. */
       void addMolecule(Molecule* mol);
       /** Slot to align the molecules of the scene to the grid. */
-      void alignToGrid();
+      void alignToGrid(); // TODO obsolete
 
       /** Slot to convert image to mol using OSRA */
       void convertImage();
@@ -255,17 +230,6 @@ namespace Molsketch {
       /** event handler for mouse button releases */
       void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
   public:
-      //item to accept input for text tool
-//      TextInputItem *m_inputTextItem;
-      void setColor (QColor);
-      QColor color() const;
-
-
-      qreal bondWidth() const;
-      void setBondWidth(const qreal &bondWidth);
-
-      qreal arrowLineWidth() const;
-      void setArrowLineWidth(const qreal &arrowLineWidth);
 
       QString xmlName() const { return "div" ; }
       QPointF snapToGrid(const QPointF& point, bool force = false);
@@ -290,30 +254,7 @@ namespace Molsketch {
       // Scene properties
       /** Stores the edit mode of the scene as an integer. */
       int m_editMode;
-      /** Stores the current bond length. */
-      //qreal m_bondLength;
-      /** Stores the current bond width. */
-      qreal m_bondWidth;
-      /** Stores the current arrow line width. */
-      qreal m_arrowLineWidth ; // TODO add to XML
-      /** Stores the current bond order. */
-      //int m_bondOrder;
-      /** Stores the current bond type. */
-      //Bond::BondType m_bondType;
-      /** Strores the bond angle. */
-      //int m_bondAngle;
-
-      qreal m_atomSize; //!< Stores the current atom size.
-      QFont m_atomSymbolFont; //!< Stores the current atomsymbol font.
-      bool m_hydrogenVisible; //!< Stores whether hydrogens should be visible.
-      bool m_carbonVisible; //!< Stores whether neutral carbons are to be shown.
-      bool m_chargeVisible; //!< Stores whether the charge of the atoms is to be shown.
-      bool m_autoAddHydrogen; //!< Stores whether hydrogens are to be added automaticly.
-      bool m_electronSystemsVisible; //!< Stores whether electron systems should be visible.
-
       RenderMode m_renderMode;
-
-      QColor m_color;
 
       class privateData;
       privateData *d;
