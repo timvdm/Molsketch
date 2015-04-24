@@ -1,5 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2015 Hendrik Vennekate                                  *
+ *   Copyright (C) 2007 by Harm van Eersel                                 *
+ *   devsciurus@xs4all.nl                                                  *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -16,24 +17,39 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef XMLFONT_H
-#define XMLFONT_H
 
-#include <QFont>
+#ifndef STRINGIFY_H
+#define STRINGIFY_H
+
+#include <QString>
+#include <QDataStream>
+
+#define READSTREAMABLE(STREAMABLE) \
+  QByteArray ba(QByteArray::fromBase64(data.toUtf8())); \
+  QDataStream in(&ba, QIODevice::ReadOnly); \
+  in >> STREAMABLE;
 
 namespace Molsketch {
 
-  class xmlFont : public QFont
+  template<class QDataStreamable>
+  QDataStreamable makeFromString(const QString& data)
   {
-  public:
-    xmlFont(const QFont& other);
-    xmlFont();
-    ~xmlFont();
-    QString xmlData() const;
-    void fromXmlData(const QString& data) ;
-    static xmlFont generateFromXml(const QString& data) ;
-  };
+    QDataStreamable streamable;
+    READSTREAMABLE(streamable)
+    return streamable;
+  }
 
-} // namespace Molsketch
+  template<class QDataStreamable>
+  QString stringify(const QDataStreamable& streamable)
+  {
+    QByteArray ba;
+    QDataStream out(&ba, QIODevice::WriteOnly);
+    out << streamable;
+    out.setDevice(0);
+    return ba.toBase64();
+  }
 
-#endif // XMLFONT_H
+} // namespace
+
+
+#endif // STRINGIFY_H

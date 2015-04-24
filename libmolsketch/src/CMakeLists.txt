@@ -47,8 +47,8 @@ set(libmolsketch_HDRS
     TextInputItem.h
     arrow.h
     graphicsitem.h
-    xmlfont.h
     grid.h
+    stringify.h
    )
 
 set(action_HDRS
@@ -133,7 +133,6 @@ set(libmolsketch_SRCS
     TextInputItem.cpp
     graphicsitem.cpp
     arrow.cpp
-    xmlfont.cpp
     grid.cpp
     actions/coloraction.cpp
     actions/linewidthaction.cpp

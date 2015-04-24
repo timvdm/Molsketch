@@ -67,8 +67,8 @@ HEADERS += \
     libmolsketch/src/actions/arrowtypeaction.h \
     libmolsketch/src/actions/arrowtypewidget.h \
     libmolsketch/src/actions/flipbondaction.h \
-    libmolsketch/src/xmlfont.h \
-    libmolsketch/src/grid.h
+    libmolsketch/src/grid.h \
+    libmolsketch/src/stringify.h
 
 SOURCES += \
     libmolsketch/src/atom.cpp \
@@ -123,7 +123,6 @@ SOURCES += \
     libmolsketch/src/actions/arrowtypeaction.cpp \
     libmolsketch/src/actions/arrowtypewidget.cpp \
     libmolsketch/src/actions/flipbondaction.cpp \
-    libmolsketch/src/xmlfont.cpp \
     libmolsketch/src/grid.cpp
 
 FORMS += \
