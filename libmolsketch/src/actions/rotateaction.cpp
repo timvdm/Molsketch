@@ -120,7 +120,7 @@ namespace Molsketch {
 
   void rotateAction::snapLine(const QLineF &originalLine, QLineF &currentLine)
   {
-    const qreal step = 30;
+    const qreal step = (scene() ? scene()->bondAngle() : 30);
     qreal angle = step*qRound(currentLine.angleTo(originalLine)/step);
     currentLine.setAngle(originalLine.angle()-angle);
   }
