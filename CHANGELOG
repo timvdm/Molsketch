@@ -1,3 +1,17 @@
+Lithium
+-----------------------------------------------------------------------------
+- Reworked "tools" into "actions", more dynamic addressing via QObject
+- Added context menu
+- individual line/arrow width (relative to global width)
+- Qt5 support
+- qmake support
+- draw on grid
+- rotation in discrete steps
+- all actions undo-compatible
+- MSK file format
+- Use Qt SVG
+- more arrow types
+
 Helium alpha 2
 -----------------------------------------------------------------------------
 Features:
