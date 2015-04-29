@@ -63,14 +63,11 @@ class Bond : public graphicsItem
           Wedge  = 11,
           Hash   = 12,
           WedgeOrHash = 13,
-          SingleBroken = 14,
           Double = 20,
           CisOrTrans = 21,
           DoubleAsymmetric = 22,
-          DoubleBroken = 23,
           Triple = 30,
           TripleAsymmetric = 31,
-          TripleBroken = 32,
         };
 
         static int orderFromType(const BondType& type);
@@ -170,8 +167,6 @@ class Bond : public graphicsItem
         void prepareContextMenu(QMenu *contextMenu);
 
   private:
-	void drawSimpleBond(QPainter *painter);
-        void drawSingleBrokenBond(QPainter *painter); // TODO make all these local and add begin/end to arguments
 	void drawRingBond(QPainter *painter);
         void drawHashBond(QPainter *painter);
         void drawWedgeBond(QPainter *painter);

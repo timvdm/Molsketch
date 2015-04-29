@@ -117,95 +117,6 @@ namespace Molsketch {
                   mapFromParent(m_endAtom->pos())) ;
   }
 
-  // draw single, double and triple bonds
-  void Bond::drawSimpleBond(QPainter *painter)
-  {
-    if (m_ring && (bondOrder() == 2)) { // TODO eliminate in favor of asymmetric double bond
-      // draw double bond inside ring
-      drawRingBond(painter);
-      return;
-    }
-
-    qreal m_bondSpacing = 4.0;
-
-    QPointF begin = mapFromParent(m_beginAtom->pos());
-    QPointF end = mapFromParent(m_endAtom->pos());
-    QPointF vb = end - begin;
-    QPointF uvb = vb / sqrt(vb.x()*vb.x() + vb.y()*vb.y());
-
-
-    if (m_beginAtom->hasLabel())
-      begin += 0.20 * uvb * 40/*molScene->bondLength()*/; // FIXME
-    if (m_endAtom->hasLabel())
-      end -= 0.20 * uvb * 40/*molScene->bondLength()*/; // FIXME
-
-    switch (bondOrder()) {
-      case 1:
-        painter->drawLine(QLineF(begin, end));
-        break;
-      case 2:
-      {
-        QPointF orthogonal(uvb.y(), -uvb.x());
-        QPointF offset = orthogonal * 0.5 * m_bondSpacing;
-        if (m_bondType == CisOrTrans) {
-          painter->drawLine(QLineF(begin + offset, end - offset));
-          painter->drawLine(QLineF(begin - offset, end + offset));
-        } else {
-          painter->drawLine(QLineF(begin + offset, end + offset));
-          painter->drawLine(QLineF(begin - offset, end - offset));
-        }
-        break;
-      }
-      case 3:
-      {
-        QPointF orthogonal(uvb.y(), -uvb.x());
-        QPointF offset = orthogonal * m_bondSpacing;
-        painter->drawLine(QLineF(begin, end));
-        painter->drawLine(QLineF(begin + offset, end + offset));
-        painter->drawLine(QLineF(begin - offset, end - offset));
-        break;
-      }
-    }
-  }
-
-  void Bond::drawSingleBrokenBond(QPainter *painter)
-  {
-          painter->save();
-          QPointF begin = mapFromParent(m_beginAtom->pos());
-          QPointF end = mapFromParent(m_endAtom->pos());
-          QPointF vb = end - begin;
-          QPointF uvb = vb / sqrt(vb.x()*vb.x() + vb.y()*vb.y());
-          const qreal decorationScale = 0.8; // TODO modifiable
-          QLineF bondLine(QPointF(0,0), vb);
-          QPointF
-              x = bondLine.normalVector().unitVector().p2()*decorationScale,
-              y = 2*bondLine.unitVector().p2()*decorationScale;
-
-          if (m_beginAtom->hasLabel())
-            begin += 0.20 * uvb * 40/*molScene->bondLength()*/; // FIXME
-          if (m_endAtom->hasLabel())
-            end -= 0.20 * uvb * 40/*molScene->bondLength()*/; // FIXME
-
-          end -= (end - begin)*.4;
-          painter->drawLine(QLineF(begin, end));
-          QPainterPath path;
-          path.moveTo(-7*x);
-          path.quadTo(-7*x+y, -6*x+y);
-          path.cubicTo(-5*x+y, -5*x, -4*x);
-          path.cubicTo(-3*x, -3*x+y, -2*x+y);
-          path.cubicTo(-x+y, -x, 0*x);
-          path.cubicTo(x, x+y, 2*x+y);
-          path.cubicTo(3*x+y, 3*x, 4*x);
-          path.cubicTo(5*x, 5*x+y, 6*x+y);
-          path.quadTo(7*x+y, 7*x);
-          path.translate(end);
-
-          QPen subPen(painter->pen());
-          subPen.setWidthF(subPen.widthF()* 0.75);
-          painter->setPen(subPen);
-          painter->drawPath(path);
-          painter->restore();
-  }
 
   // draw a double bond with one line inside the ring
   void Bond::drawRingBond(QPainter *painter)
@@ -300,6 +211,48 @@ namespace Molsketch {
     painter->drawConvexPolygon( points, i);
   }
 
+  QPolygonF clipBond(const QPointF& atomPoint,
+                     const QPointF& otherAtom,
+                     const QPointF& normalVector)
+  {
+    QPointF bondVector = atomPoint - otherAtom;
+    return QPolygonF() << otherAtom + normalVector
+                       << otherAtom - normalVector
+                       << otherAtom - normalVector + .7*bondVector
+                       << otherAtom + normalVector + .7*bondVector
+                       << otherAtom + normalVector
+                          ;
+  }
+
+  void drawBrokenIndicator(QPainter* painter,
+                           const QPointF& point,
+                           const QPointF& bondVector,
+                           const QPointF& normalVector)
+  {
+    painter->save();
+    QPointF bondUnitVector(bondVector/QLineF(QPointF(0,0), bondVector).length());
+    const qreal decorationScale = 0.2; // TODO modifiable
+    QPointF
+        x = normalVector*decorationScale,
+        y = -8*bondUnitVector*decorationScale;
+    QPainterPath path;
+    path.moveTo(-7*x);
+    path.quadTo(-7*x+y, -6*x+y);
+    path.cubicTo(-5*x+y, -5*x, -4*x);
+    path.cubicTo(-3*x, -3*x+y, -2*x+y);
+    path.cubicTo(-x+y, -x, 0*x);
+    path.cubicTo(x, x+y, 2*x+y);
+    path.cubicTo(3*x+y, 3*x, 4*x);
+    path.cubicTo(5*x, 5*x+y, 6*x+y);
+    path.quadTo(7*x+y, 7*x);
+    path.translate(point + 0.3 * bondVector);
+
+    QPen subPen(painter->pen());
+    subPen.setWidthF(subPen.widthF()* 0.75);
+    painter->setPen(subPen);
+    painter->drawPath(path);
+    painter->restore();
+  }
   void Bond::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
   {
     Q_UNUSED(option);
@@ -317,30 +270,91 @@ namespace Molsketch {
     pen.setColor (getColor());
     painter->setPen(pen);
 
+    // Get beginning and end
+    QPointF begin = mapFromParent(m_beginAtom->pos());
+    QPointF end = mapFromParent(m_endAtom->pos());
+    QPointF vb = end - begin;
+    QPointF uvb = vb / sqrt(vb.x()*vb.x() + vb.y()*vb.y());
+    if (MolScene* s = qobject_cast<MolScene*>(scene()))
+      uvb *= s->bondLength()/10.;
+    QPointF normalVector(uvb.y(), -uvb.x());
 
-    // Create dash pattern for dot
-    QVector<qreal> dash;
-    dash << 2 << 5;
+    // clip for broken bond
+    const bool beginBroken = m_beginAtom->element().isEmpty();
+    const bool endBroken = m_endAtom->element().isEmpty();
+    QPainterPath clipPath;
+    if (beginBroken)
+    {
+      drawBrokenIndicator(painter, begin, vb, normalVector);
+      clipPath.addPolygon(clipBond(begin, end, normalVector));
+    }
+    if (endBroken)
+    {
+      drawBrokenIndicator(painter, end, -vb, normalVector);
+      clipPath.addPolygon(clipBond(end, begin, normalVector));
+    }
+    if (!clipPath.isEmpty())
+      painter->setClipPath(clipPath);
+
+    if (m_beginAtom->hasLabel())
+      begin += 0.20 * uvb * 40/*molScene->bondLength()*/; // FIXME
+    if (m_endAtom->hasLabel())
+      end -= 0.20 * uvb * 40/*molScene->bondLength()*/; // FIXME
 
     switch ( m_bondType )
     {
-      case Bond::Hash:
-        drawHashBond(painter);
-        break;
-      case Bond::WedgeOrHash:
-        pen.setDashPattern(dash);
+      case Bond::DativeDot:
+        pen.setStyle(Qt::DotLine);
         painter->setPen(pen);
-        painter->drawLine(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())));
+        painter->drawLine(begin, end);
+        break;
+      case Bond::DativeDash:
+        pen.setStyle(Qt::DashLine);
+        painter->setPen(pen);
+        painter->drawLine(begin, end);
+        break;
+      case Bond::Single:
+        painter->drawLine(begin, end);
         break;
       case Bond::Wedge:
         drawWedgeBond(painter);
         break;
-    case Bond::SingleBroken:
-            drawSingleBrokenBond(painter);
-            break;
+      case Bond::Hash:
+        drawHashBond(painter);
+        break;
+      case Bond::WedgeOrHash:
+        pen.setDashPattern(QVector<qreal>() << 2 << 5);
+        painter->setPen(pen);
+        painter->drawLine(begin, end);
+        break;
+      case Bond::Double:
+        {
+          QPointF offset = .5*normalVector;
+          painter->drawLine(QLineF(begin + offset, end + offset));
+          painter->drawLine(QLineF(begin - offset, end - offset));
+          break;
+        }
+      case Bond::CisOrTrans:
+        {
+          QPointF offset = .5*normalVector;
+          painter->drawLine(QLineF(begin + offset, end - offset));
+          painter->drawLine(QLineF(begin - offset, end + offset));
+          break;
+        }
+      case Bond::Triple:
+        {
+          QPointF offset = normalVector;
+          painter->drawLine(QLineF(begin, end));
+          painter->drawLine(QLineF(begin + offset, end + offset));
+          painter->drawLine(QLineF(begin - offset, end - offset));
+          break;
+        }
+      case TripleAsymmetric:
       default:
-        drawSimpleBond(painter);
+        ;
     }
+
+    painter->setClipping(false);
 
     if (isSelected()) {
       // draw square at the midpoint of the bond when selected
