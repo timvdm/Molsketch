@@ -122,7 +122,7 @@ namespace Molsketch {
         return false;
       }
       /** Returns @c true if hydrogens are automaticly added, return @c false otherwise. */
-      bool autoAddHydrogen() const { return m_autoAddHydrogen; };
+      bool autoAddHydrogen() const { return m_autoAddHydrogen; }
 
       /** Returns the current atom size. */
       qreal atomSize() const;
@@ -130,6 +130,9 @@ namespace Molsketch {
       QFont atomSymbolFont() const;
       /** Returns the current dynamic grid radius. */
       int dynamicGridSize() const;
+
+      // TODO replace with scene properties
+      qreal bondLength() const { return 40; }
       
       
       /**
