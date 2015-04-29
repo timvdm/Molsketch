@@ -49,5 +49,6 @@
         <file>images/brokenbond-odd.png</file>
         <file>images/brokenbond-odd.svg</file>
         <file>images/double-asymmetric.png</file>
+        <file>images/triple-asymmetric.png</file>
     </qresource>
 </RCC>

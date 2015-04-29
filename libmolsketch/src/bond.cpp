@@ -286,7 +286,7 @@ namespace Molsketch {
     if (m_endAtom->hasLabel())
       end -= 0.20 * uvb * 40/*molScene->bondLength()*/; // FIXME
 
-    switch ( m_bondType )
+    switch ( m_bondType ) // TODO beautify
     {
       case Bond::DativeDot:
         pen.setStyle(Qt::DotLine);
@@ -349,6 +349,25 @@ namespace Molsketch {
           break;
         }
       case TripleAsymmetric:
+        {
+          painter->drawLine(begin, end);
+          // now the double part
+          QPointF offset = normalVector;
+          qreal beginAngle = findIdealAngle(beginAtom(), this, false),
+              endAngle = findIdealAngle(endAtom(), this, true),
+              limitAngle = atan(2*QLineF(QPointF(0,0),uvb).length()/QLineF(begin, end).length());
+          beginAngle = qMax(beginAngle, limitAngle);
+          endAngle = qMax(endAngle, limitAngle);
+          painter->drawLine(begin + uvb/tan(beginAngle) + offset,
+                            end - uvb/tan(endAngle) + offset);
+          beginAngle = findIdealAngle(beginAtom(), this, true);
+          endAngle = findIdealAngle(endAtom(), this, false);
+          beginAngle = qMax(beginAngle, limitAngle);
+          endAngle = qMax(endAngle, limitAngle);
+          painter->drawLine(begin + uvb/tan(beginAngle) - offset,
+                            end - uvb/tan(endAngle) - offset);
+          break;
+        }
       default:
         ;
     }

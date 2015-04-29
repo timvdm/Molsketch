@@ -48,7 +48,8 @@ namespace Molsketch {
     if (withInversion) buttonList << tipGen(Bond::DoubleAsymmetric, "double-asymmetric", true);
     buttonList
                << tipGen(Bond::CisOrTrans, "cistrans")
-               << tipGen(Bond::Triple, "triple");
+               << tipGen(Bond::Triple, "triple")
+               << tipGen(Bond::TripleAsymmetric, "triple-asymmetric");
     setButtons(buttonList);
   }
 
