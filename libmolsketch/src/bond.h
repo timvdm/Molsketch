@@ -151,7 +151,7 @@ class Bond : public graphicsItem
 	 * bonds. This ensures that double bonds are drawn inside the correct
 	 * ring.
 	 */
-	Ring* ring() const { return m_ring; }
+        Ring* ring() const { return m_ring; } // TODO maybe eliminate class Ring? (requires additional maintenance and the main use seems to be ring bonds (now manually chosen) and the "minimize" action)
 
 	QString xmlName() const { return "bond" ; }
 	void setRing(Ring *ring) { m_ring = ring; }
@@ -167,7 +167,6 @@ class Bond : public graphicsItem
         void prepareContextMenu(QMenu *contextMenu);
 
   private:
-	void drawRingBond(QPainter *painter);
         void drawHashBond(QPainter *painter);
         void drawWedgeBond(QPainter *painter);
 
@@ -182,7 +181,6 @@ class Bond : public graphicsItem
 	Ring *m_ring;
 
 	void *pseudoStereoPointer ;
-
 };
 
 } // namespace

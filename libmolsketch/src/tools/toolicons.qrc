@@ -48,5 +48,6 @@
         <file>images/eqHook.png</file>
         <file>images/brokenbond-odd.png</file>
         <file>images/brokenbond-odd.svg</file>
+        <file>images/double-asymmetric.png</file>
     </qresource>
 </RCC>

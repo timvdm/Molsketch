@@ -117,47 +117,7 @@ namespace Molsketch {
                   mapFromParent(m_endAtom->pos())) ;
   }
 
-
-  // draw a double bond with one line inside the ring
-  void Bond::drawRingBond(QPainter *painter)
-  {
-    if (!m_ring) return ;
-
-    qreal m_bondSpacing = 4.0;
-
-    QPointF center = mapFromParent(m_ring->center());
-    QPointF begin = mapFromParent(m_beginAtom->pos());
-    QPointF end = mapFromParent(m_endAtom->pos());
-    QPointF vb = end - begin;
-
-    QPointF uvb = vb / sqrt(vb.x()*vb.x() + vb.y()*vb.y());
-    QPointF orthogonal(uvb.y(), -uvb.x());
-    QPointF spacing = orthogonal * m_bondSpacing;
-    QPointF offset = uvb * m_bondSpacing;
-
-    QPointF offset2 = 0.20 * uvb * 40/*molScene->bondLength()*/; //FIXME
-
-    if (length(begin + spacing - center) > length(begin - spacing - center))
-      spacing *= -1.0;
-    
-    if (!m_beginAtom->hasLabel() && !m_endAtom->hasLabel()) {
-      // begin & end have no label
-      painter->drawLine(QLineF(begin, end));
-      painter->drawLine(QLineF(begin + spacing + offset, end + spacing - offset));
-    } else if (m_beginAtom->hasLabel() && m_endAtom->hasLabel()) {
-      painter->drawLine(QLineF(begin + offset2, end - offset2));
-      painter->drawLine(QLineF(begin + spacing + offset2, end + spacing - offset2));
-    } else if (m_beginAtom->hasLabel()) {
-      painter->drawLine(QLineF(begin + offset2, end));
-      painter->drawLine(QLineF(begin + spacing + offset2, end + spacing - offset));
-    } else if (m_endAtom->hasLabel()) {
-      painter->drawLine(QLineF(begin, end - offset2));
-      painter->drawLine(QLineF(begin + spacing + offset, end + spacing - offset2));
-    }
-
-  }
-
-  void Bond::drawHashBond(QPainter *painter)
+  void Bond::drawHashBond(QPainter *painter) // TODO make part of ::paint()
   {
     qreal m_bondSpacing = 4.0;
 
@@ -179,7 +139,7 @@ namespace Molsketch {
     }
   }
 
-  void Bond::drawWedgeBond(QPainter *painter)
+  void Bond::drawWedgeBond(QPainter *painter) // TODO make part of ::paint()
   {
     qreal m_bondSpacing = 4.0;
 
@@ -253,6 +213,31 @@ namespace Molsketch {
     painter->drawPath(path);
     painter->restore();
   }
+
+  QLineF effectiveBondLine(const Bond* b, const Atom* a)
+  {
+    QLineF bl(b->bondAxis());
+    if (b->beginAtom() != a)
+      return QLineF(bl.p2(), bl.p1());
+    return bl;
+  }
+
+  qreal findIdealAngle(const Atom* atom, const Bond* bond, bool inverted)
+  {
+    qreal angle = 120; // normal angle (e.g. in benzene)
+    QLineF bondLine(effectiveBondLine(bond, atom));
+    // TODO skip if we have a displayed label for the beginAtom
+    foreach (const Bond* otherBond, atom->bonds())
+    {
+      if (otherBond == bond) continue;
+      QLineF otherBondAxis(effectiveBondLine(otherBond, atom));
+      angle = qMin(angle, (inverted
+                           ? otherBondAxis.angleTo(bondLine)
+                           : bondLine.angleTo(otherBondAxis)));
+    }
+    return angle*M_PI/360.; // includes division by 2
+  }
+
   void Bond::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
   {
     Q_UNUSED(option);
@@ -339,6 +324,20 @@ namespace Molsketch {
           QPointF offset = .5*normalVector;
           painter->drawLine(QLineF(begin + offset, end - offset));
           painter->drawLine(QLineF(begin - offset, end + offset));
+          break;
+        }
+      case Bond::DoubleAsymmetric:
+        {
+          painter->drawLine(begin, end);
+          // now the double part
+          QPointF offset = normalVector;
+          qreal beginAngle = findIdealAngle(beginAtom(), this, false),
+              endAngle = findIdealAngle(endAtom(), this, true),
+              limitAngle = atan(2*QLineF(QPointF(0,0),uvb).length()/QLineF(begin, end).length());
+          beginAngle = qMax(beginAngle, limitAngle);
+          endAngle = qMax(endAngle, limitAngle);
+          painter->drawLine(begin + uvb/tan(beginAngle) + offset,
+                            end - uvb/tan(endAngle) + offset);
           break;
         }
       case Bond::Triple:

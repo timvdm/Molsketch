@@ -44,6 +44,9 @@ namespace Molsketch {
     buttonList
                << tipGen(Bond::WedgeOrHash, "hashOrWedge")
                << tipGen(Bond::Double, "double")
+               << tipGen(Bond::DoubleAsymmetric, "double-asymmetric");
+    if (withInversion) buttonList << tipGen(Bond::DoubleAsymmetric, "double-asymmetric", true);
+    buttonList
                << tipGen(Bond::CisOrTrans, "cistrans")
                << tipGen(Bond::Triple, "triple");
     setButtons(buttonList);
