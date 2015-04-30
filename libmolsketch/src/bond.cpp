@@ -39,6 +39,7 @@
 
 #include <actions/bondtypeaction.h>
 #include <actions/flipbondaction.h>
+#include <actions/flipstereobondsaction.h>
 
 #define CHECKFORATOMS if (!m_beginAtom || !m_endAtom)
 
@@ -465,20 +466,22 @@ namespace Molsketch {
     return QStringList() << "bondStereo" ;
   }
 
-  void Bond::prepareContextMenu(QMenu *contextMenu)
+  void Bond::prepareContextMenu(QMenu *contextMenu) // TODO simply use a function that returns the scene's actions pertaining to the item
   {
     // Prepare bond menu
     MolScene *sc = qobject_cast<MolScene*>(scene());
     if (sc)
     {
-      bondTypeAction* action = sc->findChild<bondTypeAction*>();
-      if (action)
+      QList<QAction*> actions;
+      actions << sc->findChild<bondTypeAction*>()
+              << sc->findChild<flipBondAction*>()
+              << sc->findChild<flipStereoBondsAction*>();
+      foreach(QAction* action, actions)
       {
+        if (!action) continue;
+        QObject::connect(action, SIGNAL(triggered()), contextMenu, SLOT(close())); // TODO check if "changed()" event can accomplish this. Only required for bondType action
         contextMenu->addAction(action);
-        QObject::connect(action, SIGNAL(triggered()), contextMenu, SLOT(close())); // TODO check if "changed()" event can accomplish this
       }
-      flipBondAction *flipAction = sc->findChild<flipBondAction*>();
-      if (flipAction) contextMenu->addAction(flipAction);
     }
     graphicsItem::prepareContextMenu(contextMenu);
   }

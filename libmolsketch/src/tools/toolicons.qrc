@@ -46,5 +46,7 @@
         <file>images/eqMirrorHook.png</file>
         <file>images/eqMirrorHookb.png</file>
         <file>images/eqHook.png</file>
+        <file>images/flip-stereo.png</file>
+        <file>images/flip-bond.png</file>
     </qresource>
 </RCC>

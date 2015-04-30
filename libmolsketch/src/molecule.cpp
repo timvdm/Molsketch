@@ -19,7 +19,10 @@
  ***************************************************************************/
 
 
+#include <QMenu>
 #include <QtGui>
+
+#include <actions/flipstereobondsaction.h>
 
 #include "molecule.h"
 
@@ -855,6 +858,17 @@ namespace Molsketch {
   void Molecule::invalidateElectronSystems()
   {
     m_electronSystemsUpdate = true;
+  }
+
+  void Molecule::prepareContextMenu(QMenu *contextMenu)
+  {
+    MolScene* sc = qobject_cast<MolScene*>(scene());
+    if (sc)
+    {
+      flipStereoBondsAction* flipStereo = sc->findChild<flipStereoBondsAction*>();
+      if (flipStereo)
+        contextMenu->addAction(flipStereo); // TODO test with bond AND molecule selected simultaneously
+    }
   }
 
   void Molecule::updateElectronSystems()

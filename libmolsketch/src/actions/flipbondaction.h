@@ -21,8 +21,6 @@
 
 #include "abstractitemaction.h"
 
-
-
 namespace Molsketch {
 
   class flipBondAction : public abstractItemAction

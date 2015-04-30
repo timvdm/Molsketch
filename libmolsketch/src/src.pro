@@ -59,7 +59,8 @@ HEADERS += \
     actions/arrowtypewidget.h \
     actions/flipbondaction.h \
     xmlfont.h \
-    grid.h
+    grid.h \
+    actions/flipstereobondsaction.h
 
 SOURCES += \
     atom.cpp \
@@ -115,7 +116,8 @@ SOURCES += \
     actions/arrowtypewidget.cpp \
     actions/flipbondaction.cpp \
     xmlfont.cpp \
-    grid.cpp
+    grid.cpp \
+    actions/flipstereobondsaction.cpp
 
 FORMS += \
     mechanismarrowdialog.ui \

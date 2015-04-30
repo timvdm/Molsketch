@@ -52,6 +52,7 @@
 #include <actions/pluginaction.h>
 #include <actions/ringaction.h>
 #include <actions/rotateaction.h>
+#include <actions/flipstereobondsaction.h>
 
 #include "mainwindow.h"
 
@@ -850,10 +851,11 @@ void MainWindow::createToolBars()
   modifyToolBar->addAction(new connectAction(m_scene));
   modifyToolBar->addAction(new minimizeAction(m_scene));
   modifyToolBar->addAction(new deleteAction(m_scene));
+  modifyToolBar->addAction(new flipBondAction(m_scene));
+  modifyToolBar->addAction(new flipStereoBondsAction(m_scene));
 
   new arrowTypeAction(m_scene);
   new bondTypeAction(m_scene);
-  new flipBondAction(m_scene);
 }
 
 void MainWindow::createStatusBar()
