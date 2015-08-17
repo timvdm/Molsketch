@@ -618,13 +618,6 @@ namespace Molsketch {
 
   }
 
-  bool MolScene::textEditItemAt (const QPointF &pos)
-  {
-//                foreach(QGraphicsItem* item,items(pos))
-//                if (item->type() == TextInputItem::Type) return true;
-                  return false;
-  }
-
   TextInputItem *MolScene::inputItem()
   {
     return d->inputItem;
@@ -677,79 +670,11 @@ namespace Molsketch {
   }
 
 
-  //////////////////////////////////////////////////////////////////////////////
-  //
-  // Text Mode
-  //
-  //////////////////////////////////////////////////////////////////////////////
-
-	void MolScene::textModePress(QGraphicsSceneMouseEvent* event) {
-		if (textEditItemAt (event ->scenePos())) {
-//			m_inputTextItem ->setFocus();
-		}
-		else {
-		Atom * atom = atomAt(event->scenePos());
-		if (atom) {
-//			m_inputTextItem ->clickedOn (atom);
-
-				}
-/*
-		else {
-			QGraphicsTextItem *text = addText("");
-			text ->show ();
-			text ->setFlag(QGraphicsItem::ItemIsSelectable);
-			text->setTextInteractionFlags(Qt::TextEditorInteraction);
-			text->setPos (event->buttonDownScenePos(event->button()));
-			text ->setFocus ();
-
-		}
-*/
-
-			}
-	}
-
-        void MolScene::textModeRelease(QGraphicsSceneMouseEvent* event)
+  void MolScene::updateAll()
   {
-                  Q_UNUSED(event)
-                }
-
-		void MolScene::updateAll()
-		{
-		  invalidate() ;
-		  update() ;
-		}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    invalidate() ;
+    update() ;
+  }
 
   void MolScene::keyPressEvent(QKeyEvent* keyEvent)
   {

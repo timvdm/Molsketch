@@ -15,7 +15,7 @@
    <string>molsKetch - Preferences</string>
   </property>
   <property name="windowIcon">
-   <iconset>
+   <iconset resource="molsketch.qrc">
     <normaloff>:/images/configure.png</normaloff>:/images/configure.png</iconset>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
@@ -63,7 +63,7 @@
            <string>General</string>
           </property>
           <property name="icon">
-           <iconset>
+           <iconset resource="molsketch.qrc">
             <normaloff>:/images/configure.svg</normaloff>:/images/configure.svg</iconset>
           </property>
          </item>
@@ -72,7 +72,7 @@
            <string>Draw settings</string>
           </property>
           <property name="icon">
-           <iconset>
+           <iconset resource="molsketch.qrc">
             <normaloff>:/images/draw-freehand.svg</normaloff>:/images/draw-freehand.svg</iconset>
           </property>
          </item>
@@ -81,7 +81,7 @@
            <string>Libraries</string>
           </property>
           <property name="icon">
-           <iconset>
+           <iconset resource="molsketch.qrc">
             <normaloff>:/images/document-open.svg</normaloff>:/images/document-open.svg</iconset>
           </property>
          </item>
@@ -90,7 +90,7 @@
        <item>
         <widget class="QStackedWidget" name="stackedWidget">
          <property name="currentIndex">
-          <number>1</number>
+          <number>2</number>
          </property>
          <widget class="QWidget" name="generalPage">
           <widget class="QGroupBox" name="groupBoxGeneral">
@@ -222,7 +222,16 @@
                 <bool>false</bool>
                </property>
                <layout class="QGridLayout">
-                <property name="margin">
+                <property name="leftMargin">
+                 <number>9</number>
+                </property>
+                <property name="topMargin">
+                 <number>9</number>
+                </property>
+                <property name="rightMargin">
+                 <number>9</number>
+                </property>
+                <property name="bottomMargin">
                  <number>9</number>
                 </property>
                 <property name="spacing">
@@ -470,7 +479,7 @@
             </property>
             <layout class="QVBoxLayout" name="verticalLayout">
              <item>
-              <layout class="QGridLayout" name="gridLayout">
+              <layout class="QGridLayout" name="subGridLayout">
                <item row="0" column="0">
                 <widget class="QLabel" name="labelLibraryPath">
                  <property name="text">
@@ -536,7 +545,9 @@
  <tabstops>
   <tabstop>buttonBox</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="molsketch.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>buttonBox</sender>
