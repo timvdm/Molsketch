@@ -254,6 +254,8 @@ namespace Molsketch {
       void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
       /** event handler for mouse button releases */
       void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+
+      void wheelEvent(QGraphicsSceneWheelEvent *event);
   public:
       //item to accept input for text tool
 //      TextInputItem *m_inputTextItem;

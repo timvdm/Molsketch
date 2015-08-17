@@ -21,6 +21,7 @@
 #include <QToolButton>
 
 #include "itemtypewidget.h"
+#include "generics.h"
 
 namespace Molsketch {
 
@@ -91,6 +92,12 @@ namespace Molsketch {
       d->createButton(tip.second, tip.first);
     if (!d->buttonGroup->buttons().isEmpty())
       d->buttonGroup->buttons().first()->setChecked(true);
+  }
+
+  void ItemTypeWidget::cycleTypes(bool inverse) // TODO make generic function with multiAction::cycleSubActions
+  {
+    cycleButtons(d->buttonGroup, inverse);
+    emit currentTypeChanged(currentType());
   }
 
 

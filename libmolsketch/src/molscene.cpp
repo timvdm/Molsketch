@@ -60,6 +60,7 @@
 #include "math2d.h"
 #include "obabeliface.h"
 #include "grid.h"
+#include "molview.h"
 
 #include "reactionarrow.h"
 #include "mechanismarrow.h"
@@ -668,7 +669,7 @@ namespace Molsketch {
 	{
 	  emit copyAvailable(!selectedItems().isEmpty());
 	  //     emit pasteAvailable(!m_clipItems.isEmpty());
-	  emit selectionChange( );
+          emit selectionChange();
 	}
 
 	// Execute default behavior
@@ -953,6 +954,16 @@ namespace Molsketch {
     if (event->button() != Qt::LeftButton) return;
     removeItem(d->selectionRectangle);
     event->accept();
+  }
+
+  void MolScene::wheelEvent(QGraphicsSceneWheelEvent *event)
+  {
+    foreach(QGraphicsView* vp, views()) // TODO track back event to originator
+    {
+      MolView *mvp = qobject_cast<MolView*>(vp);
+      if (mvp)
+        mvp->scaleView(pow((double)2, -event->delta() / MOUSEWHEELDIVIDER));
+    }
   }
 
 

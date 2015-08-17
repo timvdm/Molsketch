@@ -34,6 +34,7 @@ namespace Molsketch {
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event); // TODO
+    void wheelEvent(QGraphicsSceneWheelEvent *event);
 
   private:
     class privateData;

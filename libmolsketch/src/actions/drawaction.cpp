@@ -118,6 +118,8 @@ namespace Molsketch {
             this, SLOT(refreshIcon()));
     connect(this, SIGNAL(toggled(bool)),
             this, SLOT(toggleVisibility(bool)));
+    connect(d->bondType, SIGNAL(currentTypeChanged(int)),
+            this, SLOT(refreshIcon()));
     refreshIcon(); // TODO
     if (parentWidget())
       qobject_cast<QMainWindow*>(parentWidget())->addDockWidget(Qt::LeftDockWidgetArea, d->dock);
@@ -337,6 +339,13 @@ namespace Molsketch {
         stack->endMacro();
       }
     }
+  }
+
+  void drawAction::wheelEvent(QGraphicsSceneWheelEvent *event)
+  {
+    if (!event->delta()) return;
+    d->bondType->cycleTypes(event->delta() > 0); // TODO size of wheel movement
+    event->accept();
   }
 
   void drawAction::refreshIcon()

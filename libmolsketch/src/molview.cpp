@@ -45,24 +45,11 @@ MolView::MolView(QGraphicsScene* scene) : QGraphicsView(scene)
 #endif
 }
 
-void MolView::wheelEvent(QWheelEvent* event)
-{
-	scaleView(pow((double)2, -event->delta() / 240.0));
-}
-
 void MolView::scaleView(qreal scaleFactor)
 {
 	qreal factor = matrix().scale(scaleFactor, scaleFactor).mapRect(QRect(0,0,1,1)).width();
 	if (factor < 0.07 || factor > 100) return;
 	scale(scaleFactor, scaleFactor);
 }
-
-
-// void MolView::mouseMoveEvent(QMouseEvent * e)
-// {
-//     if(e->buttons() == Qt::MidButton && !scene()->itemAt(mapToScene(e->pos())))
-//         translate(-e->x(), -e->y());
-//     e->ignore();
-// }
 
 }

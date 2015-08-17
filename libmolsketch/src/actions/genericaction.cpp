@@ -32,6 +32,11 @@ namespace Molsketch{
     connect(this, SIGNAL(toggled(bool)), this, SLOT(activationSlot(bool))) ;
   }
 
+  void genericAction::wheelEvent(QGraphicsSceneWheelEvent *event)
+  {
+    Q_UNUSED(event)
+  }
+
   MolScene *genericAction::scene() const
   {
     return parentWidget()->findChild<MolScene*>() ;
@@ -68,6 +73,8 @@ namespace Molsketch{
       case QEvent::Enter:
         enterSceneEvent(event);
         break;
+      case QEvent::GraphicsSceneWheel:
+        wheelEvent(static_cast<QGraphicsSceneWheelEvent*>(event));
       default: ;
     }
     if (event->isAccepted()) return true;
