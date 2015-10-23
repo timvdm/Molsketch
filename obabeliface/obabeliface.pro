@@ -9,10 +9,10 @@ HEADERS += \
 SOURCES += \
     obabeliface.cpp
 
-INCLUDEPATH += $$topLevelDir/libmolsketch/src
-LIBS += -L$$topLevelDir/lib -lmolsketch$$qtVersionSuffix
+INCLUDEPATH += $$sourceDir/../libmolsketch/src
+LIBS += -L../lib -lmolsketch$$qtVersionSuffix
 TARGET = obabeliface$$qtVersionSuffix
-DESTDIR = $$topLevelDir/lib
+DESTDIR = ../lib
 
 QT += widgets
 

@@ -1,6 +1,6 @@
 include(settings.pri)
 message("Welcome to molsKetch build")
-message("Current dir: $$PWD")
+message("Sources in: $$sourceDir")
 message("Install dir: $$PREFIX")
 message("To change, use \"qmake PREFIX=<your install dir>\"")
 

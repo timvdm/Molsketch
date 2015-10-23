@@ -15,6 +15,6 @@ isEmpty(PREFIX) {
 	win32 : PREFIX = "C:/Program Files/MolsKetch"
 }
 
-topLevelDir = $$relative_path($$PWD, $$_PRO_FILE_PWD_)
+sourceDir = $$_PRO_FILE_PWD_
 
 contains(CONFIG, static) { QT += svg }

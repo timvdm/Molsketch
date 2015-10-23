@@ -112,11 +112,11 @@ endif (EXISTS ${OPENBABEL2_INCLUDE_DIR}/openbabel/graphsym.h)
 
 
 # Optional KDE4 for "KDE Part"
-find_package(KDE4)
+# find_package(KDE4)
 
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libmolsketch/src)
-add_subdirectory(obabeliface)
 add_subdirectory(libmolsketch)
+add_subdirectory(obabeliface)
 add_subdirectory(molsketch)
 
   

@@ -2,7 +2,8 @@ include(../../settings.pri)
 
 TEMPLATE = lib
 
-INCLUDEPATH += $$topLevelDir/obabeliface
+INCLUDEPATH += $$sourceDir/../../obabeliface
+message("Including $$sourceDir/obabeliface for lib")
 
 HEADERS += \
     atom.h \
@@ -126,7 +127,7 @@ RESOURCES += \
 QT += svg
 
 TARGET = molsketch$$qtVersionSuffix
-DESTDIR = $$topLevelDir/lib
+DESTDIR = ../../lib
 
 INSTALLS += target includes
 

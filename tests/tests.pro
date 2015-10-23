@@ -2,14 +2,14 @@ include(../settings.pri)
 
 QT += testlib widgets
 
-INCLUDEPATH += $$topLevelDir/libmolsketch/src
+INCLUDEPATH += $$sourceDir/../libmolsketch/src
 
 SOURCES += valencetest.cpp \
     #drawingtest.cpp
 
-LIBS += -L$$topLevelDir/lib -lmolsketch$$qtVersionSuffix
+LIBS += -L../lib -lmolsketch$$qtVersionSuffix
 
 TARGET = molsketch-test$$qtVersionSuffix
-DESTDIR = $$topLevelDir/bin
+DESTDIR = ../bin
 
 HEADERS +=

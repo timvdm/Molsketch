@@ -19,13 +19,13 @@ SOURCES += \
     settings.cpp
 
 INCLUDEPATH += \
-	$$topLevelDir/libmolsketch/src \
-	$$topLevelDir/obabeliface
+	$$sourceDir/../../libmolsketch/src \
+	$$sourceDir/../../obabeliface
 
-LIBS += -L$$topLevelDir/lib -lmolsketch$$qtVersionSuffix
+LIBS += -L../../lib -lmolsketch$$qtVersionSuffix
 
 TARGET = molsketch$$qtVersionSuffix
-DESTDIR = $$topLevelDir/bin
+DESTDIR = ../../bin
 
 target.path=$$PREFIX/bin
 INSTALLS += target

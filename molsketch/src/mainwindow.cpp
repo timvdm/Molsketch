@@ -1089,8 +1089,11 @@ void MainWindow::readPreferences(const QSettings & settings)
   m_scene->setBondWidth(settings.value("bond-width",m_scene->bondWidth()).toDouble());
   m_scene->setBondAngle(settings.value("bond-angle",m_scene->bondAngle()).toInt());
 
+  // TODO fix this (protected in Qt4)
+#if QT_VERSION >= 0x050000
   foreach(QAction *action, m_scene->sceneActions())
     emit action->changed();
+#endif
 
   // Update the scene contents
   m_scene->update();
