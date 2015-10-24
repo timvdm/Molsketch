@@ -16,5 +16,5 @@ DESTDIR = ../lib
 
 QT += widgets
 
-target.path=$$PREFIX/lib/molsketch
+target.path=$$[QT_INSTALL_LIBS]
 INSTALLS += target

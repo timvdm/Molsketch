@@ -80,6 +80,7 @@ endif(FORCEQt4)
 
 # Install the documentation
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/doc DESTINATION share/doc/molsketch)
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/library DESTINATION share/molsketch/library)
 
 # Install menu entries on Linux
 if(UNIX)

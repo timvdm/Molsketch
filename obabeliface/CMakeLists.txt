@@ -51,7 +51,7 @@ target_link_libraries(obabeliface_LIB ${QT_LIBRARIES} ${OPENBABEL2_LIBRARIES})
 # Install the executable and the library
 install(TARGETS obabeliface_LIB
 	RUNTIME DESTINATION bin
-	LIBRARY DESTINATION lib
+	LIBRARY DESTINATION ${QT_LIBRARY_DIR}
 	ARCHIVE DESTINATION lib/static)
 
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/library DESTINATION share/molsketch)

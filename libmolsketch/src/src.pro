@@ -131,7 +131,7 @@ DESTDIR = ../../lib
 
 INSTALLS += target includes
 
-target.path=$$PREFIX/lib
+target.path=$$[QT_INSTALL_LIBS]
 
 includes.files = $$PWD/*.h
 includes.path = $$PREFIX/include/molsketch

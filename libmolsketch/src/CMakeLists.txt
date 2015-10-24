@@ -197,7 +197,7 @@ target_link_libraries(molsketch_LIB ${QT_LIBRARIES} ${OPENBABEL2_LIBRARIES})
 # Install the executable and the library
 install(TARGETS molsketch_LIB
 	RUNTIME DESTINATION bin
-	LIBRARY DESTINATION lib
+	LIBRARY DESTINATION ${QT_LIBRARY_DIR}
 	ARCHIVE DESTINATION lib/static)
 
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/library DESTINATION share/molsketch)
