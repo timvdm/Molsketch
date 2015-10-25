@@ -16,5 +16,5 @@ DESTDIR = ../lib
 
 QT += widgets
 
-target.path=$$[QT_INSTALL_LIBS]
+target.path=$${MSK_INSTALL_LIBS}
 INSTALLS += target

@@ -1,15 +1,9 @@
+message("======= Welcome to molsKetch build =======")
 include(settings.pri)
-message("Welcome to molsKetch build")
-message("Sources in: $$sourceDir")
-message("Executable will be placed in dir: $$[QT_INSTALL_BINS]")
-message("Libraries will be placed in dir: $$[QT_INSTALL_LIBS]")
-message("Documentation will be placed in dir: $$[QT_INSTALL_BINS]/../share/doc/molsketch")
-message("Structure library will be placed in ir: $$[QT_INSTALL_BINS]/../share/molsketch/library")
 
 TEMPLATE = subdirs
 CONFIG += ordered
 
-# TODO (install uninstall)-targets
 SUBDIRS += \
 	libmolsketch/src \
 	molsketch/src \
@@ -28,10 +22,14 @@ documentation_nl.files = $$PWD/doc/nl/*
 molecule_library.files = $$PWD/library/*
 custom_library.files = $$PWD/library/custom/*
 
-documentation_en.path = $$[QT_INSTALL_BINS]/../share/doc/molsketch/en
-documentation_cs.path = $$[QT_INSTALL_BINS]/../share/doc/molsketch/cs
-documentation_nl.path = $$[QT_INSTALL_BINS]/../share/doc/molsketch/nl
-molecule_library.path = $$[QT_INSTALL_BINS]/../share/molsketch/library
-custom_library.path = $$[QT_INSTALL_BINS]/../share/molsketch/library/custom
+documentation_en.path = $${MSK_INSTALL_DOCS}/en
+documentation_cs.path = $${MSK_INSTALL_DOCS}/cs
+documentation_nl.path = $${MSK_INSTALL_DOCS}/nl
+molecule_library.path = $${MSK_INSTALL_LIBRARY}
+custom_library.path = $${MSK_INSTALL_CUSTOM}
 
 contains(CONFIG, static) { SUBDIRS -= tests obabeliface }
+
+OTHER_FILES += \
+    version \
+    versionnick

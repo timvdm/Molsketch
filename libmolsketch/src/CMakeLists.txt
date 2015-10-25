@@ -192,12 +192,11 @@ if(FORCEQt4)
 else(FORCEQt4)
 	set_target_properties(molsketch_LIB PROPERTIES OUTPUT_NAME "molsketch-qt5")
 endif(FORCEQt4)
+set_target_properties(molsketch_LIB PROPERTIES VERSION ${MSK_VERSION})
 target_link_libraries(molsketch_LIB ${QT_LIBRARIES} ${OPENBABEL2_LIBRARIES})
 
 # Install the executable and the library
 install(TARGETS molsketch_LIB
-	RUNTIME DESTINATION bin
-	LIBRARY DESTINATION ${QT_LIBRARY_DIR}
-	ARCHIVE DESTINATION lib/static)
-
-install(DIRECTORY ${PROJECT_SOURCE_DIR}/library DESTINATION share/molsketch)
+	RUNTIME DESTINATION ${MSK_INSTALL_BINS}
+	LIBRARY DESTINATION ${MSK_INSTALL_LIBS}
+	ARCHIVE DESTINATION ${MSK_INSTALL_LIBS}/static)

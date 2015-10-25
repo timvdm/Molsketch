@@ -3,7 +3,6 @@ include(../../settings.pri)
 TEMPLATE = lib
 
 INCLUDEPATH += $$sourceDir/../../obabeliface
-message("Including $$sourceDir/obabeliface for lib")
 
 HEADERS += \
     atom.h \
@@ -131,7 +130,7 @@ DESTDIR = ../../lib
 
 INSTALLS += target includes
 
-target.path=$$[QT_INSTALL_LIBS]
+target.path = $${MSK_INSTALL_LIBS}
 
 includes.files = $$PWD/*.h
-includes.path = $$PREFIX/include/molsketch
+includes.path = $${MSK_INSTALL_INCLUDES}

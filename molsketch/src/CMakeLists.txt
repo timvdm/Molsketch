@@ -64,12 +64,12 @@ endif(FORCEQt4)
 link_directories(${CMAKE_BINARY_DIR}/lib)
 if(FORCEQt4)
 	add_executable(molsketch ${molsketch_SRCS} ${molsketch_UIS_H} ${molsketch_MOC_HDRS})
-	install(TARGETS molsketch DESTINATION bin)
+	install(TARGETS molsketch DESTINATION ${MSK_INSTALL_BINS})
 	# Link the code against libmolsKetch, Qt and OpenBabel
 	target_link_libraries(molsketch molsketch_LIB ${QT_LIBRARIES} ${OPENBABEL2_LIBRARIES})
 else(FORCEQt4)
 	add_executable(molsketch-qt5 ${molsketch_SRCS} ${molsketch_UIS_H} ${molsketch_MOC_HDRS})
-	install(TARGETS molsketch-qt5 DESTINATION bin)
+	install(TARGETS molsketch-qt5 DESTINATION ${MSK_INSTALL_BINS})
 	# Link the code against libmolsKetch, Qt and OpenBabel
 	target_link_libraries(molsketch-qt5 molsketch_LIB ${OPENBABEL2_LIBRARIES})
 	foreach(package ${Qt5RequiredPackages})
@@ -79,8 +79,8 @@ endif(FORCEQt4)
 
 
 # Install the documentation
-install(DIRECTORY ${PROJECT_SOURCE_DIR}/doc DESTINATION share/doc/molsketch)
-install(DIRECTORY ${PROJECT_SOURCE_DIR}/library DESTINATION share/molsketch/library)
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/doc DESTINATION ${MSK_INSTALL_DOCS})
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/library DESTINATION ${MSK_INSTALL_LIBRARY})
 
 # Install menu entries on Linux
 if(UNIX)

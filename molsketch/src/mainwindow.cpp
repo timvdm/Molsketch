@@ -70,11 +70,6 @@
 
 
 #define PROGRAM_NAME "Molsketch"
-#define PROGRAM_VERSION "Lithium"
-
-#define ALT_DOC_PATH ""
-#define ALT_LIB_PATH ""
-#define ALT_CUSTOM_LIB_PATH ""
 
 #define OB_FILE_FORMATS "MolsKetsch default (*.msk);;All supported types (*.*);;SMILES (*.smi);;MDL Molfile (*.mdl *.mol *.sd *.sdf);;XYZ (*.xyz);;ChemDraw Connection Table (*.ct);;Ghemical (*.gpr);;CML (*.cml)"
 #define OB_DEFAULT_FORMAT "MolsKetch default (*.msk)"
@@ -524,7 +519,7 @@ void MainWindow::zoomFit()
 
 void MainWindow::assistant()
 {
-  QFileInfo file(ALT_DOC_PATH + QString("/index.html"));
+  QFileInfo file(MSK_INSTALL_DOCS + QString("/index.html"));
   if (!file.exists()) file.setFile(QApplication::applicationDirPath() + "/doc/en/index.html");
   if (!file.exists()) file.setFile(QApplication::applicationDirPath() + "/../share/doc/molsketch/doc/en/index.html");
 #if QT_VERSION <= 0x040603
@@ -888,11 +883,11 @@ void MainWindow::createToolBoxes()
 
   // Loading generic molecules
   QStringList pathList ;
-  pathList << ALT_LIB_PATH
+  pathList << MSK_INSTALL_LIBRARY
            << QDir::homePath() + "/.molsketch/library"
            << QApplication::applicationDirPath() + "/../share/molsketch/library"
            << QApplication::applicationDirPath() + "/library"
-           << ALT_CUSTOM_LIB_PATH
+           << MSK_INSTALL_CUSTOM
            << QDir::homePath() + "/.molsketch/library/custom"
            << QApplication::applicationDirPath() + "/../share/molsketch/library/custom"
            << QApplication::applicationDirPath() + "/library/custom" ;
@@ -1020,7 +1015,7 @@ void MainWindow::initializeAssistant()
   QString docfile("molsketch.qhp") ;
 #endif
 
-  QFileInfo file(ALT_DOC_PATH + QString("/molsketch.adp"));
+  QFileInfo file(MSK_INSTALL_DOCS + QString("/molsketch.adp"));
   if (!file.exists()) file.setFile(QApplication::applicationDirPath() + "/doc/en/" + docfile );
   if (!file.exists()) file.setFile(QApplication::applicationDirPath() + "/../share/doc/molsketch/doc/en/" + docfile);
 

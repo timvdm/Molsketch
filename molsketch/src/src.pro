@@ -27,5 +27,5 @@ LIBS += -L../../lib -lmolsketch$$qtVersionSuffix
 TARGET = molsketch$$qtVersionSuffix
 DESTDIR = ../../bin
 
-target.path=$$[QT_INSTALL_BINS]
+target.path=$${MSK_INSTALL_BINS}
 INSTALLS += target

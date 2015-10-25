@@ -110,9 +110,51 @@ if (EXISTS ${OPENBABEL2_INCLUDE_DIR}/openbabel/graphsym.h)
   add_definitions(-DOPENBABEL2_TRUNK) # for use in code
 endif (EXISTS ${OPENBABEL2_INCLUDE_DIR}/openbabel/graphsym.h)
 
+################ Reading version and default paths
 
-# Optional KDE4 for "KDE Part"
-# find_package(KDE4)
+cmake_policy(SET CMP0005 OLD)
+message(STATUS "======= Welcome to molsKetch build =======")
+message(STATUS "Sources in: ${CMAKE_CURRENT_SOURCE_DIR}")
+message(STATUS "Installation directories and corresponding cmake variables (use \"-D <variableName>=<path>\" to change):")
+
+list(APPEND mskprefix "Global prefix" MSK_INSTALL_PREFIX /usr/local "C:/Program Files/MolsKetch")
+list(APPEND mskbins Executable MSK_INSTALL_BINS /bin "")
+if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+	list(APPEND msklibs Libraries MSK_INSTALL_LIBS /lib64 "")
+else( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+	list(APPEND msklibs Libraries MSK_INSTALL_LIBS /lib "")
+endif( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+list(APPEND mskincludes Headers MSK_INSTALL_INCLUDES /include/molsketch /include)
+list(APPEND msklibrary "Molecule library" MSK_INSTALL_LIBRARY /share/molsketch/library /library)
+list(APPEND mskcustom "Custom molecule library" MSK_INSTALL_CUSTOM /share/molsketch/library/custom /library/custom)
+list(APPEND mskdocs Documentation MSK_INSTALL_DOCS /share/doc/molsketch /doc)
+
+file(STRINGS version TEMPVERSION)
+file(STRINGS versionnick TEMPVERSIONNICK)
+list(APPEND mskversion "Version" MSK_VERSION ${TEMPVERSION})
+list(APPEND msknick "Nickname" MSK_VERSION_NICK ${TEMPVERSIONNICK})
+
+foreach(varname mskprefix mskbins msklibs mskincludes msklibrary mskcustom mskdocs mskversion msknick)
+	list(GET ${varname} 0 descriptor)
+	list(GET ${varname} 1 variableName)
+	list(GET ${varname} 2 defaultValue)
+	list(LENGTH ${varname} listLength)
+	if(listLength EQUAL 3 AND NOT ${variableName})
+		set(${variableName} "${defaultValue}")
+	endif(listLength EQUAL 3 AND NOT ${variableName})
+	if(listLength EQUAL 4 AND NOT ${variableName})
+		if(WIN32 OR WIN64)
+			list(GET ${varname} 3 defaultValue)
+		endif(WIN32 OR WIN64)
+		set(${variableName} "${MSK_INSTALL_PREFIX}${defaultValue}")
+	endif(listLength EQUAL 4 AND NOT ${variableName})
+	message(STATUS "${descriptor}: ${variableName} = ${${variableName}}")
+	add_definitions(-D${variableName}="\\\"${${variableName}}\\\"")
+endforeach(varname)
+
+set(CMAKE_INSTALL_PREFIX ${MSK_INSTALL_PREFIX})
+
+################ Adding subdirs
 
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libmolsketch/src)
 add_subdirectory(libmolsketch)
