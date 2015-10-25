@@ -45,4 +45,4 @@ for(DV, $$list($$split(defaultVars, ;))) {
 	message("$${variableDescription}: $${variableName} = $$eval($$variableName)")
 }
 
-VERSION = MSK_VERSION
+VERSION = $${MSK_VERSION}
