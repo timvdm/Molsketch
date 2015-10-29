@@ -79,8 +79,8 @@ endif(FORCEQt4)
 
 
 # Install the documentation
-install(DIRECTORY ${PROJECT_SOURCE_DIR}/doc DESTINATION ${MSK_INSTALL_DOCS})
-install(DIRECTORY ${PROJECT_SOURCE_DIR}/library DESTINATION ${MSK_INSTALL_LIBRARY})
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/doc/ DESTINATION ${MSK_INSTALL_DOCS})
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/library/ DESTINATION ${MSK_INSTALL_LIBRARY})
 
 # Install menu entries on Linux
 if(UNIX)
@@ -88,3 +88,8 @@ if(UNIX)
   install(FILES ${PROJECT_SOURCE_DIR}/molsketch/src/images/molsketch.xpm DESTINATION share/pixmaps)
   install(FILES ${PROJECT_SOURCE_DIR}/molsketch/src/images/molsketch.png DESTINATION share/icons/hicolor/128x128/apps)
 endif(UNIX)
+
+# Update library cache. Must be done _after_ installing the libs
+if(NOT WIN32 AND NOT WIN64)
+	install(CODE "execute_process(COMMAND \"ldconfig\")")
+endif(NOT WIN32 AND NOT WIN64)

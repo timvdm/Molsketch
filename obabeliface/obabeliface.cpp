@@ -159,7 +159,7 @@ namespace Molsketch
     // Creating and setting conversion classes
     using namespace OpenBabel;
     OBConversion conversion ;
-    conversion.SetInFormat(conversion.FormatFromExt(fileName. STRINGCONVERSION)) ;
+    conversion.SetInFormat(conversion.FormatFromExt(fileName.toStdString())) ;
     OBMol obmol;
 
     if (!conversion.ReadFile(&obmol, fileName.toStdString()))

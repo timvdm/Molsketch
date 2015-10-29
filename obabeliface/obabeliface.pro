@@ -13,6 +13,7 @@ INCLUDEPATH += $$sourceDir/../libmolsketch/src
 LIBS += -L../lib -lmolsketch$$qtVersionSuffix
 TARGET = obabeliface$$qtVersionSuffix
 DESTDIR = ../lib
+win* : VERSION =
 
 QT += widgets
 

@@ -77,15 +77,20 @@
 #define GRAPHIC_DEFAULT_FORMAT "Portable Network Graphics (*.png)"
 #define OSRA_GRAPHIC_FILE_FORMATS "All supported types (*.*);;Images (*.png *.bmp *.jpg *.jpeg *.gif *.tif *.tiff);;Documents (*.pdf *.ps)"
 
+#define OBABELOSSUFFIX
+#ifdef _WIN32
+#define OBABELOSSUFFIX ".dll"
+#endif
+
 #define PREPARELOADFILE \
-  QLibrary obabeliface("obabeliface" QTVERSIONSUFFIX); \
+  QLibrary obabeliface("obabeliface" QTVERSIONSUFFIX OBABELOSSUFFIX); \
   obabeliface.load() ; \
   loadFileFunctionPointer loadFilePtr = 0 ; \
   if (obabeliface.isLoaded()) \
     loadFilePtr = (loadFileFunctionPointer) (obabeliface.resolve("loadFile")) ;
   
 #define PREPARESAVEFILE \
-  QLibrary obabeliface("obabeliface" QTVERSIONSUFFIX); \
+  QLibrary obabeliface("obabeliface" QTVERSIONSUFFIX OBABELOSSUFFIX); \
   obabeliface.load() ; \
   saveFileFunctionPointer saveFilePtr = 0 ; \
   if (obabeliface.isLoaded()) \
@@ -885,12 +890,8 @@ void MainWindow::createToolBoxes()
   QStringList pathList ;
   pathList << MSK_INSTALL_LIBRARY
            << QDir::homePath() + "/.molsketch/library"
-           << QApplication::applicationDirPath() + "/../share/molsketch/library"
-           << QApplication::applicationDirPath() + "/library"
            << MSK_INSTALL_CUSTOM
-           << QDir::homePath() + "/.molsketch/library/custom"
-           << QApplication::applicationDirPath() + "/../share/molsketch/library/custom"
-           << QApplication::applicationDirPath() + "/library/custom" ;
+           << QDir::homePath() + "/.molsketch/library/custom";
   PREPARELOADFILE
   if (loadFilePtr)
   {

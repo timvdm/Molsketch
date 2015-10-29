@@ -129,6 +129,7 @@ TARGET = molsketch$$qtVersionSuffix
 DESTDIR = ../../lib
 
 INSTALLS += target includes
+win* : VERSION =
 
 target.path = $${MSK_INSTALL_LIBS}
 

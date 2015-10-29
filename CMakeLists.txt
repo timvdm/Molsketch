@@ -1,5 +1,7 @@
 ## CMakeLists.txt for Molsketch
 cmake_minimum_required(VERSION 2.6.0) # Depend on CMake 2.6 or better
+cmake_policy(SET CMP0005 OLD)
+cmake_policy(SET CMP0020 OLD)
 
 # The name of the project
 project(Molsketch)
@@ -75,6 +77,7 @@ if(NOT FORCEQt4)
 		INCLUDE_DIRECTORIES(${Qt5${package}_INCLUDE_DIRS})
 		add_definitions(${Qt5${package}_DEFINITIONS})
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5${package}_EXECUTABLE_COMPILE_FLAGS}")
+		set(QT_LIBRARIES ${QT_LIBRARIES} Qt5::${package})
 	endforeach(package)
 
 endif(NOT FORCEQt4)
@@ -112,7 +115,6 @@ endif (EXISTS ${OPENBABEL2_INCLUDE_DIR}/openbabel/graphsym.h)
 
 ################ Reading version and default paths
 
-cmake_policy(SET CMP0005 OLD)
 message(STATUS "======= Welcome to molsKetch build =======")
 message(STATUS "Sources in: ${CMAKE_CURRENT_SOURCE_DIR}")
 message(STATUS "Installation directories and corresponding cmake variables (use \"-D <variableName>=<path>\" to change):")

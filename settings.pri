@@ -38,11 +38,12 @@ for(DV, $$list($$split(defaultVars, ;))) {
 	variableName = $$section(DV, ",", 1, 1)
 	variableDefaultValue = $$section(DV, ",", 2, 2)
 	contains(variableName, ".*INSTALL.*"){
+		variableDefaultValue = $${MSK_INSTALL_PREFIX}$$section(DV, ",", 2, 2)
 		win*: variableDefaultValue = $${MSK_INSTALL_PREFIX}$$section(DV, ",", 3, 3)
 	}
-	isEmpty($$variableName) : $$variableName = $$split(variableDefaultValue, _)
+	isEmpty($$variableName) : $$variableName = $$replace(variableDefaultValue, _, " ") # TODO not so elegant...
 	DEFINES += "$${variableName}=\"\\\"$$eval($$variableName)\\\"\""
-	message("$${variableDescription}: $${variableName} = $$eval($$variableName)")
+	message("$$split(variableDescription, _): $${variableName} = $$eval($$variableName)")
 }
 
 VERSION = $${MSK_VERSION}

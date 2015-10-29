@@ -46,7 +46,11 @@ if(FORCEQt4)
 else(FORCEQt4)
 	set_target_properties(obabeliface_LIB PROPERTIES OUTPUT_NAME "obabeliface-qt5")
 endif(FORCEQt4)
-target_link_libraries(obabeliface_LIB ${QT_LIBRARIES} ${OPENBABEL2_LIBRARIES})
+set_target_properties(obabeliface_LIB PROPERTIES VERSION ${MSK_VERSION} )
+if(WIN32 OR WIN64)
+	set_target_properties(obabeliface_LIB PROPERTIES PREFIX "")
+endif(WIN32 OR WIN64)
+target_link_libraries(obabeliface_LIB molsketch_LIB ${QT_LIBRARIES} ${OPENBABEL2_LIBRARIES})
 
 # Install the executable and the library
 install(TARGETS obabeliface_LIB
