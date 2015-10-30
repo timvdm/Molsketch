@@ -28,12 +28,6 @@ documentation_nl.path = $${MSK_INSTALL_DOCS}/nl
 molecule_library.path = $${MSK_INSTALL_LIBRARY}
 custom_library.path = $${MSK_INSTALL_CUSTOM}
 
-!win* {
-	ldconfig_update.commands = ldconfig
-	ldconfig_update.path = ./
-	INSTALLS += ldconfig_update
-}
-
 contains(CONFIG, static) { SUBDIRS -= tests obabeliface }
 
 OTHER_FILES += \

@@ -88,8 +88,3 @@ if(UNIX)
   install(FILES ${PROJECT_SOURCE_DIR}/molsketch/src/images/molsketch.xpm DESTINATION share/pixmaps)
   install(FILES ${PROJECT_SOURCE_DIR}/molsketch/src/images/molsketch.png DESTINATION share/icons/hicolor/128x128/apps)
 endif(UNIX)
-
-# Update library cache. Must be done _after_ installing the libs
-if(NOT WIN32 AND NOT WIN64)
-	install(CODE "execute_process(COMMAND \"ldconfig\")")
-endif(NOT WIN32 AND NOT WIN64)
