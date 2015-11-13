@@ -193,7 +193,7 @@ else(FORCEQt4)
 	set_target_properties(molsketch_LIB PROPERTIES OUTPUT_NAME "molsketch-qt5")
 endif(FORCEQt4)
 set_target_properties(molsketch_LIB PROPERTIES VERSION ${MSK_VERSION})
-target_link_libraries(molsketch_LIB ${QT_LIBRARIES} ${OPENBABEL2_LIBRARIES})
+target_link_libraries(molsketch_LIB ${QT_LIBRARIES} ${OPENBABEL2_LIBRARIES}) # TODO remove Openbabel dependency
 
 # Install the executable and the library
 install(TARGETS molsketch_LIB

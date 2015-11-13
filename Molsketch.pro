@@ -7,7 +7,7 @@ CONFIG += ordered
 SUBDIRS += \
 	libmolsketch/src \
 	molsketch/src \
-	obabeliface \
+	obabeliface \ # TODO make optional
 	tests
 
 INSTALLS += documentation_en \
