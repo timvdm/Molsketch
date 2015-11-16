@@ -117,6 +117,7 @@ namespace Molsketch {
       SCENEPROPERTY(B,b,ondLength, qreal, 40)
       SCENEPROPERTY(B,b,ondWidth, qreal, 2)
       SCENEPROPERTY(A,a,rrowWidth, qreal, 1.5)
+      SCENEPROPERTY(F,f,rameLinewidth, qreal, 1.5)
       SCENEPROPERTY(B,b,ondAngle, qreal, 30)
       SCENEPROPERTY(A,a,tomSize, qreal, 5)
       STRINGIFIEDPROPERTY(A,a,tomFont, QFont, QFont())

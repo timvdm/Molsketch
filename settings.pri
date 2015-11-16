@@ -1,3 +1,4 @@
+QMAKE_CXXFLAGS += --std=c++0x
 QT += widgets printsupport
 contains(CONFIG, static) { QT += svg }
 

@@ -23,7 +23,7 @@
 
 namespace Molsketch {
 
-  class Arrow : public graphicsItem
+  class Arrow : public graphicsItem // TODO introduce dependent coordinates
   {
   public:
     enum {Type = GeneralArrowType} ;

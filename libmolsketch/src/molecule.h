@@ -71,6 +71,7 @@ class Molecule : public graphicsItem
 	Molecule(QGraphicsItem* parent = 0 GRAPHICSSCENEHEADER ) ;
 	/** Creates a molecule from the atoms and bonds of the sets with @p parent on MolScene @p scene. */
 	Molecule(QSet<Atom*>, QSet<Bond*>, QGraphicsItem* parent = 0 GRAPHICSSCENEHEADER ) ;
+        // TODO get bonds from atoms or atoms from bonds, but don't take both
 	/** Creates a copy of molecule @p mol with @p parent on MolScene @p scene. */
 	Molecule(const Molecule& mol, QGraphicsItem* parent = 0 GRAPHICSSCENEHEADER ) ;
 
