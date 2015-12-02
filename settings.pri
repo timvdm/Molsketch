@@ -1,6 +1,8 @@
 QT += widgets printsupport
 contains(CONFIG, static) { QT += svg }
 
+CONFIG += c++11
+# QMAKE_CXXFLAGS += -std=c++11
 CONFIG += silent
 
 qtVersionSuffix=""

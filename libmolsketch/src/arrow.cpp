@@ -25,7 +25,6 @@
 #include <QPainter>
 #include <QGraphicsSceneHoverEvent>
 #include <QDialog>
-#include <QDebug>
 #include <QUndoCommand>
 #include <QMenu>
 
@@ -53,7 +52,7 @@ namespace Molsketch {
     : graphicsItem(),
       d(new privateData)
   {
-    d->arrowType = LowerBackward | UpperBackward ;
+    d->arrowType = LowerBackward | UpperBackward ; // TODO rename these
     d->points << QPointF(0,0) << QPointF(50.0, 0.0),
     d->dialog = 0 ;
     d->spline = true ;
@@ -257,10 +256,135 @@ namespace Molsketch {
     return "arrow";
   }
 
-#define POINTNAMEMACRO(POINTINDEX) "p" + QString::number(i)
+
   void Arrow::readGraphicAttributes(const QXmlStreamAttributes &attributes)
   {
-    d->arrowType = (ArrowType) (attributes.value("arrowType").toString().toInt()) ;
+    // Check for legacy arrow type
+    auto legacyArrowType = attributes.value("type").toString();
+    // if not legacy type, read arrow tip type and return
+    if ("ReactionArrow" != legacyArrowType
+        && "MechanismArrow" != legacyArrowType)
+    {
+      d->arrowType = (ArrowType) (attributes.value("arrowType").toString().toInt()) ;
+      return;
+    }
+
+    // Code for legacy version
+    if ("ReactionArrow" == legacyArrowType)
+    {
+      enum LegacyReactionArrowType {
+        SingleArrow = 0,
+        DoubleArrow,
+        Equilibrium,
+        EqRightShifted,
+        EqLeftShifted
+      };
+      // Arrow tip
+      auto legacyReactionArrowType = (LegacyReactionArrowType) (attributes.value("arrowType").toString().toInt());
+      switch(legacyReactionArrowType)
+      {
+        case SingleArrow:
+          setArrowType(UpperBackward | LowerBackward);
+          break;
+        case DoubleArrow:
+          setArrowType(LowerForward | UpperForward | LowerBackward | UpperBackward);
+          break;
+        case Equilibrium:
+        case EqRightShifted:
+        case EqLeftShifted:
+          setArrowType(UpperBackward);
+          break;
+        default:
+          setArrowType(NoArrow);
+      }
+
+      // Coordinates
+      QPointF origin(attributes.value("posx").toString().toDouble(),
+                     attributes.value("posy").toString().toDouble());
+      QLineF arrowLine(origin, origin +
+                       QPointF(attributes.value("endx").toString().toDouble(),
+                               attributes.value("endy").toString().toDouble()));
+      setCoordinates(QPolygonF() << arrowLine.p1() << arrowLine.p2());
+
+      if (!scene()) return;
+
+      // Fix equilibrium arrows:
+      if (Equilibrium == legacyReactionArrowType
+          || EqLeftShifted == legacyReactionArrowType
+          || EqRightShifted == legacyReactionArrowType)
+      { // shift both arrows in equilibrium
+        QLineF normalVector = arrowLine.normalVector().unitVector();
+        QLineF unitVector = arrowLine.unitVector();
+        QPointF normalTranslation = 2*(normalVector.p2() - normalVector.p1());
+        QPointF unitTranslation = 15*(unitVector.p2() - unitVector.p1());
+        QLineF reverseArrowLine = arrowLine;
+        arrowLine.translate(normalTranslation);
+        reverseArrowLine.translate(-normalTranslation);
+        if (EqRightShifted == legacyReactionArrowType)
+        {
+          reverseArrowLine.setP1(reverseArrowLine.p1() + unitTranslation);
+          reverseArrowLine.setP2(reverseArrowLine.p2() - unitTranslation);
+        }
+        if (EqLeftShifted == legacyReactionArrowType)
+        {
+          arrowLine.setP1(arrowLine.p1() + unitTranslation);
+          arrowLine.setP2(arrowLine.p2() - unitTranslation);
+        }
+        auto reverseArrow = new Arrow;
+        reverseArrow->setParentItem(parentItem());
+        scene()->addItem(reverseArrow);
+        reverseArrow->setCoordinates(QPolygonF() << reverseArrowLine.p1()
+                                     << reverseArrowLine.p2());
+        reverseArrow->setArrowType(LowerForward);
+        setCoordinates(QPolygonF() << arrowLine.p1()
+                       << arrowLine.p2());
+      }
+    }
+    if ("MechanismArrow" == legacyArrowType)
+    {
+      enum LegacyMechanismArrowType {
+        SingleArrowRight = 0,
+        SingleArrowLeft,
+        DoubleMechanismArrow,
+        SingleHookRight,
+        SingleHookLeft,
+        DoubleHook
+      };
+      // Arrow tip
+      auto legacyMechanismArrowType = (LegacyMechanismArrowType) (attributes.value("arrowType").toString().toInt());
+      switch(legacyMechanismArrowType)
+      {
+        case SingleArrowRight:
+          setArrowType(UpperBackward | LowerBackward);
+          break;
+        case SingleArrowLeft:
+          setArrowType(UpperForward | LowerForward);
+          break;
+        case DoubleMechanismArrow:
+          setArrowType(LowerForward | UpperForward | LowerBackward | UpperBackward);
+          break;
+        case SingleHookRight:
+          setArrowType(UpperBackward);
+          break;
+        case SingleHookLeft:
+          setArrowType(UpperForward);
+          break;
+        case DoubleHook:
+          setArrowType(UpperForward | UpperBackward);
+          break;
+        default:
+          setArrowType(NoArrow);
+      }
+
+      // Setting coordinates
+      QPolygonF points;
+      for (int i = 0 ; i < 4 ; ++i)
+        points << QPointF(attributes.value("p" + QString::number(i+1) + "x").toString().toDouble(),
+                          attributes.value("p" + QString::number(i+1) + "y").toString().toDouble());
+      points.translate(attributes.value("posx").toString().toDouble(),
+                       attributes.value("posy").toString().toDouble());
+      setCoordinates(points);
+    }
   }
 
   QXmlStreamAttributes Arrow::graphicAttributes() const

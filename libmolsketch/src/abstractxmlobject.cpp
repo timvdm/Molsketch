@@ -46,7 +46,7 @@ namespace Molsketch {
     while (!in.atEnd())
     {
       in.readNext() ;
-      if (in.name() == xmlName() && in.isEndElement()) break ;
+      if (in.isEndElement()) break ;
       if (!in.isStartElement()) continue ;
       if (textItemAttributes().contains(in.name().toString()))
       {

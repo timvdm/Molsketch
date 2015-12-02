@@ -22,9 +22,6 @@
 #include <QtSvg>
 
 #include "fileio.h"
-#include "reactionarrow.h"
-#include "mechanismarrow.h"
-
 #include "atom.h"
 #include "bond.h"
 #include "molecule.h"

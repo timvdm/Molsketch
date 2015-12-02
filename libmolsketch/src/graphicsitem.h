@@ -94,15 +94,7 @@ namespace Molsketch {
     privateData *d;
     virtual qreal sceneLineWidth(MolScene* scene) const ;
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event) ;
-  };
-
-  class arrowGraphicsItem : public graphicsItem
-  {
-  public:
-    arrowGraphicsItem(QGraphicsItem* parent = 0 GRAPHICSSCENEHEADER ) ;
-    QString xmlName() const { return "object" ; }
-  private:
-    qreal sceneLineWidth(MolScene *scene) const ;
+    // TODO automatically return item children from graphicsitem as xmlitem
   };
 
 } // namespace
