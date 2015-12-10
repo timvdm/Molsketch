@@ -33,6 +33,8 @@ private slots:
 
   void atomCoordinates();
   void atomCoordinates_data();
+  void moleculeBoundingBox();
+  void moleculeBoundingBox_data();
 };
 
 #endif // COORDINATETEST_H

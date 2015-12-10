@@ -71,4 +71,47 @@ void coordinatesTest::atomCoordinates_data()
   QTest::newRow("origin") << QPointF(0,0) << "C";
   QTest::newRow("10,10") << QPointF(10,10) << "C";
   QTest::newRow("-5,10") << QPointF(-5,10) << "C";
+  // TODO atoms in molecules
 }
+
+void coordinatesTest::moleculeBoundingBox()
+{
+  QFETCH(QVector<QPointF>, atomCoordinates);
+  QFETCH(QStringList, atomSymbols);
+
+  QSet<Atom*> atoms;
+  for (int i = 0 ; i < qMin(atomCoordinates.size(), atomSymbols.size()) ; ++i)
+    atoms << new Atom(atomCoordinates[i], atomSymbols[i]);
+  QSet<Bond*> bonds;
+  foreach(Atom* a, atoms)
+  {
+    foreach(Atom* b, atoms)
+    {
+      if (a->neighbours().contains(b)) continue;
+      bonds << new Bond(a,b);
+    }
+  }
+  Molecule *molecule = new Molecule(atoms, bonds);
+
+  QRectF boundingBox;
+  foreach(Atom* a, atoms)
+    boundingBox |= a->boundingRect().translated(a->pos());
+
+  foreach(Bond* b, bonds)
+    boundingBox |= b->boundingRect().translated(b->pos());
+
+  QCOMPARE(molecule->boundingRect(), boundingBox);
+}
+// TODO check prepareGeometryChange() in items, molscene rendering refresh mode
+
+void coordinatesTest::moleculeBoundingBox_data()
+{
+  QTest::addColumn<QVector<QPointF> >("atomCoordinates");
+  QTest::addColumn<QStringList>("atomSymbols");
+
+  QTest::newRow("square") << (QPolygonF()
+                              << QPointF(0,0) << QPointF(100,0) << QPointF(0,100) << QPointF(100,100))
+                          << (QStringList() << "H" << "H" << "H" << "H") ;
+}
+
+
