@@ -24,7 +24,7 @@
 #include "molecule.h"
 #include "bond.h"
 #include "arrow.h"
-#include "frame.h"
+//#include "frame.h"
 
 using namespace Molsketch;
 
@@ -55,8 +55,7 @@ void coordinatesTest::atomCoordinates()
   Atom atom(ownCoordinate, atomicSymbol);
   auto metrics = QFontMetrics(QFont());
   QRectF expectedBoundingRect = metrics.boundingRect(atom.element());
-  expectedBoundingRect.moveTopLeft(QPointF(-qCeil(expectedBoundingRect.width()/2),
-                                          -qCeil(expectedBoundingRect.height()/2)));
+  expectedBoundingRect.moveTopLeft(- QPointF(expectedBoundingRect.width()/2, expectedBoundingRect.height()/2));
   QCOMPARE(atom.boundingRect(), expectedBoundingRect);
   expectedBoundingRect.translate(atom.coordinates().first());
   QCOMPARE(atom.pos(), ownCoordinate);
