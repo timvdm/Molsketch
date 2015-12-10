@@ -1,7 +1,4 @@
 /***************************************************************************
- *   Copyright (C) 2007-2008 by Harm van Eersel                            *
- *   Copyright (C) 2009 Tim Vandermeersch                                  *
- *   Copyright (C) 2009 by Nicola Zonta                                    *
  *   Copyright (C) 2015 Hendrik Vennekate                                  *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -19,35 +16,42 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#include "coordinatedelegate.h"
 
-#ifndef ABSTRACTXMLOBJECT_H
-#define ABSTRACTXMLOBJECT_H
-
-#include <QXmlStreamReader>
-#include <QXmlStreamWriter>
+#include <QLineEdit>
 
 namespace Molsketch {
-  class abstractXmlObject
+
+  CoordinateDelegate::CoordinateDelegate(QObject *parent) :
+    QItemDelegate(parent)
   {
-  protected:
-    virtual abstractXmlObject* produceChild(const QString& name, const QString& type) { Q_UNUSED(name) Q_UNUSED(type) return 0 ; }
-    virtual void readAttributes(const QXmlStreamAttributes& attributes) { Q_UNUSED(attributes) }
-    virtual QList<const abstractXmlObject*> children() const { return QList<const abstractXmlObject*>() ; }
-    virtual QXmlStreamAttributes xmlAttributes() const { return QXmlStreamAttributes() ; }
-    virtual QStringList textItemAttributes() const ;
-    virtual void afterReadFinalization();
-  public:
-    virtual QString xmlName() const = 0 ;
-    abstractXmlObject();
-    QXmlStreamReader& readXml(QXmlStreamReader& in) ;
-    QXmlStreamWriter& writeXml(QXmlStreamWriter& out) const ;
-    virtual ~abstractXmlObject() {}
-  };
+  }
 
-} // namespace
+  CoordinateDelegate::~CoordinateDelegate()
+  {
+  }
 
+  QWidget *CoordinateDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
+  {
+    Q_UNUSED(option)
+    Q_UNUSED(index)
+    auto edit = new QLineEdit(parent);
+    edit->setValidator(new QDoubleValidator(edit));
+    edit->setFrame(false);
+    return edit;
+  }
 
-QXmlStreamReader& operator>>(QXmlStreamReader& in, Molsketch::abstractXmlObject& object) ;
-QXmlStreamWriter& operator<<(QXmlStreamWriter& out, const Molsketch::abstractXmlObject& object) ;
+#define CASTEDITORMACRO QLineEdit *edit = qobject_cast<QLineEdit*>(editor); if (!edit) return;
+  void CoordinateDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
+  {
+    CASTEDITORMACRO
+    edit->setText(index.data(Qt::EditRole).toString());
+  }
 
-#endif // ABSTRACTXMLOBJECT_H
+  void CoordinateDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
+  {
+    CASTEDITORMACRO
+    model->setData(index, edit->text());
+  }
+
+} // namespace Molsketch

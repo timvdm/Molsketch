@@ -1,7 +1,4 @@
 /***************************************************************************
- *   Copyright (C) 2007-2008 by Harm van Eersel                            *
- *   Copyright (C) 2009 Tim Vandermeersch                                  *
- *   Copyright (C) 2009 by Nicola Zonta                                    *
  *   Copyright (C) 2015 Hendrik Vennekate                                  *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -19,35 +16,27 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-
-#ifndef ABSTRACTXMLOBJECT_H
-#define ABSTRACTXMLOBJECT_H
-
-#include <QXmlStreamReader>
-#include <QXmlStreamWriter>
+#include "coordinatedelegate.h"
+#include "coordinatetableview.h"
 
 namespace Molsketch {
-  class abstractXmlObject
+
+  CoordinateTableView::CoordinateTableView(QWidget *parent) :
+    QTableView(parent)
   {
-  protected:
-    virtual abstractXmlObject* produceChild(const QString& name, const QString& type) { Q_UNUSED(name) Q_UNUSED(type) return 0 ; }
-    virtual void readAttributes(const QXmlStreamAttributes& attributes) { Q_UNUSED(attributes) }
-    virtual QList<const abstractXmlObject*> children() const { return QList<const abstractXmlObject*>() ; }
-    virtual QXmlStreamAttributes xmlAttributes() const { return QXmlStreamAttributes() ; }
-    virtual QStringList textItemAttributes() const ;
-    virtual void afterReadFinalization();
-  public:
-    virtual QString xmlName() const = 0 ;
-    abstractXmlObject();
-    QXmlStreamReader& readXml(QXmlStreamReader& in) ;
-    QXmlStreamWriter& writeXml(QXmlStreamWriter& out) const ;
-    virtual ~abstractXmlObject() {}
-  };
+    QAbstractItemDelegate* oldDelegate = itemDelegate();
+    setItemDelegate(new CoordinateDelegate(this));
+    delete oldDelegate;
+  }
 
-} // namespace
+  CoordinateModel *CoordinateTableView::model() const
+  {
+    return qobject_cast<CoordinateModel*>(QTableView::model());
+  }
 
+  void CoordinateTableView::setModel(CoordinateModel *model)
+  {
+    QTableView::setModel(model);
+  }
 
-QXmlStreamReader& operator>>(QXmlStreamReader& in, Molsketch::abstractXmlObject& object) ;
-QXmlStreamWriter& operator<<(QXmlStreamWriter& out, const Molsketch::abstractXmlObject& object) ;
-
-#endif // ABSTRACTXMLOBJECT_H
+} // namespace Molsketch

@@ -1,6 +1,7 @@
 /***************************************************************************
  *   Copyright (C) 2007 by Harm van Eersel                                 *
  *   devsciurus@xs4all.nl                                                  *
+ *   Copyright (C) 2015 Hendrik Vennekate                                  *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -49,6 +50,12 @@ class MolScene;
 class Residue;
 
 namespace Commands {
+
+  enum CommandId {
+    BondTypeId = 1,
+    ArrowTypeId,
+    ArrowPropertiesId
+  };
 
 // Atom command
 
@@ -366,31 +373,44 @@ class DelBond : public  QUndoCommand
  */
 
 template<class ItemClass,
-         class ItemTypeEnum,
-         void (ItemClass::*setFunction)(const ItemTypeEnum&),
-         ItemTypeEnum (ItemClass::*getFunction)()const>
-class setItemTypeCommand : public QUndoCommand
+         class ItemPropertyType,
+         void (ItemClass::*setFunction)(const ItemPropertyType&),
+         ItemPropertyType (ItemClass::*getFunction)()const,
+         int CommandId = -1>
+class setItemPropertiesCommand : public QUndoCommand
 {
 private:
   ItemClass *item;
-  ItemTypeEnum type;
+  ItemPropertyType type;
+  typedef setItemPropertiesCommand<ItemClass, ItemPropertyType, setFunction, getFunction, CommandId> ownType;
 public:
-  setItemTypeCommand(ItemClass *Item, ItemTypeEnum newType, const QString& text = "")
+  setItemPropertiesCommand(ItemClass *Item, ItemPropertyType newType, const QString& text = "")
     : QUndoCommand(text),
       item(Item),
       type(newType){}
   void redo()
   {
-    ItemTypeEnum temp = (item->*getFunction)();
+    ItemPropertyType temp = (item->*getFunction)();
     (item->*setFunction)(type);
     type = temp;
     item->update();
   }
   void undo() { redo(); }
+  int id() const { return CommandId; }
+  bool mergeWith(const QUndoCommand *other)
+  {
+    auto otherCommand = dynamic_cast<const ownType*>(other);
+    if (!otherCommand) return false;
+    if (otherCommand->item!= item) return false;
+    return true;
+  }
+
+  // TODO make mergeable
 };
 
-typedef setItemTypeCommand<Bond, Bond::BondType, &Bond::setType, &Bond::bondType> SetBondType;
-typedef setItemTypeCommand<Arrow, Arrow::ArrowType, &Arrow::setArrowType, &Arrow::getArrowType> SetArrowType;
+typedef setItemPropertiesCommand<Bond, Bond::BondType, &Bond::setType, &Bond::bondType, BondTypeId> SetBondType;
+typedef setItemPropertiesCommand<Arrow, Arrow::ArrowType, &Arrow::setArrowType, &Arrow::getArrowType, ArrowTypeId> SetArrowType;
+typedef setItemPropertiesCommand<Arrow, Arrow::Properties, &Arrow::setProperties, &Arrow::getProperties, ArrowPropertiesId> setArrowProperties;
 
 class SwapBondAtoms : public QUndoCommand
 {

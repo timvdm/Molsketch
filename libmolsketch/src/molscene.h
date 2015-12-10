@@ -103,14 +103,14 @@ namespace Molsketch {
       int editMode() const; // TODO obsolete?
 
 #define SCENEPROPERTY(CAPLETTER, LOWERLETTER, PROPNAME, TYPE, DEFAULTVALUE) \
-  void set##CAPLETTER##PROPNAME(const TYPE& value) { setProperty("Molscene" #PROPNAME, value); } \
-  TYPE LOWERLETTER##PROPNAME() const { QVariant value = property("Molscene" #PROPNAME); \
+  void set##CAPLETTER##PROPNAME(const TYPE& value) { setProperty("Molscene" #CAPLETTER #PROPNAME, value); } \
+  TYPE LOWERLETTER##PROPNAME() const { QVariant value = property("Molscene" #CAPLETTER #PROPNAME); \
       if (value.isValid()) return value.value<TYPE>(); \
       return DEFAULTVALUE; }
 
 #define STRINGIFIEDPROPERTY(CAPLETTER, LOWERLETTER, PROPNAME, TYPE, DEFAULTVALUE) \
-  void set##CAPLETTER##PROPNAME(const TYPE& value) { setProperty("Molscene" #PROPNAME, stringify(value)); } \
-  TYPE LOWERLETTER##PROPNAME() const { QVariant value = property("Molscene" #PROPNAME); \
+  void set##CAPLETTER##PROPNAME(const TYPE& value) { setProperty("Molscene" #CAPLETTER #PROPNAME, stringify(value)); } \
+  TYPE LOWERLETTER##PROPNAME() const { QVariant value = property("Molscene" #CAPLETTER #PROPNAME); \
       if (value.isValid()) return makeFromString<TYPE>(value.toString()); \
       return DEFAULTVALUE; }
 

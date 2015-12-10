@@ -59,7 +59,11 @@ HEADERS += \
     actions/arrowtypewidget.h \
     actions/flipbondaction.h \
     grid.h \
-    stringify.h
+    stringify.h \
+    arrowpopup.h \
+    coordinatedelegate.h \
+    coordinatemodel.h \
+    coordinatetableview.h
 
 SOURCES += \
     atom.cpp \
@@ -114,11 +118,16 @@ SOURCES += \
     actions/arrowtypeaction.cpp \
     actions/arrowtypewidget.cpp \
     actions/flipbondaction.cpp \
-    grid.cpp
+    grid.cpp \
+    arrowpopup.cpp \
+    coordinatedelegate.cpp \
+    coordinatemodel.cpp \
+    coordinatetableview.cpp
 
 FORMS += \
     mechanismarrowdialog.ui \
-    reactionarrowdialog.ui
+    reactionarrowdialog.ui \
+    arrowpopup.ui
 
 RESOURCES += \
     tools/toolicons.qrc
