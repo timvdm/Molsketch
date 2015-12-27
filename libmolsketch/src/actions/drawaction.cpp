@@ -42,7 +42,7 @@ namespace Molsketch {
   class drawAction::privateData
   {
   public:
-    QDockWidget *dock ;
+    QWidget *dock ;
     periodicTableWidget *periodicTable;
     bondTypeWidget *bondType;
     QGraphicsLineItem hintLine;
@@ -110,16 +110,15 @@ namespace Molsketch {
     : genericAction(scene),
       d(new privateData(this))
   {
-    d->dock = new QDockWidget(tr("Draw mode"), parentWidget()) ;
-    d->dock->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum); // TODO minimize size
-    d->dock->setWidget(new QWidget(d->dock));
-    d->dock->widget()->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    QVBoxLayout *layout = new QVBoxLayout(d->dock->widget()) ;
+    d->dock = new QWidget(parentWidget()) ;
+//    d->dock->setWidget(new QWidget(d->dock));
+//    d->dock->widget()->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    QVBoxLayout *layout = new QVBoxLayout(d->dock) ;
     layout->setAlignment(Qt::AlignLeft | Qt::AlignTop) ;
     d->periodicTable = new periodicTableWidget(d->dock) ;
     d->bondType = new bondTypeWidget(true, d->dock) ;
-    d->dock->widget()->layout()->addWidget(d->periodicTable);
-    d->dock->widget()->layout()->addWidget(d->bondType);
+    d->dock->layout()->addWidget(d->periodicTable);
+    d->dock->layout()->addWidget(d->bondType);
     connect(d->periodicTable, SIGNAL(elementChanged(QString)),
             this, SLOT(refreshIcon()));
     connect(d->bondType, SIGNAL(currentTypeChanged(int)),
@@ -127,8 +126,11 @@ namespace Molsketch {
     connect(this, SIGNAL(toggled(bool)),
             this, SLOT(toggleVisibility(bool)));
     refreshIcon(); // TODO
-    if (parentWidget())
-      qobject_cast<QMainWindow*>(parentWidget())->addDockWidget(Qt::LeftDockWidgetArea, d->dock);
+//    if (parentWidget())
+//      qobject_cast<QMainWindow*>(parentWidget())->addDockWidget(Qt::LeftDockWidgetArea, d->dock);
+    d->dock->setWindowFlags(Qt::Tool);
+    d->dock->setWindowTitle(tr("Draw mode"));
+    d->dock->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed); // TODO minimize size
     d->dock->hide();
     setText(tr("Draw"));
   }
