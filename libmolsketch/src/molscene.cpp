@@ -90,6 +90,7 @@ namespace Molsketch {
         Grid(new grid)
     {
       selectionRectangle->setPen(QPen(Qt::blue,0,Qt::DashLine));
+      selectionRectangle->setZValue(INFINITY);
     }
 
     ~privateData()
