@@ -1,3 +1,21 @@
+/***************************************************************************
+ *   Copyright (C) 2015 Hendrik Vennekate                                  *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
 #include "frame.h"
 
 #include "molscene.h"
@@ -5,59 +23,241 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QPainter>
 
+//// code for parsing frame instructions TODO externalize
+///
+/* Syntax for coordinates:
+ * + - add to current coordinate
+ * r - relative value (relative to bounding box)
+ * f - relative value (relative to font size)
+ *
+ * Postfix: (use coord stack)
+ * - - line to
+ * . - quadratic to
+ * <nothing> - move to
+ * $ - do not advance path, just parse coordinate
+ */
+
+class CoordinateParser
+{
+private:
+  QPointF currentCoordinate;
+  qreal relativeX, relativeY, fontX, fontY;
+  void applyScaling(const QString& rfStringX, const QString& rfStringY, QPointF& coordinate) const
+  {
+    if ("r" == rfStringX) coordinate.rx() *= relativeX;
+    if ("f" == rfStringX) coordinate.rx() *= fontX;
+    if ("r" == rfStringY) coordinate.ry() *= relativeY;
+    if ("f" == rfStringY) coordinate.ry() *= fontY;
+  }
+public:
+  CoordinateParser(qreal relativeX = 0,
+                   qreal relativeY = 0,
+                   qreal fontX = 0,
+                   qreal fontY = 0)
+    : relativeX(relativeX),
+      relativeY(relativeY),
+      fontX(fontX),
+      fontY(fontY)
+  {}
+  void reset() { setCurrentCoordinate(QPointF()); }
+  QPointF getCurrentCoordinate() const { return currentCoordinate; }
+  void setCurrentCoordinate(const QPointF &value) { currentCoordinate = value; }
+  void parse(const QStringList& l)
+  {
+    if (l.size() != 5) throw std::domain_error(("coordinateParser: invalid number of strings to parse: " + QString::number(l.size())).toStdString().c_str());
+    QPointF coord(l[2].toDouble(), l[4].toDouble());
+    applyScaling(l[1], l[3], coord);
+    if ("+" == l[0]) currentCoordinate += coord;
+    else currentCoordinate = coord;
+  }
+};
+
+class PathSegmentParser
+{
+private:
+  QRegExp re;
+protected:
+  virtual void process(QPainterPath& path, CoordinateParser& parser) = 0;
+  const QRegExp& regExp() const { return re; }
+public:
+  PathSegmentParser(const QString& re)
+    : re(re)
+  {}
+  bool processed(QPainterPath& path, const QString& segment, int& index, CoordinateParser& parser)
+  {
+    if (!match(segment, index)) return false;
+    index += re.matchedLength();
+    process(path, parser);
+    return true;
+  }
+  bool match(const QString& segment, const int& index) const
+  {
+    return re.indexIn(segment, index) == index;
+  }
+  static QString coordinateRegExp()
+  {
+    QString numberRegExp("([rf]?)([+-]?[0-9]*.?[0-9]+(?:[eE][+-]?[0-9])?)");
+    return "(\\+?)\\(" + numberRegExp + "," + numberRegExp + "\\)";
+  }
+};
+
+template <void (QPainterPath::*fp)(const QPointF&)>
+class SinglePointSegment : public PathSegmentParser
+{
+  void process(QPainterPath &path, CoordinateParser &parser)
+  {
+    parser.parse(regExp().capturedTexts().mid(1));
+    (path.*fp)(parser.getCurrentCoordinate());
+  }
+public:
+  SinglePointSegment<fp>(const QString& prefix) : PathSegmentParser(prefix + coordinateRegExp()) {}
+};
+
+class SilentMoveSegment : public PathSegmentParser
+{
+  void process(QPainterPath &path, CoordinateParser &parser)
+  {
+    Q_UNUSED(path)
+    parser.parse(regExp().capturedTexts().mid(1));
+  }
+public:
+  SilentMoveSegment() : PathSegmentParser("$") {}
+};
+
+class QuadToSegment : public PathSegmentParser
+{
+  void process(QPainterPath &path, CoordinateParser &parser)
+  {
+    parser.parse(regExp().capturedTexts().mid(1,5));
+    QPointF point1(parser.getCurrentCoordinate());
+    parser.parse(regExp().capturedTexts().mid(6));
+    path.quadTo(point1, parser.getCurrentCoordinate());
+  }
+public:
+  QuadToSegment() : PathSegmentParser("." + coordinateRegExp() + "." + coordinateRegExp()) {}
+};
+//// end code for parsing
+
+
 namespace Molsketch {
 
-  class frame::privateData
+  class Frame::privateData
   {
+  private:
+    QList<PathSegmentParser*> segmentParsers;
   public:
-    QPointF topLeft, bottomRight, offset;
-    bool checkingBoundingRect;
-    void refreshCoords(QGraphicsItem* parent)
+    privateData()
     {
-      if (!parent) return;
-      checkingBoundingRect = true;
-      topLeft = parent->boundingRect().topLeft();
-      bottomRight = parent->boundingRect().bottomRight();
-      topLeft -= offset;
-      bottomRight += offset;
-      checkingBoundingRect = false;
+      segmentParsers << new SinglePointSegment<&QPainterPath::moveTo>("")
+                     << new SinglePointSegment<&QPainterPath::lineTo>("-")
+                     << new QuadToSegment
+                     << new SilentMoveSegment
+                        ;
+    }
+
+    QRectF baseRect;
+    QString framePathCode;
+
+    QPainterPath parseFramePath(const QGraphicsItem* qparent)
+    {
+      auto parent = dynamic_cast<const graphicsItem*>(qparent);
+      if (parent) baseRect = parent->boundingRectWithoutChildren<Frame*>();
+
+      CoordinateParser parser(
+            baseRect.width(), // relX
+            baseRect.height(), // rely
+            10, // fontX TODO
+            10); // fontY
+
+      auto purePath = framePathCode;
+      purePath.remove(QRegExp("\\s+"));
+
+      QPainterPath painterPath;
+      int currentIndex = 0;
+      while (currentIndex < purePath.size())
+      {
+        bool found = false;
+        for (auto segmentParser : segmentParsers)
+          if ((found = segmentParser->processed(painterPath, purePath, currentIndex, parser)))
+            break;
+        if (!found) break;
+      }
+
+      painterPath.translate(baseRect.center());
+      return painterPath;
     }
   };
 
-  frame::frame()
+  Frame::Frame() // TODO rotation around center of parentItem (new variable d->rotationAngle)
     : d(new privateData)
   {
-    d->offset = QPointF(10,10);
-    d->checkingBoundingRect = false;
+#if QT_VERSION < 0x050000
+    setAcceptsHoverEvents(true);
+#else
+    setAcceptHoverEvents(true) ;
+#endif
   }
 
-  frame::~frame()
+  Frame::~Frame()
   {
     delete d;
   }
 
-  void frame::setCoordinates(const QVector<QPointF> &c)
+  void Frame::setCoordinates(const QVector<QPointF> &c)
   {
-    if (c.size() != 2) return;
-    setCoordinates(c[0], c[1]);
+    if (parentItem()) return;
+    d->baseRect.setTopLeft(c[0]);
+    d->baseRect.setBottomRight(c[1]);
   }
 
-  void frame::setCoordinates(const QPointF &topLeft, const QPointF &bottomRight)
+  QPolygonF Frame::coordinates() const
   {
-    d->topLeft = topLeft;
-    d->bottomRight = bottomRight;
+    return QPolygonF()
+        << d->baseRect.topLeft()
+        << d->baseRect.bottomRight();
   }
 
-  QPolygonF frame::coordinates() const
+  QPolygonF Frame::moveablePoints() const
   {
-    return QPolygonF() << d->topLeft << d->bottomRight;
+    QPolygonF mps;
+    mps
+        << d->baseRect.topLeft()
+        << d->baseRect.topRight()
+        << d->baseRect.bottomLeft()
+        << d->baseRect.bottomRight()
+        << (d->baseRect.topLeft() + d->baseRect.topRight())/2
+        << (d->baseRect.bottomLeft() + d->baseRect.bottomRight())/2
+        << (d->baseRect.topLeft() + d->baseRect.bottomLeft())/2
+        << (d->baseRect.topRight() + d->baseRect.bottomRight())/2;
+    return mps;
   }
 
-  void frame::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+  QPointF Frame::getPoint(const int &index) const
+  {
+    if (index < 0 || index >= moveablePoints().size()) return QPointF();
+    return moveablePoints().at(index);
+  }
+
+  void Frame::movePointBy(const QPointF &offset, int pointIndex)
+  {
+    switch(pointIndex)
+    {
+      case 0: d->baseRect.setTopLeft(d->baseRect.topLeft() + offset); break;
+      case 1: d->baseRect.setTopRight(d->baseRect.topRight() + offset); break;
+      case 2: d->baseRect.setBottomLeft(d->baseRect.bottomLeft() + offset); break;
+      case 3: d->baseRect.setBottomRight(d->baseRect.bottomRight() + offset); break;
+      case 4: d->baseRect.setTop(d->baseRect.top() + offset.y()); break;
+      case 5: d->baseRect.setBottom(d->baseRect.bottom() + offset.y()); break;
+      case 6: d->baseRect.setLeft(d->baseRect.left() + offset.x()); break;
+      case 7: d->baseRect.setRight(d->baseRect.right() + offset.x()); break;
+      default: graphicsItem::movePointBy(offset, pointIndex);
+    }
+  }
+
+  void Frame::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
   {
     Q_UNUSED(option)
     Q_UNUSED(widget)
-    d->refreshCoords(parentItem());
 
     painter->save();
 
@@ -68,46 +268,78 @@ namespace Molsketch {
     pen.setColor(getColor());
     painter->setPen(pen);
 
-    painter->drawRect(QRectF(d->topLeft, d->bottomRight));
+    painter->save();
+    painter->setPen(QPen(Qt::red));
+    foreach(const QPointF& p, moveablePoints())
+      painter->drawEllipse(p,5,5);
+    painter->restore();
+
+    QPainterPath painterPath = d->parseFramePath(parentItem());
+    painter->drawPath(painterPath);
+    // TODO check path coordinates vs. bounding rect of parentItem()
+    // TODO incorporate path size in boundingRect() (maybe
 
     painter->restore();
   }
 
-  QRectF frame::boundingRect() const
+  QRectF Frame::ownBoundingRect() const
   {
-    if (d->checkingBoundingRect) return QRectF();
-    d->refreshCoords(parentItem());
-    return QRectF(d->topLeft,d->bottomRight);
+    return d->parseFramePath(parentItem()).boundingRect();
   }
 
-  void frame::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+  QRectF Frame::boundingRect() const
+  {
+    QRectF moveablePointsRect = moveablePoints().boundingRect();
+    moveablePointsRect.adjust(-pointSelectionDistance(),
+                              -pointSelectionDistance(),
+                              pointSelectionDistance(),
+                              pointSelectionDistance());
+    return ownBoundingRect() | moveablePointsRect; // TODO make bounding rect = ownBoundingRect() | moveablePoints() ?
+  }
+
+  void Frame::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
   {
     event->ignore();
   }
 
-  int frame::coordinateCount() const
+  int Frame::coordinateCount() const
   {
     return 2;
   }
 
-  QString frame::xmlName() const
+  void Frame::setFrameString(const QString &frameString)
+  {
+    d->framePathCode = frameString;
+  }
+
+  QString Frame::frameString() const
+  {
+    return d->framePathCode;
+  }
+
+  QString Frame::xmlName() const
   {
     return "frame";
   }
 
-  void frame::readGraphicAttributes(const QXmlStreamAttributes &attributes)
+  void Frame::readGraphicAttributes(const QXmlStreamAttributes &attributes)
   {
+    d->framePathCode = attributes.value("framePath").toString();
   }
 
-  QXmlStreamAttributes frame::graphicAttributes() const
+  QXmlStreamAttributes Frame::graphicAttributes() const
   {
+    QXmlStreamAttributes attributes;
+    attributes.append("framePath", d->framePathCode);
+    return attributes;
   }
 
-  void frame::prepareContextMenu(QMenu *contextMenu)
+  void Frame::prepareContextMenu(QMenu *contextMenu)
   {
+    Q_UNUSED(contextMenu);
   }
 
-  qreal frame::sceneLineWidth(MolScene *scene) const
+  qreal Frame::sceneLineWidth(MolScene *scene) const
   {
     return scene->frameLinewidth();
   }
