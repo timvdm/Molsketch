@@ -127,7 +127,7 @@ namespace Molsketch {
 
   QString rotateAction::cursorLabel(const QLineF &originalLine, QLineF &currentLine)
   {
-    return QString::number(currentLine.angleTo(originalLine)) + "°";
+    return QString::number(currentLine.angleTo(originalLine)) + tr("°\nHold Shift to use fixed angles.");
   }
 
   QTransform rotateAction::generateTransform(const QLineF &originalLine, const QLineF &currentLine)
