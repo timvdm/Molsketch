@@ -54,7 +54,7 @@ namespace Molsketch {
       ReactionArrow();
       virtual ~ReactionArrow();
 
-      QRectF boundingRect() const;
+      QRectF ownBoundingRect() const;
       void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
       void hoverEnterEvent(QGraphicsSceneHoverEvent *event);

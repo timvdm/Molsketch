@@ -59,7 +59,7 @@ namespace Molsketch {
       MechanismArrow(QPointF c1, QPointF c2, QPointF endPoint);
       virtual ~MechanismArrow();
 
-      QRectF boundingRect() const;
+      QRectF ownBoundingRect() const;
       QPainterPath shape() const;
       void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 

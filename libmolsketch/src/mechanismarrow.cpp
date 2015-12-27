@@ -89,7 +89,7 @@ namespace Molsketch {
     return QVector<QPointF>() << m_p1 << m_p2 << m_p3 << m_p4 ;
   }
 
-  QRectF MechanismArrow::boundingRect() const
+  QRectF MechanismArrow::ownBoundingRect() const
   {
     QRectF rect(-200,-200,400,400);
     rect = QRectF(m_p1, m_p3).normalized() | QRectF(m_p2, m_p4).normalized();

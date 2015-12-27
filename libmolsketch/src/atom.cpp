@@ -101,7 +101,7 @@ namespace Molsketch {
 
   void Atom::computeBoundingRect()
   {
-    //qDebug() << "Atom::computeBoundingRect";
+    // TODO no boundingRect if not drawn
     int alignment = labelAlignment(this);
     bool leftAligned = false;
     switch (alignment) {
@@ -228,7 +228,7 @@ namespace Molsketch {
     computeBoundingRect();
   }
 
-  QRectF Atom::boundingRect() const
+  QRectF Atom::ownBoundingRect() const
   {
     return m_shape;
   }

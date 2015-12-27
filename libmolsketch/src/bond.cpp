@@ -95,7 +95,7 @@ namespace Molsketch {
 
   // Inherited methods
 
-  QRectF Bond::boundingRect() const
+  QRectF Bond::ownBoundingRect() const
   {
     CHECKFORATOMS return QRect() ;
 

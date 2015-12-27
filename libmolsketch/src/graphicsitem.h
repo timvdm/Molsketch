@@ -71,9 +71,26 @@ namespace Molsketch {
     virtual QPointF firstPoint() const;
     virtual int coordinateCount() const;
     virtual void swapPoint(const int& index, QPointF& p);
+    virtual QPolygonF moveablePoints() const;
+    virtual void movePointBy(const QPointF& offset, int pointIndex = -1);
+    virtual void moveItemBy(const QPointF& offset);
+
+    QRectF boundingRect() const { return ownBoundingRect(); }
+    template<class T> // TODO default to QGraphicsItem
+    // TODO check implementation of QGraphicsItem::childrenBoundingRect
+    QRectF boundingRectWithoutChildren() const
+    {
+      QRectF result;
+      foreach(auto childItem, childItems()){
+        if (!dynamic_cast<T>(childItem))
+          result |= childItem->boundingRect().translated(childItem->pos());
+      }
+      return result | ownBoundingRect();
+    }
 
     virtual void prepareContextMenu(QMenu* contextMenu);
   protected:
+    qreal pointSelectionDistance() const;
     void readAttributes(const QXmlStreamAttributes &attributes) ;
     QXmlStreamAttributes xmlAttributes() const ;
     virtual void readGraphicAttributes(const QXmlStreamAttributes& attributes) { Q_UNUSED(attributes)}
@@ -87,6 +104,7 @@ namespace Molsketch {
     int selectedPoint() const;
     virtual void prepareItemContextMenu(QMenu* contextMenu);
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+    virtual QRectF ownBoundingRect() const { return QRectF(); }
   private:
     QColor m_color ;
     qreal lineWidthScaling ;

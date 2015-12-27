@@ -29,7 +29,7 @@
 
 namespace Molsketch {
 
-  class movePointCommand : public QUndoCommand
+  class movePointCommand : public QUndoCommand // TODO eliminate transformcommand or merge
   {
   private:
     int index ;
@@ -49,16 +49,8 @@ namespace Molsketch {
     }
     void redo()
     {
-      foreach(graphicsItem* item, items)
-      {
-        QPolygonF coords = item->coordinates();
-        if (index < 0)
-          for (int i = 0 ; i < coords.size() ; ++i)
-            coords[i] += shift;
-        else
-          coords[index] += shift;
-        item->setCoordinates(coords);
-      }
+      for(auto item : items)
+        item->movePointBy(shift, index);
 
       shift *= -1;
     }
@@ -147,11 +139,11 @@ namespace Molsketch {
     int i = 0 ;
     double minDistance = INFINITY ;
 
-    foreach(const QPointF& p, coordinates())
+    foreach(const QPointF& p, moveablePoints())
     {
       qreal currentDistance = QLineF(eventPosition, p).length() ;
       if (currentDistance < minDistance
-          && currentDistance < 5.)
+          && currentDistance < pointSelectionDistance())
       {
         minDistance = currentDistance ;
         d->selectedPoint = i ;
@@ -203,7 +195,7 @@ namespace Molsketch {
   }
 
   void graphicsItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
-  {
+  { // TODO this function seems weird
     QGraphicsItem::mousePressEvent(event);
     event->accept(); // to prevent scene from clearing selection
     if (event->button() != Qt::LeftButton) return;
@@ -374,6 +366,30 @@ namespace Molsketch {
     qSwap(p,oldCoords[index]);
   }
 
+  QPolygonF graphicsItem::moveablePoints() const
+  {
+    return coordinates();
+  }
+
+  void graphicsItem::movePointBy(const QPointF &offset, int pointIndex)
+  {
+    if (-1 == pointIndex)
+    {
+      moveItemBy(offset);
+      return;
+    }
+    setCoordinate(pointIndex, offset + getPoint(pointIndex));
+  }
+
+  void graphicsItem::moveItemBy(const QPointF &offset)
+  {
+    QPolygonF coords(coordinates());
+    coords.translate(offset);
+    setCoordinates(coords);
+  }
+
+
+
   void graphicsItem::prepareContextMenu(QMenu *contextMenu)
   {
     colorAction *caction = scene()->findChild<colorAction*>();
@@ -382,6 +398,11 @@ namespace Molsketch {
     if (caction)  contextMenu->addAction(caction);
     if (lwaction) contextMenu->addAction(lwaction);
     if (raction)  contextMenu->addAction(raction);
+  }
+
+  qreal graphicsItem::pointSelectionDistance() const
+  {
+    return 5.;
   }
 
 } // namespace
