@@ -88,6 +88,7 @@ namespace Molsketch {
     d->arrow = a;
     if (!a) return;
     d->transferPropertiesToUi(ui,d->arrow->getProperties());
+    checkSplineEligibility();
   }
 
   // immediate TODO: Enable quit by pressing Esc (revert settings first) or loosing focus

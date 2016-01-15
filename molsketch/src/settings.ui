@@ -7,7 +7,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>543</width>
+    <width>602</width>
     <height>509</height>
    </rect>
   </property>
@@ -15,14 +15,14 @@
    <string>molsKetch - Preferences</string>
   </property>
   <property name="windowIcon">
-   <iconset>
+   <iconset resource="molsketch.qrc">
     <normaloff>:/images/configure.png</normaloff>:/images/configure.png</iconset>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
-    <layout class="QVBoxLayout">
+    <layout class="QVBoxLayout" name="settingsDialogLayout">
      <item>
-      <layout class="QHBoxLayout">
+      <layout class="QHBoxLayout" name="settingsInnerLayout">
        <item>
         <widget class="QListWidget" name="listWidget">
          <property name="sizePolicy">
@@ -63,7 +63,7 @@
            <string>General</string>
           </property>
           <property name="icon">
-           <iconset>
+           <iconset resource="molsketch.qrc">
             <normaloff>:/images/configure.svg</normaloff>:/images/configure.svg</iconset>
           </property>
          </item>
@@ -72,7 +72,7 @@
            <string>Draw settings</string>
           </property>
           <property name="icon">
-           <iconset>
+           <iconset resource="molsketch.qrc">
             <normaloff>:/images/draw-freehand.svg</normaloff>:/images/draw-freehand.svg</iconset>
           </property>
          </item>
@@ -81,7 +81,7 @@
            <string>Libraries</string>
           </property>
           <property name="icon">
-           <iconset>
+           <iconset resource="molsketch.qrc">
             <normaloff>:/images/document-open.svg</normaloff>:/images/document-open.svg</iconset>
           </property>
          </item>
@@ -90,7 +90,7 @@
        <item>
         <widget class="QStackedWidget" name="stackedWidget">
          <property name="currentIndex">
-          <number>1</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="generalPage">
           <widget class="QGroupBox" name="groupBoxGeneral">
@@ -111,12 +111,12 @@
               <x>20</x>
               <y>40</y>
               <width>388</width>
-              <height>105</height>
+              <height>116</height>
              </rect>
             </property>
-            <layout class="QVBoxLayout">
+            <layout class="QVBoxLayout" name="SaveLayout">
              <item>
-              <layout class="QHBoxLayout">
+              <layout class="QHBoxLayout" name="defaultFileTypeLayout">
                <item>
                 <widget class="QLabel" name="labelDefaultFileType">
                  <property name="text">
@@ -141,7 +141,7 @@
               </layout>
              </item>
              <item>
-              <layout class="QHBoxLayout">
+              <layout class="QHBoxLayout" name="defaultImageTypeLayout">
                <item>
                 <widget class="QLabel" name="labelDefaultImageType">
                  <property name="text">
@@ -166,7 +166,7 @@
               </layout>
              </item>
              <item>
-              <layout class="QHBoxLayout">
+              <layout class="QHBoxLayout" name="autoSaveIntervalLayout">
                <item>
                 <widget class="QLabel" name="labelAutoSave">
                  <property name="text">
@@ -175,7 +175,7 @@
                 </widget>
                </item>
                <item>
-                <spacer>
+                <spacer name="autoSaveIntervalSpacer">
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
                  </property>
@@ -206,7 +206,7 @@
          <widget class="QWidget" name="drawingPage">
           <layout class="QHBoxLayout" name="horizontalLayout_2">
            <item>
-            <layout class="QVBoxLayout">
+            <layout class="QVBoxLayout" name="atomLayout">
              <item>
               <widget class="QGroupBox" name="groupBoxAtom">
                <property name="sizePolicy">
@@ -249,7 +249,7 @@
                  </widget>
                 </item>
                 <item row="6" column="0">
-                 <layout class="QHBoxLayout">
+                 <layout class="QHBoxLayout" name="atomFontLayout">
                   <item>
                    <widget class="QDoubleSpinBox" name="doubleSpinBoxFontSize">
                     <property name="buttonSymbols">
@@ -295,7 +295,7 @@
                  </widget>
                 </item>
                 <item row="4" column="0">
-                 <spacer>
+                 <spacer name="atomSpacer">
                   <property name="orientation">
                    <enum>Qt::Vertical</enum>
                   </property>
@@ -470,7 +470,7 @@
             </property>
             <layout class="QVBoxLayout" name="verticalLayout">
              <item>
-              <layout class="QGridLayout" name="gridLayout">
+              <layout class="QGridLayout" name="libraryPathLayout">
                <item row="0" column="0">
                 <widget class="QLabel" name="labelLibraryPath">
                  <property name="text">
@@ -491,7 +491,7 @@
               </layout>
              </item>
              <item>
-              <layout class="QGridLayout" name="gridLayout_2">
+              <layout class="QGridLayout" name="customLibraryPathLayout">
                <item row="0" column="0">
                 <widget class="QLabel" name="labelCustomLibraryPath">
                  <property name="text">
@@ -536,7 +536,9 @@
  <tabstops>
   <tabstop>buttonBox</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="molsketch.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>buttonBox</sender>
