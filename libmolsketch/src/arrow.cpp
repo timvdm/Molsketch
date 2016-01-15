@@ -188,7 +188,7 @@ namespace Molsketch {
     painter->restore();
   }
 
-  QRectF Arrow::ownBoundingRect() const
+  QRectF Arrow::boundingRect() const
   {
     QRectF result ;
     foreach(const QPointF& p, d->points)

@@ -48,7 +48,7 @@ namespace Molsketch {
     QPolygonF coordinates() const ;
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    QRectF ownBoundingRect() const ;
+    QRectF boundingRect() const ;
 
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 

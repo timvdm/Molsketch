@@ -228,7 +228,7 @@ namespace Molsketch {
     computeBoundingRect();
   }
 
-  QRectF Atom::ownBoundingRect() const
+  QRectF Atom::boundingRect() const
   {
     return m_shape;
   }

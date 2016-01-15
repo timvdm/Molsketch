@@ -86,6 +86,7 @@ namespace Molsketch {
 
     // TODO just take ownership of the atoms and bonds
     // Add the new atoms
+    // TODO: why not take ownership of the old ones and set this as their parent?!
     foreach(Atom* atom, atomSet) {
       Atom *a = new Atom(atom->scenePos(), atom->element(), atom->hasImplicitHydrogens(), this);
       a ->setColor (atom ->getColor ());

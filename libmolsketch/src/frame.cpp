@@ -288,20 +288,20 @@ namespace Molsketch {
     painter->restore();
   }
 
-  QRectF Frame::ownBoundingRect() const
+  QRectF Frame::boundingRect() const // TODO include selectable points if active/selected (hovered/clicked)
   {
     return d->parseFramePath().boundingRect();
   }
 
-  QRectF Frame::boundingRect() const
-  {
-    QRectF moveablePointsRect = moveablePoints().boundingRect();
-    moveablePointsRect.adjust(-pointSelectionDistance(),
-                              -pointSelectionDistance(),
-                              pointSelectionDistance(),
-                              pointSelectionDistance());
-    return ownBoundingRect() | moveablePointsRect; // TODO make bounding rect = ownBoundingRect() | moveablePoints() ?
-  }
+//  QRectF Frame::boundingRect() const
+//  {
+//    QRectF moveablePointsRect = moveablePoints().boundingRect();
+//    moveablePointsRect.adjust(-pointSelectionDistance(),
+//                              -pointSelectionDistance(),
+//                              pointSelectionDistance(),
+//                              pointSelectionDistance());
+//    return boundingRect() | moveablePointsRect; // TODO make bounding rect = ownBoundingRect() | moveablePoints() ?
+//  }
 
   void Frame::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
   {

@@ -65,8 +65,9 @@
 #include "mechanismarrow.h"
 #include "arrow.h"
 #include "actions/abstractitemaction.h"
+#include "actions/genericaction.h"
 
-#include <actions/genericaction.h>
+#include "frame.h"
 
 #ifdef QT_STATIC_BUILD
 inline void initToolBarIcons() { Q_INIT_RESOURCE(toolicons); }

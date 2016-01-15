@@ -37,8 +37,8 @@ namespace Molsketch {
     void movePointBy(const QPointF &offset, int pointIndex);
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    QRectF ownBoundingRect() const;
     QRectF boundingRect() const;
+//    QRectF boundingRect() const;
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     int coordinateCount() const;
 

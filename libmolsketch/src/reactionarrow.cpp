@@ -64,7 +64,7 @@ namespace Molsketch {
     return QVector<QPointF>() << pos() << m_end ;
   }
 
-  QRectF ReactionArrow::ownBoundingRect() const // TODO adapt
+  QRectF ReactionArrow::boundingRect() const // TODO adapt
   {
     QRectF rect;
     if (m_end.x() < 0 && m_end.y() < 0)

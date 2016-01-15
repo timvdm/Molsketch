@@ -103,7 +103,7 @@ class Bond : public graphicsItem
 	/** Returns the shape of the bond. Needed for Qt event handling. */
 	virtual QPainterPath shape() const;
 	/** Returns the bounding rectangle of the bond. Needed for Qt painting. */
-        virtual QRectF ownBoundingRect() const;
+        virtual QRectF boundingRect() const;
 	/** Returns the angle of this bond from atom @p origin */
 	qreal bondAngle(const Atom* origin) const ;
 	/** Returns the main bond axis */

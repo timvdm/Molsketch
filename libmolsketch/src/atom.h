@@ -61,7 +61,7 @@ namespace Molsketch {
       /** 
        * Returns the bounding rectangle of the atom. Needed for Qt painting. 
        */
-      virtual QRectF ownBoundingRect() const;
+      virtual QRectF boundingRect() const;
       /** 
        * Paint method to draw the atom onto a QPainter. Needed for Qt painting.
        */
