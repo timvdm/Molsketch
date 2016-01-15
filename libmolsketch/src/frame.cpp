@@ -145,8 +145,10 @@ namespace Molsketch {
   {
   private:
     QList<PathSegmentParser*> segmentParsers;
+    Frame *frame;
   public:
-    privateData()
+    privateData(Frame *frame)
+      : frame(frame)
     {
       segmentParsers << new SinglePointSegment<&QPainterPath::moveTo>("")
                      << new SinglePointSegment<&QPainterPath::lineTo>("-")
@@ -158,10 +160,15 @@ namespace Molsketch {
     QRectF baseRect;
     QString framePathCode;
 
-    QPainterPath parseFramePath(const QGraphicsItem* qparent)
+    void refreshBaseRect()
     {
-      auto parent = dynamic_cast<const graphicsItem*>(qparent);
-      if (parent) baseRect = parent->boundingRectWithoutChildren<Frame*>();
+      if (!frame->childItems().isEmpty())
+        baseRect = frame->childrenBoundingRect();
+    }
+
+    QPainterPath parseFramePath()
+    {
+      refreshBaseRect();
 
       CoordinateParser parser(
             baseRect.width(), // relX
@@ -189,7 +196,7 @@ namespace Molsketch {
   };
 
   Frame::Frame() // TODO rotation around center of parentItem (new variable d->rotationAngle)
-    : d(new privateData)
+    : d(new privateData(this))
   {
 #if QT_VERSION < 0x050000
     setAcceptsHoverEvents(true);
@@ -205,7 +212,6 @@ namespace Molsketch {
 
   void Frame::setCoordinates(const QVector<QPointF> &c)
   {
-    if (parentItem()) return;
     d->baseRect.setTopLeft(c[0]);
     d->baseRect.setBottomRight(c[1]);
   }
@@ -274,7 +280,7 @@ namespace Molsketch {
       painter->drawEllipse(p,5,5);
     painter->restore();
 
-    QPainterPath painterPath = d->parseFramePath(parentItem());
+    QPainterPath painterPath = d->parseFramePath();
     painter->drawPath(painterPath);
     // TODO check path coordinates vs. bounding rect of parentItem()
     // TODO incorporate path size in boundingRect() (maybe
@@ -284,7 +290,7 @@ namespace Molsketch {
 
   QRectF Frame::ownBoundingRect() const
   {
-    return d->parseFramePath(parentItem()).boundingRect();
+    return d->parseFramePath().boundingRect();
   }
 
   QRectF Frame::boundingRect() const

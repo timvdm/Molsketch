@@ -132,6 +132,18 @@ namespace Molsketch {
     // Set initial size
     QRectF sizerect(-5000,-5000,10000,10000);
     setSceneRect(sizerect);
+//    f->setCoordinates(QPointF(0,0), QPointF(100,100));
+//    f->setParentItem(m);
+//    f->setFrameString("(r .5,r.5)+(-10,0)-+( 10,0)-(r .5,r-.5)-+(-10,0)"
+//                        "(r-.5,r.5)+( 10,0)-+(-10,0)-(r-.5,r-.5)-+( 10,0)"); // brackets
+//    f->setFrameString("(r.5,r-.5)+(-20,0)-+(20,0)-+(0,20)"); // angle
+//    f->setFrameString("(r.5,r-.5)+(-10,0).+(10,0).+(0,10)"
+//                      "$(r.5,r0)-+(0,-10).+(0,10).+(5,0)"
+//                      ".+(-5,0).+(0,10)$(r.5,r.5)-+(0,-10)"
+//                      ".+(0,10).+(-10,0)"
+//                      ); // curly bracket
+
+//    f->setFrameString("(r.5,r.5)-(r.5,r-.5)-(r-.5,r-.5)-(r-.5,r.5)-(r.5,r.5)"); // full frame
   }
 
   MolScene::~MolScene()
@@ -497,7 +509,7 @@ namespace Molsketch {
       object = new Arrow;
     if (childName == "object")
     {
-      if (type == "ReactionArrow") object = new ReactionArrow ;
+      if (type == "ReactionArrow") object = new ReactionArrow ; // TODO get rid of these
       if (type == "MechanismArrow") object = new MechanismArrow ;
     }
     if (childName == "plugin")

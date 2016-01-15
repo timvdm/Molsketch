@@ -84,6 +84,7 @@ namespace Molsketch {
     setAcceptHoverEvents(true) ;
 #endif
 
+    // TODO just take ownership of the atoms and bonds
     // Add the new atoms
     foreach(Atom* atom, atomSet) {
       Atom *a = new Atom(atom->scenePos(), atom->element(), atom->hasImplicitHydrogens(), this);
@@ -663,7 +664,7 @@ namespace Molsketch {
       //painter->setBrush(Qt::yellow);
       //painter->setOpacity(0.2);
       painter->drawRect(boundingRect());
-    }
+    } // TODO move this somewhere else, so that it can have a different Z value
     /*
   if(hasFocus()) {
     painter->setBrush(Qt::yellow);
