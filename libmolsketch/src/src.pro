@@ -60,7 +60,9 @@ HEADERS += \
     actions/flipbondaction.h \
     grid.h \
     stringify.h \
-    frame.h
+    frame.h \
+    actions/frameaction.h \
+    actions/frametypewidget.h
 
 SOURCES += \
     atom.cpp \
@@ -116,7 +118,9 @@ SOURCES += \
     actions/arrowtypewidget.cpp \
     actions/flipbondaction.cpp \
     grid.cpp \
-    frame.cpp
+    frame.cpp \
+    actions/frameaction.cpp \
+    actions/frametypewidget.cpp
 
 FORMS += \
     mechanismarrowdialog.ui \
