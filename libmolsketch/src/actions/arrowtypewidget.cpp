@@ -21,21 +21,19 @@
 
 namespace Molsketch {
 
-#define TIPGEN(TYPE, IMAGESTRING) << typeIconPair(TYPE, QPixmap::fromImage(QImage(":/images/" + QString(IMAGESTRING) + ".png")))
+#define TIPGEN(TYPE, IMAGESTRING) addButton(TYPE, QPixmap::fromImage(QImage(":/images/" + QString(IMAGESTRING) + ".png")));
 
   arrowTypeWidget::arrowTypeWidget(QWidget *parent)
     : ItemTypeWidget(parent)
   {
-    setButtons(QList<typeIconPair>()
-               TIPGEN(Arrow::NoArrow, "line") // --
-               TIPGEN(Arrow::UpperBackward | Arrow::LowerBackward, "arrow") // ->
-               TIPGEN(Arrow::UpperForward | Arrow::LowerForward | Arrow::UpperBackward | Arrow::LowerBackward, "resonanceArrow") // <->
-               TIPGEN(Arrow::UpperBackward, "hookUp") // -P
-               TIPGEN(Arrow::LowerBackward, "hookDown") // -b
-               TIPGEN(Arrow::UpperForward | Arrow::UpperBackward, "eqHook") //
-               TIPGEN(Arrow::UpperForward | Arrow::LowerBackward, "eqMirrorHook")
-               TIPGEN(Arrow::LowerForward | Arrow::UpperBackward, "eqMirrorHookb")
-               );
+    TIPGEN(Arrow::NoArrow, "line") // --
+    TIPGEN(Arrow::UpperBackward | Arrow::LowerBackward, "arrow") // ->
+    TIPGEN(Arrow::UpperForward | Arrow::LowerForward | Arrow::UpperBackward | Arrow::LowerBackward, "resonanceArrow") // <->
+    TIPGEN(Arrow::UpperBackward, "hookUp") // -P
+    TIPGEN(Arrow::LowerBackward, "hookDown") // -b
+    TIPGEN(Arrow::UpperForward | Arrow::UpperBackward, "eqHook") //
+    TIPGEN(Arrow::UpperForward | Arrow::LowerBackward, "eqMirrorHook")
+    TIPGEN(Arrow::LowerForward | Arrow::UpperBackward, "eqMirrorHookb")
   }
 
 } // namespace Molsketch

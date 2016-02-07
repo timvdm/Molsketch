@@ -20,20 +20,22 @@
 
 namespace Molsketch {
 
+#define ADDFRAMEBUTTON(FRAME, ICON) addButton(-1, QPixmap::fromImage(QImage(":/images/" + QString(ICON) + ".png")), QVariant(FRAME));
+
   FrameTypeWidget::FrameTypeWidget(QWidget *parent)
     : ItemTypeWidget(parent)
   {
-    ADDBUTTONMACRO("(r .5,r.5)+(-10,0)-+( 10,0)-(r .5,r-.5)-+(-10,0)"
+    ADDFRAMEBUTTON("(r .5,r.5)+(-10,0)-+( 10,0)-(r .5,r-.5)-+(-10,0)"
                    "(r-.5,r.5)+( 10,0)-+(-10,0)-(r-.5,r-.5)-+( 10,0)",
                    "brackets")
-    ADDBUTTONMACRO("(r.5,r-.5)+(-20,0)-+(20,0)-+(0,20)",
+    ADDFRAMEBUTTON("(r.5,r-.5)+(-20,0)-+(20,0)-+(0,20)",
                    "angle")
-    ADDBUTTONMACRO("(r.5,r-.5)+(-10,0).+(10,0).+(0,10)"
+    ADDFRAMEBUTTON("(r.5,r-.5)+(-10,0).+(10,0).+(0,10)"
                    "$(r.5,r0)-+(0,-10).+(0,10).+(5,0)"
                    ".+(-5,0).+(0,10)$(r.5,r.5)-+(0,-10)"
                    ".+(0,10).+(-10,0)",
                    "curlybracket")
-    ADDBUTTONMACRO("(r.5,r.5)-(r.5,r-.5)-(r-.5,r-.5)-(r-.5,r.5)-(r.5,r.5)",
+    ADDFRAMEBUTTON("(r.5,r.5)-(r.5,r-.5)-(r-.5,r-.5)-(r-.5,r.5)-(r.5,r.5)",
                    "fullframe")
   }
 

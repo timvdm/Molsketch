@@ -43,377 +43,388 @@ class QTransform;
 
 namespace Molsketch {
 
-class Atom;
-class Molecule;
-class MolScene;
-class Residue;
+  class Atom;
+  class Molecule;
+  class MolScene;
+  class Residue;
 
-namespace Commands {
+  namespace Commands {
 
-// Atom command
+    // Atom command
 
-/**
+    /**
  * Command to add an atom
  *
  * @author Harm van Eersel
  */
-class AddAtom : public QUndoCommand
-  {
-  public:
-    /** 
+    class AddAtom : public QUndoCommand
+    {
+    public:
+      /**
      * Creates a new AddAtom command.
      *
      * @param newAtom pointer to the atom that should be added
      * @param molecule pointer to the molecule for the new atom
      * @param text a description of the command
      */
-    AddAtom(Atom* newAtom, Molecule* molecule, const QString & text = "");
-    /**
-     * Destructor 
+      AddAtom(Atom* newAtom, Molecule* molecule, const QString & text = "");
+      /**
+     * Destructor
      *
      * Deletes m_atom if command is destructed in an undone state.
      */
-    ~AddAtom();
-    /** Undo this command. */
-    virtual void undo();
-    /** Redo this command. */
-    virtual void redo();
-  private:
-    /** Undo state of the command. */
-    bool m_undone;
-    /** Atom of this command. */
-    Atom* m_atom;
-    /** Molecule of this command. */
-    Molecule* m_molecule;
-  };
+      ~AddAtom();
+      /** Undo this command. */
+      virtual void undo();
+      /** Redo this command. */
+      virtual void redo();
+    private:
+      /** Undo state of the command. */
+      bool m_undone;
+      /** Atom of this command. */
+      Atom* m_atom;
+      /** Molecule of this command. */
+      Molecule* m_molecule;
+    };
 
 
-	class AddResidue : public QUndoCommand
-		{
-		public:
-			/** 
-			 * Creates a new AddResidue command.
-			 *
+    class AddResidue : public QUndoCommand
+    {
+    public:
+      /**
+                         * Creates a new AddResidue command.
+                         *
 
-			 */
-			AddResidue(Residue* newResidue, const QString & text = "");
-			/**
-			 * Destructor 
-			 *
+                         */
+      AddResidue(Residue* newResidue, const QString & text = "");
+      /**
+                         * Destructor
+                         *
 
-			 */
-			~AddResidue();
-			/** Undo this command. */
-			virtual void undo();
-			/** Redo this command. */
-			virtual void redo();
-		private:
-			/** Undo state of the command. */
-			bool m_undone;
-			/** Residue of this command. */
-			Residue* m_residue;
-			/** Molecule of this command. */
-			QGraphicsScene* m_scene;
-		};
-	
-	
-/**
+                         */
+      ~AddResidue();
+      /** Undo this command. */
+      virtual void undo();
+      /** Redo this command. */
+      virtual void redo();
+    private:
+      /** Undo state of the command. */
+      bool m_undone;
+      /** Residue of this command. */
+      Residue* m_residue;
+      /** Molecule of this command. */
+      QGraphicsScene* m_scene;
+    };
+
+
+    /**
  * Command to change the element of an atom
  *
  * @author Harm van Eersel
  */
-class ChangeElement : public QUndoCommand
-  {
-  public:
-    /** 
+    class ChangeElement : public QUndoCommand
+    {
+    public:
+      /**
      * Creates a new ChangeElement command.
      *
      * @param changeAtom the atom which element symbol should be changed
      * @param newElementSymbol the new element symbol
      * @param text a description of the command
      */
-    ChangeElement(Atom* changeAtom, const QString & newElementSymbol, const QString & text = "");
-    /** Undo this command. */
-    virtual void undo();
-    /** Redo this command. */
-    virtual void redo();
-  private:
-    /** Undo state of the command. */
-    bool m_undone;
-    /** Old element symbol of the atom. */
-    QString m_oldName;
-    /** New element symbol of the atom. */
-    QString m_newName;
-    /** Atom of this command. */
-   Atom* m_atom;
-  };
-  
-/**
+      ChangeElement(Atom* changeAtom, const QString & newElementSymbol, const QString & text = "");
+      /** Undo this command. */
+      virtual void undo();
+      /** Redo this command. */
+      virtual void redo();
+    private:
+      /** Undo state of the command. */
+      bool m_undone;
+      /** Old element symbol of the atom. */
+      QString m_oldName;
+      /** New element symbol of the atom. */
+      QString m_newName;
+      /** Atom of this command. */
+      Atom* m_atom;
+    };
+
+    /**
  * Command to decrease the charge of an atom
  *
  * @author Harm van Eersel
  */
-class DecCharge : public QUndoCommand
-  {
-  public:
-    /** 
+    class DecCharge : public QUndoCommand
+    {
+    public:
+      /**
      * Constructor
      *
      * @param atom the atom to decrease the charge of
      * @param text a description of the command
      */
-    DecCharge(Atom* atom, const QString & text = "");
-    /** Undo this command. */
-    virtual void undo();
-    /** Redo this command. */
-    virtual void redo();
-  private:
-    /** Undo state of the command. */
-    bool m_undone;
-    /** Atom of this command. */
-    Atom* m_atom;
-  };
-  
- /**
+      DecCharge(Atom* atom, const QString & text = "");
+      /** Undo this command. */
+      virtual void undo();
+      /** Redo this command. */
+      virtual void redo();
+    private:
+      /** Undo state of the command. */
+      bool m_undone;
+      /** Atom of this command. */
+      Atom* m_atom;
+    };
+
+    /**
  * Command to increase the charge of an atom
  *
  * @author Harm van Eersel
  */
-class IncCharge : public QUndoCommand
-  {
-  public:
-    /** 
+    class IncCharge : public QUndoCommand
+    {
+    public:
+      /**
      * Constructor
      *
      * @param atom the atom to increase the charge of
      * @param text a description of the command
      */
-    IncCharge(Atom* atom, const QString & text = "");
-    /** Undo this command. */
-    virtual void undo();
-    /** Redo this command. */
-    virtual void redo();
-  private:
-    /** Undo state of the command. */
-    bool m_undone;
-    /** Atom of this command. */
-    Atom* m_atom;
-  };
-  
-/**
+      IncCharge(Atom* atom, const QString & text = "");
+      /** Undo this command. */
+      virtual void undo();
+      /** Redo this command. */
+      virtual void redo();
+    private:
+      /** Undo state of the command. */
+      bool m_undone;
+      /** Atom of this command. */
+      Atom* m_atom;
+    };
+
+    /**
  * Command to add an implicit hydrogen
  *
  * @author Harm van Eersel
  */
-class AddImplicitHydrogen : public QUndoCommand
-  {
-  public:
-    /** 
+    class AddImplicitHydrogen : public QUndoCommand
+    {
+    public:
+      /**
      * Constructor
      *
      * @param atom the atom to decrease the charge of
      * @param text a description of the command
      */
-    AddImplicitHydrogen(Atom* atom, const QString & text = "");
-    /** Undo this command. */
-    virtual void undo();
-    /** Redo this command. */
-    virtual void redo();
-  private:
-    /** Undo state of the command. */
-    bool m_undone;
-    /** Atom of this command. */
-    Atom* m_atom;
-  };
-  
- /**
+      AddImplicitHydrogen(Atom* atom, const QString & text = "");
+      /** Undo this command. */
+      virtual void undo();
+      /** Redo this command. */
+      virtual void redo();
+    private:
+      /** Undo state of the command. */
+      bool m_undone;
+      /** Atom of this command. */
+      Atom* m_atom;
+    };
+
+    /**
  * Command to remove an implicit hydrogen
  *
  * @author Harm van Eersel
  */
-class RemoveImplicitHydrogen : public QUndoCommand
-  {
-  public:
-    /** 
+    class RemoveImplicitHydrogen : public QUndoCommand
+    {
+    public:
+      /**
      * Constructor
      *
      * @param atom the atom to increase the charge of
      * @param text a description of the command
      */
-    RemoveImplicitHydrogen(Atom* atom, const QString & text = "");
-    /** Undo this command. */
-    virtual void undo();
-    /** Redo this command. */
-    virtual void redo();
-  private:
-    /** Undo state of the command. */
-    bool m_undone;
-    /** Atom of this command. */
-    Atom* m_atom;
-  };
+      RemoveImplicitHydrogen(Atom* atom, const QString & text = "");
+      /** Undo this command. */
+      virtual void undo();
+      /** Redo this command. */
+      virtual void redo();
+    private:
+      /** Undo state of the command. */
+      bool m_undone;
+      /** Atom of this command. */
+      Atom* m_atom;
+    };
 
-/**
+    /**
  * Command to delete an atom
  *
  * @author Harm van Eersel
  */
-class DelAtom : public QUndoCommand
-  {
-  public:
-    /**
+    class DelAtom : public QUndoCommand
+    {
+    public:
+      /**
      * Creates a new DelAtom command.
      *
      * @param delAtom the atom to be removed
      * @param text a description of the command
      */
-    DelAtom(Atom* delAtom, const QString & text = "");
-    /**
+      DelAtom(Atom* delAtom, const QString & text = "");
+      /**
      * Destructor
      *
      * Deletes m_atom if the command is destructed in a done state.
      */
-    virtual ~DelAtom();
-    /** Undo this command. */
-    virtual void undo();
-    /** Redo this command. */
-    virtual void redo();
-  private:
-    /** Undo state of the command. */
-    bool m_undone;
-    /** Atom of this command. */
-    Atom* m_atom;
-    /** Molecule of this command. */
-    Molecule* m_molecule;
-    /** The list of bonds that were connected to m_atom. */
-    QList<Bond*> m_bondList;
-  };
+      virtual ~DelAtom();
+      /** Undo this command. */
+      virtual void undo();
+      /** Redo this command. */
+      virtual void redo();
+    private:
+      /** Undo state of the command. */
+      bool m_undone;
+      /** Atom of this command. */
+      Atom* m_atom;
+      /** Molecule of this command. */
+      Molecule* m_molecule;
+      /** The list of bonds that were connected to m_atom. */
+      QList<Bond*> m_bondList;
+    };
 
-// Bond commands
+    // Bond commands
 
-/**
+    /**
  * Command to add a bond
  *
  * @author Harm van Eersel
  */
-class AddBond : public QUndoCommand
-  {
-  public:
-    /**
+    class AddBond : public QUndoCommand
+    {
+    public:
+      /**
      * Constructor
      *
      * @param newBond the new bond to add
      * @param text a description of the command
      */
-    
-    AddBond(Bond* newBond, const QString & text = "");
-    /**
+
+      AddBond(Bond* newBond, const QString & text = "");
+      /**
      * Destructor
      *
      * Deletes m_bond if the command is in an undone state.
      */
-    ~AddBond();
-    /** Undo this command. */
-    virtual void undo();
-    /** Redo this command. */
-    virtual void redo();
-  private:
-    /** Undo state of the command. */
-    bool m_undone;
-    /** The bond of this command. */
-    Bond* m_bond;
-    /** Molecule of this command. */
-    Molecule* m_mol;
-  };
+      ~AddBond();
+      /** Undo this command. */
+      virtual void undo();
+      /** Redo this command. */
+      virtual void redo();
+    private:
+      /** Undo state of the command. */
+      bool m_undone;
+      /** The bond of this command. */
+      Bond* m_bond;
+      /** Molecule of this command. */
+      Molecule* m_mol;
+    };
 
 
-/**
+    /**
  * Command to remove a bond
  *
  * @author Harm van Eersel
  */
-class DelBond : public  QUndoCommand
-  {
-  public:
-    /**
+    class DelBond : public  QUndoCommand
+    {
+    public:
+      /**
      * Constructor
      *
      * @param delBond the bond that should be removed
      * @param text a description of the command
      */
-    DelBond(Bond* delBond, const QString & text = "");
-    /**
+      DelBond(Bond* delBond, const QString & text = "");
+      /**
      * Destructor
      *
      * Deletes m_bond if the command is destructed in a done state.
      */
-    virtual ~DelBond();
-    /** Undo this command. */
-    virtual void undo();
-    /** Redo this command. */
-    virtual void redo();
-  private:
-    /** Undo state of the command. */
-    bool m_undone;
-    /** The bond of this command. */
-    Bond* m_bond;
-    /** Molecule of this command. */
-    Molecule* m_mol;
-  };
+      virtual ~DelBond();
+      /** Undo this command. */
+      virtual void undo();
+      /** Redo this command. */
+      virtual void redo();
+    private:
+      /** Undo state of the command. */
+      bool m_undone;
+      /** The bond of this command. */
+      Bond* m_bond;
+      /** Molecule of this command. */
+      Molecule* m_mol;
+    };
 
 
-/**
+    /**
  * Command to set the bond type.
  */
 
-template<class ItemClass,
-         class ItemTypeEnum,
-         void (ItemClass::*setFunction)(const ItemTypeEnum&),
-         ItemTypeEnum (ItemClass::*getFunction)()const>
-class setItemTypeCommand : public QUndoCommand
-{
-private:
-  ItemClass *item;
-  ItemTypeEnum type;
-public:
-  setItemTypeCommand(ItemClass *Item, ItemTypeEnum newType, const QString& text = "")
-    : QUndoCommand(text),
-      item(Item),
-      type(newType){}
-  void redo()
-  {
-    ItemTypeEnum temp = (item->*getFunction)();
-    (item->*setFunction)(type);
-    type = temp;
-    item->update();
-  }
-  void undo() { redo(); }
-};
+    template<class ItemClass,
+             class ItemTypeEnum,
+             void (ItemClass::*setFunction)(const ItemTypeEnum&),
+             ItemTypeEnum (ItemClass::*getFunction)()const>
+    class setItemTypeCommand : public QUndoCommand
+    {
+    private:
+      ItemClass *item;
+      ItemTypeEnum type;
+    public:
+      setItemTypeCommand(ItemClass *Item, ItemTypeEnum newType, const QString& text = "")
+        : QUndoCommand(text),
+          item(Item),
+          type(newType){}
+      void redo()
+      {
+        ItemTypeEnum temp = (item->*getFunction)();
+        (item->*setFunction)(type);
+        type = temp;
+        item->update();
+      }
+      void undo() { redo(); }
+    };
 
-typedef setItemTypeCommand<Bond, Bond::BondType, &Bond::setType, &Bond::bondType> SetBondType;
-typedef setItemTypeCommand<Arrow, Arrow::ArrowType, &Arrow::setArrowType, &Arrow::getArrowType> SetArrowType;
+    typedef setItemTypeCommand<Bond, Bond::BondType, &Bond::setType, &Bond::bondType> SetBondType;
+    typedef setItemTypeCommand<Arrow, Arrow::ArrowType, &Arrow::setArrowType, &Arrow::getArrowType> SetArrowType;
 
-class SwapBondAtoms : public QUndoCommand
-{
-public:
-  SwapBondAtoms(Bond* bond, const QString& text = "");
-  void redo();
-  void undo();
-private:
-  Bond* m_bond;
-};
+    class SetParentItem : public QUndoCommand
+    {
+    private:
+      QGraphicsItem* item;
+      QGraphicsItem* parentItem;
+    public:
+      SetParentItem(QGraphicsItem *item, QGraphicsItem* parentItem, const QString& text = "");
+      void redo();
+      void undo();
+    };
 
-// Molecule commands
+      class SwapBondAtoms : public QUndoCommand
+      {
+      public:
+      SwapBondAtoms(Bond* bond, const QString& text = "");
+      void redo();
+      void undo();
+    private:
+      Bond* m_bond;
+    };
+
+    // Molecule commands
 
 
-/**
+    /**
  * Command to merge two molecules
  *
  * @author Harm van Eersel
  */
-class MergeMol : public QUndoCommand
-  {
-  public:
-    /**
+    class MergeMol : public QUndoCommand
+    {
+    public:
+      /**
      * Constructor
      *
      * @param oldMolA pointer to the first of the two molecules that should be merged
@@ -421,253 +432,253 @@ class MergeMol : public QUndoCommand
      * @param newMol pointer to the new merged molecule, passed as reference
      * @param text a description of the command
      */
-    MergeMol(Molecule* oldMolA, Molecule* oldMolB, Molecule*& newMol, const QString & text = "");
-    /**
+      MergeMol(Molecule* oldMolA, Molecule* oldMolB, Molecule*& newMol, const QString & text = "");
+      /**
      * Destructor
      *
      * Deletes the two unmerged molecules if the command is destucted in a done state
      * and the merged molecule if destructed in an undone state.
      */
-    virtual ~MergeMol();
-    /** Undo this command. */
-    virtual void undo();
-    /** Redo this command. */
-    virtual void redo();
-  private:
-    /** Merges @p molA and @p molB. Used two merge two molecules when connected with a bond. */
-    Molecule* merge(const Molecule* molA, const Molecule* molB);
+      virtual ~MergeMol();
+      /** Undo this command. */
+      virtual void undo();
+      /** Redo this command. */
+      virtual void redo();
+    private:
+      /** Merges @p molA and @p molB. Used two merge two molecules when connected with a bond. */
+      Molecule* merge(const Molecule* molA, const Molecule* molB);
 
-    /** Undo state of the command. */
-    bool m_undone;
-    /** The first of the two molecules that should be merged. */
-    Molecule* m_molA;
-    /** The second of the two molecules that should be merged. */
-    Molecule* m_molB;
-    /** The merged molecule. */
-    Molecule* m_molC;
-    /** The scene of this command. */
-    MolScene* m_scene;
-  };
+      /** Undo state of the command. */
+      bool m_undone;
+      /** The first of the two molecules that should be merged. */
+      Molecule* m_molA;
+      /** The second of the two molecules that should be merged. */
+      Molecule* m_molB;
+      /** The merged molecule. */
+      Molecule* m_molC;
+      /** The scene of this command. */
+      MolScene* m_scene;
+    };
 
 
-/**
+    /**
  * Command to split a molecule
  *
  * @author Harm van Eersel
  */
-class SplitMol : public QUndoCommand
-  {
-  public:
-    /**
+    class SplitMol : public QUndoCommand
+    {
+    public:
+      /**
      * Constructor
      *
      * @param molecule the molecule to be split
      * @param text a description of the command
      */
-    SplitMol(Molecule* molecule, const QString & text = "");
-    /**
+      SplitMol(Molecule* molecule, const QString & text = "");
+      /**
      * Destructor
      *
      * Deletes the original molecule if destructed in a done state
      * and the submolecules if destructed in an undone state.
      */
-    ~SplitMol();
-    /** Undo this command. */
-    virtual void undo();
-    /** Redo this command. */
-    virtual void redo();
-  private:
-    /** Undo state of the command. */
-    bool m_undone;
-    /** The molecule before the split. */
-    Molecule* m_oldMol;
-    /** The list of molecules after the split. */
-    QList<Molecule*> m_newMolList;
-    /** The scene of this command. */
-    MolScene* m_scene;
-  };
+      ~SplitMol();
+      /** Undo this command. */
+      virtual void undo();
+      /** Redo this command. */
+      virtual void redo();
+    private:
+      /** Undo state of the command. */
+      bool m_undone;
+      /** The molecule before the split. */
+      Molecule* m_oldMol;
+      /** The list of molecules after the split. */
+      QList<Molecule*> m_newMolList;
+      /** The scene of this command. */
+      MolScene* m_scene;
+    };
 
 
-// Generic item commands
+    // Generic item commands
 
-/**
+    /**
  * Command to add an item to the scene
  *
  * @author Harm van Eersel
  */
-class AddItem : public QUndoCommand
-  {
-  public:
-    /**
+    class AddItem : public QUndoCommand
+    {
+    public:
+      /**
      * Constructor
      *
      * @param newItem the item that should be added to the scene
      * @param addScene the scene for the new item
      * @param text a description of the command
      */
-    AddItem(QGraphicsItem* newItem, MolScene* addScene, const QString & text = "");
-    /**
+      AddItem(QGraphicsItem* newItem, MolScene* addScene, const QString & text = "");
+      /**
      * Destructor
      *
      * Deletes m_item if the command is destructed in an undone state.
      */
-    ~AddItem();
-    /** Undo this command. */
-    virtual void undo();
-    /** Redo this command. */
-    virtual void redo();
-  private:
-    /** Undo state of the command. */
-    bool m_undone;
-    /** The item of this command. */
-    QGraphicsItem* m_item;
-    /** The scene of this command. */
-    MolScene* m_scene;
-  };
+      ~AddItem();
+      /** Undo this command. */
+      virtual void undo();
+      /** Redo this command. */
+      virtual void redo();
+    private:
+      /** Undo state of the command. */
+      bool m_undone;
+      /** The item of this command. */
+      QGraphicsItem* m_item;
+      /** The scene of this command. */
+      MolScene* m_scene;
+    };
 
 
-/**
+    /**
  * Command to remove an item from the scene
  *
  * @author Harm van Eersel
  */
-class DelItem : public QUndoCommand
-  {
-  public:
-    /**
+    class DelItem : public QUndoCommand
+    {
+    public:
+      /**
      * Constructor
      *
      * @param delItem item to be deleted
      * @param text a description of the command
      */
-    DelItem(QGraphicsItem* delItem, const QString & text = "");
-    /**
+      DelItem(QGraphicsItem* delItem, const QString & text = "");
+      /**
      * Destructor
      *
      * Deletes m_item if the command is destructed in a done state.
      */
-    ~DelItem();
-    /** Undo this command. */
-    virtual void undo();
-    /** Redo this command. */
-    virtual void redo();
-  private:
-    /** Undo state of the command. */
-    bool m_undone;
-    /** The item of this command. */
-    QGraphicsItem* m_item;
-    /** The scene of this command. */
-    MolScene* m_scene;
-  };
+      ~DelItem();
+      /** Undo this command. */
+      virtual void undo();
+      /** Redo this command. */
+      virtual void redo();
+    private:
+      /** Undo state of the command. */
+      bool m_undone;
+      /** The item of this command. */
+      QGraphicsItem* m_item;
+      /** The scene of this command. */
+      MolScene* m_scene;
+    };
 
 
-/**
+    /**
  * Command to move an item on the scene
  *
  * @author Harm van Eersel
  */
-class MoveItem : public QUndoCommand
-  {
-  public:
-    /**
+    class MoveItem : public QUndoCommand
+    {
+    public:
+      /**
      * Constructor
      *
      * @param moveItem the item to be moved
      * @param moveVector the vector representation of the move
      * @param text a description of the command
      */
-    MoveItem(QGraphicsItem* moveItem, const QPointF & moveVector, const QString & text = "");
-    /** Undo this command. */
-    virtual void undo();
-    /** Redo this command. */
-    virtual void redo();
-  private:
-    /** Undo state of the command. */
-    bool m_undone;
-    /** The position of the item before the move. */
-    QPointF m_oldPos;
-    /** The position of the item after the move. */
-    QPointF m_newPos;
-    /** The item of this command. */
-    QGraphicsItem* m_item;
-  };
+      MoveItem(QGraphicsItem* moveItem, const QPointF & moveVector, const QString & text = "");
+      /** Undo this command. */
+      virtual void undo();
+      /** Redo this command. */
+      virtual void redo();
+    private:
+      /** Undo state of the command. */
+      bool m_undone;
+      /** The position of the item before the move. */
+      QPointF m_oldPos;
+      /** The position of the item after the move. */
+      QPointF m_newPos;
+      /** The item of this command. */
+      QGraphicsItem* m_item;
+    };
 
-/**
+    /**
  * Command to rotate an item on the scene
  *
  * @author Harm van Eersel
  */
-class RotateItem : public QUndoCommand
-  {
-  public:
-    /**
+    class RotateItem : public QUndoCommand
+    {
+    public:
+      /**
      * Constructor
      *
      * @param rotateItem the item to be rotated
      * @param transform the matrix representation of the rotation
      * @param text a description of the command
      */
-    RotateItem(QGraphicsItem* rotateItem, const QTransform & transform, const QString & text = "");
-    /** Undo this command. */
-    virtual void undo();
-    /** Redo this command. */
-    virtual void redo();
-  private:
-    /** Undo state of the command. */
-    bool m_undone;
-    /** The item of this command. */
-    QGraphicsItem* m_item;
-    /** The position of the item before the move. */
-    QTransform m_transform;
+      RotateItem(QGraphicsItem* rotateItem, const QTransform & transform, const QString & text = "");
+      /** Undo this command. */
+      virtual void undo();
+      /** Redo this command. */
+      virtual void redo();
+    private:
+      /** Undo state of the command. */
+      bool m_undone;
+      /** The item of this command. */
+      QGraphicsItem* m_item;
+      /** The position of the item before the move. */
+      QTransform m_transform;
 
-  };
+    };
 
-/**
+    /**
  * Command to change color of an item
  *
  * @author Hendrik Vennekate
  */
-class changeColor : public QUndoCommand
-{
-public:
-  /**
+    class changeColor : public QUndoCommand
+    {
+    public:
+      /**
    * Constructor
    *
    * @param color the new color
    * @param item the item whose color will be changed
    */
-  changeColor(QColor color, graphicsItem* item) ;
-  void undo() ;
-  void redo() ;
-private:
-  QColor m_color ;
-  graphicsItem* m_item ;
-};
+      changeColor(QColor color, graphicsItem* item) ;
+      void undo() ;
+      void redo() ;
+    private:
+      QColor m_color ;
+      graphicsItem* m_item ;
+    };
 
-/**
+    /**
  * Command to change the relative line width
  *
  * @author Hendrik Vennekate
  */
-class changeRelativeWidth : public QUndoCommand // TODO macro for property changes (linewidth, color, bond order...)
-{
-public:
-  /**
+    class changeRelativeWidth : public QUndoCommand // TODO macro for property changes (linewidth, color, bond order...)
+    {
+    public:
+      /**
    * Constructor
    *
    * @param relativeWidth the factor by which the global width (defined for the scene)
    * will be changed during drawing
    * @param item the affected item
    */
-  changeRelativeWidth(qreal relativeWidth, graphicsItem* item) ;
-  void undo() ;
-  void redo() ;
-private:
-  qreal lw ;
-  graphicsItem* m_item ;
-};
+      changeRelativeWidth(qreal relativeWidth, graphicsItem* item) ;
+      void undo() ;
+      void redo() ;
+    private:
+      qreal lw ;
+      graphicsItem* m_item ;
+    };
 
-} // namespace Commands
+  } // namespace Commands
 
 } // namespace Molsketch
 

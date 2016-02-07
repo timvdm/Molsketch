@@ -21,6 +21,8 @@
 #include <QToolButton>
 
 #include "itemtypewidget.h"
+#define BUTTONPROPERTY "ButtonDataProperty"
+
 
 namespace Molsketch {
 
@@ -30,12 +32,14 @@ namespace Molsketch {
     QBoxLayout *layout ;
     ItemTypeWidget *parent;
 
-    void createButton(const QPixmap& Icon,
-                      const int& type)
+    void createButton(const int& type,
+                      const QPixmap& Icon,
+                      const QVariant& data)
     {
       QToolButton *button = new QToolButton(parent) ;
       buttonGroup->addButton(button, type) ;
       button->setIcon(Icon) ;
+      button->setProperty(BUTTONPROPERTY, data);
       button->setAutoRaise(true);
       button->setCheckable(true);
       layout->addWidget(button);
@@ -67,9 +71,23 @@ namespace Molsketch {
     return qAbs(fullType());
   }
 
-  void ItemTypeWidget::setCurrentType(const uint &type) const
+  QVariant ItemTypeWidget::currentData() const
+  {
+    QAbstractButton *currentButton = d->buttonGroup->checkedButton();
+    if (!currentButton) return QVariant();
+    return currentButton->property(BUTTONPROPERTY);
+  }
+
+  void ItemTypeWidget::setCurrentType(const uint &type)
   {
     setFullType(type);
+  }
+
+  void ItemTypeWidget::setCurrentType(const QVariant &variant)
+  {
+    for(auto button : d->buttonGroup->buttons())
+      if (button->property(BUTTONPROPERTY) == variant)
+        button->setChecked(true);
   }
 
   int ItemTypeWidget::fullType() const
@@ -93,13 +111,10 @@ namespace Molsketch {
     d->layout->setDirection(dir);
   }
 
-  void ItemTypeWidget::setButtons(QList<typeIconPair> typeButtons)
+  void ItemTypeWidget::addButton(const int &type, const QPixmap &icon, const QVariant &data)
   {
-    foreach(QAbstractButton* button, d->buttonGroup->buttons())
-      delete button;
-    foreach(const typeIconPair& tip, typeButtons)
-      d->createButton(tip.second, tip.first);
-    if (!d->buttonGroup->buttons().isEmpty())
+    d->createButton(type, icon, data);
+    if (d->buttonGroup->buttons().size() == 1)
       d->buttonGroup->buttons().first()->setChecked(true);
   }
 

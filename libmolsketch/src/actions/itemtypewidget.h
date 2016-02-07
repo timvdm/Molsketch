@@ -21,6 +21,7 @@
 
 #include <QWidget>
 #include <QBoxLayout>
+#include <QVariant>
 
 namespace Molsketch {
 
@@ -32,13 +33,14 @@ namespace Molsketch {
     explicit ItemTypeWidget(QWidget *parent = 0);
     ~ItemTypeWidget();
     uint currentType() const ;
-    void setCurrentType(const uint &type) const;
+    QVariant currentData() const;
+    void setCurrentType(const uint &type);
+    void setCurrentType(const QVariant& variant);
     int fullType() const;
     void setFullType(const int& type) const;
     QPixmap currentIcon() const ;
     void setDirection(QBoxLayout::Direction);
-    void setButtons(QList<typeIconPair > typeButtons);
-
+    void addButton(const int& type, const QPixmap& icon, const QVariant& data = QVariant());
   signals:
     void currentTypeChanged(const int& newType) ;
 

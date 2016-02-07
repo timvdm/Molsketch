@@ -30,7 +30,7 @@ namespace Molsketch {
     explicit bondTypeWidget(bool withInversion, QWidget *parent = 0);
     bool backward() const ;
     Bond::BondType bondType() const ;
-    void setBondType(Bond::BondType type) const;
+    void setBondType(Bond::BondType type);
   };
 
 } // namespace

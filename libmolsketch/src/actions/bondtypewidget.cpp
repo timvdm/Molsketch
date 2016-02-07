@@ -23,29 +23,20 @@
 
 namespace Molsketch {
 
-  bondTypeWidget::typeIconPair tipGen(int t, const QString& name, bool invert = false)
-  {
-    QImage icon(":images/" + name + ".png");
-    return bondTypeWidget::typeIconPair(t, QPixmap::fromImage(icon.mirrored(invert, invert)));
-  }
+#define ADDBONDBUTTON(TYPE, ICON, INVERTED) addButton(TYPE, QPixmap::fromImage(QImage(":images/" ICON ".png").mirrored(INVERTED, INVERTED)));
 
   bondTypeWidget::bondTypeWidget(bool withInversion, QWidget *parent)
     : ItemTypeWidget(parent)
   {
-    QList<typeIconPair> buttonList;
-    buttonList
-        << tipGen(Bond::Single, "single")
-        << tipGen(Bond::Hash, "hash");
-    if (withInversion) buttonList << tipGen(- Bond::Hash, "hash", true);
-    buttonList
-        << tipGen(Bond::Wedge, "wedge");
-    if (withInversion) buttonList << tipGen(- Bond::Wedge, "wedge", true);
-    buttonList
-               << tipGen(Bond::WedgeOrHash, "hashOrWedge")
-               << tipGen(Bond::Double, "double")
-               << tipGen(Bond::CisOrTrans, "cistrans")
-               << tipGen(Bond::Triple, "triple");
-    setButtons(buttonList);
+    ADDBONDBUTTON(Bond::Single, "single", false)
+    ADDBONDBUTTON(Bond::Hash, "hash", false)
+    if (withInversion) ADDBONDBUTTON(- Bond::Hash, "hash", true)
+    ADDBONDBUTTON(Bond::Wedge, "wedge", false)
+    if (withInversion) ADDBONDBUTTON(- Bond::Wedge, "wedge", true)
+    ADDBONDBUTTON(Bond::WedgeOrHash, "hashOrWedge", false)
+    ADDBONDBUTTON(Bond::Double, "double", false)
+    ADDBONDBUTTON(Bond::CisOrTrans, "cistrans", false)
+    ADDBONDBUTTON(Bond::Triple, "triple", false)
   }
 
   bool bondTypeWidget::backward() const
@@ -58,7 +49,7 @@ namespace Molsketch {
     return (Bond::BondType) currentType() ;
   }
 
-  void bondTypeWidget::setBondType(Bond::BondType type) const
+  void bondTypeWidget::setBondType(Bond::BondType type)
   {
     setCurrentType(type);
   }

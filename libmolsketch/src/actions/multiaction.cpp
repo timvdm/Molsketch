@@ -70,6 +70,12 @@ namespace Molsketch {
     return d->actionGroup->checkedAction() ;
   }
 
+  QAction *multiAction::firstSubAction() const
+  {
+    if (d->actionGroup->actions().isEmpty()) return 0;
+    return d->actionGroup->actions().first();
+  }
+
   void multiAction::changeIcon()
   {
     QIcon activeIcon = d->actionGroup->checkedAction()->icon();

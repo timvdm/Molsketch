@@ -45,6 +45,7 @@
 #include <actions/deleteaction.h>
 #include <actions/drawaction.h>
 #include <actions/flipbondaction.h>
+#include <actions/frameaction.h>
 #include <actions/incdecaction.h>
 #include <actions/linewidthaction.h>
 #include <actions/mechanismarrowaction.h>
@@ -836,6 +837,7 @@ void MainWindow::createToolBars()
   drawToolBar->addAction(new ringAction(m_scene));
   drawToolBar->addAction(new reactionArrowAction(m_scene));
   drawToolBar->addAction(new mechanismArrowAction(m_scene));
+  drawToolBar->addAction(new FrameAction(m_scene));
   drawToolBar->addAction(new pluginAction(m_scene));
 
   modifyToolBar = addToolBar(tr("Modify"));

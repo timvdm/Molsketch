@@ -521,3 +521,20 @@ void SwapBondAtoms::undo()
 {
   redo();
 }
+
+
+SetParentItem::SetParentItem(QGraphicsItem *item, QGraphicsItem *parentItem, const QString &text)
+  : QUndoCommand(text),
+    item(item),
+    parentItem(parentItem) {}
+
+void SetParentItem::redo()
+{
+  QGraphicsItem* temp = item->parentItem();
+  item->setParentItem(parentItem);
+  parentItem = temp;
+  item->update();
+  if (parentItem) parentItem->update();
+}
+
+void SetParentItem::undo() { redo(); }

@@ -32,6 +32,7 @@ namespace Molsketch {
     void addSubAction(QAction*) ;
     void addSeparator() ;
     QAction* activeSubAction() const ;
+    QAction* firstSubAction() const;
   private:
     class privateData ;
     privateData *d ;

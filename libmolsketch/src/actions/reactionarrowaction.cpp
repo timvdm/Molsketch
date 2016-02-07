@@ -78,24 +78,21 @@ namespace Molsketch {
     d->currentArrow->setCoordinates(QVector<QPointF>(2, d->mousePressPosition)) ;
     scene()->addItem(d->currentArrow) ;
     scene()->update(d->currentArrow->boundingRect());
-    event->accept();
   }
 
   void reactionArrowAction::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
   {
-    event->accept();
     if (!d->currentArrow) return ;
+    event->accept();
     d->currentArrow->setPoints(
           makePolygon(QLineF(
                         d->mousePressPosition, // TODO event->buttonDownScenePos
                         event->scenePos())));
     scene()->update(d->currentArrow->boundingRect());
-    event->accept();
   }
 
   void reactionArrowAction::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
   {
-    event->accept();
     if (!d->currentArrow) return ;
     if (!scene() || !scene()->stack()) return ; // TODO
     scene()->stack()->push(new Commands::AddItem(d->currentArrow, scene(), tr("draw arrow"))) ;

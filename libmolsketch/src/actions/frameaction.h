@@ -32,12 +32,12 @@ namespace Molsketch {
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-    void trigger();
   private:
     class privateData;
     privateData *d;
   private slots:
-    void actionTriggered();
+    void changeCheckable();
+    void gotTriggerd();
   };
 
 } // namespace Molsketch
