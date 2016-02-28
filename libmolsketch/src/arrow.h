@@ -40,9 +40,21 @@ namespace Molsketch {
     Q_DECLARE_FLAGS(ArrowType, ArrowTypeParts)
 
     explicit Arrow(QGraphicsItem* parent = 0);
-    ~Arrow();
+    struct Properties
+    {
+      Arrow::ArrowType arrowType;
+      QPolygonF points;
+      bool spline ;
+    };
 
+    ~Arrow();
+    static bool splinePossible(const int& numberOfPoints);
+
+    bool getSpline() const;
+    void setSpline(bool value);
     void setArrowType(const ArrowType& type);
+    void setArrowTipPart(const ArrowTypeParts& part);
+    void unsetArrowTipPart(const ArrowTypeParts& part);
     ArrowType getArrowType() const;
     void setCoordinates(const QVector<QPointF> &c) ;
     QPolygonF coordinates() const ;
@@ -61,6 +73,9 @@ namespace Molsketch {
     void swapPoint(const int& index, QPointF &p) ;
 
     QString xmlName() const;
+
+    Properties getProperties() const;
+    void setProperties(const Properties& p);
   protected:
     void readGraphicAttributes(const QXmlStreamAttributes &attributes) ;
     QXmlStreamAttributes graphicAttributes() const ;

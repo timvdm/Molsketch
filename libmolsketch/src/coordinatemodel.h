@@ -1,7 +1,4 @@
 /***************************************************************************
- *   Copyright (C) 2007-2008 by Harm van Eersel                            *
- *   Copyright (C) 2009 Tim Vandermeersch                                  *
- *   Copyright (C) 2009 by Nicola Zonta                                    *
  *   Copyright (C) 2015 Hendrik Vennekate                                  *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -19,36 +16,36 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#ifndef MOLSKETCH_COORDINATEMODEL_H
+#define MOLSKETCH_COORDINATEMODEL_H
 
-#ifndef ABSTRACTXMLOBJECT_H
-#define ABSTRACTXMLOBJECT_H
-
-#include <QXmlStreamReader>
-#include <QXmlStreamWriter>
+#include <QAbstractTableModel>
+#include <QPolygonF>
 
 namespace Molsketch {
-  class abstractXmlObject
+
+  class CoordinateModel : public QAbstractTableModel
   {
-  protected:
-    // TODO should be factory function
-    virtual abstractXmlObject* produceChild(const QString& name, const QString& type) { Q_UNUSED(name) Q_UNUSED(type) return 0 ; }
-    virtual void readAttributes(const QXmlStreamAttributes& attributes) { Q_UNUSED(attributes) }
-    virtual QList<const abstractXmlObject*> children() const { return QList<const abstractXmlObject*>() ; }
-    virtual QXmlStreamAttributes xmlAttributes() const { return QXmlStreamAttributes() ; }
-    virtual QStringList textItemAttributes() const ;
-    virtual void afterReadFinalization();
+    Q_OBJECT
+  private:
+    class privateData;
+    privateData *d;
   public:
-    virtual QString xmlName() const = 0 ;
-    abstractXmlObject();
-    QXmlStreamReader& readXml(QXmlStreamReader& in) ;
-    QXmlStreamWriter& writeXml(QXmlStreamWriter& out) const ;
-    virtual ~abstractXmlObject() {}
+    explicit CoordinateModel(QObject *parent = 0);
+    ~CoordinateModel();
+    int rowCount(const QModelIndex &parent) const;
+    int columnCount(const QModelIndex &parent) const;
+    QVariant headerData(int section, Qt::Orientation orientation, int role) const;
+    QVariant data(const QModelIndex &index, int role) const;
+    bool setData(const QModelIndex &index, const QVariant &value, int role);
+    Qt::ItemFlags flags(const QModelIndex &index) const;
+    bool insertRows(int row, int count, const QModelIndex &parent);
+    bool removeRows(int row, int count, const QModelIndex &parent);
+
+    QPolygonF getCoordinates() const;
+    void setCoordinates(const QPolygonF&polygon);
   };
 
-} // namespace
+} // namespace Molsketch
 
-
-QXmlStreamReader& operator>>(QXmlStreamReader& in, Molsketch::abstractXmlObject& object) ;
-QXmlStreamWriter& operator<<(QXmlStreamWriter& out, const Molsketch::abstractXmlObject& object) ;
-
-#endif // ABSTRACTXMLOBJECT_H
+#endif // MOLSKETCH_COORDINATEMODEL_H

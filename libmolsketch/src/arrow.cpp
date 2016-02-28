@@ -32,21 +32,16 @@
 #include "molscene.h"
 #include "math2d.h"
 #include "actions/arrowtypeaction.h"
+#include "arrowpopup.h"
+#include <QDebug>
 
 namespace Molsketch {
 
-  class ArrowDialog : public QDialog
-  {
-  public:
-    ArrowDialog(Arrow* parent){}
-  };
 
-  struct Arrow::privateData
+  struct Arrow::privateData : public Arrow::Properties
   {
-    Arrow::ArrowType arrowType;
-    QVector<QPointF> points;
-    bool spline ;
-    ArrowDialog *dialog;
+    // TODO maybe integrate this into scene
+    ArrowPopup popup;
   };
 
   Arrow::Arrow(QGraphicsItem *parent)
@@ -55,20 +50,35 @@ namespace Molsketch {
   {
     d->arrowType = LowerBackward | UpperBackward ;
     d->points << QPointF(0,0) << QPointF(50.0, 0.0),
-    d->dialog = 0 ;
     d->spline = true ;
+    d->popup.connectArrow(this);
+    qDebug() << "creating arrow" << this;
   }
 
   Arrow::~Arrow()
   {
-    if (d->dialog)
-      d->dialog->deleteLater() ;
     delete d ;
   }
+
+  bool Arrow::splinePossible(const int &numberOfPoints)
+  {
+    return 1 == numberOfPoints % 3;
+  }
+
 
   void Arrow::setArrowType(const ArrowType &type)
   {
     d->arrowType = type ;
+  }
+
+  void Arrow::setArrowTipPart(const ArrowTypeParts &part)
+  {
+    d->arrowType |= part;
+  }
+
+  void Arrow::unsetArrowTipPart(const ArrowTypeParts &part)
+  {
+    d->arrowType &= ~part ;
   }
 
   Arrow::ArrowType Arrow::getArrowType() const
@@ -134,7 +144,7 @@ namespace Molsketch {
     QPainterPath path ;
     // draw the line
     path.moveTo(d->points.first()) ;
-    if (d->spline && !((d->points.size()-1) % 3))
+    if (d->spline && splinePossible(d->points.size()))
     {
       for (int i = 1 ; i+2 < d->points.size() ; i += 3) // TODO: alternatively: straight connection
         path.cubicTo(d->points[i],
@@ -198,9 +208,9 @@ namespace Molsketch {
 
   void Arrow::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
   {
-    Q_UNUSED(event)
-    if (!d->dialog) d->dialog = new ArrowDialog(this) ;
-    d->dialog->show() ;
+    d->popup.move(event->screenPos());
+//    d->popup.connectArrow(this);
+    d->popup.show();
   }
 
   void Arrow::setPoint(const int &index, const QPointF &p)
@@ -257,15 +267,28 @@ namespace Molsketch {
     return "arrow";
   }
 
+  Arrow::Properties Arrow::getProperties() const
+  {
+    return *d;
+  }
+
+  void Arrow::setProperties(const Arrow::Properties &p)
+  {
+    *(dynamic_cast<Arrow::Properties*>(d)) = p;
+  }
+
+#define POINTNAMEMACRO(POINTINDEX) "p" + QString::number(i)
   void Arrow::readGraphicAttributes(const QXmlStreamAttributes &attributes)
   {
     d->arrowType = (ArrowType) (attributes.value("arrowType").toString().toInt()) ;
+    d->spline = ! (attributes.value("splineDisabled").toString().toInt());
   }
 
   QXmlStreamAttributes Arrow::graphicAttributes() const
   {
     QXmlStreamAttributes attributes ;
     attributes.append("arrowType", QString::number(d->arrowType)) ;
+    attributes.append("splineDisabled", QString::number(d->spline));
     return attributes ;
   }
 
@@ -288,6 +311,16 @@ namespace Molsketch {
   {
     return scene->arrowWidth();
   }
+  bool Arrow::getSpline() const
+  {
+    return d->spline;
+  }
+
+  void Arrow::setSpline(bool value)
+  {
+    d->spline = value;
+  }
+
 
   // TODO (maybe) highlight points if covered by other bounding rect (probably in scene class)
   // TODO shift responsibility for move to item level, remove move tool

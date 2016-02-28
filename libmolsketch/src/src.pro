@@ -64,7 +64,11 @@ HEADERS += \
     actions/frameaction.h \
     actions/frametypewidget.h \
     actions/frametypeaction.h \
-    actions/itemgrouptypeaction.h
+    actions/itemgrouptypeaction.h \
+    arrowpopup.h \
+    coordinatedelegate.h \
+    coordinatemodel.h \
+    coordinatetableview.h
 
 SOURCES += \
     atom.cpp \
@@ -124,11 +128,16 @@ SOURCES += \
     actions/frameaction.cpp \
     actions/frametypewidget.cpp \
     actions/frametypeaction.cpp \
-    actions/itemgrouptypeaction.cpp
+    actions/itemgrouptypeaction.cpp \
+    arrowpopup.cpp \
+    coordinatedelegate.cpp \
+    coordinatemodel.cpp \
+    coordinatetableview.cpp
 
 FORMS += \
     mechanismarrowdialog.ui \
-    reactionarrowdialog.ui
+    reactionarrowdialog.ui \
+    arrowpopup.ui
 
 RESOURCES += \
     tools/toolicons.qrc

@@ -1,7 +1,4 @@
 /***************************************************************************
- *   Copyright (C) 2007-2008 by Harm van Eersel                            *
- *   Copyright (C) 2009 Tim Vandermeersch                                  *
- *   Copyright (C) 2009 by Nicola Zonta                                    *
  *   Copyright (C) 2015 Hendrik Vennekate                                  *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -19,36 +16,41 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#ifndef ARROWPOPUP_H
+#define ARROWPOPUP_H
 
-#ifndef ABSTRACTXMLOBJECT_H
-#define ABSTRACTXMLOBJECT_H
+#include <QWidget>
 
-#include <QXmlStreamReader>
-#include <QXmlStreamWriter>
+namespace Ui {
+  class arrowPopup;
+}
 
 namespace Molsketch {
-  class abstractXmlObject
+
+  class Arrow;
+
+  class ArrowPopup : public QWidget
   {
-  protected:
-    // TODO should be factory function
-    virtual abstractXmlObject* produceChild(const QString& name, const QString& type) { Q_UNUSED(name) Q_UNUSED(type) return 0 ; }
-    virtual void readAttributes(const QXmlStreamAttributes& attributes) { Q_UNUSED(attributes) }
-    virtual QList<const abstractXmlObject*> children() const { return QList<const abstractXmlObject*>() ; }
-    virtual QXmlStreamAttributes xmlAttributes() const { return QXmlStreamAttributes() ; }
-    virtual QStringList textItemAttributes() const ;
-    virtual void afterReadFinalization();
+    Q_OBJECT
+
   public:
-    virtual QString xmlName() const = 0 ;
-    abstractXmlObject();
-    QXmlStreamReader& readXml(QXmlStreamReader& in) ;
-    QXmlStreamWriter& writeXml(QXmlStreamWriter& out) const ;
-    virtual ~abstractXmlObject() {}
+    explicit ArrowPopup(QWidget *parent = 0);
+
+    void connectArrow(Arrow* a);
+    ~ArrowPopup();
+
+  protected:
+    void focusOutEvent(QFocusEvent *e);
+  private:
+    Ui::arrowPopup *ui;
+    class privateData;
+    privateData *d;
+    void showEvent(QShowEvent *e);
+  private slots:
+    void applyPropertiesToArrow();
+    void checkSplineEligibility();
   };
 
 } // namespace
 
-
-QXmlStreamReader& operator>>(QXmlStreamReader& in, Molsketch::abstractXmlObject& object) ;
-QXmlStreamWriter& operator<<(QXmlStreamWriter& out, const Molsketch::abstractXmlObject& object) ;
-
-#endif // ABSTRACTXMLOBJECT_H
+#endif // ARROWPOPUP_H

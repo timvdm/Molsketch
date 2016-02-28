@@ -4,6 +4,7 @@ QT += widgets printsupport
 contains(CONFIG, static) { QT += svg }
 
 CONFIG += silent
+CONFIG += c++11
 
 qtVersionSuffix=""
 equals(QT_MAJOR_VERSION, 5) {
