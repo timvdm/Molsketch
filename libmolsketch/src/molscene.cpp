@@ -61,8 +61,6 @@
 #include "obabeliface.h"
 #include "grid.h"
 
-#include "reactionarrow.h"
-#include "mechanismarrow.h"
 #include "arrow.h"
 #include "actions/abstractitemaction.h"
 #include "actions/genericaction.h"
@@ -510,8 +508,8 @@ namespace Molsketch {
       object = new Arrow;
     if (childName == "object")
     {
-      if (type == "ReactionArrow") object = new ReactionArrow ; // TODO get rid of these
-      if (type == "MechanismArrow") object = new MechanismArrow ;
+      if (type == "ReactionArrow") object = new Arrow ;
+      if (type == "MechanismArrow") object = new Arrow ;
     }
     if (childName == "plugin")
       object = ItemPluginFactory::createInstance(type);

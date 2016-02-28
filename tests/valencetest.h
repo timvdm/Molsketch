@@ -16,35 +16,42 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef REACTIONARROWDIALOG_H
-#define REACTIONARROWDIALOG_H
+#ifndef VALENCETEST_H
+#define VALENCETEST_H
 
-#include <QDialog>
+#include <QObject>
+#include <QtTest>
 
+class ValenceTest : public QObject
+{
+  Q_OBJECT
 
-namespace Ui {
-    class ReactionArrowDialog;
-}
+  private slots:
+    /**
+     * Called before the first test function is executed.
+     */
+    void initTestCase();
 
-namespace Molsketch {
+    /**
+     * Called after the last test function is executed.
+     */
+    void cleanupTestCase();
 
-  class ReactionArrow;
+    /**
+     * Called before each test function is executed.
+     */
+    void init();
 
-  class ReactionArrowDialog : public QDialog 
-  {
-    Q_OBJECT
-    public:
-      ReactionArrowDialog(ReactionArrow *arrow, QWidget *parent = 0);
-      virtual ~ReactionArrowDialog();
-  
-    public Q_SLOTS:
-      void typeChanged(int);
+    /**
+     * Called after every test function.
+     */
+    void cleanup();
 
-    private:
-      Ui::ReactionArrowDialog *m_ui;
-      ReactionArrow *m_arrow;
-  };
+    void elementGroups();
+    void expectedValences();
+    void valenceElectrons();
+    void implicitHydrogensAndCharge();
 
-}
+};
 
-#endif // REACTIONARROWDIALOG_H
+#endif // VALENCETEST_H

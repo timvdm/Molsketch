@@ -104,16 +104,3 @@ void DrawingTest::testDrawing_data()
                                    << QLineF(0,0,0,0)
                                    );
 }
-
-
-QTEST_MAIN(DrawingTest)
-
-#if QT_VERSION < 0x050000
-#ifdef QMAKEBUILD
-#include "drawingtest.moc"
-#else
-#include "moc_drawingtest.cxx"
-#endif
-#else
-#include "drawingtest.moc"
-#endif

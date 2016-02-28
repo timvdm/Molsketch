@@ -16,31 +16,38 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include "mechanismarrowdialog.h"
+#ifndef DRAWINGTEST_H
+#define DRAWINGTEST_H
 
-#include "mechanismarrow.h"
-
-#include "ui_mechanismarrowdialog.h"
+#include <QObject>
+#include <QtTest>
 
 namespace Molsketch {
-
-  MechanismArrowDialog::MechanismArrowDialog(MechanismArrow *arrow, QWidget *parent) :
-    QDialog(parent), m_ui(new Ui::MechanismArrowDialog), m_arrow(arrow)
-  {
-    m_ui->setupUi(this);
-
-    connect(m_ui->typeComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(typeChanged(int)));
-  }
-
-  void MechanismArrowDialog::typeChanged(int t)
-  {
-    m_arrow->setArrowType(static_cast<MechanismArrow::ArrowType>(t));  
-    m_arrow->update();
-  }
-
-  MechanismArrowDialog::~MechanismArrowDialog()
-  {
-    delete m_ui;
-  }
+  class MolScene;
+  class drawAction;
+  class MolView;
 
 }
+
+class DrawingTest : public QObject
+{
+  Q_OBJECT
+public:
+  explicit DrawingTest(QObject *parent = 0);
+  ~DrawingTest();
+private slots:
+  void initTestCase();
+  void cleanupTestCase();
+  void init();
+  void cleanup();
+
+  void testDrawing();
+  void testDrawing_data();
+
+private:
+  Molsketch::MolScene *scene;
+  Molsketch::drawAction *action;
+  Molsketch::MolView *view;
+};
+
+#endif // DRAWINGTEST_H

@@ -15,8 +15,6 @@ HEADERS += \
     graphsymitem.h \
     itemplugin.h \
     math2d.h \
-    mechanismarrow.h \
-    mechanismarrowdialog.h \
     mimemolecule.h \
     minimise.h \
     molecule.h \
@@ -24,8 +22,6 @@ HEADERS += \
     mollibitem.h \
     molscene.h \
     molview.h \
-    reactionarrow.h \
-    reactionarrowdialog.h \
     residue.h \
     ring.h \
     smilesitem.h \
@@ -80,8 +76,6 @@ SOURCES += \
     fileio.cpp \
     graphsymitem.cpp \
     itemplugin.cpp \
-    mechanismarrow.cpp \
-    mechanismarrowdialog.cpp \
     mimemolecule.cpp \
     minimise.cpp \
     molecule.cpp \
@@ -89,8 +83,6 @@ SOURCES += \
     mollibitem.cpp \
     molscene.cpp \
     molview.cpp \
-    reactionarrow.cpp \
-    reactionarrowdialog.cpp \
     residue.cpp \
     ring.cpp \
     smilesitem.cpp \
@@ -135,8 +127,6 @@ SOURCES += \
     coordinatetableview.cpp
 
 FORMS += \
-    mechanismarrowdialog.ui \
-    reactionarrowdialog.ui \
     arrowpopup.ui
 
 RESOURCES += \

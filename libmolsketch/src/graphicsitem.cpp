@@ -317,15 +317,6 @@ namespace Molsketch {
     return retVal;
   }
 
-  arrowGraphicsItem::arrowGraphicsItem(QGraphicsItem *parent GRAPHICSSCENESOURCE )
-    : graphicsItem(parent GRAPHICSSCENEINIT )
-  {}
-
-  qreal arrowGraphicsItem::sceneLineWidth(MolScene *scene) const
-  {
-    return scene->arrowWidth() ;
-  }
-
   void graphicsItem::setCoordinate(const int &index, const QPointF &p)
   {
     QPolygonF oldCoords(coordinates());

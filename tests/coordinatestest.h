@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2009 Tim Vandermeersch                                  *
+ *   Copyright (C) 2015 Hendrik Vennekate                                  *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -16,35 +16,25 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef MECHANISMARROWDIALOG_H
-#define MECHANISMARROWDIALOG_H
+#ifndef COORDINATETEST_H
+#define COORDINATETEST_H
 
-#include <QDialog>
+#include <QObject>
+#include <QtTest>
 
+class coordinatesTest : public QObject
+{
+  Q_OBJECT
+private slots:
+  void initTestCase();
+  void cleanupTestCase();
+  void init();
+  void cleanup();
 
-namespace Ui {
-    class MechanismArrowDialog;
-}
+  void atomCoordinates();
+  void atomCoordinates_data();
+  void moleculeBoundingBox();
+  void moleculeBoundingBox_data();
+};
 
-namespace Molsketch {
-
-  class MechanismArrow;
-
-  class MechanismArrowDialog : public QDialog 
-  {
-    Q_OBJECT
-    public:
-      MechanismArrowDialog(MechanismArrow *arrow, QWidget *parent = 0);
-      virtual ~MechanismArrowDialog();
-  
-    public Q_SLOTS:
-      void typeChanged(int);
-
-    private:
-      Ui::MechanismArrowDialog *m_ui;
-      MechanismArrow *m_arrow;
-  };
-
-}
-
-#endif // MECHANISMARROWDIALOG_H
+#endif // COORDINATETEST_H
