@@ -46,6 +46,7 @@
 #include <actions/drawaction.h>
 #include <actions/flipbondaction.h>
 #include <actions/frameaction.h>
+#include <actions/frametypeaction.h>
 #include <actions/incdecaction.h>
 #include <actions/linewidthaction.h>
 #include <actions/mechanismarrowaction.h>
@@ -856,6 +857,7 @@ void MainWindow::createToolBars()
   new arrowTypeAction(m_scene);
   new bondTypeAction(m_scene);
   new flipBondAction(m_scene);
+  new FrameTypeAction(m_scene);
 }
 
 void MainWindow::createStatusBar()

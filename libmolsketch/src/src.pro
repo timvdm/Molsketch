@@ -62,7 +62,9 @@ HEADERS += \
     stringify.h \
     frame.h \
     actions/frameaction.h \
-    actions/frametypewidget.h
+    actions/frametypewidget.h \
+    actions/frametypeaction.h \
+    actions/itemgrouptypeaction.h
 
 SOURCES += \
     atom.cpp \
@@ -120,7 +122,9 @@ SOURCES += \
     grid.cpp \
     frame.cpp \
     actions/frameaction.cpp \
-    actions/frametypewidget.cpp
+    actions/frametypewidget.cpp \
+    actions/frametypeaction.cpp \
+    actions/itemgrouptypeaction.cpp
 
 FORMS += \
     mechanismarrowdialog.ui \

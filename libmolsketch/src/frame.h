@@ -29,7 +29,9 @@ namespace Molsketch {
     class privateData;
     privateData *d;
   public:
-    Frame();
+    enum { Type = graphicsItem::FrameType };
+
+    explicit Frame(QGraphicsItem* parent = 0);
     ~Frame();
     void setCoordinates(const QVector<QPointF> &c);
     QPolygonF coordinates() const;
@@ -51,6 +53,8 @@ namespace Molsketch {
     void readGraphicAttributes(const QXmlStreamAttributes &attributes);
     QXmlStreamAttributes graphicAttributes() const;
     void prepareContextMenu(QMenu *contextMenu);
+    abstractXmlObject* produceChild(const QString &name, const QString &type);
+    QList<const abstractXmlObject*> children() const;
   private:
     qreal sceneLineWidth(MolScene *scene) const;
   }; // TODO let classes start with capital letters.

@@ -19,7 +19,10 @@
  ***************************************************************************/
 
 
+#include <QMenu>
 #include <QtGui>
+
+#include <actions/frametypeaction.h>
 
 #include "molecule.h"
 
@@ -857,6 +860,22 @@ namespace Molsketch {
   void Molecule::invalidateElectronSystems()
   {
     m_electronSystemsUpdate = true;
+  }
+
+  // TODO make default function that calls this one instead
+  void Molecule::prepareContextMenu(QMenu *contextMenu)
+  {
+    MolScene *sc = qobject_cast<MolScene*>(scene());
+    if (sc)
+    {
+      auto action = sc->findChild<FrameTypeAction*>();
+      if (action)
+      {
+        contextMenu->addAction(action);
+        QObject::connect(action, SIGNAL(triggered()), contextMenu, SLOT(close()));
+      }
+    }
+    graphicsItem::prepareContextMenu(contextMenu);
   }
 
   void Molecule::updateElectronSystems()

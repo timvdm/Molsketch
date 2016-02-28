@@ -17,80 +17,29 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "itemtypeaction.h"
-#include "itemtypewidget.h"
-
-#include <QMenu>
 
 namespace Molsketch {
 
-
-  struct ItemTypeAction::privateData
-  {
-    ItemTypeWidget *typeWidget;
-    QMenu *menu;
-    bool transferingItemType;
-  };
-
   ItemTypeAction::ItemTypeAction(MolScene *scene)
-    : abstractItemAction(scene),
-      d(new privateData)
-  {
-    d->menu = new QMenu;
-    d->typeWidget = 0;
-    QVBoxLayout *layout = new QVBoxLayout(d->menu);
-    d->menu->setLayout(layout);
-    connect(this, SIGNAL(itemsChanged()), this, SLOT(checkItemType()));
-    setMinimumItemCount(1);
-    setMenu(d->menu);
-    setCheckable(false);
-    d->transferingItemType = false;
-  }
+    :ItemGroupTypeAction(scene)
+  {}
 
-  ItemTypeAction::~ItemTypeAction()
+  void ItemTypeAction::applyType(int type, const QVariant &data) const
   {
-    delete d->menu;
-    delete d;
-  }
-
-  void ItemTypeAction::setItemTypeWidget(ItemTypeWidget *widget)
-  {
-    delete d->typeWidget;
-    d->typeWidget = widget;
-    widget->setParent(d->menu);
-    d->menu->layout()->addWidget(widget);
-    connect(widget, SIGNAL(currentTypeChanged(int)), d->menu, SLOT(close()));
-    connect(widget, SIGNAL(currentTypeChanged(int)), this, SLOT(trigger()));
-  }
-
-  QString ItemTypeAction::undoName() const
-  {
-    return tr("change ") + text().toLower();
-  }
-
-  int ItemTypeAction::defaultType() const
-  {
-    return 0;
-  }
-
-  void ItemTypeAction::execute()
-  {
-    if (d->transferingItemType) return;
     attemptBeginMacro(undoName());
     foreach(graphicsItem *item, items())
-      applyTypeToItem(item, d->typeWidget->currentType());
+      applyTypeToItem(item,type);
     attemptEndMacro();
   }
 
-  void ItemTypeAction::checkItemType()
+  void ItemTypeAction::getType(int &type, QVariant &data) const
   {
-    if (!d->typeWidget) return;
-    d->transferingItemType = true;
-    int type = defaultType();
+    Q_UNUSED(data)
     foreach(graphicsItem* item, items())
       if (getTypeFromItem(item, type)) break;
-    d->typeWidget->setCurrentType(type);
-    d->transferingItemType = false;
   }
+
+
 
 
 } // namespace Molsketch

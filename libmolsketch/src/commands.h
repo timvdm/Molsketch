@@ -40,6 +40,7 @@ class QTransform;
 
 #include "bond.h"
 #include "arrow.h"
+#include "frame.h"
 
 namespace Molsketch {
 
@@ -391,7 +392,7 @@ namespace Molsketch {
 
     typedef setItemTypeCommand<Bond, Bond::BondType, &Bond::setType, &Bond::bondType> SetBondType;
     typedef setItemTypeCommand<Arrow, Arrow::ArrowType, &Arrow::setArrowType, &Arrow::getArrowType> SetArrowType;
-
+    typedef setItemTypeCommand<Frame, QString, &Frame::setFrameString, &Frame::frameString> SetFrameTypeString;
     class SetParentItem : public QUndoCommand
     {
     private:

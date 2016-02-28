@@ -42,7 +42,8 @@ namespace Molsketch {
       TextInputType = QGraphicsItem::UserType + 5,
       ReactionArrowType = QGraphicsItem::UserType + 6,
       MechanismArrowType = QGraphicsItem::UserType + 7,
-      GeneralArrowType = QGraphicsItem::UserType + 8
+      GeneralArrowType = QGraphicsItem::UserType + 8,
+      FrameType = QGraphicsItem::UserType + 9
     };
 
     graphicsItem(QGraphicsItem* parent = 0 GRAPHICSSCENEHEADER);

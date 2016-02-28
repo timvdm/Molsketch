@@ -20,14 +20,15 @@
 
 namespace Molsketch {
 
-#define ADDFRAMEBUTTON(FRAME, ICON) addButton(-1, QPixmap::fromImage(QImage(":/images/" + QString(ICON) + ".png")), QVariant(FRAME));
+#define ADDFRAMEBUTTON(FRAME, ICON) addButton(-1, QPixmap::fromImage(QImage(":/images/" + QString(ICON) + ".svg")), QVariant(FRAME));
 
   FrameTypeWidget::FrameTypeWidget(QWidget *parent)
     : ItemTypeWidget(parent)
   {
+    addButton(-1, QPixmap(), QVariant());
     ADDFRAMEBUTTON("(r .5,r.5)+(-10,0)-+( 10,0)-(r .5,r-.5)-+(-10,0)"
                    "(r-.5,r.5)+( 10,0)-+(-10,0)-(r-.5,r-.5)-+( 10,0)",
-                   "brackets")
+                   "bracket")
     ADDFRAMEBUTTON("(r.5,r-.5)+(-20,0)-+(20,0)-+(0,20)",
                    "angle")
     ADDFRAMEBUTTON("(r.5,r-.5)+(-10,0).+(10,0).+(0,10)"

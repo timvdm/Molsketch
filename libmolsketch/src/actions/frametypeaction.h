@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2015 Hendrik Vennekate                                  *
+ *   Copyright (C) 2016 Hendrik Vennekate                                  *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -16,28 +16,28 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef MOLSKETCH_ITEMTYPEACTION_H
-#define MOLSKETCH_ITEMTYPEACTION_H
+
+#ifndef MOLSKETCH_FRAMETYPEACTION_H
+#define MOLSKETCH_FRAMETYPEACTION_H
 
 #include "itemgrouptypeaction.h"
 
+
 namespace Molsketch {
 
-  class ItemTypeWidget;
-
-  class ItemTypeAction : public ItemGroupTypeAction
+  class FrameTypeAction : public ItemGroupTypeAction
   {
     Q_OBJECT
   public:
-    explicit ItemTypeAction(MolScene* scene = 0);
-  protected:
-    virtual void applyTypeToItem(graphicsItem* item, int type) const = 0;
-    virtual bool getTypeFromItem(graphicsItem* item, int& type) const = 0;
+    explicit FrameTypeAction(MolScene *scene = 0);
+    ~FrameTypeAction();
   private:
-    void applyType(int type, const QVariant &data) const;
     void getType(int &type, QVariant &data) const;
+    void applyType(int type, const QVariant &data) const;
+    class privateData;
+    privateData *d;
   };
 
 } // namespace Molsketch
 
-#endif // MOLSKETCH_ITEMTYPEACTION_H
+#endif // MOLSKETCH_FRAMETYPEACTION_H

@@ -221,6 +221,7 @@ class Molecule : public graphicsItem
 
   protected:
 
+        void prepareContextMenu(QMenu *contextMenu);
 
 //    /** Event handler for mouse press events on the molecule. */
 //     virtual void mousePressEvent(QGraphicsSceneMouseEvent* event);

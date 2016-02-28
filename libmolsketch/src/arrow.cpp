@@ -49,8 +49,8 @@ namespace Molsketch {
     ArrowDialog *dialog;
   };
 
-  Arrow::Arrow()
-    : graphicsItem(),
+  Arrow::Arrow(QGraphicsItem *parent)
+    : graphicsItem(parent),
       d(new privateData)
   {
     d->arrowType = LowerBackward | UpperBackward ;

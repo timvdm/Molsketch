@@ -33,6 +33,7 @@ namespace Molsketch {
     setText(tr("Bond type"));
   }
 
+  // TODO templated function (cf. e.g. BondTypeAction
   Bond *getBond(graphicsItem* item)
   {
     if (item->type() != Bond::Type) return 0;

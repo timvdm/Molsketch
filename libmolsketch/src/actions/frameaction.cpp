@@ -114,17 +114,9 @@ namespace Molsketch {
   void FrameAction::gotTriggerd()
   {
     if (!scene()) return;
-    if (scene()->selectedItems().isEmpty()) return;
-    if (!activeSubAction()) return;
     Frame *frame = new Frame();
     frame->setFrameString(activeSubAction()->data().toString());
-
-    auto undoStack = scene()->stack();
-    undoStack->beginMacro(tr("Add decoration"));
     scene()->stack()->push(new Commands::AddItem(frame, scene(), tr("Add decoration")));
-    for(auto selectedItem : scene()->selectedItems())
-      undoStack->push(new Commands::SetParentItem(selectedItem, frame));
-    undoStack->endMacro();
   }
 
 } // namespace Molsketch

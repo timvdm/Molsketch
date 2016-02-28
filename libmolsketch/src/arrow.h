@@ -39,7 +39,7 @@ namespace Molsketch {
 
     Q_DECLARE_FLAGS(ArrowType, ArrowTypeParts)
 
-    Arrow();
+    explicit Arrow(QGraphicsItem* parent = 0);
     ~Arrow();
 
     void setArrowType(const ArrowType& type);

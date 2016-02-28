@@ -18,10 +18,12 @@
  ***************************************************************************/
 #include "frame.h"
 
+#include "arrow.h"
 #include "molscene.h"
 
 #include <QGraphicsSceneMouseEvent>
 #include <QPainter>
+#include <molecule.h>
 
 //// code for parsing frame instructions TODO externalize
 ///
@@ -195,8 +197,9 @@ namespace Molsketch {
     }
   };
 
-  Frame::Frame() // TODO rotation around center of parentItem (new variable d->rotationAngle)
-    : d(new privateData(this))
+  Frame::Frame(QGraphicsItem *parent) // TODO rotation around center of parentItem (new variable d->rotationAngle)
+    : graphicsItem(parent),
+      d(new privateData(this))
   {
 #if QT_VERSION < 0x050000
     setAcceptsHoverEvents(true);
@@ -343,6 +346,24 @@ namespace Molsketch {
   void Frame::prepareContextMenu(QMenu *contextMenu)
   {
     Q_UNUSED(contextMenu);
+  }
+
+  abstractXmlObject *Frame::produceChild(const QString &name, const QString &type)
+  {
+    Q_UNUSED(type)
+    if ("molecule" == name) return new Molecule(this);
+    if ("arrow" == name) return new Arrow(this); // TODO make static function for this
+    if ("frame" == name) return new Frame(this);
+    return 0;
+  }
+
+  QList<const abstractXmlObject *> Frame::children() const
+  {
+    QList<const abstractXmlObject*> list;
+    for (auto child : childItems())
+      list << dynamic_cast<graphicsItem*>(child);
+    list.removeAll(0);
+    return list;
   }
 
   qreal Frame::sceneLineWidth(MolScene *scene) const

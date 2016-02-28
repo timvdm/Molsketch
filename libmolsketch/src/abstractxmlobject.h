@@ -29,6 +29,7 @@ namespace Molsketch {
   class abstractXmlObject
   {
   protected:
+    // TODO should be factory function
     virtual abstractXmlObject* produceChild(const QString& name, const QString& type) { Q_UNUSED(name) Q_UNUSED(type) return 0 ; }
     virtual void readAttributes(const QXmlStreamAttributes& attributes) { Q_UNUSED(attributes) }
     virtual QList<const abstractXmlObject*> children() const { return QList<const abstractXmlObject*>() ; }
