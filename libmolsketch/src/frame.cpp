@@ -164,8 +164,8 @@ namespace Molsketch {
 
     void refreshBaseRect()
     {
-      if (!frame->childItems().isEmpty())
-        baseRect = frame->childrenBoundingRect();
+      if (frame->childItems().isEmpty()) return;
+      baseRect = frame->childrenBoundingRect();
     }
 
     QPainterPath parseFramePath()
@@ -276,12 +276,6 @@ namespace Molsketch {
     pen.setJoinStyle(Qt::RoundJoin);
     pen.setColor(getColor());
     painter->setPen(pen);
-
-    painter->save();
-    painter->setPen(QPen(Qt::red));
-    foreach(const QPointF& p, moveablePoints())
-      painter->drawEllipse(p,5,5);
-    painter->restore();
 
     QPainterPath painterPath = d->parseFramePath();
     painter->drawPath(painterPath);

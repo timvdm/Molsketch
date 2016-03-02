@@ -502,6 +502,7 @@ namespace Molsketch {
   abstractXmlObject *MolScene::produceChild(const QString &childName, const QString &type)
   {
     graphicsItem *object = 0 ;
+    if ("frame" == childName) object = new Frame;
     if (childName == "molecule") // TODO move those names to their classes.
       object = new Molecule;
     if (childName == "arrow")

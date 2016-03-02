@@ -45,11 +45,13 @@ namespace Molsketch {
 
   int CoordinateModel::rowCount(const QModelIndex &parent) const
   {
+    Q_UNUSED(parent)
     return d->coordinates.size();
   }
 
   int CoordinateModel::columnCount(const QModelIndex &parent) const
   {
+    Q_UNUSED(parent)
     return 2;
   }
 

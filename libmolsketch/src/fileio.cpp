@@ -66,7 +66,6 @@ namespace Molsketch
     while (xml.name().toString() != scene->xmlName())
       xml.readNext() ;
     xml >> *scene ;
-
       //if (xml.name()
 
     if (xml.hasError()) {
