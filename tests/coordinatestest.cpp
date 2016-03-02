@@ -103,6 +103,7 @@ void coordinatesTest::moleculeBoundingBox()
   QCOMPARE(molecule->boundingRect(), boundingBox);
 }
 // TODO check prepareGeometryChange() in items, molscene rendering refresh mode
+// TODO seems to be a blinker
 
 void coordinatesTest::moleculeBoundingBox_data()
 {

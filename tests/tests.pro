@@ -8,7 +8,8 @@ SOURCES += \
     main.cpp \
     coordinatestest.cpp \
     valencetest.cpp \
-    drawingtest.cpp
+    drawingtest.cpp \
+    xmltest.cpp
 
 LIBS += -L../lib -lmolsketch$$qtVersionSuffix
 
@@ -18,4 +19,5 @@ DESTDIR = ../bin
 HEADERS += \
     coordinatestest.h \
     valencetest.h \
-    drawingtest.h
+    drawingtest.h \
+    xmltest.h
