@@ -158,7 +158,6 @@ namespace Molsketch {
         totalWidth = width; 
     }
 
-    QString str, subscript;
     // compute the horizontal starting position
     qreal xOffset, yOffset, yOffsetSubscript;
     switch (alignment) {
@@ -219,7 +218,6 @@ namespace Molsketch {
     // Setting private fields
     m_elementSymbol = element;
     m_hidden = true;
-    m_drawn = false;
 
     m_userCharge = 0; // The initial additional charge is zero
     m_userElectrons = 0;
@@ -230,6 +228,7 @@ namespace Molsketch {
 
   QRectF Atom::boundingRect() const
   {
+    if (!isDrawn()) return QRect();
     return m_shape;
   }
 
@@ -426,24 +425,7 @@ namespace Molsketch {
         break;
     }
 
-
-    // If element is m_hidden, don't draw the atoms
-    // Always draw the atom when there are no bonds
-    if (m_hidden && !isSelected() && numBonds()) {
-        if (m_elementSymbol == "H" && !molScene->autoAddHydrogen() && (!molScene->chargeVisible())) {
-            m_drawn = false;
-            return;
-        }
-  //      qDebug() << "bondOrderSum = " << bondOrderSum();
-    //    qDebug() << "# implicit H = " << numImplicitHydrogens();
-        //if (m_elementSymbol == "C" && !molScene->carbonVisible() && ((bondOrderSum() - numOfImplicitHydrogens()) > 2 && charge() == 0 || !molScene->chargeVisible())) {
-        if ((m_elementSymbol == "C") && !molScene->carbonVisible() && (numBonds() > 1) && ((charge() == 0) || !molScene->chargeVisible())) {
-            m_drawn = false;
-            return;
-        }
-    }
-
-    m_drawn = true;
+    if (!isDrawn()) return;
 
     int alignment = labelAlignment(this);
     bool leftAligned = false;
@@ -894,7 +876,25 @@ namespace Molsketch {
 
   bool Atom::isDrawn() const
   {
-    return m_drawn;
+    // If element is m_hidden, don't draw the atoms
+    // Always draw the atom when there are no bonds
+    if (!m_hidden || isSelected() || !numBonds()) return true;
+    bool autoAddHydrogen = true;
+    bool carbonVisible = false;
+    bool chargeVisible = true;
+    MolScene* molScene = dynamic_cast<MolScene*>(scene());
+    if (molScene)
+    {
+      autoAddHydrogen = molScene->autoAddHydrogen();
+      carbonVisible = molScene->carbonVisible();
+      chargeVisible = molScene->chargeVisible();
+    }
+
+    if (m_elementSymbol == "H" && !autoAddHydrogen && (!chargeVisible)) // TODO charge() == 0 ?
+          return false;
+    if ((m_elementSymbol == "C") && !carbonVisible && (numBonds() > 1) && ((charge() == 0) || !chargeVisible))
+      return false;
+    return true;
   }
 
   bool Atom::isHidden() const

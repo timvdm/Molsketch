@@ -233,8 +233,6 @@ namespace Molsketch {
       QString m_elementSymbol;
       /** Stores whether the atom is hidden. */
       bool m_hidden;
-      /** Stores whether the atom is drawn. */
-      bool m_drawn;
       /** Stores the charge of the atom. */
       int m_userCharge;
       int m_userElectrons;
