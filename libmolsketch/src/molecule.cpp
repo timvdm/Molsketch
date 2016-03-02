@@ -90,15 +90,19 @@ namespace Molsketch {
     // TODO just take ownership of the atoms and bonds
     // Add the new atoms
     // TODO: why not take ownership of the old ones and set this as their parent?!
+    QMap<Atom*, Atom*> oldToNewAtoms;
     foreach(Atom* atom, atomSet) {
       Atom *a = new Atom(atom->scenePos(), atom->element(), atom->hasImplicitHydrogens(), this);
       a ->setColor (atom ->getColor ());
       addAtom(a);
+      oldToNewAtoms[atom] = a;
     }
 
     // ...and bonds
     foreach(Bond* bond, bondSet) {
-      Bond *b = new Bond(atomAt(bond->beginAtom()->scenePos()),atomAt(bond->endAtom()->scenePos()),bond->bondType());
+      Bond *b = new Bond(oldToNewAtoms[bond->beginAtom()],
+          oldToNewAtoms[bond->endAtom()],
+          bond->bondType());
       b ->setColor (bond ->getColor ());
       addBond(b);
     }
@@ -119,16 +123,20 @@ namespace Molsketch {
 #endif
 
     // Add the new atoms
+    QMap<Atom*, Atom*> oldToNewAtoms;
     foreach(Atom* atom, mol.atoms())
     {
       Atom *a = new Atom(atom->pos(),atom->element(), atom->hasImplicitHydrogens(), this);
       a ->setColor(atom ->getColor ());
       addAtom(a);
+      oldToNewAtoms[atom] = a;
     }
     // ...and bonds
     foreach(Bond* bond, mol.bonds())
     {
-      Bond *b = new Bond(atomAt(bond->beginAtom()->pos()),atomAt(bond->endAtom()->pos()),bond->bondType());
+      Bond *b = new Bond(oldToNewAtoms[bond->beginAtom()],
+          oldToNewAtoms[bond->endAtom()],
+          bond->bondType());
       b ->setColor (bond ->getColor ());
       addBond(b);
     }
@@ -919,7 +927,7 @@ namespace Molsketch {
         piEle->setAtoms(atoms);
         piEle->setNumElectrons(2);
         m_electronSystems.append(piEle);
-        qDebug() << "adding lone pair";
+//        qDebug() << "adding lone pair";
       }
 
       if (unboundElectrons % 2 == 1) {
@@ -950,7 +958,7 @@ namespace Molsketch {
     }
 
 
-    qDebug() << "# ElectronSystem =" << m_electronSystems.size();
+//    qDebug() << "# ElectronSystem =" << m_electronSystems.size();
 
   }
 
