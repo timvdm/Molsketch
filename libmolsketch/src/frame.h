@@ -42,6 +42,9 @@ namespace Molsketch {
     QRectF boundingRect() const;
 //    QRectF boundingRect() const;
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+    void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
+    void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
     int coordinateCount() const;
 
     void setFrameString(const QString& frameString);

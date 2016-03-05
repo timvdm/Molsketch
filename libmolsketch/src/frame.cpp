@@ -150,7 +150,8 @@ namespace Molsketch {
     Frame *frame;
   public:
     privateData(Frame *frame)
-      : frame(frame)
+      : frame(frame),
+        isHovering(false)
     {
       segmentParsers << new SinglePointSegment<&QPainterPath::moveTo>("")
                      << new SinglePointSegment<&QPainterPath::lineTo>("-")
@@ -161,6 +162,18 @@ namespace Molsketch {
 
     QRectF baseRect;
     QString framePathCode;
+    bool isHovering;
+
+    void highlightPoints(QPainter* painter)
+    {// TODO move this to graphicsItem; highlight selected point
+      if (!isHovering) return;
+      painter->save();
+      painter->setPen(Qt::red);
+      painter->setBrush(Qt::NoBrush);
+      foreach(QPointF point, frame->moveablePoints())
+        painter->drawEllipse(point, 5, 5);
+      painter->restore();
+    }
 
     void refreshBaseRect()
     {
@@ -283,11 +296,17 @@ namespace Molsketch {
     // TODO incorporate path size in boundingRect() (maybe
 
     painter->restore();
+
+    d->highlightPoints(painter);
   }
 
   QRectF Frame::boundingRect() const // TODO include selectable points if active/selected (hovered/clicked)
   {
-    return d->parseFramePath().boundingRect();
+    QRectF br = d->parseFramePath().boundingRect();
+    if (!d->isHovering) return br;
+    br.setTopLeft(br.topLeft() - QPointF(5,5));
+    br.setBottomRight(br.bottomRight() + QPointF(5,5));
+    return  br;
   }
 
 //  QRectF Frame::boundingRect() const
@@ -303,6 +322,23 @@ namespace Molsketch {
   void Frame::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
   {
     event->ignore();
+  }
+
+  void Frame::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+  {
+    d->isHovering = true;
+    graphicsItem::hoverEnterEvent(event);
+  }
+
+  void Frame::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+  {
+    d->isHovering = false;
+    graphicsItem::hoverLeaveEvent(event);
+  }
+
+  void Frame::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
+  {
+    graphicsItem::hoverMoveEvent(event);
   }
 
   int Frame::coordinateCount() const
