@@ -104,6 +104,11 @@ void coordinatesTest::moleculeBoundingBox()
 }
 // TODO check prepareGeometryChange() in items, molscene rendering refresh mode
 // TODO seems to be a blinker
+//FAIL!  : coordinatesTest::moleculeBoundingBox(square) Compared values are not the same
+//   Actual   (molecule->boundingRect()): QRectF(-5,-9 110x132) (bottomright 105,123)
+//   Expected (boundingBox)             : QRectF(-5,-9 110x118) (bottomright 105,109)
+//   Loc: [../../../../Programme/Molsketch/tests/coordinatestest.cpp(103)]
+
 
 void coordinatesTest::moleculeBoundingBox_data()
 {

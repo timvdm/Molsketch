@@ -71,17 +71,18 @@ void XmlTest::boundingRectTest()
   originalScene.addItem(sceneObject);
   readRestoreScene(originalScene, loadedScene);
 
-  QGraphicsItem* topLevelItem = 0;
+  QGraphicsItem* restoredItem = 0;
   for (auto item : loadedScene.items())
   {
     if (!item->parentItem())
     {
-      Q_ASSERT(!topLevelItem);
-      topLevelItem = item;
+      Q_ASSERT(!restoredItem);
+      restoredItem = item;
     }
   }
-  Q_ASSERT(topLevelItem);
-  QCOMPARE(topLevelItem->boundingRect(), sceneObject->boundingRect());
+  Q_ASSERT(restoredItem);;
+  QCOMPARE(loadedScene.bondWidth(), originalScene.bondWidth());
+  QCOMPARE(restoredItem->boundingRect(), sceneObject->boundingRect());
   QCOMPARE(loadedScene.toSvg(), originalScene.toSvg());
 }
 
@@ -106,6 +107,11 @@ QGraphicsItem *generateBracketFrame(QGraphicsItem *molecule)
   return frame;
 }
 
+QGraphicsItem *generateMoleculeWithSingleAtom(const QString& element)
+{
+  return new Molecule(QSet<Atom*>() << new Atom(QPointF(30,30), element), QSet<Bond*>());
+}
+
 void XmlTest::boundingRectTest_data()
 {
   QTest::addColumn<QGraphicsItem*>("sceneObject");
@@ -113,6 +119,8 @@ void XmlTest::boundingRectTest_data()
   QTest::newRow("Cyclopropane") << generateCyclopropaneAnalogon("C");
   QTest::newRow("Cyclic azide") << generateCyclopropaneAnalogon("N");
   QTest::newRow("Cyclopropasilane") << generateCyclopropaneAnalogon("Si");
+  QTest::newRow("Carbon atom") << generateMoleculeWithSingleAtom("C");
+  QTest::newRow("Silicon atom") << generateMoleculeWithSingleAtom("Si");
   QTest::newRow("Cyclopropane with frame") << generateBracketFrame(generateCyclopropaneAnalogon("C"));
   QTest::newRow("Cyclopropasilane with frame") << generateBracketFrame(generateCyclopropaneAnalogon("Si"));
 }

@@ -192,7 +192,8 @@ namespace Molsketch {
 
 	  void hoverOut () {m_hidden = true;}
           QString xmlName() const { return "atom" ; }
-    protected:
+          int labelAlignment() const;
+  protected:
       // Event handlers
       /** Event handler to show hidden atoms when the mouse hovers over them. */
       void hoverEnterEvent(QGraphicsSceneHoverEvent* event);
@@ -222,7 +223,7 @@ namespace Molsketch {
        * Compute the boudning rect for this atom. This function needs to be called after changing
        * the elelement symbol, adding bonds, ...
        */
-      void computeBoundingRect();
+      QRectF computeBoundingRect();
 
       void initialize(const QPointF & position,
                       const QString & element,
@@ -260,6 +261,12 @@ namespace Molsketch {
       bool m_implicitHydrogens;
       /** Stores the shape of the atom */
       QRectF m_shape;
+      qreal computeTotalWdith(const int &alignment, const QString &lbl, const QFontMetrics &fmSymbol, const QFontMetrics &fmScript);
+      QFont getSymbolFont() const;
+      QFont getSubscriptFont(const QFont &symbolFont) const;
+      QPair<QFont, QFont> getFonts() const;
+      QString composeLabel(bool leftAligned) const;
+      qreal computeXOffset(int alignment, const QFontMetrics &fmSymbol, const QString &lbl, const qreal &totalWidth);
   };
 
 } // namespace
