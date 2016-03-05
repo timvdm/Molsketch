@@ -19,6 +19,7 @@
  ***************************************************************************/
 
 
+#include <QGraphicsSceneHoverEvent>
 #include <QMenu>
 #include <QtGui>
 
@@ -150,6 +151,31 @@ namespace Molsketch {
     for (int i = 0; i < ats.size (); i++) {
       ats[i] ->setNumber(i);
     }
+  }
+
+  void Molecule::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
+  {
+    foreach (Atom* atom, atoms())
+      atom->setHidden(QLineF(event->scenePos(), atom->scenePos()).length() > 10);
+    graphicsItem::hoverMoveEvent(event);
+  }
+
+  void Molecule::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+  {
+    hideAllAtoms();
+    graphicsItem::hoverLeaveEvent(event);
+  }
+
+  void Molecule::mousePressEvent(QGraphicsSceneMouseEvent *event)
+  {
+    hideAllAtoms();
+    graphicsItem::mousePressEvent(event);
+  }
+
+  void Molecule::hideAllAtoms()
+  {
+    foreach (Atom* atom, atoms())
+      atom->setHidden(true);
   }
 
   // Manipulation methods
@@ -372,7 +398,7 @@ namespace Molsketch {
 
 
   Atom* Molecule::atom (const int n) const
-  {
+  { // TODO start with 0
     if (n>= 1 && n <= m_atomList.size ()) {
       return m_atomList[n - 1];
     }

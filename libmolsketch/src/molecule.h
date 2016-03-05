@@ -153,6 +153,9 @@ class Molecule : public graphicsItem
 
 //   void normalize();
 //   void setAtomSize(qreal pt);
+          void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
+          void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
+          void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
 	// Query methods
 	/** Returns a pointer to the atom at position @p pos, or NULL id none. */
@@ -246,6 +249,7 @@ class Molecule : public graphicsItem
    abstractXmlObject* produceChild(const QString &name, const QString &type) ;
    void afterReadFinalization();
   private:
+   void hideAllAtoms();
 	// Internal representation
 	/** A list of pointers to the atoms of the molecule. Used as internal reprentation. */
    template<class T>

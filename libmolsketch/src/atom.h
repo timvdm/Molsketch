@@ -124,6 +124,8 @@ namespace Molsketch {
       {
         m_userElectrons = n;
       }
+
+      void setHidden(bool hidden);
       /** 
        * Returns the string for the superscript charge (e.g. "3-", "2-", "-", "", "+", "2+", ...).
        */

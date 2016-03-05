@@ -250,6 +250,7 @@ namespace Molsketch {
 
   QRectF Atom::boundingRect() const
   {
+    // TODO cannot change atom symbol if not drawn...
     if (!isDrawn()) return QRect();
     return m_shape;
   }
@@ -850,6 +851,11 @@ namespace Molsketch {
   {
     int computedCharge = charge() - m_userCharge;
     m_userCharge = requiredCharge - computedCharge;
+  }
+
+  void Atom::setHidden(bool hidden)
+  {
+    m_hidden = hidden;
   }
 
   QString Atom::chargeString() const
