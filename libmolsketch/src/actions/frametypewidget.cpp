@@ -17,6 +17,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "frametypewidget.h"
+#include "frameaction.h"
 
 namespace Molsketch {
 
@@ -26,18 +27,10 @@ namespace Molsketch {
     : ItemTypeWidget(parent)
   {
     addButton(-1, QPixmap(), QVariant());
-    ADDFRAMEBUTTON("(r .5,r.5)+(-10,0)-+( 10,0)-(r .5,r-.5)-+(-10,0)"
-                   "(r-.5,r.5)+( 10,0)-+(-10,0)-(r-.5,r-.5)-+( 10,0)",
-                   "bracket")
-    ADDFRAMEBUTTON("(r.5,r-.5)+(-20,0)-+(20,0)-+(0,20)",
-                   "angle")
-    ADDFRAMEBUTTON("(r.5,r-.5)+(-10,0).+(10,0).+(0,10)"
-                   "$(r.5,r0)-+(0,-10).+(0,10).+(5,0)"
-                   ".+(-5,0).+(0,10)$(r.5,r.5)-+(0,-10)"
-                   ".+(0,10).+(-10,0)",
-                   "curlybracket")
-    ADDFRAMEBUTTON("(r.5,r.5)-(r.5,r-.5)-(r-.5,r-.5)-(r-.5,r.5)-(r.5,r.5)",
-                   "fullframe")
+    ADDFRAMEBUTTON(FrameAction::bracketsFrame(), "bracket")
+    ADDFRAMEBUTTON(FrameAction::angleFrame(), "angle")
+    ADDFRAMEBUTTON(FrameAction::curlyBracketsFrame(), "curlybracket")
+    ADDFRAMEBUTTON(FrameAction::rectangleFrame(), "fullframe")
   }
 
 } // namespace Molsketch

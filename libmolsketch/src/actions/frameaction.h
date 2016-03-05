@@ -27,6 +27,11 @@ namespace Molsketch {
   {
     Q_OBJECT
   public:
+    static QString bracketsFrame() ;
+    static QString angleFrame();
+    static QString rectangleFrame();
+    static QString curlyBracketsFrame();
+
     explicit FrameAction(MolScene* scene);
     ~FrameAction();
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -35,9 +40,6 @@ namespace Molsketch {
   private:
     class privateData;
     privateData *d;
-  private slots:
-    void changeCheckable();
-    void gotTriggerd();
   };
 
 } // namespace Molsketch

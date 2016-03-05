@@ -26,40 +26,51 @@
 
 namespace Molsketch {
 
-#define FRAMEMACRO(ARROWSTRING, ICON, DESCRIPTION) a = new QAction(QIcon(":images/" ICON ".svg"), tr(DESCRIPTION), this); a->setData(ARROWSTRING); addSubAction(a);
+#define FRAMEMACRO(ARROWSTRING, ICON, DESCRIPTION) { auto a = new QAction(QIcon(":images/" ICON ".svg"), tr(DESCRIPTION), this); a->setData(ARROWSTRING); addSubAction(a); }
 
   // TODO this leads to ugly doubling with FrameTypeWidget
   struct FrameAction::privateData
   {
     Frame *currentFrame;
     QPointF mousePressPosition;
-    //    QAction *lastCheckedAction;
     privateData()
       : currentFrame(0)
-      //      , lastCheckedAction(0)
     {}
   };
+
+  QString FrameAction::bracketsFrame()
+  {
+    return "(r .5,r.5)+(-10,0)-+( 10,0)-(r .5,r-.5)-+(-10,0)"
+           "(r-.5,r.5)+( 10,0)-+(-10,0)-(r-.5,r-.5)-+( 10,0)";
+  }
+
+  QString FrameAction::angleFrame()
+  {
+    return "(r.5,r-.5)+(-20,0)-+(20,0)-+(0,20)";
+  }
+
+  QString FrameAction::curlyBracketsFrame()
+  {
+    return "(r.5,r-.5)+(-10,0).+(10,0).+(0,10)"
+           "$(r.5,r0)-+(0,-10).+(0,10).+(5,0)"
+           ".+(-5,0).+(0,10)$(r.5,r.5)-+(0,-10)"
+           ".+(0,10).+(-10,0)";
+  }
+
+  QString FrameAction::rectangleFrame()
+  {
+    return "(r.5,r.5)-(r.5,r-.5)-(r-.5,r-.5)-(r-.5,r.5)-(r.5,r.5)";
+  }
 
   FrameAction::FrameAction(MolScene *scene)
     : multiAction(scene),
       d(new privateData)
   {
-    connect(scene, SIGNAL(selectionChanged()), this, SLOT(changeCheckable()));
-    connect(this, SIGNAL(triggered()), this, SLOT(gotTriggerd()));
     setText(tr("Decoration"));
-    QAction *a = 0;
-    FRAMEMACRO("(r .5,r.5)+(-10,0)-+( 10,0)-(r .5,r-.5)-+(-10,0)"
-               "(r-.5,r.5)+( 10,0)-+(-10,0)-(r-.5,r-.5)-+( 10,0)",
-               "bracket", "brackets")
-        FRAMEMACRO("(r.5,r-.5)+(-20,0)-+(20,0)-+(0,20)",
-                   "angle", "corner")
-        FRAMEMACRO("(r.5,r-.5)+(-10,0).+(10,0).+(0,10)"
-                   "$(r.5,r0)-+(0,-10).+(0,10).+(5,0)"
-                   ".+(-5,0).+(0,10)$(r.5,r.5)-+(0,-10)"
-                   ".+(0,10).+(-10,0)",
-                   "curlybracket", "curly brackets")
-        FRAMEMACRO("(r.5,r.5)-(r.5,r-.5)-(r-.5,r-.5)-(r-.5,r.5)-(r.5,r.5)",
-                   "fullframe", "frame")
+    FRAMEMACRO(bracketsFrame(), "bracket", "brackets");
+    FRAMEMACRO(angleFrame(),"angle", "corner");
+    FRAMEMACRO(curlyBracketsFrame(), "curlybracket", "curly bracket");
+    FRAMEMACRO(rectangleFrame(), "fullframe", "frame");
   }
 
   FrameAction::~FrameAction()
@@ -98,25 +109,6 @@ namespace Molsketch {
     scene()->stack()->push(new Commands::AddItem(d->currentFrame, scene(), tr("Decoration arrow"))) ;
     d->currentFrame = 0 ;
     event->accept();
-  }
-
-  void FrameAction::changeCheckable()
-  {// TODO move this to multiaction
-    if (!scene()) return;
-    setCheckable(scene()->selectedItems().isEmpty());
-    //    if (!isCheckable()) return;
-    //    QAction *actionToCheck = d->lastCheckedAction;
-    //    if (!actionToCheck) actionToCheck = firstSubAction();
-    //    if (!actionToCheck) return;
-    //    actionToCheck->setChecked(true);
-  }
-
-  void FrameAction::gotTriggerd()
-  {
-    if (!scene()) return;
-    Frame *frame = new Frame();
-    frame->setFrameString(activeSubAction()->data().toString());
-    scene()->stack()->push(new Commands::AddItem(frame, scene(), tr("Add decoration")));
   }
 
 } // namespace Molsketch

@@ -31,14 +31,7 @@ namespace Molsketch {
   {
     FrameTypeAction *action;
     privateData(FrameTypeAction *action) : action(action) {}
-    void applyToFrameItem(Frame* frame, const QString& frameString)
-    {
-      action->attemptUndoPush(new Commands::SetFrameTypeString(frame, frameString, tr("Set decoration type")));
-    }
-    void applyToMoleculeItem(Molecule*, int type)
-    {
 
-    }
     bool itemsAreOnlyFramesAndNotEmpty()
     {
       if (action->items().isEmpty()) return false;

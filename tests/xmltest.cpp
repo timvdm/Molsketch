@@ -98,12 +98,13 @@ QGraphicsItem *generateCyclopropaneAnalogon(const QString& element)
                       QSet<Bond*>() << bondAB << bondBC << bondCA);
 }
 
-QGraphicsItem *generateBracketFrame(QGraphicsItem *molecule)
+QGraphicsItem *generateBracketFrame(QGraphicsItem *molecule = 0)
 {
   auto frame = new Frame;
   frame->setFrameString("(r .5,r.5)+(-10,0)-+( 10,0)-(r .5,r-.5)-+(-10,0)"
                         "(r-.5,r.5)+( 10,0)-+(-10,0)-(r-.5,r-.5)-+( 10,0)");
-  molecule->setParentItem(frame);
+  if (molecule)
+    molecule->setParentItem(frame);
   return frame;
 }
 
@@ -123,4 +124,5 @@ void XmlTest::boundingRectTest_data()
   QTest::newRow("Silicon atom") << generateMoleculeWithSingleAtom("Si");
   QTest::newRow("Cyclopropane with frame") << generateBracketFrame(generateCyclopropaneAnalogon("C"));
   QTest::newRow("Cyclopropasilane with frame") << generateBracketFrame(generateCyclopropaneAnalogon("Si"));
+  QTest::newRow("Empty bracket frame") << generateBracketFrame();
 }
