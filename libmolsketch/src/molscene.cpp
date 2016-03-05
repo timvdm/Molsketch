@@ -829,7 +829,7 @@ namespace Molsketch {
       case Qt::Key_Escape:
         keyEvent->accept();
         clearSelection();
-        foreach(QAction* action, findChildren<QAction*>())
+        foreach(QAction* action, findChildren<QAction*>(QString(), Qt::FindDirectChildrenOnly))
           if (action->isChecked())
             action->setChecked(false);
         break;

@@ -78,7 +78,7 @@ namespace Molsketch {
 
   void multiAction::changeIcon()
   {
-    QIcon activeIcon = d->actionGroup->checkedAction()->icon();
+    QIcon activeIcon = activeSubAction()->icon();
     if (!activeIcon.isNull())
       setIcon(activeIcon);
   }
