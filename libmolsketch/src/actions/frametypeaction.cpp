@@ -17,7 +17,6 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include <QSet>
-#include <QDebug>
 #include "frametypeaction.h"
 #include "frametypewidget.h"
 #include "frame.h"
@@ -74,42 +73,37 @@ namespace Molsketch {
   }
 
   // TODO make utility function or lambda and copy_if
-  QSet<graphicsItem *> onlyTopLevelItemsOrFrames(const QList<graphicsItem *>& inputList)
+  QSet<graphicsItem *> onlyTopLevelItems(const QList<graphicsItem *>& inputList)
   {
-    qDebug() << "input list" << inputList;
     QSet<graphicsItem *> resultSet;
     for(auto item : inputList)
     {
-      while (isFrame(item->parentItem()))
-        item = (graphicsItem*) item->parentItem();
-      QGraphicsItem* parent = item;
-      while((parent = parent->parentItem()))
-        if (inputList.contains((graphicsItem*) parent))
-          break;
-      if (!parent)
-        resultSet << item;
+      QGraphicsItem* topLevelItem = item;
+      while (topLevelItem->parentItem())
+        topLevelItem = topLevelItem->parentItem();
+      resultSet << dynamic_cast<graphicsItem*>(topLevelItem);
     }
+    resultSet.remove(0);
     return resultSet;
   }
 
   void FrameTypeAction::applyType(int type, const QVariant &data) const
   {
     Q_UNUSED(type)
-    auto itemList = onlyTopLevelItemsOrFrames(items());
+    auto itemList = onlyTopLevelItems(items());
     if (itemList.isEmpty()) return;
-
 
     if (data.isValid() && data.canConvert(QVariant::String))
     {
       if (itemList.size() == 1 && isFrame(itemList.toList().first()))
       {
-        attemptUndoPush(new Commands::SetFrameTypeString((Frame*) itemList.toList().first(), data.toString(), tr("Change decoration type")));
+        attemptUndoPush(new Commands::SetFrameTypeString((Frame*) itemList.toList().first(), data.toString(), tr("change decoration")));
       }
       else
       {
         Frame *frame = new Frame();
         frame->setFrameString(data.toString());
-        attemptBeginMacro(tr("Add decoration"));
+        attemptBeginMacro(tr("add decoration"));
         attemptUndoPush(new Commands::AddItem(frame, scene()));
         for(auto selectedItem : itemList)
           attemptUndoPush(new Commands::SetParentItem(selectedItem, frame));
@@ -119,14 +113,17 @@ namespace Molsketch {
     else
     {
       QList<graphicsItem*> frameList;
-
       std::copy_if(itemList.begin(),
                    itemList.end(), std::back_inserter(frameList),
                    isFrame);
       if (frameList.isEmpty()) return;
-      attemptBeginMacro(tr("Remove decoration"));
+      attemptBeginMacro(tr("remove decoration"));
       for (auto frame : frameList)
+      {
+        for (auto item : frame->childItems())
+          attemptUndoPush(new Commands::SetParentItem(item, 0));
         attemptUndoPush(new Commands::DelItem(frame));
+      }
       attemptEndMacro();
     }
   }

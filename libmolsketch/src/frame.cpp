@@ -166,7 +166,7 @@ namespace Molsketch {
 
     void highlightPoints(QPainter* painter)
     {// TODO move this to graphicsItem; highlight selected point
-      if (!isHovering) return;
+      if (!isHovering || !frame->childItems().isEmpty()) return;
       painter->save();
       painter->setPen(Qt::red);
       painter->setBrush(Qt::NoBrush);

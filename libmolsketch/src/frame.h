@@ -30,6 +30,7 @@ namespace Molsketch {
     privateData *d;
   public:
     enum { Type = graphicsItem::FrameType };
+    int type() const { return Type; }
 
     explicit Frame(QGraphicsItem* parent = 0);
     ~Frame();
