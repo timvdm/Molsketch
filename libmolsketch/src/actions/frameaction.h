@@ -27,9 +27,14 @@ namespace Molsketch {
   {
     Q_OBJECT
   public:
+    static QString leftBracketFrame();
+    static QString rightBracketFrame();
     static QString bracketsFrame() ;
     static QString angleFrame();
     static QString rectangleFrame();
+    static QString roundedCornerRectangleFrame();
+    static QString leftCurlyBracketFrame();
+    static QString rightCurlyBracketFrame();
     static QString curlyBracketsFrame();
 
     explicit FrameAction(MolScene* scene);

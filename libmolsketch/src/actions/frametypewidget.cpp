@@ -27,10 +27,15 @@ namespace Molsketch {
     : ItemTypeWidget(parent)
   {
     addButton(-1, QPixmap(), QVariant());
-    ADDFRAMEBUTTON(FrameAction::bracketsFrame(), "bracket")
-    ADDFRAMEBUTTON(FrameAction::angleFrame(), "angle")
-    ADDFRAMEBUTTON(FrameAction::curlyBracketsFrame(), "curlybracket")
-    ADDFRAMEBUTTON(FrameAction::rectangleFrame(), "fullframe")
+    ADDFRAMEBUTTON(FrameAction::bracketsFrame(), "bracket");
+    ADDFRAMEBUTTON(FrameAction::leftBracketFrame(), "leftbracket");
+    ADDFRAMEBUTTON(FrameAction::rightBracketFrame(), "rightbracket");
+    ADDFRAMEBUTTON(FrameAction::angleFrame(), "angle");
+    ADDFRAMEBUTTON(FrameAction::curlyBracketsFrame(), "curlybracket");
+    ADDFRAMEBUTTON(FrameAction::leftCurlyBracketFrame(), "leftcurlybracket");
+    ADDFRAMEBUTTON(FrameAction::rightCurlyBracketFrame(), "rightcurlybracket");
+    ADDFRAMEBUTTON(FrameAction::rectangleFrame(), "fullframe");
+    ADDFRAMEBUTTON(FrameAction::roundedCornerRectangleFrame(), "roundedfullframe");
   }
 
 } // namespace Molsketch

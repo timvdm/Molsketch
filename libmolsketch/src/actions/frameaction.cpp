@@ -38,10 +38,19 @@ namespace Molsketch {
     {}
   };
 
+  QString FrameAction::rightBracketFrame()
+  {
+    return "(r .5,r.5)+(-10,0)-+( 10,0)-(r .5,r-.5)-+(-10,0)";
+  }
+
+  QString FrameAction::leftBracketFrame()
+  {
+    return "(r-.5,r.5)+( 10,0)-+(-10,0)-(r-.5,r-.5)-+( 10,0)";
+  }
+
   QString FrameAction::bracketsFrame()
   {
-    return "(r .5,r.5)+(-10,0)-+( 10,0)-(r .5,r-.5)-+(-10,0)"
-           "(r-.5,r.5)+( 10,0)-+(-10,0)-(r-.5,r-.5)-+( 10,0)";
+    return leftBracketFrame() + rightBracketFrame();
   }
 
   QString FrameAction::angleFrame()
@@ -51,15 +60,37 @@ namespace Molsketch {
 
   QString FrameAction::curlyBracketsFrame()
   {
-    return "(r.5,r-.5)+(-10,0).+(10,0).+(0,10)"
-           "$(r.5,r0)-+(0,-10).+(0,10).+(5,0)"
-           ".+(-5,0).+(0,10)$(r.5,r.5)-+(0,-10)"
-           ".+(0,10).+(-10,0)";
+    return leftCurlyBracketFrame() + rightCurlyBracketFrame();
   }
 
   QString FrameAction::rectangleFrame()
   {
     return "(r.5,r.5)-(r.5,r-.5)-(r-.5,r-.5)-(r-.5,r.5)-(r.5,r.5)";
+  }
+
+  QString FrameAction::roundedCornerRectangleFrame()
+  {
+    return "(r-.5,r.5)+(0,-10).+(0,10).+(10,0)"
+           "$(r.5,r.5)-+(-10,0).+(10,0).+(0,-10)"
+           "$(r.5,r-.5)-+(0,10).+(0,-10).+(-10,0)"
+           "$(r-.5,r-.5)-+(10,0).+(-10,0).+(0,10)"
+           "$(r-.5,r.5)-+(0,-10)";
+  }
+
+  QString FrameAction::leftCurlyBracketFrame()
+  {
+    return "(r-.5,r-.5)+(10,0).+(-10,0).+(0,10)"
+           "$(r-.5,r0)-+(0,-10).+(0,10).+(-5,0)"
+           ".+(5,0).+(0,10)$(r-.5,r.5)-+(0,-10)"
+           ".+(0,10).+(10,0)";
+  }
+
+  QString FrameAction::rightCurlyBracketFrame()
+  {
+    return "(r.5,r-.5)+(-10,0).+(10,0).+(0,10)"
+           "$(r.5,r0)-+(0,-10).+(0,10).+(5,0)"
+           ".+(-5,0).+(0,10)$(r.5,r.5)-+(0,-10)"
+           ".+(0,10).+(-10,0)";
   }
 
   FrameAction::FrameAction(MolScene *scene)
@@ -68,9 +99,14 @@ namespace Molsketch {
   {
     setText(tr("Decoration"));
     FRAMEMACRO(bracketsFrame(), "bracket", "brackets");
+    FRAMEMACRO(leftBracketFrame(), "leftbracket", "left bracket");
+    FRAMEMACRO(rightBracketFrame(), "rightbracket", "right bracket");
     FRAMEMACRO(angleFrame(),"angle", "corner");
-    FRAMEMACRO(curlyBracketsFrame(), "curlybracket", "curly bracket");
+    FRAMEMACRO(curlyBracketsFrame(), "curlybracket", "curly brackets");
+    FRAMEMACRO(leftCurlyBracketFrame(), "leftcurlybracket", "left curly bracket");
+    FRAMEMACRO(rightCurlyBracketFrame(), "rightcurlybracket", "right curly bracket");
     FRAMEMACRO(rectangleFrame(), "fullframe", "frame");
+    FRAMEMACRO(roundedCornerRectangleFrame(), "roundedfullframe", "frame with rounded corners");
   }
 
   FrameAction::~FrameAction()

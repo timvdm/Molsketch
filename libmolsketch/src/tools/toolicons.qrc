@@ -50,5 +50,10 @@
         <file>images/bracket.svg</file>
         <file>images/curlybracket.svg</file>
         <file>images/fullframe.svg</file>
+        <file>images/rightbracket.svg</file>
+        <file>images/roundedfullframe.svg</file>
+        <file>images/rightcurlybracket.svg</file>
+        <file>images/leftbracket.svg</file>
+        <file>images/leftcurlybracket.svg</file>
     </qresource>
 </RCC>
