@@ -63,7 +63,16 @@ HEADERS += \
     libmolsketch/src/actions/arrowtypewidget.h \
     libmolsketch/src/actions/flipbondaction.h \
     libmolsketch/src/grid.h \
-    libmolsketch/src/stringify.h
+    libmolsketch/src/stringify.h \
+    libmolsketch/src/frame.h \
+    libmolsketch/src/actions/frameaction.h \
+    libmolsketch/src/actions/frametypewidget.h \
+    libmolsketch/src/actions/frametypeaction.h \
+    libmolsketch/src/actions/itemgrouptypeaction.h \
+    libmolsketch/src/arrowpopup.h \
+    libmolsketch/src/coordinatedelegate.h \
+    libmolsketch/src/coordinatemodel.h \
+    libmolsketch/src/coordinatetableview.h
 
 SOURCES += \
     libmolsketch/src/atom.cpp \
@@ -118,11 +127,19 @@ SOURCES += \
     libmolsketch/src/actions/arrowtypeaction.cpp \
     libmolsketch/src/actions/arrowtypewidget.cpp \
     libmolsketch/src/actions/flipbondaction.cpp \
-    libmolsketch/src/grid.cpp
+    libmolsketch/src/grid.cpp \
+    libmolsketch/src/frame.cpp \
+    libmolsketch/src/actions/frameaction.cpp \
+    libmolsketch/src/actions/frametypewidget.cpp \
+    libmolsketch/src/actions/frametypeaction.cpp \
+    libmolsketch/src/actions/itemgrouptypeaction.cpp \
+    libmolsketch/src/arrowpopup.cpp \
+    libmolsketch/src/coordinatedelegate.cpp \
+    libmolsketch/src/coordinatemodel.cpp \
+    libmolsketch/src/coordinatetableview.cpp
 
 FORMS += \
-    libmolsketch/src/mechanismarrowdialog.ui \
-    libmolsketch/src/reactionarrowdialog.ui
+    libmolsketch/src/arrowpopup.ui
 
 RESOURCES += \
     libmolsketch/src/tools/toolicons.qrc
