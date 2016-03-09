@@ -19,8 +19,6 @@ HEADERS += \
     libmolsketch/src/graphsymitem.h \
     libmolsketch/src/itemplugin.h \
     libmolsketch/src/math2d.h \
-    libmolsketch/src/mechanismarrow.h \
-    libmolsketch/src/mechanismarrowdialog.h \
     libmolsketch/src/mimemolecule.h \
     libmolsketch/src/minimise.h \
     libmolsketch/src/molecule.h \
@@ -28,8 +26,6 @@ HEADERS += \
     libmolsketch/src/mollibitem.h \
     libmolsketch/src/molscene.h \
     libmolsketch/src/molview.h \
-    libmolsketch/src/reactionarrow.h \
-    libmolsketch/src/reactionarrowdialog.h \
     libmolsketch/src/residue.h \
     libmolsketch/src/ring.h \
     libmolsketch/src/smilesitem.h \
@@ -84,8 +80,6 @@ SOURCES += \
     libmolsketch/src/fileio.cpp \
     libmolsketch/src/graphsymitem.cpp \
     libmolsketch/src/itemplugin.cpp \
-    libmolsketch/src/mechanismarrow.cpp \
-    libmolsketch/src/mechanismarrowdialog.cpp \
     libmolsketch/src/mimemolecule.cpp \
     libmolsketch/src/minimise.cpp \
     libmolsketch/src/molecule.cpp \
@@ -93,8 +87,6 @@ SOURCES += \
     libmolsketch/src/mollibitem.cpp \
     libmolsketch/src/molscene.cpp \
     libmolsketch/src/molview.cpp \
-    libmolsketch/src/reactionarrow.cpp \
-    libmolsketch/src/reactionarrowdialog.cpp \
     libmolsketch/src/residue.cpp \
     libmolsketch/src/ring.cpp \
     libmolsketch/src/smilesitem.cpp \
