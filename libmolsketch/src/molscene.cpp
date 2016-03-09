@@ -824,16 +824,20 @@ namespace Molsketch {
     QGraphicsScene::keyPressEvent(keyEvent);
     update();
     if (keyEvent->isAccepted()) return;
-    switch (keyEvent->key())
+    if (keyEvent->key() == Qt::Key_Escape)
     {
-      case Qt::Key_Escape:
         keyEvent->accept();
         clearSelection();
+#if QT_VERSION < 0x050000
+        QList<QAction*> directActionChildren, actionChildren = findChildren<QAction*>() ;
+        std::copy_if(actionChildren.begin(), actionChildren.end(), std::back_inserter(directActionChildren),
+                     [&](QAction* a) { return a->parent() == this; });
+        for (QAction* action : directActionChildren)
+#else
         foreach(QAction* action, findChildren<QAction*>(QString(), Qt::FindDirectChildrenOnly))
+#endif
           if (action->isChecked())
             action->setChecked(false);
-        break;
-      default:;
     }
   }
 

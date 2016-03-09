@@ -26,6 +26,10 @@
 #include "arrow.h"
 //#include "frame.h"
 
+#if QT_VERSION < 0x050000
+Q_DECLARE_METATYPE(QVector<QPointF>)
+#endif
+
 using namespace Molsketch;
 
 void coordinatesTest::initTestCase()

@@ -18,6 +18,7 @@
  ***************************************************************************/
 #include <QObject>
 #include <QtTest>
+#include "valencetest.h"
 
 #include "element.h"
 #include "molecule.h"
@@ -25,38 +26,6 @@
 
 
 using namespace Molsketch;
-
-class ValenceTest : public QObject
-{
-  Q_OBJECT
-
-  private slots:
-    /**
-     * Called before the first test function is executed.
-     */
-    void initTestCase();
-
-    /**
-     * Called after the last test function is executed.
-     */
-    void cleanupTestCase();
-
-    /**
-     * Called before each test function is executed.
-     */
-    void init();
-
-    /**
-     * Called after every test function.
-     */
-    void cleanup();
-
-    void elementGroups();
-    void expectedValences();
-    void valenceElectrons();
-    void implicitHydrogensAndCharge();
-
-};
 
 void ValenceTest::initTestCase()
 {

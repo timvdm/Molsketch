@@ -82,7 +82,7 @@ namespace Molsketch {
       d->coordinates[index.row()].setX(value.toDouble());
     else
       d->coordinates[index.row()].setY(value.toDouble());
-    emit dataChanged(index, index, QVector<int>() << role);
+    emit dataChanged(index, index);
     return true;
   }
 

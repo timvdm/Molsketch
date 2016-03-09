@@ -23,6 +23,7 @@
 
 #include <QGraphicsSceneMouseEvent>
 #include <QPainter>
+#include <QDebug>
 #include <molecule.h>
 
 //// code for parsing frame instructions TODO externalize
@@ -66,7 +67,11 @@ public:
   void setCurrentCoordinate(const QPointF &value) { currentCoordinate = value; }
   void parse(const QStringList& l)
   {
-    if (l.size() != 5) throw std::domain_error(("coordinateParser: invalid number of strings to parse: " + QString::number(l.size())).toStdString().c_str());
+    if (l.size() != 5)
+    {
+      qDebug() << "coordinateParser: invalid number of strings to parse: " + QString::number(l.size());
+      return;
+    }
     QPointF coord(l[2].toDouble(), l[4].toDouble());
     applyScaling(l[1], l[3], coord);
     if ("+" == l[0]) currentCoordinate += coord;
@@ -85,6 +90,7 @@ public:
   PathSegmentParser(const QString& re)
     : re(re)
   {}
+  virtual ~PathSegmentParser() {}
   bool processed(QPainterPath& path, const QString& segment, int& index, CoordinateParser& parser)
   {
     if (!match(segment, index)) return false;

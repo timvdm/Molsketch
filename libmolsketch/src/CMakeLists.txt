@@ -2,7 +2,6 @@
 cmake_policy(SET CMP0003 NEW)
 
 # Including qt4 and OpenBabel
-set(QT_USE_QTASSISTANT TRUE)
 set(QT_USE_QTSVG TRUE)
 if(FORCEQt4)
 	include(${QT_USE_FILE})
@@ -29,8 +28,6 @@ set(libmolsketch_HDRS
     graphsymitem.h
     itemplugin.h
     math2d.h
-    mechanismarrow.h
-    mechanismarrowdialog.h
     mimemolecule.h
     minimise.h
     molecule.h
@@ -38,8 +35,6 @@ set(libmolsketch_HDRS
     mollibitem.h
     molscene.h
     molview.h
-    reactionarrow.h
-    reactionarrowdialog.h
     residue.h
     ring.h
     smilesitem.h
@@ -49,6 +44,11 @@ set(libmolsketch_HDRS
     graphicsitem.h
     grid.h
     stringify.h
+    frame.h
+    arrowpopup.h 
+    coordinatedelegate.h 
+    coordinatemodel.h 
+    coordinatetableview.h
    )
 
 set(action_HDRS
@@ -77,6 +77,10 @@ set(action_HDRS
     actions/arrowtypeaction.h
     actions/arrowtypewidget.h
     actions/flipbondaction.h
+    actions/frameaction.h
+    actions/frametypewidget.h 
+    actions/frametypeaction.h 
+    actions/itemgrouptypeaction.h 
    )
 
 
@@ -115,8 +119,6 @@ set(libmolsketch_SRCS
     fileio.cpp
     graphsymitem.cpp
     itemplugin.cpp
-    mechanismarrow.cpp
-    mechanismarrowdialog.cpp
     mimemolecule.cpp
     minimise.cpp
     molecule.cpp
@@ -124,8 +126,6 @@ set(libmolsketch_SRCS
     mollibitem.cpp
     molscene.cpp
     molview.cpp
-    reactionarrow.cpp
-    reactionarrowdialog.cpp
     residue.cpp
     ring.cpp
     smilesitem.cpp
@@ -134,6 +134,11 @@ set(libmolsketch_SRCS
     graphicsitem.cpp
     arrow.cpp
     grid.cpp
+    frame.cpp 
+    arrowpopup.cpp 
+    coordinatedelegate.cpp 
+    coordinatemodel.cpp 
+    coordinatetableview.cpp
     actions/coloraction.cpp
     actions/linewidthaction.cpp
     actions/abstractitemaction.cpp
@@ -159,6 +164,10 @@ set(libmolsketch_SRCS
     actions/arrowtypeaction.cpp
     actions/arrowtypewidget.cpp
     actions/flipbondaction.cpp
+    actions/frameaction.cpp 
+    actions/frametypewidget.cpp 
+    actions/frametypeaction.cpp 
+    actions/itemgrouptypeaction.cpp 
     )
 
 set(toolicon_RCS tools/toolicons.qrc)
@@ -166,22 +175,22 @@ set(toolicon_RCS tools/toolicons.qrc)
 file(GLOB molsketch_UIS "*.ui")
 message("UIS = ${molsketch_UIS}")
 if(FORCEQt4)
-	qt4_automoc(${libmolsketch_HDRS})
-	qt4_add_resources(libmolsketch_SRCS ${toolicon_RCS})
-	qt4_wrap_ui(molsketch_UIS_H ${molsketch_UIS})
+    qt4_automoc(${libmolsketch_HDRS})
+    qt4_add_resources(libmolsketch_SRCS ${toolicon_RCS})
+    qt4_wrap_ui(molsketch_UIS_H ${molsketch_UIS})
 else(FORCEQt4)
-	qt5_add_resources(libmolsketch_SRCS ${toolicon_RCS})
-	qt5_wrap_ui(molsketch_UIS_H ${molsketch_UIS})
+    qt5_add_resources(libmolsketch_SRCS ${toolicon_RCS})
+    qt5_wrap_ui(molsketch_UIS_H ${molsketch_UIS})
 endif(FORCEQt4)
 
 
 # MOC-ing headers
-set(molsketch_LIB_MOC_HDRS ${libmolsketch_HDRS} ${action_HDRS})
-set(molsketch_MOC_HDRS mainwindow.h settings.h drawwidget.h reactionarrowdialog.h mechanismarrowdialog.h)
 if(FORCEQt4)
-	qt4_wrap_cpp(libmolsketch_SRCS ${molsketch_LIB_MOC_HDRS})
-	# Take care of the .moc files
-	qt4_automoc(${libmolsketch_SRCS})
+    set(molsketch_LIB_MOC_HDRS ${libmolsketch_HDRS} ${action_HDRS})
+    set(molsketch_MOC_HDRS mainwindow.h settings.h drawwidget.h reactionarrowdialog.h mechanismarrowdialog.h)
+    qt4_wrap_cpp(libmolsketch_SRCS ${molsketch_LIB_MOC_HDRS})
+    # Take care of the .moc files
+    qt4_automoc(${libmolsketch_SRCS})
 endif(FORCEQt4)
 
 
@@ -192,11 +201,12 @@ if(FORCEQt4)
 else(FORCEQt4)
 	set_target_properties(molsketch_LIB PROPERTIES OUTPUT_NAME "molsketch-qt5")
 endif(FORCEQt4)
+set_property(TARGET molsketch_LIB PROPERTY CXX_STANDARD 14)
 set_target_properties(molsketch_LIB PROPERTIES VERSION ${MSK_VERSION})
 target_link_libraries(molsketch_LIB ${QT_LIBRARIES} ${OPENBABEL2_LIBRARIES}) # TODO remove Openbabel dependency
 
 # Install the executable and the library
 install(TARGETS molsketch_LIB
-	RUNTIME DESTINATION ${MSK_INSTALL_BINS}
-	LIBRARY DESTINATION ${MSK_INSTALL_LIBS}
-	ARCHIVE DESTINATION ${MSK_INSTALL_LIBS}/static)
+    RUNTIME DESTINATION ${MSK_INSTALL_BINS}
+    LIBRARY DESTINATION ${MSK_INSTALL_LIBS}
+    ARCHIVE DESTINATION ${MSK_INSTALL_LIBS}/static)

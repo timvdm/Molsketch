@@ -24,31 +24,12 @@
 #include <actions/drawaction.h>
 #include <QVector>
 
+#include "drawingtest.h"
+
 Q_DECLARE_METATYPE(QVector<QLineF>)
 
 
 using namespace Molsketch;
-
-class DrawingTest : public QObject
-{
-  Q_OBJECT
-public:
-  explicit DrawingTest(QObject *parent = 0);
-  ~DrawingTest();
-private slots:
-  void initTestCase();
-  void cleanupTestCase();
-  void init();
-  void cleanup();
-
-  void testDrawing();
-  void testDrawing_data();
-
-private:
-  Molsketch::MolScene *scene;
-  Molsketch::drawAction *action;
-  Molsketch::MolView *view;
-};
 
 DrawingTest::DrawingTest(QObject *parent) : QObject(parent)
 {
