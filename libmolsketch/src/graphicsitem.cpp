@@ -23,7 +23,7 @@
 #include "molscene.h"
 #include "actions/coloraction.h"
 #include "actions/linewidthaction.h"
-#include <cmath>
+#include <QtMath>
 #include <QDebug>
 #include <actions/rotateaction.h>
 

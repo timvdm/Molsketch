@@ -19,7 +19,7 @@
 #include "grid.h"
 #include <QGraphicsScene>
 #include <QPainter>
-#include <cmath>
+#include <QtMath>
 
 namespace Molsketch {
 

@@ -20,7 +20,7 @@
 #ifndef MSK_MATH2D_H
 #define MSK_MATH2D_H
 
-#include <cmath>
+#include <QtMath>
 
 namespace Molsketch {
 

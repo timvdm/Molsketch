@@ -34,7 +34,7 @@
 #include "molscene.h"
 #include "TextInputItem.h"
 #include <iostream>
-#include <cmath>
+#include <QtMath>
 
 namespace Molsketch {
 

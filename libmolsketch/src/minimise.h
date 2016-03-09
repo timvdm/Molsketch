@@ -34,18 +34,12 @@
 #include "bond.h"
 
 #include "molecule.h"
-#include <cmath>
+#include <QtMath>
 
 #include <iostream>
 #include <assert.h>
-#include <cmath>
 #include <cfloat>
 #include <ctime>
-
-
-#ifndef M_PI
-  #define M_PI 3.14159265358979323846
-#endif
 
 //contains both a forcefield and a minimisation algorithm. 
 
