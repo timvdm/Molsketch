@@ -15,8 +15,7 @@
    <string>molsKetch - Preferences</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="molsketch.qrc">
-    <normaloff>:/images/configure.png</normaloff>:/images/configure.png</iconset>
+   <iconset theme="preferences-system"/>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
@@ -63,8 +62,9 @@
            <string>General</string>
           </property>
           <property name="icon">
-           <iconset resource="molsketch.qrc">
-            <normaloff>:/images/configure.svg</normaloff>:/images/configure.svg</iconset>
+           <iconset theme="preferences-system">
+            <normaloff/>
+           </iconset>
           </property>
          </item>
          <item>
@@ -72,8 +72,7 @@
            <string>Draw settings</string>
           </property>
           <property name="icon">
-           <iconset resource="molsketch.qrc">
-            <normaloff>:/images/draw-freehand.svg</normaloff>:/images/draw-freehand.svg</iconset>
+           <iconset theme="draw-freehand"/>
           </property>
          </item>
          <item>
@@ -81,8 +80,7 @@
            <string>Libraries</string>
           </property>
           <property name="icon">
-           <iconset resource="molsketch.qrc">
-            <normaloff>:/images/document-open.svg</normaloff>:/images/document-open.svg</iconset>
+           <iconset theme="document-open"/>
           </property>
          </item>
         </widget>
@@ -90,7 +88,7 @@
        <item>
         <widget class="QStackedWidget" name="stackedWidget">
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="generalPage">
           <widget class="QGroupBox" name="groupBoxGeneral">
@@ -228,23 +226,10 @@
                 <property name="spacing">
                  <number>6</number>
                 </property>
-                <item row="1" column="0">
-                 <widget class="QCheckBox" name="checkBoxShowValency">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
+                <item row="3" column="0">
+                 <widget class="QCheckBox" name="checkBoxShowES">
                   <property name="text">
-                   <string>Show atomic charge</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="0">
-                 <widget class="QCheckBox" name="checkBoxShowCarbon">
-                  <property name="text">
-                   <string>Show neutral carbon atoms</string>
+                   <string>Show electron systems (experimental)</string>
                   </property>
                  </widget>
                 </item>
@@ -287,6 +272,20 @@
                   </item>
                  </layout>
                 </item>
+                <item row="0" column="0">
+                 <widget class="QCheckBox" name="checkBoxShowCarbon">
+                  <property name="text">
+                   <string>Show neutral carbon atoms</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QCheckBox" name="checkBoxShowLP">
+                  <property name="text">
+                   <string>Show lone pairs</string>
+                  </property>
+                 </widget>
+                </item>
                 <item row="5" column="0">
                  <widget class="QLabel" name="labelAtomSymbolFont">
                   <property name="text">
@@ -310,17 +309,16 @@
                   </property>
                  </spacer>
                 </item>
-                <item row="2" column="0">
-                 <widget class="QCheckBox" name="checkBoxShowLP">
-                  <property name="text">
-                   <string>Show lone pairs</string>
+                <item row="1" column="0">
+                 <widget class="QCheckBox" name="checkBoxShowValency">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
                   </property>
-                 </widget>
-                </item>
-                <item row="3" column="0">
-                 <widget class="QCheckBox" name="checkBoxShowES">
                   <property name="text">
-                   <string>Show electron systems (experimental)</string>
+                   <string>Show atomic charge</string>
                   </property>
                  </widget>
                 </item>
@@ -536,9 +534,7 @@
  <tabstops>
   <tabstop>buttonBox</tabstop>
  </tabstops>
- <resources>
-  <include location="molsketch.qrc"/>
- </resources>
+ <resources/>
  <connections>
   <connection>
    <sender>buttonBox</sender>

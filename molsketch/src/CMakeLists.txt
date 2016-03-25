@@ -74,5 +74,5 @@ install(DIRECTORY ${PROJECT_SOURCE_DIR}/library/ DESTINATION ${MSK_INSTALL_LIBRA
 if(UNIX)
   install(FILES ${PROJECT_SOURCE_DIR}/molsketch/src/molsketch.desktop DESTINATION share/applications)
   install(FILES ${PROJECT_SOURCE_DIR}/molsketch/src/images/molsketch.xpm DESTINATION share/pixmaps)
-  install(FILES ${PROJECT_SOURCE_DIR}/molsketch/src/images/molsketch.png DESTINATION share/icons/hicolor/128x128/apps)
+  install(FILES ${PROJECT_SOURCE_DIR}/molsketch/src/images/molsketch.svg DESTINATION share/icons/hicolor/scalable/apps)
 endif(UNIX)
