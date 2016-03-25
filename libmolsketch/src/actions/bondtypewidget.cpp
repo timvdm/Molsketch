@@ -23,7 +23,7 @@
 
 namespace Molsketch {
 
-#define ADDBONDBUTTON(TYPE, ICON, INVERTED) addButton(TYPE, QPixmap::fromImage(QImage(":images/" ICON ".png").mirrored(INVERTED, INVERTED)));
+#define ADDBONDBUTTON(TYPE, ICON, INVERTED) addButton(TYPE, QPixmap::fromImage(QImage(":images/" ICON ".svg").mirrored(INVERTED, INVERTED)));
 
   bondTypeWidget::bondTypeWidget(bool withInversion, QWidget *parent)
     : ItemTypeWidget(parent)

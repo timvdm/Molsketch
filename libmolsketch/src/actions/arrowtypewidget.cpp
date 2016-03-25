@@ -21,7 +21,7 @@
 
 namespace Molsketch {
 
-#define TIPGEN(TYPE, IMAGESTRING) addButton(TYPE, QPixmap::fromImage(QImage(":/images/" + QString(IMAGESTRING) + ".png")));
+#define TIPGEN(TYPE, IMAGESTRING) addButton(TYPE, QPixmap::fromImage(QImage(":/images/" + QString(IMAGESTRING) + ".svg")));
 
   arrowTypeWidget::arrowTypeWidget(QWidget *parent)
     : ItemTypeWidget(parent)

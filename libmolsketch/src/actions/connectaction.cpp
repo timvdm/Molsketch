@@ -32,7 +32,7 @@ namespace Molsketch {
   connectAction::connectAction(MolScene *scene) :
     genericAction(scene)
   {
-    setIcon(QIcon(":images/connect.png"));
+    setIcon(QIcon(":images/connect.svg"));
     setText(tr("Connect to plugin")) ;
   }
 

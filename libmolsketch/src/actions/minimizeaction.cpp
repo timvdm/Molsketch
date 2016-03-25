@@ -31,7 +31,7 @@ namespace Molsketch {
   minimizeAction::minimizeAction(MolScene *scene) :
     genericAction(scene)
   {
-    setIcon(QIcon(":images/minimize.png")) ;
+    setIcon(QIcon(":images/minimize.svg")) ;
     setText(tr("Minimize energy")) ;
     setCheckable(false);
   }

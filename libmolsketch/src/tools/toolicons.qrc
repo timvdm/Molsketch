@@ -1,51 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>images/electrons.png</file>
-        <file>images/reactionarrow.png</file>
-        <file>images/mechanismarrow.png</file>
-        <file>images/hydrogens.png</file>
-        <file>images/charges.png</file>
-        <file>images/connect.png</file>
-        <file>images/hand.png</file>
-        <file>images/move.png</file>
-        <file>images/lasso.png</file>
-        <file>images/rotate.png</file>
-        <file>images/C1CC1.png</file>
-        <file>images/C1CCC1.png</file>
-        <file>images/a1aaaa1.png</file>
-        <file>images/a1aaaaa1.png</file>
-        <file>images/C1CCCCC1.png</file>
-        <file>images/cistrans.png</file>
-        <file>images/wedge.png</file>
-        <file>images/C1CCCC1.png</file>
-        <file>images/double.png</file>
-        <file>images/triple.png</file>
-        <file>images/hash.png</file>
-        <file>images/hashOrWedge.png</file>
-        <file>images/single.png</file>
-        <file>images/incHydrogens.png</file>
-        <file>images/incCharge.png</file>
-        <file>images/decCharge.png</file>
-        <file>images/decHydrogens.png</file>
-        <file>images/curveddoublearrow.png</file>
-        <file>images/curvedhalfarrow.png</file>
-        <file>images/doublearrow.png</file>
-        <file>images/simplearrow.png</file>
-        <file>images/halfarrow.png</file>
-        <file>images/plugin.png</file>
-        <file>images/linewidth.png</file>
-        <file>images/minimize.png</file>
-        <file>images/C1CCCCCCC1.png</file>
-        <file>images/C1CCCCCC1.png</file>
-        <file>images/delete.png</file>
-        <file>images/arrow.png</file>
-        <file>images/line.png</file>
-        <file>images/resonanceArrow.png</file>
-        <file>images/hookDown.png</file>
-        <file>images/hookUp.png</file>
-        <file>images/eqMirrorHook.png</file>
-        <file>images/eqMirrorHookb.png</file>
-        <file>images/eqHook.png</file>
         <file>images/angle.svg</file>
         <file>images/bracket.svg</file>
         <file>images/curlybracket.svg</file>
@@ -55,5 +9,51 @@
         <file>images/rightcurlybracket.svg</file>
         <file>images/leftbracket.svg</file>
         <file>images/leftcurlybracket.svg</file>
+        <file>images/plugin.svg</file>
+        <file>images/a1aaaa1.svg</file>
+        <file>images/a1aaaaa1.svg</file>
+        <file>images/arrow.svg</file>
+        <file>images/brokenbond-odd.svg</file>
+        <file>images/C1CC1.svg</file>
+        <file>images/C1CCC1.svg</file>
+        <file>images/C1CCCC1.svg</file>
+        <file>images/C1CCCCC1.svg</file>
+        <file>images/C1CCCCCC1.svg</file>
+        <file>images/C1CCCCCCC1.svg</file>
+        <file>images/charges.svg</file>
+        <file>images/cistrans.svg</file>
+        <file>images/connect.svg</file>
+        <file>images/curveddoublearrow.svg</file>
+        <file>images/curvedhalfarrow.svg</file>
+        <file>images/decCharge.svg</file>
+        <file>images/decHydrogens.svg</file>
+        <file>images/delete.svg</file>
+        <file>images/double.svg</file>
+        <file>images/doublearrow.svg</file>
+        <file>images/electrons.svg</file>
+        <file>images/eqHook.svg</file>
+        <file>images/eqMirrorHook.svg</file>
+        <file>images/eqMirrorHookb.svg</file>
+        <file>images/halfarrow.svg</file>
+        <file>images/hand.svg</file>
+        <file>images/hash.svg</file>
+        <file>images/hashorWedge.svg</file>
+        <file>images/hookDown.svg</file>
+        <file>images/hookUp.svg</file>
+        <file>images/hydrogens.svg</file>
+        <file>images/incCharge.svg</file>
+        <file>images/incHydrogens.svg</file>
+        <file>images/line.svg</file>
+        <file>images/linewidth.svg</file>
+        <file>images/mechanismarrow.svg</file>
+        <file>images/minimize.svg</file>
+        <file>images/move.svg</file>
+        <file>images/reactionarrow.svg</file>
+        <file>images/resonanceArrow.svg</file>
+        <file>images/rotate.svg</file>
+        <file>images/simplearrow.svg</file>
+        <file>images/single.svg</file>
+        <file>images/triple.svg</file>
+        <file>images/wedge.svg</file>
     </qresource>
 </RCC>

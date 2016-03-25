@@ -31,13 +31,13 @@ namespace Molsketch {
     {
       if (action->text() == tr("Single arrow"))
       {
-        action->setIcon(QIcon(":images/mechanismarrow.png"));
+        action->setIcon(QIcon(":images/mechanismarrow.svg"));
         action->trigger();
       }
       if (action->text() == tr("Double arrow"))
-        action->setIcon(QIcon(":images/curveddoublearrow.png"));
+        action->setIcon(QIcon(":images/curveddoublearrow.svg"));
       if (action->text() == tr("Half arrow"))
-        action->setIcon(QIcon(":images/curvedhalfarrow.png"));
+        action->setIcon(QIcon(":images/curvedhalfarrow.svg"));
     }
     setChecked(false);
   }
