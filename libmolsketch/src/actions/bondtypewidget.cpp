@@ -35,8 +35,12 @@ namespace Molsketch {
     if (withInversion) ADDBONDBUTTON(- Bond::Wedge, "wedge", true)
     ADDBONDBUTTON(Bond::WedgeOrHash, "hashOrWedge", false)
     ADDBONDBUTTON(Bond::Double, "double", false)
+    ADDBONDBUTTON(Bond::DoubleAsymmetric, "double-asymmetric")
+    if (withInversion) ADDBONDBUTTON(- Bond::DoubleAsymmetric, "double-asymmetric", true)
     ADDBONDBUTTON(Bond::CisOrTrans, "cistrans", false)
     ADDBONDBUTTON(Bond::Triple, "triple", false)
+    ADDBONDBUTTON(Bond::TripleAsymmetric, "triple-asymmetric")
+// TODO insert option for broken bond
   }
 
   bool bondTypeWidget::backward() const

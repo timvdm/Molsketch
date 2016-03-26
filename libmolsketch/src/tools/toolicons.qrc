@@ -55,5 +55,7 @@
         <file>images/single.svg</file>
         <file>images/triple.svg</file>
         <file>images/wedge.svg</file>
+        <file>images/double-asymmetric.svg</file>
+        <file>images/triple-asymmetric.svg</file>
     </qresource>
 </RCC>

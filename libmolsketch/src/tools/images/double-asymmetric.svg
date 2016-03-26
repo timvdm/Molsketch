@@ -14,10 +14,10 @@
    id="svg2383"
    sodipodi:version="0.32"
    inkscape:version="0.48.5 r10040"
-   sodipodi:docname="triple.svg"
+   sodipodi:docname="double-asymmetric.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.1"
-   inkscape:export-filename="/home/hendrik/Programme/Molsketch/libmolsketch/src/tools/images/triple.png"
+   inkscape:export-filename="/home/hendrik/Programme/Molsketch/libmolsketch/src/tools/images/double-asymmetric.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90">
   <defs
@@ -38,8 +38,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="3.8890873"
-     inkscape:cx="16.327428"
-     inkscape:cy="45.97558"
+     inkscape:cx="1.8732386"
+     inkscape:cy="43.767827"
      inkscape:current-layer="layer1"
      showgrid="true"
      inkscape:document-units="px"
@@ -83,30 +83,6 @@
        orientation="0,1"
        position="9,24"
        id="guide3050" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="24,24"
-       id="guide3001" />
-    <sodipodi:guide
-       orientation="0,1"
-       position="46.363636,40"
-       id="guide3003" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="16.5,44.545455"
-       id="guide3069" />
-    <sodipodi:guide
-       orientation="0,1"
-       position="2,16.5"
-       id="guide3071" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="47.727273,59.363636"
-       id="guide3073" />
-    <sodipodi:guide
-       orientation="0,1"
-       position="59,47.5"
-       id="guide3075" />
   </sodipodi:namedview>
   <metadata
      id="metadata2388">
@@ -132,14 +108,8 @@
        sodipodi:nodetypes="cc" />
     <path
        style="fill:none;stroke:#000000;stroke-width:5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="m 16.5,47.5 31.227273,-31"
+       d="M 9,55 55,9.102801"
        id="path3209"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cc" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="M 24,55 55,24"
-       id="path3207-9"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cc" />
   </g>
