@@ -235,7 +235,7 @@ void MainWindow::open()
     // Start a new document
     m_scene->clear();
 
-    Molecule* mol;
+    Molecule* mol = 0;
     PREPARELOADFILE
     if (fileName.endsWith(".msk"))
     {
@@ -789,12 +789,21 @@ void MainWindow::createMenus()
   helpMenu->addAction(aboutQtAct);
 }
 
+void setAllToolBarChildren(QObject* parent,
+                           Qt::ToolButtonStyle style,
+                           QSize size)
+{
+  foreach (QToolBar* bar, parent->findChildren<QToolBar*>())
+  {
+    bar->setToolButtonStyle(style); // TODO configurable
+    bar->setIconSize(size);
+  }
+}
+
 void MainWindow::createToolBars()
 {
   fileToolBar = addToolBar(tr("File"));
   fileToolBar->setObjectName("file-toolbar");
-  fileToolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-  fileToolBar->setIconSize(QSize(22,22));
   fileToolBar->addAction(newAct);
   fileToolBar->addAction(openAct);
   fileToolBar->addAction(saveAct);
@@ -804,8 +813,6 @@ void MainWindow::createToolBars()
 
   editToolBar = addToolBar(tr("Edit"));
   editToolBar->setObjectName("edit-toolbar");
-  editToolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-  editToolBar->setIconSize(QSize(22,22));
   editToolBar->addAction(undoAct);
   editToolBar->addAction(redoAct);
   editToolBar->addSeparator();
@@ -816,8 +823,6 @@ void MainWindow::createToolBars()
 	
   zoomToolBar = addToolBar(tr("Zoom"));
   zoomToolBar->setObjectName("zoom-toolbar");
-  zoomToolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-  zoomToolBar->setIconSize(QSize(22,22));
   zoomToolBar->addAction(zoomInAct);
   zoomToolBar->addAction(zoomOutAct);
   zoomToolBar->addAction(zoomResetAct);
@@ -831,8 +836,6 @@ void MainWindow::createToolBars()
 
   drawToolBar = addToolBar(tr("Drawing"));
   drawToolBar->setObjectName("drawing-toolbar");
-  drawToolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon); // TODO configurable
-  drawToolBar->setIconSize(QSize(22,22));
   drawToolBar->addAction(new drawAction(m_scene));
   drawToolBar->addAction(new ringAction(m_scene));
   drawToolBar->addAction(new reactionArrowAction(m_scene));
@@ -842,8 +845,6 @@ void MainWindow::createToolBars()
 
   modifyToolBar = addToolBar(tr("Modify"));
   modifyToolBar->setObjectName("modify-toolbar");
-  modifyToolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon); // TODO configurable
-  modifyToolBar->setIconSize(QSize(22,22));
   modifyToolBar->addAction(new rotateAction(m_scene));
   modifyToolBar->addAction(new colorAction(m_scene));
   modifyToolBar->addAction(new lineWidthAction(m_scene));
@@ -857,11 +858,26 @@ void MainWindow::createToolBars()
   new bondTypeAction(m_scene);
   new flipBondAction(m_scene);
   new FrameTypeAction(m_scene);
+
+  setAllToolBarChildren(this,
+#ifdef __ANDROID__
+                        Qt::ToolButtonIconOnly,
+                        QSize(48,48)
+#else
+                        Qt::ToolButtonTextUnderIcon,
+                        QSize(22,22)
+#endif
+                        );
 }
 
 void MainWindow::createStatusBar()
 {
   statusBar()->showMessage(tr("Ready"));
+#ifdef __ANDROID__
+  QFont statusFont(statusBar()->font());
+  statusFont.setPixelSize(12);
+  statusBar()->setFont(statusFont);
+#endif
 }
 
 void MainWindow::createToolBoxes()
@@ -887,7 +903,6 @@ void MainWindow::createToolBoxes()
 
   // Declaring variables
   QDir dir;
-  Molecule* mol;
 
   // Loading generic molecules
   QStringList pathList ;
@@ -895,9 +910,12 @@ void MainWindow::createToolBoxes()
            << QDir::homePath() + "/.molsketch/library"
            << MSK_INSTALL_CUSTOM
            << QDir::homePath() + "/.molsketch/library/custom";
+
+#ifndef __ANDROID__
   PREPARELOADFILE
   if (loadFilePtr)
   {
+    Molecule* mol = 0;
     foreach(const QString& path, pathList)
     {
       dir.setPath(path) ;
@@ -910,6 +928,7 @@ void MainWindow::createToolBoxes()
   }
   else
     QMessageBox::critical(this, tr(PROGRAM_NAME), tr("Molecule library could not be loaded because OpenBabel support is missing.")) ;
+#endif
 
   // Composing customLib
   QHBoxLayout* hLayoutCL = new QHBoxLayout;
@@ -933,6 +952,9 @@ void MainWindow::createToolBoxes()
   setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
   setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
   addDockWidget(Qt::LeftDockWidgetArea,toolBoxDock);
+#ifdef __ANDROID__
+  toolBoxDock->hide();
+#endif
 
 
   // Connecting signals and slots

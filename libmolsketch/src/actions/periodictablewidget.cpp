@@ -69,7 +69,13 @@ namespace Molsketch {
         QToolButton *elementButton = new QToolButton(table) ;
         elementButton->setText(element) ;
         QFont font = elementButton->font() ;
-        font.setPixelSize(qMax(8, font.pixelSize())) ;
+        font.setPixelSize(qMax(
+#ifdef __ANDROID__
+                            8
+#else
+                            8
+#endif
+                            , font.pixelSize())) ;
         elementButton->setFont(font) ;
         elementButton->setAutoRaise(true) ;
         elementButton->setCheckable(true) ;
