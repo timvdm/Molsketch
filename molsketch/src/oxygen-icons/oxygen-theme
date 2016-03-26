@@ -1,0 +1,8 @@
+[Icon Theme]
+Name=Oxygen
+Comment=Oxygen Theme
+Inherits=default
+Directories=scalable
+
+[scalable]
+Size=16
