@@ -27,7 +27,7 @@ namespace Molsketch {
       else if (bond->bondType() == Bond::Wedge)
         attemptUndoPush(new Commands::SetBondType(bond, Bond::Hash));
     }
-    attemptEndEndMacro();
+    attemptEndMacro();
   }
 
 } // namespace Molsketch

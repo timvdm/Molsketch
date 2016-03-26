@@ -41,6 +41,7 @@ namespace Molsketch {
     QPixmap currentIcon() const ;
     void setDirection(QBoxLayout::Direction);
     void addButton(const int& type, const QPixmap& icon, const QVariant& data = QVariant());
+    void cycleTypes(bool inverse);
   signals:
     void currentTypeChanged(const int& newType) ;
 

@@ -119,5 +119,11 @@ namespace Molsketch {
       d->buttonGroup->buttons().first()->setChecked(true);
   }
 
+  void ItemTypeWidget::cycleTypes(bool inverse) // TODO make generic function with multiAction::cycleSubActions
+  {
+    cycleButtons(d->buttonGroup, inverse);
+    emit currentTypeChanged(currentType());
+  }
+
 } // namespace Molsketch
 

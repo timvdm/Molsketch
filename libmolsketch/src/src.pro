@@ -54,7 +54,6 @@ HEADERS += \
     actions/arrowtypeaction.h \
     actions/arrowtypewidget.h \
     actions/flipbondaction.h \
-    grid.h \
     stringify.h \
     frame.h \
     actions/frameaction.h \
@@ -65,7 +64,6 @@ HEADERS += \
     coordinatedelegate.h \
     coordinatemodel.h \
     coordinatetableview.h \
-    xmlfont.h \
     grid.h \
     actions/flipstereobondsaction.h \
     generics.h
@@ -119,7 +117,6 @@ SOURCES += \
     actions/arrowtypeaction.cpp \
     actions/arrowtypewidget.cpp \
     actions/flipbondaction.cpp \
-    grid.cpp \
     frame.cpp \
     actions/frameaction.cpp \
     actions/frametypewidget.cpp \
@@ -129,7 +126,6 @@ SOURCES += \
     coordinatedelegate.cpp \
     coordinatemodel.cpp \
     coordinatetableview.cpp \
-    xmlfont.cpp \
     grid.cpp \
     actions/flipstereobondsaction.cpp \
     generics.cpp

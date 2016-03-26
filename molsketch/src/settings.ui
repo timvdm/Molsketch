@@ -103,7 +103,7 @@
            <property name="title">
             <string>Save options</string>
            </property>
-           <widget class="QWidget" name="layoutWidget">
+           <widget class="QWidget" name="generalLayoutWidget">
             <property name="geometry">
              <rect>
               <x>20</x>
@@ -466,7 +466,7 @@
            <property name="title">
             <string>Libraries</string>
            </property>
-           <widget class="QWidget" name="layoutWidget">
+           <widget class="QWidget" name="librarieslayoutWidget">
             <property name="geometry">
              <rect>
               <x>20</x>
