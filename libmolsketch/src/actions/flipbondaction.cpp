@@ -28,13 +28,13 @@ namespace Molsketch {
   {
     setMinimumItemCount(1);
     setIcon(QIcon(":images/flipbond.svg"));
-    setText(tr("Flip bond"));
+    setText(tr("Flip bond(s)"));
     setCheckable(false);
   }
 
   void flipBondAction::execute()
   {
-    attemptBeginMacro(tr("flip bond"));
+    attemptBeginMacro(tr("flip bond")); // TODO make sure at least one bond was flipped
     foreach(graphicsItem* item, items())
     {
       Bond *bond = dynamic_cast<Bond*>(item);

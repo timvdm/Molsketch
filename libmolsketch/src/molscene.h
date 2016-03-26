@@ -163,8 +163,6 @@ namespace Molsketch {
       /** Returns the first bond at position @p pos or NULL if none. */
       Bond* bondAt(const QPointF &pos);
 
-      bool textEditItemAt (const QPointF &pos) ;
-
       /** Calculates the nearest magnetic point around @p curPos. */
       QPointF nearestPoint(const QPointF &curPos);
 
@@ -230,6 +228,8 @@ namespace Molsketch {
       void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
       /** event handler for mouse button releases */
       void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+
+      void wheelEvent(QGraphicsSceneWheelEvent *event);
   public:
 
       QString xmlName() const { return "div" ; }
@@ -269,18 +269,6 @@ namespace Molsketch {
       QUndoStack * m_stack;
 
       // Event handlers
-
-      /** Event handler for mouse presses in text mode. */
-      void textModePress(QGraphicsSceneMouseEvent* event);	
-      /** Event handler for mouse releases in text mode. */
-      void textModeRelease(QGraphicsSceneMouseEvent* event);
-
-
-
-
-
-
-
 
       // Auxillary feedback items
       /** The highlight rectangle. */

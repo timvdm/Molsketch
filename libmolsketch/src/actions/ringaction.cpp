@@ -266,7 +266,7 @@ namespace Molsketch {
 
   void ringAction::changeRing() // TODO virtual function in multiaction
   {
-    if (isChecked())
+    if (isChecked() && activeSubAction())
       d->createHintRing(qAbs(activeSubAction()->data().toInt()), false, scene());
     else
       scene()->removeItem(&(d->hintMoleculeItems));

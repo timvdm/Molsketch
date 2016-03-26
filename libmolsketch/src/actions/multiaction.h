@@ -28,6 +28,8 @@ namespace Molsketch {
   public:
     explicit multiAction(MolScene *scene) ;
     ~multiAction() ;
+    void wheelEvent(QGraphicsSceneWheelEvent *event);
+    void cycleSubActions(bool inverse = false);
   protected:
     void addSubAction(QAction*) ;
     void addSeparator() ;

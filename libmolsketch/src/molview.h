@@ -30,6 +30,8 @@
 
 #include <QGraphicsView>
 
+#define MOUSEWHEELDIVIDER 120 // TODO change
+
 namespace Molsketch {
 
 /**
@@ -47,11 +49,6 @@ class MolView : public QGraphicsView
     MolView(QGraphicsScene* scene);
     /*		void itemMoved();*/
 
-  protected:
-    /** Handles the move move events */
-//     void mouseMoveEvent(QMouseEvent * e);
-    /** Handles the mouse wheel events. */
-    void wheelEvent(QWheelEvent* event);
     /** Scales the view with factor @p scaleFactor. */
     void scaleView(qreal scaleFactor);
   };

@@ -24,6 +24,7 @@
 #include <QtGui>
 
 #include <actions/frametypeaction.h>
+#include <actions/flipstereobondsaction.h>
 
 #include "molecule.h"
 
@@ -907,6 +908,12 @@ namespace Molsketch {
       {
         contextMenu->addAction(action);
         QObject::connect(action, SIGNAL(triggered()), contextMenu, SLOT(close()));
+      }
+      flipStereoBondsAction* flipStereo = sc->findChild<flipStereoBondsAction*>();
+      if (flipStereo)
+      {
+        contextMenu->addAction(flipStereo); // TODO test with bond AND molecule selected simultaneously
+        QObject::connect(flipStereo, SIGNAL(triggered()), contextMenu, SLOT(close()));
       }
     }
     graphicsItem::prepareContextMenu(contextMenu);

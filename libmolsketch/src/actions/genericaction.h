@@ -28,6 +28,7 @@
 class QGraphicsSceneMouseEvent ;
 class QUndoStack ;
 class QUndoCommand;
+class QGraphicsSceneWheelEvent;
 
 namespace Molsketch {
 
@@ -46,6 +47,7 @@ namespace Molsketch {
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) { Q_UNUSED(event) }
     virtual void leaveSceneEvent(QEvent *event) { Q_UNUSED(event) }
     virtual void enterSceneEvent(QEvent *event) { Q_UNUSED(event) }
+    virtual void wheelEvent(QGraphicsSceneWheelEvent *event);
   protected:
     MolScene *scene() const ;
     QUndoStack* undoStack() const ;

@@ -17,7 +17,9 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "multiaction.h"
+#include <QGraphicsSceneMouseEvent>
 #include <QMenu>
+#include "generics.h"
 
 namespace Molsketch {
 
@@ -48,11 +50,24 @@ namespace Molsketch {
     delete d ;
   }
 
+  void multiAction::wheelEvent(QGraphicsSceneWheelEvent *event)
+  {
+    if (!event->delta()) return;
+    cycleSubActions(event->delta() > 0); // TODO consider size of wheel movement
+    event->accept();
+  }
+
+  void multiAction::cycleSubActions(bool inverse)
+  {
+    cycleActions(d->actionGroup, inverse);
+  }
+
   void multiAction::addSubAction(QAction *a)
   {
     a->setCheckable(true);
     d->menu->addAction(a) ;
     d->actionGroup->addAction(a);
+    connect(a, SIGNAL(changed()), this, SLOT(changeIcon()));
     if (!d->actionGroup->checkedAction())
     {
       a->setChecked(true);
@@ -78,9 +93,9 @@ namespace Molsketch {
 
   void multiAction::changeIcon()
   {
-    QIcon activeIcon = activeSubAction()->icon();
-    if (!activeIcon.isNull())
-      setIcon(activeIcon);
+    QAction *activeAction = activeSubAction();
+    QIcon activeIcon(activeAction ? activeAction->icon() : QIcon());
+    setIcon(activeIcon);
   }
 
   void multiAction::checkActivation(QAction *subaction)

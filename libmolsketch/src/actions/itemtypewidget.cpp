@@ -21,8 +21,9 @@
 #include <QToolButton>
 
 #include "itemtypewidget.h"
-#define BUTTONPROPERTY "ButtonDataProperty"
+#include "generics.h"
 
+#define BUTTONPROPERTY "ButtonDataProperty"
 
 namespace Molsketch {
 
@@ -117,7 +118,6 @@ namespace Molsketch {
     if (d->buttonGroup->buttons().size() == 1)
       d->buttonGroup->buttons().first()->setChecked(true);
   }
-
 
 } // namespace Molsketch
 

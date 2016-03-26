@@ -64,7 +64,11 @@ HEADERS += \
     arrowpopup.h \
     coordinatedelegate.h \
     coordinatemodel.h \
-    coordinatetableview.h
+    coordinatetableview.h \
+    xmlfont.h \
+    grid.h \
+    actions/flipstereobondsaction.h \
+    generics.h
 
 SOURCES += \
     atom.cpp \
@@ -124,7 +128,11 @@ SOURCES += \
     arrowpopup.cpp \
     coordinatedelegate.cpp \
     coordinatemodel.cpp \
-    coordinatetableview.cpp
+    coordinatetableview.cpp \
+    xmlfont.cpp \
+    grid.cpp \
+    actions/flipstereobondsaction.cpp \
+    generics.cpp
 
 FORMS += \
     arrowpopup.ui

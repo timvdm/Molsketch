@@ -59,6 +59,7 @@
 #include "math2d.h"
 #include "obabeliface.h"
 #include "grid.h"
+#include "molview.h"
 
 #include "arrow.h"
 #include "actions/abstractitemaction.h"
@@ -555,13 +556,6 @@ namespace Molsketch {
 
   }
 
-  bool MolScene::textEditItemAt (const QPointF &pos)
-  {
-//                foreach(QGraphicsItem* item,items(pos))
-//                if (item->type() == TextInputItem::Type) return true;
-                  return false;
-  }
-
   TextInputItem *MolScene::inputItem()
   {
     return d->inputItem;
@@ -606,7 +600,7 @@ namespace Molsketch {
 	{
 	  emit copyAvailable(!selectedItems().isEmpty());
 	  //     emit pasteAvailable(!m_clipItems.isEmpty());
-	  emit selectionChange( );
+          emit selectionChange();
 	}
 
 	// Execute default behavior
@@ -614,79 +608,11 @@ namespace Molsketch {
   }
 
 
-  //////////////////////////////////////////////////////////////////////////////
-  //
-  // Text Mode
-  //
-  //////////////////////////////////////////////////////////////////////////////
-
-	void MolScene::textModePress(QGraphicsSceneMouseEvent* event) {
-		if (textEditItemAt (event ->scenePos())) {
-//			m_inputTextItem ->setFocus();
-		}
-		else {
-		Atom * atom = atomAt(event->scenePos());
-		if (atom) {
-//			m_inputTextItem ->clickedOn (atom);
-
-				}
-/*
-		else {
-			QGraphicsTextItem *text = addText("");
-			text ->show ();
-			text ->setFlag(QGraphicsItem::ItemIsSelectable);
-			text->setTextInteractionFlags(Qt::TextEditorInteraction);
-			text->setPos (event->buttonDownScenePos(event->button()));
-			text ->setFocus ();
-
-		}
-*/
-
-			}
-	}
-
-        void MolScene::textModeRelease(QGraphicsSceneMouseEvent* event)
+  void MolScene::updateAll()
   {
-                  Q_UNUSED(event)
-                }
-
-		void MolScene::updateAll()
-		{
-		  invalidate() ;
-		  update() ;
-		}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    invalidate() ;
+    update() ;
+  }
 
   void MolScene::keyPressEvent(QKeyEvent* keyEvent)
   {
@@ -895,6 +821,16 @@ namespace Molsketch {
     if (event->button() != Qt::LeftButton) return;
     removeItem(d->selectionRectangle);
     event->accept();
+  }
+
+  void MolScene::wheelEvent(QGraphicsSceneWheelEvent *event)
+  {
+    foreach(QGraphicsView* vp, views()) // TODO track back event to originator
+    {
+      MolView *mvp = qobject_cast<MolView*>(vp);
+      if (mvp)
+        mvp->scaleView(pow((double)2, -event->delta() / MOUSEWHEELDIVIDER));
+    }
   }
 
 
