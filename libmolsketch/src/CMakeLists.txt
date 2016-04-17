@@ -49,6 +49,7 @@ set(libmolsketch_HDRS
     coordinatedelegate.h 
     coordinatemodel.h 
     coordinatetableview.h
+    generics.h
    )
 
 set(action_HDRS
@@ -78,9 +79,10 @@ set(action_HDRS
     actions/arrowtypewidget.h
     actions/flipbondaction.h
     actions/frameaction.h
-    actions/frametypewidget.h 
-    actions/frametypeaction.h 
-    actions/itemgrouptypeaction.h 
+    actions/frametypewidget.h
+    actions/frametypeaction.h
+    actions/itemgrouptypeaction.h
+    actions/flipstereobondsaction.h
    )
 
 
@@ -134,11 +136,12 @@ set(libmolsketch_SRCS
     graphicsitem.cpp
     arrow.cpp
     grid.cpp
-    frame.cpp 
-    arrowpopup.cpp 
-    coordinatedelegate.cpp 
-    coordinatemodel.cpp 
+    frame.cpp
+    arrowpopup.cpp
+    coordinatedelegate.cpp
+    coordinatemodel.cpp
     coordinatetableview.cpp
+    generics.cpp
     actions/coloraction.cpp
     actions/linewidthaction.cpp
     actions/abstractitemaction.cpp
@@ -164,10 +167,11 @@ set(libmolsketch_SRCS
     actions/arrowtypeaction.cpp
     actions/arrowtypewidget.cpp
     actions/flipbondaction.cpp
-    actions/frameaction.cpp 
-    actions/frametypewidget.cpp 
-    actions/frametypeaction.cpp 
-    actions/itemgrouptypeaction.cpp 
+    actions/frameaction.cpp
+    actions/frametypewidget.cpp
+    actions/frametypeaction.cpp
+    actions/itemgrouptypeaction.cpp
+    actions/flipstereobondsaction.cpp
     )
 
 set(toolicon_RCS tools/toolicons.qrc)

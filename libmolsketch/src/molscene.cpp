@@ -19,7 +19,11 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
+#if QT_VERSION >= 0x050000
 #include <QtMath>
+#else
+#include <QtCore/qmath.h>
+#endif
 #include <iostream>
 
 #include <QGraphicsSceneMouseEvent>

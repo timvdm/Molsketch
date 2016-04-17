@@ -34,7 +34,11 @@
 #include "molscene.h"
 #include "TextInputItem.h"
 #include <iostream>
+#if QT_VERSION >= 0x050000
 #include <QtMath>
+#else
+#include <QtCore/qmath.h>
+#endif
 
 namespace Molsketch {
 

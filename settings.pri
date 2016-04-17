@@ -3,6 +3,7 @@ contains(CONFIG, static) { QT += svg }
 
 CONFIG += silent
 CONFIG += c++14
+lessThan(QT_MAJOR_VERSION,5): QMAKE_CXXFLAGS += -std=c++11
 
 qtVersionSuffix=""
 equals(QT_MAJOR_VERSION, 5) {
@@ -13,10 +14,6 @@ DEFINES += QMAKEBUILD \
 
 sourceDir = $$_PRO_FILE_PWD_
 message("Sources in: $$sourceDir")
-
-VERSION = $$cat(version)
-VERSIONNICK = $$cat(versionnick)
-
 
 ########### Reading version and default paths
 message("Installation directories and corresponding qmake variables:")

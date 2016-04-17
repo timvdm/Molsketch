@@ -20,7 +20,11 @@
 #ifndef MSK_MATH2D_H
 #define MSK_MATH2D_H
 
+#if QT_VERSION >= 0x050000
 #include <QtMath>
+#else
+#include <QtCore/qmath.h>
+#endif
 
 namespace Molsketch {
 

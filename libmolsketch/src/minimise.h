@@ -34,7 +34,11 @@
 #include "bond.h"
 
 #include "molecule.h"
+#if QT_VERSION >= 0x050000
 #include <QtMath>
+#else
+#include <QtCore/qmath.h>
+#endif
 
 #include <iostream>
 #include <assert.h>
