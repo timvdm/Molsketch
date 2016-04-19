@@ -140,7 +140,7 @@ namespace Molsketch {
   {
     QAbstractButton* button = d->buttonGroup->checkedButton();
     if (!button) return "";
-    return button->text() ;
+    return button->text().remove('&');
   }
 
   periodicTableWidget::~periodicTableWidget()
