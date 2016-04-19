@@ -57,7 +57,7 @@ namespace Molsketch {
     switch (order)
     {
       case 1: return Single;
-      case 2: return Double;
+      case 2: return DoubleSymmetric;
       case 3: return Triple;
       default: return Invalid;
     }
@@ -172,6 +172,44 @@ namespace Molsketch {
     painter->drawConvexPolygon( points, i);
   }
 
+  double minimumAngle(const Bond* reference, const QSet<Bond*>& others, const Atom* origin, bool clockwise)
+  {
+    double minAngle = 361;
+    for (auto b : others)
+    {
+      double angle = b->bondAngle(origin) - reference->bondAngle(origin);
+      qDebug() << "Bond angles:" <<origin << reference << b << b->bondAngle(origin) << reference->bondAngle(origin);
+      if (clockwise) angle = 360 - angle;
+      angle = Molecule::toDegrees(angle);
+      minAngle = qMin(minAngle, angle);
+    }
+    return minAngle;
+  }
+
+  void Bond::determineDoubleBondOrientation()
+  {
+    if (m_bondType != DoubleLegacy) return;
+    m_bondType = DoubleSymmetric;
+    QSet<Bond*> beginBonds = m_beginAtom->bonds().toSet();
+    beginBonds -= this;
+    QSet<Bond*> endBonds = m_endAtom->bonds().toSet();
+    endBonds -= this;
+    // no other bonds: symmetric
+    if (beginBonds.empty() && endBonds.empty()) return;
+    // other bonds: add up angles upper and lower
+    double sumUpperAngles = minimumAngle(this, beginBonds, m_beginAtom, false)
+        + minimumAngle(this, endBonds, m_endAtom, true);
+    double sumLowerAngles = minimumAngle(this, beginBonds, m_beginAtom, true)
+        + minimumAngle(this, endBonds, m_endAtom, false);
+    // equal (float tolerance): symmetric
+    if (qAbs(sumUpperAngles - sumLowerAngles) < 1e-7) return;
+    // else: unsymmetric
+    m_bondType = DoubleAsymmetric;
+    // consider swapping atoms
+    qDebug() << "Angles:" << this << sumUpperAngles << sumLowerAngles;
+    if (sumUpperAngles > sumLowerAngles) qSwap(m_beginAtom, m_endAtom);
+  }
+
   QPolygonF clipBond(const QPointF& atomPoint,
                      const QPointF& otherAtom,
                      const QPointF& normalVector)
@@ -246,7 +284,7 @@ namespace Molsketch {
 
     CHECKFORATOMS return ;
 
-    // Check the scene
+    if (m_bondType == DoubleLegacy) determineDoubleBondOrientation();
 
     // Set painter defaults
     painter->save();
@@ -313,7 +351,7 @@ namespace Molsketch {
         painter->setPen(pen);
         painter->drawLine(begin, end);
         break;
-      case Bond::Double:
+      case Bond::DoubleSymmetric:
         {
           QPointF offset = .5*normalVector;
           painter->drawLine(QLineF(begin + offset, end + offset));

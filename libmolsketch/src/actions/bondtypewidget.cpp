@@ -34,7 +34,7 @@ namespace Molsketch {
     ADDBONDBUTTON(Bond::Wedge, "wedge", false)
     if (withInversion) ADDBONDBUTTON(- Bond::Wedge, "wedge", true)
     ADDBONDBUTTON(Bond::WedgeOrHash, "hashOrWedge", false)
-    ADDBONDBUTTON(Bond::Double, "double", false)
+    ADDBONDBUTTON(Bond::DoubleSymmetric, "double", false)
     ADDBONDBUTTON(Bond::DoubleAsymmetric, "double-asymmetric", false)
     if (withInversion) ADDBONDBUTTON(- Bond::DoubleAsymmetric, "double-asymmetric", true)
     ADDBONDBUTTON(Bond::CisOrTrans, "cistrans", false)

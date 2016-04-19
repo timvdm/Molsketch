@@ -63,9 +63,10 @@ class Bond : public graphicsItem
           Wedge  = 11,
           Hash   = 12,
           WedgeOrHash = 13,
-          Double = 20,
+          DoubleLegacy = 20,
           CisOrTrans = 21,
           DoubleAsymmetric = 22,
+          DoubleSymmetric = 23,
           Triple = 30,
           TripleAsymmetric = 31,
         };
@@ -166,6 +167,7 @@ class Bond : public graphicsItem
   private:
         void drawHashBond(QPainter *painter);
         void drawWedgeBond(QPainter *painter);
+        void determineDoubleBondOrientation();
 
 	// Internal representation
 	/** Stores the bond type as integer. */
