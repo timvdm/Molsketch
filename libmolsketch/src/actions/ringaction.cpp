@@ -249,7 +249,7 @@ namespace Molsketch {
         foreach(Bond* otherBond, bond->beginAtom()->bonds() + bond->endAtom()->bonds())
           canBeDouble = canBeDouble && otherBond->bondOrder() < 2;
         if (!canBeDouble) continue;
-        bond->setType(Bond::DoubleSymmetric);
+        bond->setType(Bond::DoubleAsymmetric);
       }
     }
 
