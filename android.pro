@@ -97,6 +97,7 @@ HEADERS += \
     libmolsketch/src/actions/arrowtypeaction.h \
     libmolsketch/src/actions/arrowtypewidget.h \
     libmolsketch/src/actions/flipbondaction.h \
+    libmolsketch/src/actions/flipstereobondsaction.h \
     libmolsketch/src/grid.h \
     libmolsketch/src/stringify.h \
     libmolsketch/src/frame.h \
@@ -158,6 +159,7 @@ SOURCES += \
     libmolsketch/src/actions/arrowtypeaction.cpp \
     libmolsketch/src/actions/arrowtypewidget.cpp \
     libmolsketch/src/actions/flipbondaction.cpp \
+    libmolsketch/src/actions/flipstereobondsaction.cpp \
     libmolsketch/src/grid.cpp \
     libmolsketch/src/frame.cpp \
     libmolsketch/src/actions/frameaction.cpp \
