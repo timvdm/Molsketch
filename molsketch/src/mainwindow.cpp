@@ -359,6 +359,7 @@ bool MainWindow::saveAs()
   {
     writeMskFile(fileName, m_scene);
     setCurrentFile(fileName);
+    m_scene->stack()->setClean();
     return true ;
   }
   else
