@@ -59,11 +59,18 @@ namespace Molsketch {
     return temp < 0 ? 360 + temp : temp ;
   }
 
+  void Molecule::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+  {
+    popup.move(event->screenPos());
+    popup.show();
+  }
+
   Molecule::Molecule(QGraphicsItem* parent GRAPHICSSCENESOURCE )
     : graphicsItem(parent GRAPHICSSCENEINIT ),
     m_atomList(this),
     m_bondList(this)
   {
+    popup.connectMolecule(this);
     m_electronSystemsUpdate = true;
     // Setting properties
     setHandlesChildEvents(false);
@@ -80,6 +87,7 @@ namespace Molsketch {
     m_atomList(this),
     m_bondList(this)
   {
+    popup.connectMolecule(this);
     m_electronSystemsUpdate = true;
     // Setting properties
     setHandlesChildEvents(false);
@@ -115,6 +123,7 @@ namespace Molsketch {
       m_atomList(this),
       m_bondList(this)
   {
+    popup.connectMolecule(this);
     m_electronSystemsUpdate = true;
     // Setting properties
     setHandlesChildEvents(false);
@@ -1023,6 +1032,18 @@ namespace Molsketch {
     updateElectronSystems();
   }
 
+  void Molecule::readAttributes(const QXmlStreamAttributes &attributes)
+  {
+    name = attributes.value("name").toString();
+  }
+
+  QXmlStreamAttributes Molecule::xmlAttributes() const
+  {
+    QXmlStreamAttributes attributes;
+    attributes.append("name", name);
+    return attributes;
+  }
+
   Molecule &Molecule::operator+=(const Molecule &other)
   {
     if (&other == this) return *this;
@@ -1096,6 +1117,16 @@ namespace Molsketch {
     }
     return ring ;
   }
+  QString Molecule::getName() const
+  {
+    return name;
+  }
+
+  void Molecule::setName(const QString &value)
+  {
+    name = value;
+  }
+
 
 
 } // namespace

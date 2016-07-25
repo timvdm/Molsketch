@@ -43,7 +43,7 @@ namespace Molsketch
     return true;
   }
 
-  void writeMskFile(const QString &fileName, MolScene *scene) // TODO compare output to old version
+  void writeMskFile(const QString &fileName, abstractXmlObject *xmlObject) // TODO compare output to old version
   {
     QFile file(fileName);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -52,7 +52,7 @@ namespace Molsketch
     QXmlStreamWriter xml(&file);
     xml.setAutoFormatting(true);
     xml.writeStartDocument();
-    xml << *scene ;
+    xml << *xmlObject ;
     xml.writeEndDocument();
   }
 

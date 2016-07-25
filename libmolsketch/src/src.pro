@@ -66,7 +66,9 @@ HEADERS += \
     coordinatetableview.h \
     grid.h \
     actions/flipstereobondsaction.h \
-    generics.h
+    generics.h \
+    actions/changemoleculenameaction.h \
+    moleculepopup.h
 
 SOURCES += \
     atom.cpp \
@@ -128,10 +130,13 @@ SOURCES += \
     coordinatetableview.cpp \
     grid.cpp \
     actions/flipstereobondsaction.cpp \
-    generics.cpp
+    generics.cpp \
+    actions/changemoleculenameaction.cpp \
+    moleculepopup.cpp
 
 FORMS += \
-    arrowpopup.ui
+    arrowpopup.ui \
+    moleculepopup.ui
 
 RESOURCES += \
     tools/toolicons.qrc

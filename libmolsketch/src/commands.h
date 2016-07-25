@@ -60,6 +60,14 @@ namespace Molsketch {
   };
 
 
+  class SymmetricCommand : public QUndoCommand {
+  public:
+    SymmetricCommand(QUndoCommand *parent = 0);
+    SymmetricCommand(const QString& name, QUndoCommand* parent = 0);
+    virtual ~SymmetricCommand(){}
+    void undo();
+  };
+
     /**
  * Command to add an atom
  *
@@ -433,6 +441,15 @@ private:
 
 // Molecule commands
 
+
+class ChangeMoleculeName : public SymmetricCommand
+{
+  QString oldName;
+  Molecule *molecule;
+public:
+  ChangeMoleculeName(Molecule* molecule, const QString& newName ="", const QString &commandName = "", QUndoCommand *parent = 0);
+  void redo();
+};
 
 /**
  * Command to merge two molecules

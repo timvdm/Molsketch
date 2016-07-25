@@ -34,6 +34,7 @@ namespace Molsketch
 {
 class MolScene;
 class Molecule;
+class abstractXmlObject;
 
 /**
  * Load and save routines
@@ -57,7 +58,7 @@ class Molecule;
 /**
  * Write @p scene to file @p fileName in native fomat *.msk.
  */
-  void writeMskFile(const QString &fileName, MolScene *scene);
+  void writeMskFile(const QString &fileName, abstractXmlObject *scene);
 /** 
  * Exports the document on MolScene @p scene as a bitmap with @p fileName 
  * and returns @c false if the export failed.

@@ -538,3 +538,31 @@ void SetParentItem::redo()
 }
 
 void SetParentItem::undo() { redo(); }
+
+
+ChangeMoleculeName::ChangeMoleculeName(Molsketch::Molecule *molecule, const QString &newName, const QString& commandName, QUndoCommand* parent)
+  : SymmetricCommand(commandName, parent),
+    molecule(molecule),
+    oldName(newName)
+{}
+
+void ChangeMoleculeName::redo()
+{
+  QString name = molecule->getName();
+  molecule->setName(oldName);
+  oldName.swap(name);
+}
+
+
+SymmetricCommand::SymmetricCommand(QUndoCommand *parent)
+  : QUndoCommand(parent)
+{}
+
+SymmetricCommand::SymmetricCommand(const QString &name, QUndoCommand *parent)
+  : QUndoCommand(name, parent)
+{}
+
+void SymmetricCommand::undo()
+{
+  redo();
+}

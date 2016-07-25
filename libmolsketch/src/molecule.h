@@ -34,6 +34,7 @@
 
 #include <QList>
 #include <QGraphicsItemGroup>
+#include "moleculepopup.h"
 
 class QString;
 class QPoint;
@@ -65,6 +66,7 @@ class Molecule : public graphicsItem
 
 	static qreal toDegrees(const qreal& angle) ;
 
+        void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event);
 
 	// Constructors and destructor
 	/** Creates a molecule with @p parent on MolScene @p scene. */
@@ -248,10 +250,12 @@ class Molecule : public graphicsItem
    QList<const abstractXmlObject*> children() const ;
    abstractXmlObject* produceChild(const QString &name, const QString &type) ;
    void afterReadFinalization();
+   void readAttributes(const QXmlStreamAttributes& attributes);
+   QXmlStreamAttributes xmlAttributes() const;
   private:
    void hideAllAtoms();
 	// Internal representation
-	/** A list of pointers to the atoms of the molecule. Used as internal reprentation. */
+        /** A list of pointers to the atoms of the molecule. Used as internal representation. */
    template<class T>
    class moleculeItemListClass : public QList<T*>, public abstractXmlObject // Crash bei foreach
    {
@@ -272,12 +276,16 @@ class Molecule : public graphicsItem
 	moleculeItemListClass<Bond> m_bondList;
 
 	QList<Ring*> m_rings;
+        QString name;
+        MoleculePopup popup;
 
 public:
 	Molecule& operator+=(const Molecule& other);
 	Molecule operator+(const Molecule& other) const;
 
-  };
+        QString getName() const;
+        void setName(const QString &value);
+};
 
 } // namespace
 
