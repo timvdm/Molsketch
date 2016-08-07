@@ -44,7 +44,7 @@ class MolLibItem : public QListWidgetItem
    * (MolLibItem assumes ownership of that molecule)
    * @param name the name of the library item
    */
-  MolLibItem(Molecule* molecule, const QString & name);
+  MolLibItem(Molecule* molecule, const QString & fileName);
   
   /** Destructor of the library item. */
   virtual ~MolLibItem();

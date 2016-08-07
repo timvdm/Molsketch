@@ -56,7 +56,12 @@ class abstractXmlObject;
  */
   void readMskFile(const QString &fileName, MolScene *scene);
 /**
- * Write @p scene to file @p fileName in native fomat *.msk.
+ * Read file @p fileName in native *.msk or *.msm format and @return all
+ * molecules contained therein.
+ */
+  QList<Molecule*> moleculesFromFile(const QString &fileName);
+/**
+ * Write @p object to file @p fileName in native fomat *.msk.
  */
   void writeMskFile(const QString &fileName, abstractXmlObject *scene);
 /** 

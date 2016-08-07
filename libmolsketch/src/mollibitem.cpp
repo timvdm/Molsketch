@@ -29,8 +29,9 @@
 
 namespace Molsketch {
 
-  MolLibItem::MolLibItem( Molecule* molecule, const QString & name )
-      : m_molecule(molecule)
+  MolLibItem::MolLibItem( Molecule* molecule, const QString & fileName )
+      : m_molecule(molecule),
+        m_fileName(fileName)
   {
     // pre: molecule is a valid molecule
     Q_CHECK_PTR(molecule);
@@ -57,24 +58,25 @@ namespace Molsketch {
 
     setIcon(QIcon(pixmap));
 
-    // Checking dir
-    QDir dir;
-    /* TODO Shouldn't this be the dir set in the preferences dialog? */
-    if (!dir.exists(QDir::homePath() + "/.molsketch/library/custom/")) {
-      dir.mkpath(QDir::homePath() + "/.molsketch/library/custom/");
-    }
+//    // Checking dir
+//    QDir dir;
+//    /* TODO Shouldn't this be the dir set in the preferences dialog? */
+//    if (!dir.exists(QDir::homePath() + "/.molsketch/library/custom/")) {
+//      dir.mkpath(QDir::homePath() + "/.molsketch/library/custom/");
+//    }
 
-    // Setting name
-    m_fileName = name;
-    /* TODO Nah, there should be a better way then to load the items from the dir
-   * and then check again whether they exist. 
-   */
-    if (!m_fileName.exists()) {
-      m_fileName.setFile(QDir::homePath() + "/.molsketch/library/custom/" + name + ".msk");
-      writeMskFile(m_fileName.filePath(),&renderScene);
-    }
+//    // Setting name
+//    m_fileName = name;
+//    /* TODO Nah, there should be a better way then to load the items from the dir
+//   * and then check again whether they exist.
+//   */
+//    if (!m_fileName.exists()) {
+//      m_fileName.setFile(QDir::homePath() + "/.molsketch/library/custom/" + name + ".msk");
+//      writeMskFile(m_fileName.filePath(),&renderScene);
+//    }
 
-    setText(m_fileName.baseName());
+    QString name = molecule->getName();
+    setText(name.isEmpty() ? fileName : name);
 
     // Remove the molecule before destroying the scene
     renderScene.removeItem(m_molecule);

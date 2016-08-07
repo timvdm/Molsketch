@@ -11,12 +11,14 @@ FORMS += \
 
 HEADERS += \
     mainwindow.h \
-    settings.h
+    settings.h \
+    librarylistwidget.h
 
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
-    settings.cpp
+    settings.cpp \
+    librarylistwidget.cpp
 
 INCLUDEPATH += \
 	$$sourceDir/../../libmolsketch/src \

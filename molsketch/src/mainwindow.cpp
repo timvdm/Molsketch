@@ -926,13 +926,23 @@ void MainWindow::createToolBoxes()
       foreach(const QString& entry, dir.entryList())
       {
         mol = loadFilePtr(dir.filePath(entry)) ;
-        if (mol) genericLib->addItem(new MolLibItem(mol, dir.filePath(entry))) ;
+        if (mol) genericLib->addItem(new MolLibItem(mol, entry)) ;
       }
     }
   }
   else
     QMessageBox::critical(this, tr(PROGRAM_NAME), tr("Molecule library could not be loaded because OpenBabel support is missing.")) ;
 #endif
+
+    foreach(const QString& path, pathList)
+    {
+      dir.setPath(path);
+      foreach(const QString& entry, dir.entryList())
+      {
+        foreach(Molecule* molecule, moleculesFromFile(entry))
+          genericLib->addItem(new MolLibItem(molecule, entry));
+      }
+    }
 
   // Composing customLib
   QHBoxLayout* hLayoutCL = new QHBoxLayout;
@@ -972,12 +982,13 @@ void MainWindow::addMolecule(QListWidgetItem *item)
 {
   // Extract the molecule and add it to the sceneMolecule* m
   MolLibItem *libItem = dynamic_cast<MolLibItem*>(item);
+  qDebug() << "inserting molecule from library: " << libItem << libItem->getMolecule();
   if (!libItem)
     return;
   m_scene->addMolecule(libItem->getMolecule());
 }
  
-void MainWindow::addCustomMol()
+void MainWindow::addCustomMol() // TODO rework!
 {
   foreach(QGraphicsItem* item, m_scene->selectedItems())
   {

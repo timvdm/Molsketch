@@ -124,4 +124,29 @@ namespace Molsketch
     return true;
   }
 
+  QList<Molecule *> moleculesFromFile(const QString &fileName)
+  {
+    QList<Molecule*> result;
+
+    QFile file(fileName);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+      return result;
+
+    QXmlStreamReader xml(&file);
+    while (xml.readNextStartElement())
+    {
+      if(xml.name() != "molecule") continue;
+      Molecule *m = new Molecule;
+      m->readXml(xml);
+      result << m;
+    }
+
+    if (xml.hasError()) {
+      qDebug() << "ERROR while reading " << fileName;
+      qDebug() << xml.errorString();
+    }
+
+    return result;
+  }
+
 }
