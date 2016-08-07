@@ -1,6 +1,7 @@
 #include <QTest>
 #include "coordinatestest.h"
 #include "drawingtest.h"
+#include "renderingtest.h"
 #include "valencetest.h"
 #include "xmltest.h"
 
@@ -20,6 +21,7 @@ int main(int argc, char *argv[])
   results << runTest(new DrawingTest);
   results << runTest(new ValenceTest);
   results << runTest(new XmlTest);
+  results << runTest(new RenderingTest);
   qDebug() << "=========== All tests done. ===========" ;
   foreach(const stringIntPair& result, results)
     qDebug() << (result.second ? "!!" : "  ")

@@ -9,7 +9,8 @@ SOURCES += \
     coordinatestest.cpp \
     valencetest.cpp \
     drawingtest.cpp \
-    xmltest.cpp
+    xmltest.cpp \
+    renderingtest.cpp
 
 LIBS += -L../lib -lmolsketch$$qtVersionSuffix
 
@@ -20,4 +21,5 @@ HEADERS += \
     coordinatestest.h \
     valencetest.h \
     drawingtest.h \
-    xmltest.h
+    xmltest.h \
+    renderingtest.h
