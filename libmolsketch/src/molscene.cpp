@@ -565,6 +565,17 @@ namespace Molsketch {
     return d->inputItem;
   }
 
+  QList<Atom *> MolScene::atoms() const
+  {
+    QList<Atom*> result;
+    foreach(auto item, items())
+    {
+      Atom* atom = dynamic_cast<Atom*>(item);
+      if (atom) result << atom;
+    }
+    return result;
+  }
+
   void MolScene::selectionSlot()
   {
         foreach(abstractItemAction* itemAction, findChildren<abstractItemAction*>())
@@ -572,14 +583,15 @@ namespace Molsketch {
         return;
   }
 
+  {
+    QAction* action = dynamic_cast<QAction*>(sender());
+
   Atom* MolScene::atomAt(const QPointF &pos)
   {
-        // Check if there is a atom at this position
-        foreach(QGraphicsItem* item,items(pos))
-          if (item->type() == Atom::Type) return dynamic_cast<Atom*>(item);
-
-	// Can't find an atom at that location
-	return 0;
+    foreach(Atom* atom, atoms())
+      if (atom->scenePos() == pos)
+        return atom;
+    return 0;
   }
 
   Bond* MolScene::bondAt(const QPointF &pos)

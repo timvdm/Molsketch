@@ -77,6 +77,8 @@ class Molecule : public graphicsItem
 	/** Creates a copy of molecule @p mol with @p parent on MolScene @p scene. */
 	Molecule(const Molecule& mol, QGraphicsItem* parent = 0 GRAPHICSSCENEHEADER ) ;
 
+        static Molecule *combineMolecules(const QSet<Molecule *> &molecules, QMap<Atom*, Atom*>*atomMap, QMap<Bond *, Bond *> *bondMap);
+
 	QRectF boundingRect() const;
 
 	/** Paint method to draw the atom onto a QPainter. Needed for Qt painting.*/

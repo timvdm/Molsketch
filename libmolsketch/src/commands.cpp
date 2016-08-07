@@ -237,9 +237,7 @@ void DelAtom::redo()
 // Bond commands
 
 AddBond::AddBond(Bond* newBond, const QString & text) : QUndoCommand(text), m_bond(newBond), m_mol(newBond->beginAtom()->molecule())
-{
-  qDebug() << "AddBond::AddBond";
-}
+{}
 
 AddBond::~AddBond()
 {
@@ -542,8 +540,8 @@ void SetParentItem::undo() { redo(); }
 
 ChangeMoleculeName::ChangeMoleculeName(Molsketch::Molecule *molecule, const QString &newName, const QString& commandName, QUndoCommand* parent)
   : SymmetricCommand(commandName, parent),
-    molecule(molecule),
-    oldName(newName)
+    oldName(newName),
+    molecule(molecule)
 {}
 
 void ChangeMoleculeName::redo()

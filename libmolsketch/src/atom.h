@@ -195,6 +195,7 @@ namespace Molsketch {
 	  void hoverOut () {m_hidden = true;}
           QString xmlName() const { return "atom" ; }
           int labelAlignment() const;
+          Bond *bondTo(Atom *other) const;
   protected:
       // Event handlers
       /** Event handler to show hidden atoms when the mouse hovers over them. */

@@ -145,7 +145,7 @@ namespace Molsketch {
         break;
       case Up:
       case Down:
-        if (lbl.contains("H"))
+        if (lbl.contains("H") && !QRegExp("H[0-9]*").exactMatch(lbl))
           xOffset = - 0.5 * fmSymbol.width(lbl.left(lbl.indexOf("H")));
         else
           xOffset = - 0.5 * totalWidth;
@@ -213,7 +213,7 @@ namespace Molsketch {
     qreal yOffsetSubscript = yOffset + fmSymbol.descent();
 
     // compute the shape
-    if ((alignment == Right) || (alignment == Left) || !lbl.contains("H"))
+    if ((alignment == Right) || (alignment == Left) || !lbl.contains("H") || QRegExp("H[0-9]*").exactMatch(lbl))
       return QRectF(xOffset, yOffsetSubscript - fmSymbol.height(), totalWidth, fmSymbol.height());
     if (alignment == Down)
       return QRectF(xOffset, yOffsetSubscript - fmSymbol.height(), totalWidth, fmSymbol.ascent() + fmSymbol.height());
@@ -326,7 +326,7 @@ namespace Molsketch {
         break;
       case Up:
       case Down:
-        if (lbl.contains("H"))
+        if (lbl.contains("H") && !QRegExp("H[0-9]*").exactMatch(lbl))
           xOffset = - 0.5 * fmSymbol.width(lbl.left(lbl.indexOf("H")));
         else
           xOffset = - 0.5 * totalWidth;
@@ -905,19 +905,15 @@ namespace Molsketch {
     // If element is m_hidden, don't draw the atoms
     // Always draw the atom when there are no bonds
     if (!m_hidden || isSelected() || !numBonds()) return true;
-    bool autoAddHydrogen = true;
     bool carbonVisible = false;
     bool chargeVisible = true;
     MolScene* molScene = dynamic_cast<MolScene*>(scene());
     if (molScene)
     {
-      autoAddHydrogen = molScene->autoAddHydrogen();
       carbonVisible = molScene->carbonVisible();
       chargeVisible = molScene->chargeVisible();
     }
 
-    if (m_elementSymbol == "H" && !autoAddHydrogen && (!chargeVisible)) // TODO charge() == 0 ?
-          return false;
     if ((m_elementSymbol == "C") && !carbonVisible && (numBonds() > 1) && ((charge() == 0) || !chargeVisible))
       return false;
     return true;
@@ -967,6 +963,13 @@ namespace Molsketch {
     return m_bonds;
   }
 
+  Bond* Atom::bondTo(Atom* other) const
+  {
+    foreach(Bond *bond, m_bonds)
+      if (bond->otherAtom(this) == other)
+        return bond;
+    return 0;
+  }
 
   QList<Atom*> Atom::neighbours() const
   {

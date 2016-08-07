@@ -168,6 +168,7 @@ namespace Molsketch {
 
       TextInputItem *inputItem() ;
 
+      QList<Atom*> atoms() const;
     signals:
       /** Signal emitted if copy becomes available. */
       void copyAvailable(bool);

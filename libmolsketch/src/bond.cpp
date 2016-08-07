@@ -87,7 +87,17 @@ namespace Molsketch {
     setZValue(2);
 
   //   setFlag(QGraphicsItem::ItemIsSelectable);
-  //   setAcceptedMouseButtons(Qt::LeftButton);
+    //   setAcceptedMouseButtons(Qt::LeftButton);
+  }
+
+  Bond::Bond(const Bond &other, Atom* atomA, Atom* atomB)
+    : graphicsItem(other),
+      m_bondType(other.m_bondType),
+      m_beginAtom(0),
+      m_endAtom(0),
+      m_ring(0)
+  {
+    setAtoms(atomA, atomB);
   }
   
   Bond::~Bond()

@@ -100,28 +100,23 @@ namespace Molsketch {
     // TODO just take ownership of the atoms and bonds
     // Add the new atoms
     // TODO: why not take ownership of the old ones and set this as their parent?!
-    QMap<Atom*, Atom*> oldToNewAtoms;
-    foreach(Atom* atom, atomSet) {
-      Atom *a = new Atom(atom->scenePos(), atom->element(), atom->hasImplicitHydrogens(), this);
-      a ->setColor (atom ->getColor ());
-      addAtom(a);
-      oldToNewAtoms[atom] = a;
-    }
+    foreach(Atom* atom, atomSet) addAtom(atom);
 
     // ...and bonds
-    foreach(Bond* bond, bondSet) {
-      Bond *b = new Bond(oldToNewAtoms[bond->beginAtom()],
-          oldToNewAtoms[bond->endAtom()],
-          bond->bondType());
-      b ->setColor (bond ->getColor ());
-      addBond(b);
+    foreach(Bond* bond, bondSet)
+    {
+      addBond(bond);
+      Atom *begin = bond->beginAtom(), *end = bond->endAtom();
+      if (begin && !atomSet.contains(begin)) addAtom(begin);
+      if (end && !atomSet.contains(end)) addAtom(end);
     }
   }
 
   Molecule::Molecule(const Molecule &mol, QGraphicsItem* parent GRAPHICSSCENESOURCE)
     : graphicsItem (parent GRAPHICSSCENEINIT),
       m_atomList(this),
-      m_bondList(this)
+      m_bondList(this),
+      name(mol.name)
   {
     popup.connectMolecule(this);
     m_electronSystemsUpdate = true;
@@ -154,6 +149,32 @@ namespace Molsketch {
 
     // Set the position
     setPos(mol.pos());
+  }
+
+  Molecule* Molecule::combineMolecules(const QSet<Molecule*>& molecules, QMap<Atom *, Atom *> *givenAtomMap, QMap<Bond*,Bond*> *givenBondMap)
+  {
+    Molecule* result = new Molecule;
+    QMap<Atom*,Atom*> atomMap;
+    QMap<Bond*,Bond*> bondMap;
+    foreach(Molecule* molecule, molecules)
+    {
+      if (!molecule) continue;
+      foreach(Atom* atom, molecule->atoms())
+      {
+        Atom* newAtom = new Atom(*atom);
+        result->addAtom(newAtom);
+        atomMap[atom] = newAtom;
+      }
+      foreach(Bond* bond, molecule->bonds())
+      {
+        Bond* newBond = new Bond(*bond, atomMap[bond->beginAtom()], atomMap[bond->endAtom()]);
+        result->addBond(newBond);
+        bondMap[bond] = newBond;
+      }
+    }
+    if (givenAtomMap) atomMap.swap(*givenAtomMap);
+    if (givenBondMap) bondMap.swap(*givenBondMap);
+    return result;
   }
 
   void Molecule::numberAtoms () {

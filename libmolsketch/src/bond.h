@@ -86,6 +86,8 @@ class Bond : public graphicsItem
                       Atom* atomB = 0,
                       Bond::BondType type = Single,
                       QGraphicsItem* parent = 0 GRAPHICSSCENEHEADER ) ;
+        explicit Bond(const Bond& other, Atom *atomA = 0, Atom *atomB = 0);
+
 	/**
 	 * Destructor.
 	 */

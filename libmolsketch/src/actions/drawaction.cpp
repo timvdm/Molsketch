@@ -54,10 +54,10 @@ namespace Molsketch {
     QGraphicsItemGroup hintPointsGroup;
     drawAction *parent;
 
-    privateData(drawAction* p) :
-      hintLine(QLineF(0,0,0,0)),
-      autoAddHydrogen(false),
-      parent(p)
+    privateData(drawAction* p)
+      : hintLine(QLineF(0,0,0,0)),
+        autoAddHydrogen(false),
+        parent(p)
     {
       hintLine.setAcceptedMouseButtons(Qt::NoButton);
       hintLine.setZValue(-1);
@@ -85,6 +85,13 @@ namespace Molsketch {
       }
     }
 
+    void removeHintingElements()
+    {
+      if (hintLine.scene())
+        hintLine.scene()->removeItem(&hintLine);
+      if (hintPointsGroup.scene())
+        hintPointsGroup.scene()->removeItem(&hintPointsGroup);
+    }
 
     QPointF nearestPoint(const QPointF& currentPosition)
     {
@@ -104,17 +111,116 @@ namespace Molsketch {
       // Look whether an atom is nearby
       Atom* atom = (scene ? scene->atomAt(currentPosition) : 0);
       if (atom) nPoint = atom->scenePos();
+      else
+      {
+        qreal distance = 10;
+        foreach(auto atom, scene->atoms())
+        {
+          qreal newDistance = QLineF(atom->scenePos(), currentPosition).length();
+          if (newDistance < distance)
+          {
+            nPoint = atom->scenePos();
+            distance = newDistance;
+          }
+        }
+      }
 
       return nPoint;
     }
 
-    };
+    void performAtomAction(const QPointF& position)
+    {
+      Atom* atom = parent->scene()->atomAt(position);
+      if (atom)
+        parent->attemptUndoPush(new Commands::ChangeElement(atom, periodicTable->currentElement(), tr("change element")));
+      else
+        parent->attemptUndoPush(new Commands::AddItem(
+                                  new Molecule(QSet<Atom*>() << new Atom(position,
+                                                                         periodicTable->currentElement()),
+                                               QSet<Bond*>()),
+                                  parent->scene(), tr("add atom")));
+    }
+
+    void performDiatomicAction(const QPointF& posA, const QPointF& posB)
+    {
+      parent->attemptBeginMacro(tr("draw bond"));
+      setOrReplaceBond(findOrCreateAtom(posA), findOrCreateAtom(posB));
+      parent->attemptEndMacro();
+    }
+
+    Atom* findOrCreateAtom(const QPointF pos)
+    {
+      Atom* atom = parent->scene()->atomAt(pos);
+      if (atom) return atom;
+      return new Atom(pos, periodicTable->currentElement());
+    }
+
+    void setOrReplaceBond(Atom* atomA, Atom* atomB)
+    {
+      Bond *bond = atomA->bondTo(atomB);
+      if (bond)
+      {
+        parent->attemptUndoPush(new Commands::SetBondType(bond, bondType->bondType(), tr("change bond type")));
+        if (bondType->backward())
+          parent->attemptUndoPush(new Commands::SwapBondAtoms(bond, tr("flip bond")));
+      }
+      else
+        addBondBetween(atomA, atomB);
+    }
+
+    void addBondBetween(Atom* atomA, Atom* atomB)
+    {
+      forceIntoSameMolecule(atomA, atomB);
+      addBond(atomA, atomB);
+    }
+
+    void forceIntoSameMolecule(Atom*& atomA, Atom*& atomB)
+    {
+      Molecule* molA = atomA->molecule();
+      Molecule* molB = atomB->molecule();
+      if (!molA && !molB)
+      {
+        parent->attemptUndoPush(new Commands::AddItem(new Molecule(QSet<Atom*>() << atomA << atomB, QSet<Bond*>()),
+                                                      parent->scene(), tr("add molecule")));
+        return;
+      }
+      if (!molA)
+      {
+        parent->attemptUndoPush(new Commands::AddAtom(atomA, molB, tr("add atom")));
+        return;
+      }
+      if (!molB)
+      {
+        parent->attemptUndoPush(new Commands::AddAtom(atomB, molA, tr("add atom")));
+        return;
+      }
+      mergeMolecules(molA, molB, atomA, atomB);
+    }
+
+    void mergeMolecules(Molecule *molA, Molecule *molB, Atom*& atomA, Atom*& atomB)
+    {
+      if (molA == molB) return;
+      QMap<Atom*,Atom*> atomMapping;
+      Molecule *newMolecule = Molecule::combineMolecules(QSet<Molecule*>() << molA << molB, &atomMapping, 0);
+      atomA = atomMapping[atomA];
+      atomB = atomMapping[atomB];
+      parent->attemptUndoPush(new Commands::DelItem(molA));
+      parent->attemptUndoPush(new Commands::DelItem(molB));
+      parent->attemptUndoPush(new Commands::AddItem(newMolecule, parent->scene()));
+    }
+
+    void addBond(Atom* atomA, Atom* atomB)
+    {
+      if (bondType->backward()) qSwap(atomA, atomB);
+      parent->attemptUndoPush(new Commands::AddBond(new Bond(atomA, atomB, bondType->bondType())));
+    }
+  };
 
   drawAction::drawAction(MolScene *scene)
     : genericAction(scene),
       d(new privateData(this))
   {
-    d->dock = new QWidget(parentWidget()) ;
+    d->dock = new QWidget(parentWidget()) ; // TODO turn this into a dock widget again
 //    d->dock->setWidget(new QWidget(d->dock));
 //    d->dock->widget()->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     QVBoxLayout *layout = new QVBoxLayout(d->dock) ;
@@ -197,105 +303,21 @@ namespace Molsketch {
   //                  insert atom with existing endAtom
   //                  link two existing atoms from different molecules
   //                  link two existing atoms from the same molecule
+  //                  single atom with already existing atom
+  //                  already existing bond
   void drawAction::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
   {
-    event->accept();
-    // Remove the hinting
-    if (d->hintLine.scene())
-      d->hintLine.scene()->removeItem(&(d->hintLine));
-    if (d->hintPointsGroup.scene())
-      d->hintPointsGroup.scene()->removeItem(&(d->hintPointsGroup));
+    QPointF pressPos = d->nearestPoint(event->buttonDownScenePos(event->button()));
+    QPointF releasePos = d->nearestPoint(event->scenePos());
+    d->removeHintingElements();
 
-    // Get atoms
-    QPointF beginPos = event->buttonDownScenePos(event->button());
-    Atom *beginAtom = scene()->atomAt(beginPos);
-    QPointF endPos = event->scenePos();
-    Atom *endAtom = scene()->atomAt(endPos);
-
-    // check if they are already connected
-    if (beginAtom
-        && endAtom)
-    {
-      if (beginAtom == endAtom)
-      {
-        attemptUndoPush(new Commands::ChangeElement(beginAtom,
-                                                    d->periodicTable->currentElement(),
-                                                    tr("change element")));
-        return;
-      }
-      if (beginAtom->neighbours().contains(endAtom))
-      { // TODO check which atom is the first
-        // Test cases:
-        // - new bond
-        // - beginning atom exists
-        // - end atom exists
-        // - both atoms exist, but were not connected
-        // - both atoms exist AND were connected
-        Bond *bond = beginAtom->molecule()->bondBetween(beginAtom, endAtom);
-        if (!bond) return;
-        attemptBeginMacro(tr("Change bond"));
-        attemptUndoPush(new Commands::SetBondType(bond, d->bondType->bondType()));
-        if (bond->beginAtom() != (d->bondType->backward() ? endAtom : beginAtom))
-          attemptUndoPush(new Commands::SwapBondAtoms(bond));
-        attemptEndMacro();
-        return;
-      }
-    }
-
-    // Ok, let's get to business...
-    attemptBeginMacro(tr("Draw"));
-    Molecule *newMolecule = new Molecule();
-    attemptUndoPush(new Commands::AddItem(newMolecule, scene()));
-
-    // At this point: check if no first atom exists, then insert new and add to molecule
-    // otherwise merge first atom's molecule into newly created molecule.
-    if (!beginAtom)
-    {
-      beginAtom = new Atom(d->nearestPoint(beginPos),
-                          d->periodicTable->currentElement(),
-                          d->autoAddHydrogen);
-      attemptUndoPush(new Commands::AddAtom(beginAtom, newMolecule));
-    }
+    if (pressPos == releasePos)
+      d->performAtomAction(pressPos);
     else
-    {
-      *newMolecule += *(beginAtom->molecule());
-      attemptUndoPush(new Commands::DelItem(beginAtom->molecule()));
-      beginAtom = scene()->atomAt(beginPos); // TODO redo this...
-      endAtom = scene()->atomAt(endPos); // Refresh...
-    }
-
-    // Now: If we don't have an end atom, check that it would not coincide with the
-    // atom we just inserted, then insert and add to molecule
-    if (!endAtom && scene()->atomAt(endPos) != beginAtom)
-    {
-      endAtom = new Atom(d->nearestPoint(endPos),
-                         d->periodicTable->currentElement(),
-                         d->autoAddHydrogen);
-      attemptUndoPush(new Commands::AddAtom(endAtom, newMolecule));
-    }
-
-    // If we have an end atom at this point...
-    if (endAtom)
-    {
-      // make sure it's part of the same molecule
-      // (It may already be, if endAtom and beginAtom were initially part of the same molecule)
-      if (endAtom->molecule() != newMolecule)
-      {
-        *newMolecule += *(endAtom->molecule());
-        attemptUndoPush(new Commands::DelItem(endAtom->molecule())); // TODO: new function "absorb other molecule"
-        endAtom = scene()->atomAt(endPos); // Refresh...
-      }
-      // Add bond
-      if (d->bondType->backward()) qSwap(beginAtom, endAtom);
-      attemptUndoPush(new Commands::AddBond(new Bond(beginAtom, endAtom,
-                                                     d->bondType->bondType())));
-    }
-
-    // That should've been it...
-    attemptEndMacro();
+      d->performDiatomicAction(pressPos, releasePos);
 
     scene()->update();
-
+    event->accept();
   }
 
   void drawAction::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
@@ -420,6 +442,7 @@ namespace Molsketch {
   {
     if (visible) d->dock->show();
     else d->dock->hide();
+    if (!visible) d->removeHintingElements();
   }
 
 } // namespace Molsketch
