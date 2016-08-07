@@ -66,8 +66,6 @@ class Molecule : public graphicsItem
 
 	static qreal toDegrees(const qreal& angle) ;
 
-        void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event);
-
 	// Constructors and destructor
 	/** Creates a molecule with @p parent on MolScene @p scene. */
 	Molecule(QGraphicsItem* parent = 0 GRAPHICSSCENEHEADER ) ;
@@ -205,6 +203,7 @@ class Molecule : public graphicsItem
 	  return m_rings;
 	}
 
+        QWidget *getPropertiesWidget();
 
 	/** Returns the MolScene of the molecule. */
 	virtual MolScene* scene() const;

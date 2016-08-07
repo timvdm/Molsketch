@@ -297,6 +297,13 @@ namespace Molsketch {
       if (itemAction) itemAction->setItem(this);
     }
 
+    qDebug() << "looking for scene";
+    MolScene *sc = dynamic_cast<MolScene*>(scene());
+    if (sc) {
+      qDebug() << "adding scene context menu";
+      contextMenu.addMenu(sc->sceneMenu());
+    }
+
     contextMenu.exec(event->screenPos()) ;
     qDebug() << "removing item" ;
     foreach(QAction* action, contextMenu.actions())
@@ -395,6 +402,13 @@ namespace Molsketch {
     if (lwaction) contextMenu->addAction(lwaction);
     if (raction)  contextMenu->addAction(raction);
   }
+
+  QWidget* graphicsItem::getPropertiesWidget()
+  {
+    return 0;
+  }
+
+
 
   qreal graphicsItem::pointSelectionDistance() const
   {

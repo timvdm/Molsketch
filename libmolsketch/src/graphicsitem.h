@@ -77,6 +77,7 @@ namespace Molsketch {
     virtual void moveItemBy(const QPointF& offset);
 
     virtual void prepareContextMenu(QMenu* contextMenu);
+    virtual QWidget *getPropertiesWidget();
   protected:
     qreal pointSelectionDistance() const;
     void readAttributes(const QXmlStreamAttributes &attributes) ;

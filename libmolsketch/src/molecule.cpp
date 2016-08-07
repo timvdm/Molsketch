@@ -59,12 +59,6 @@ namespace Molsketch {
     return temp < 0 ? 360 + temp : temp ;
   }
 
-  void Molecule::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
-  {
-    popup.move(event->screenPos());
-    popup.show();
-  }
-
   Molecule::Molecule(QGraphicsItem* parent GRAPHICSSCENESOURCE )
     : graphicsItem(parent GRAPHICSSCENEINIT ),
     m_atomList(this),
@@ -510,6 +504,11 @@ namespace Molsketch {
   const QList<Bond*>& Molecule::bonds() const
   {
     return m_bondList;
+  }
+
+  QWidget *Molecule::getPropertiesWidget()
+  {
+    return &popup;
   }
 
   int Molecule::charge() const

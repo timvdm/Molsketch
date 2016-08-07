@@ -78,9 +78,7 @@ namespace Molsketch {
     for(auto child : findChildren<QCheckBox*>())
       connect(child, SIGNAL(toggled(bool)), this, SLOT(applyPropertiesToArrow()));
 
-//    setFocusPolicy(Qt::StrongFocus);
     setWindowFlags(Qt::Popup);
-
   }
 
   void ArrowPopup::connectArrow(Arrow *a)

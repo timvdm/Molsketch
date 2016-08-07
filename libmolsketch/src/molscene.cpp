@@ -47,6 +47,9 @@
 #include <QStandardPaths>
 #endif
 #include <QDebug>
+#include <QDockWidget>
+#include <QMainWindow>
+#include <QPair>
 
 #include "molscene.h"
 
@@ -81,25 +84,97 @@ namespace Molsketch {
   void initToolBarIconsMsk() { initToolBarIcons(); }
 #endif
 
-
   struct MolScene::privateData
   {
     QGraphicsRectItem *selectionRectangle;
     TextInputItem *inputItem;
     grid *Grid;
-    privateData()
+    MolScene *scene;
+    QDockWidget *propertiesDock;
+
+    QAction *bondLengthAction,
+    *bondWidthAction,
+    *arrowWidthAction,
+    *frameLinewidthAction,
+    *bondAngleAction,
+    *atomSizeAction,
+    *atomFontAction,
+    *hydrogenVisibleAction,
+    *carbonVisibleAction,
+    *lonePairsVisibleAction,
+    *autoAddHydrogenAction,
+    *electronSystemsVisibleAction,
+    *chargeVisibleAction,
+    *defaultColorAction;
+
+    QMap<QAction*, QPair<void (MolScene::*)(const bool&), bool (MolScene::*)() const> > booleanActions;
+    void attachDockWidgetToMainWindow(MolScene* scene)
+    {
+      bool visible = propertiesDock->isVisible();
+      if (scene->views().size() == 1 && scene->views().first()->parentWidget())
+      {
+        QMainWindow* mainWindow = qobject_cast<QMainWindow*>(scene->views().first()->parentWidget());
+        if (mainWindow)
+        {
+          mainWindow->addDockWidget(Qt::LeftDockWidgetArea, propertiesDock);
+          propertiesDock->setVisible(visible);
+        }
+      }
+    }
+
+    privateData(MolScene* scene)
       : selectionRectangle(new QGraphicsRectItem),
         inputItem(new TextInputItem),
-        Grid(new grid)
+        Grid(new grid),
+        scene(scene),
+        propertiesDock(new QDockWidget(tr("Properties"))),
+        bondLengthAction(new QAction(tr("Bond length..."), scene)),
+        bondWidthAction(new QAction(tr("Bond linewidth..."), scene)),
+        arrowWidthAction(new QAction(tr("Arrow width..."), scene)),
+        frameLinewidthAction(new QAction(tr("Bracket linewidth..."), scene)),
+        bondAngleAction(new QAction(tr("Bond snap angle..."), scene)),
+        atomSizeAction(new QAction(tr("Atom size..."), scene)),
+        atomFontAction(new QAction(tr("Atom font..."), scene)),
+        hydrogenVisibleAction(new QAction(tr("Hydrogens visible"), scene)),
+        carbonVisibleAction(new QAction(tr("Carbons visible"), scene)),
+        lonePairsVisibleAction(new QAction(tr("Lone pairs visible"), scene)),
+        autoAddHydrogenAction(new QAction(tr("Auto add hydrogens"), scene)),
+        electronSystemsVisibleAction(new QAction(tr("Electron systems visible"), scene)),
+        chargeVisibleAction(new QAction(tr("Charges visible"), scene)),
+        defaultColorAction(new QAction(tr("Default color..."), scene))
     {
       selectionRectangle->setPen(QPen(Qt::blue,0,Qt::DashLine));
       selectionRectangle->setZValue(INFINITY);
+#define REGISTER_ACTION(CAPLETTER, LOWERLETTER, PROPNAME) booleanActions[LOWERLETTER##PROPNAME##Action] = qMakePair(&MolScene::set##CAPLETTER##PROPNAME, &MolScene::LOWERLETTER##PROPNAME);
+      REGISTER_ACTION(H,h,ydrogenVisible)
+      REGISTER_ACTION(C,c,arbonVisible)
+      REGISTER_ACTION(L,l,onePairsVisible)
+      REGISTER_ACTION(A,a,utoAddHydrogen)
+      REGISTER_ACTION(E,e,lectronSystemsVisible)
+      REGISTER_ACTION(C,c,hargeVisible)
+      foreach(QAction* booleanAction, booleanActions.keys())
+      {
+        booleanAction->setCheckable(true);
+        booleanAction->setChecked((scene->*booleanActions[booleanAction].second)());
+        connect(booleanAction, SIGNAL(toggled(bool)), scene, SLOT(booleanPropertyChanged(bool)));
+        connect(booleanAction, SIGNAL(toggled(bool)), scene, SLOT(updateAll()));
+      }
+      attachDockWidgetToMainWindow(scene);
+    }
+
+    QMenu* contextSubMenu()
+    {
+      QMenu* menu = new QMenu(tr("Scene properties"));
+      menu->addActions(booleanActions.keys());
+      return menu;
     }
 
     ~privateData()
     {
       delete inputItem;
       delete selectionRectangle;
+      propertiesDock->setWidget(0);
+      delete propertiesDock;
       if (!Grid->scene()) delete Grid;
     }
 
@@ -117,7 +192,7 @@ namespace Molsketch {
 
   MolScene::MolScene(QObject* parent)
     : QGraphicsScene(parent),
-      d(new privateData)
+      d(new privateData(this))
   {
 
     //Initializing properties
@@ -151,6 +226,7 @@ namespace Molsketch {
 
   MolScene::~MolScene()
   {
+    disconnect(this,0,0,0);
     // Clear the scene
     clear();
   }
@@ -354,7 +430,7 @@ namespace Molsketch {
         delete d;
 
         QGraphicsScene::clear();
-        d = new privateData;
+        d = new privateData(this);
 
 	// Reinitialize the scene
 	//m_hintPoints.clear();
@@ -565,6 +641,11 @@ namespace Molsketch {
     return d->inputItem;
   }
 
+  QMenu *MolScene::sceneMenu() const
+  {
+    return d->contextSubMenu();
+  }
+
   QList<Atom *> MolScene::atoms() const
   {
     QList<Atom*> result;
@@ -580,11 +661,24 @@ namespace Molsketch {
   {
         foreach(abstractItemAction* itemAction, findChildren<abstractItemAction*>())
           itemAction->setItems(selectedItems());
-        return;
+        graphicsItem* currentItem = 0;
+        if (selectedItems().size() == 1) currentItem = dynamic_cast<graphicsItem*>(selectedItems().first());
+        if (currentItem) d->propertiesDock->setWidget(currentItem->getPropertiesWidget());
+        else d->propertiesDock->setWidget(0);
+        d->attachDockWidgetToMainWindow(this);
   }
 
+  void MolScene::booleanPropertyChanged(bool newValue)
   {
     QAction* action = dynamic_cast<QAction*>(sender());
+    if (!d->booleanActions.contains(action)) return;
+    (this->*d->booleanActions.value(action).first)(newValue);
+  }
+
+  void MolScene::showCurrentItemProperties()
+  {
+    d->propertiesDock->show();
+  }
 
   Atom* MolScene::atomAt(const QPointF &pos)
   {
@@ -784,20 +878,33 @@ namespace Molsketch {
 
   void MolScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
   {
-        if (selectedItems().isEmpty())
-        {
-          QGraphicsScene::contextMenuEvent(event); // let the item handle the event
-          return;
-        }
-
-	// have a selection, so scene is handling the context menu
 	QMenu contextMenu;
+        qDebug() << "context menu";
+//        sceneMenu->setParent(&contextMenu);
+//        contextMenu.addMenu(sceneMenu);
+        qDebug() << "Generated menu";
 	foreach(QGraphicsItem* qgItem, selectedItems())
 	{
 	  graphicsItem *item = dynamic_cast<graphicsItem*>(qgItem);
 	  if (!item) continue;
 	  item->prepareContextMenu(&contextMenu);
 	}
+
+        qDebug() << "-------- context menu for no of items:" << selectedItems().size();
+        if (contextMenu.actions().empty())
+        {
+          d->contextSubMenu()->exec(event->screenPos());
+          event->accept();
+          return;
+        }
+        contextMenu.addMenu(d->contextSubMenu()); // TODO memory leak
+
+        if (selectedItems().size() == 1 && dynamic_cast<graphicsItem*>(selectedItems().first()))
+        {
+            QAction* propertiesAction = new QAction(tr("Properties..."), &contextMenu);
+            contextMenu.addAction(propertiesAction);
+            connect(propertiesAction, SIGNAL(triggered()), this, SLOT(showCurrentItemProperties()));
+        }
 
 	contextMenu.exec(event->screenPos());
         event->accept();

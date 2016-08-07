@@ -43,13 +43,6 @@ namespace Molsketch {
   class TextInputItem;
   class genericAction;
 
-  class MolSceneOptions
-  {
-    public:
-  
-  };
-
-
   /**
    * This class is a subclassed version of QGraphicsScene with addition of some extra methods and
    * event handling for molecules. In can be used in the same fashion as QGraphicsScene.
@@ -168,7 +161,9 @@ namespace Molsketch {
 
       TextInputItem *inputItem() ;
 
+      QMenu* sceneMenu() const;
       QList<Atom*> atoms() const;
+
     signals:
       /** Signal emitted if copy becomes available. */
       void copyAvailable(bool);
@@ -274,9 +269,14 @@ namespace Molsketch {
       // Auxillary feedback items
       /** The highlight rectangle. */
       QGraphicsPathItem* m_hoverRect;
+
+//      class PrivateData;
+//      PrivateData *d;
   private slots:
       void updateAll() ;
       void selectionSlot();
+      void booleanPropertyChanged(bool newValue);
+      void showCurrentItemProperties();
 };
 
 } // namespace

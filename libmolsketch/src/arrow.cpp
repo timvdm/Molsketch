@@ -40,7 +40,7 @@ namespace Molsketch {
   struct Arrow::privateData : public Arrow::Properties
   {
     // TODO maybe integrate this into scene
-    ArrowPopup popup;
+    ArrowPopup popup; // TODO make static to arrow class, convert to pointer
   };
 
   Arrow::Arrow(QGraphicsItem *parent)
@@ -271,6 +271,11 @@ namespace Molsketch {
     return *d;
   }
 
+  QWidget *Arrow::getPropertiesWidget()
+  {
+    return &(d->popup);
+  }
+
   void Arrow::setProperties(const Arrow::Properties &p)
   {
     *(dynamic_cast<Arrow::Properties*>(d)) = p;
@@ -417,6 +422,7 @@ namespace Molsketch {
 
   void Arrow::prepareContextMenu(QMenu *contextMenu)
   {
+    qDebug() << "arrow context menu";
     MolScene *sc = qobject_cast<MolScene*>(scene());
     if (sc)
     {

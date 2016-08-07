@@ -49,6 +49,7 @@ namespace Molsketch {
     void showEvent(QShowEvent* e);
   private slots:
     void applyPropertiesToMolecule();
+    void on_saveButton_clicked();
   };
 
 } // namespace

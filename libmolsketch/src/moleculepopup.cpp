@@ -19,9 +19,11 @@
 #include "moleculepopup.h"
 #include "ui_moleculepopup.h"
 
+#include <QFileDialog>
 #include <molecule.h>
 #include <molscene.h>
 #include "commands.h"
+#include "fileio.h"
 
 namespace Molsketch {
 
@@ -77,4 +79,12 @@ namespace Molsketch {
       d->molecule->setName(ui->nameEdit->text());
   }
 
+  void MoleculePopup::on_saveButton_clicked()
+  {
+    QString filter = QString( "MolsKetch molecule (*.msm)");
+    QString saveFileName = QFileDialog::getSaveFileName(this, tr("Save molecule"), QString(), "MolsKetch molecule (*.msm)", &filter);
+    if (saveFileName.isEmpty()) return;
+    writeMskFile(saveFileName, d->molecule);
+  }
 } // namespace
+

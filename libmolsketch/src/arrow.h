@@ -75,6 +75,7 @@ namespace Molsketch {
     QString xmlName() const;
 
     Properties getProperties() const;
+    QWidget* getPropertiesWidget();
     void setProperties(const Properties& p);
   protected:
     void readGraphicAttributes(const QXmlStreamAttributes &attributes) ;
