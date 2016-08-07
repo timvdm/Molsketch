@@ -170,6 +170,7 @@ class Bond : public graphicsItem
         void drawHashBond(QPainter *painter);
         void drawWedgeBond(QPainter *painter);
         void determineDoubleBondOrientation();
+        QPointF determineBondDrawingStart(Atom* start, Atom* end) const;
 
 	// Internal representation
 	/** Stores the bond type as integer. */

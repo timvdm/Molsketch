@@ -220,6 +220,34 @@ namespace Molsketch {
     if (sumUpperAngles > sumLowerAngles) qSwap(m_beginAtom, m_endAtom);
   }
 
+  QPointF Bond::determineBondDrawingStart(Atom *start, Atom *end) const
+  {
+    if (!start->boundingRect().isValid()) return mapFromParent(start->pos());
+
+    QRectF bounds = start->mapRectToItem(this, start->boundingRect());
+    QPointF p1(mapFromParent(start->pos())), p2(mapFromParent(end->pos()));
+    QLineF connection(p1,p2);
+
+    QVector<QPointF> corners;
+    corners << bounds.bottomLeft()
+            << bounds.bottomRight()
+            << bounds.topRight()
+            << bounds.topLeft()
+            << bounds.bottomLeft();
+    for (int i = 0 ; i < 4 ; ++i)
+    {
+      QLineF edge(corners[i], corners[i+1]);
+      QPointF result;
+      if (connection.intersect(edge, &result) == QLineF::BoundedIntersection)
+      {
+        QLineF uv = connection.unitVector();
+        QPointF unitVector = uv.p2() - uv.p1();
+        return result + unitVector * lineWidth();
+      }
+    }
+    return p1;
+  }
+
   QPolygonF clipBond(const QPointF& atomPoint,
                      const QPointF& otherAtom,
                      const QPointF& normalVector)
@@ -291,7 +319,6 @@ namespace Molsketch {
   {
     Q_UNUSED(option);
     Q_UNUSED(widget);
-
     CHECKFORATOMS return ;
 
     if (m_bondType == DoubleLegacy) determineDoubleBondOrientation();
@@ -308,7 +335,8 @@ namespace Molsketch {
     QPointF begin = mapFromParent(m_beginAtom->pos());
     QPointF end = mapFromParent(m_endAtom->pos());
     QPointF vb = end - begin;
-    QPointF uvb = vb / sqrt(vb.x()*vb.x() + vb.y()*vb.y());
+    QPointF nvb = vb / sqrt(vb.x()*vb.x() + vb.y()*vb.y());
+    QPointF uvb = nvb;
     if (MolScene* s = qobject_cast<MolScene*>(scene()))
       uvb *= s->bondLength()/10.;
     QPointF normalVector(uvb.y(), -uvb.x());
@@ -330,10 +358,8 @@ namespace Molsketch {
     if (!clipPath.isEmpty())
       painter->setClipPath(clipPath);
 
-    if (m_beginAtom->hasLabel())
-      begin += 0.20 * uvb * 40/*molScene->bondLength()*/; // FIXME
-    if (m_endAtom->hasLabel())
-      end -= 0.20 * uvb * 40/*molScene->bondLength()*/; // FIXME
+    begin = determineBondDrawingStart(m_beginAtom, m_endAtom);
+    end = determineBondDrawingStart(m_endAtom, m_beginAtom);
 
     switch ( m_bondType ) // TODO beautify
     {

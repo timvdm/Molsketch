@@ -91,6 +91,9 @@ namespace Molsketch {
         && !buttonGroup->buttons().isEmpty())
     {
       QAbstractButton* button = buttonGroup->buttons().first() ;
+      foreach (QAbstractButton* b, buttonGroup->buttons())
+        if (b->text() == "C")
+          button = b;
       if (button) button->setChecked(true) ;
     }
 
