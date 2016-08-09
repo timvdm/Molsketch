@@ -185,6 +185,8 @@ MainWindow::MainWindow()
 //   connect(m_scene,SIGNAL(newMolecule(QPointF,QString)),this, SLOT(newMolecule(QPointF,QString)));
   connect(m_scene,SIGNAL(editModeChange(int)),this,SLOT(updateEditMode(int)));
 
+  m_molView->setAcceptDrops(true);
+  genericLib->setDefaultDropAction(Qt::CopyAction);
 }
 
 // Event handlers
@@ -571,7 +573,7 @@ void MainWindow::documentWasModified()
 void MainWindow::updateEditMode(int mode)
 {
   Q_UNUSED(mode);
-  m_molView->setDragMode(QGraphicsView::NoDrag);
+//  m_molView->setDragMode(QGraphicsView::NoDrag);
 
 }
 
@@ -893,8 +895,8 @@ void MainWindow::createToolBoxes()
 
 
   // Create libraries
-  genericLib = new QListWidget;
-  customLib = new QListWidget;
+  genericLib = new LibraryListWidget(this);
+  customLib = new QListWidget(this);
 
   QPushButton* addButton = new QPushButton(tr("Add..."));
   QPushButton* delButton = new QPushButton(tr("Delete"));

@@ -87,8 +87,9 @@ namespace Molsketch {
        */
       ~MolScene();
 
-      void addResidue (QPointF pos = QPointF (0, 0), QString name = "");	
+      void addResidue (QPointF pos = QPointF (0, 0), QString name = "");
 
+      static QString mimeType();
       // Queries
       /** 
        * @return The current EditMode of the scene. 
@@ -225,6 +226,11 @@ namespace Molsketch {
       /** event handler for mouse button releases */
       void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
+      void dragEnterEvent(QGraphicsSceneDragDropEvent *event);
+      void dragLeaveEvent(QGraphicsSceneDragDropEvent *event);
+      void dropEvent(QGraphicsSceneDragDropEvent *event);
+      void dragMoveEvent(QGraphicsSceneDragDropEvent *event);
+
       void wheelEvent(QGraphicsSceneWheelEvent *event);
   public:
 
@@ -269,9 +275,6 @@ namespace Molsketch {
       // Auxillary feedback items
       /** The highlight rectangle. */
       QGraphicsPathItem* m_hoverRect;
-
-//      class PrivateData;
-//      PrivateData *d;
   private slots:
       void updateAll() ;
       void selectionSlot();

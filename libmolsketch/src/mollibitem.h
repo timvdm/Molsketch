@@ -53,7 +53,7 @@ class MolLibItem : public QListWidgetItem
   //void setMolecule(Molecule* molecule);
 
   /** Returns a pointer to copy of molecule of the library item. */
-  Molecule* getMolecule();
+  Molsketch::Molecule getMolecule();
   
   /** Returns the filename of the library item. */
   QFileInfo getFileName() { return m_fileName; };

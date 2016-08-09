@@ -40,6 +40,9 @@ namespace Molsketch {
     // Copying the molecule
 //     m_molecule = new Molecule(molecule);
     m_molecule->setPos(0, 0);
+    QPolygonF coords = m_molecule->coordinates();
+    m_molecule->setCoordinates(coords.translated(-coords.boundingRect().center()));
+
 
     // Creating pixmap
     MolScene renderScene;
@@ -88,10 +91,8 @@ namespace Molsketch {
     delete m_molecule;
   }
 
-  Molecule* MolLibItem::getMolecule( )
+  Molecule MolLibItem::getMolecule( )
   {
-    // Return a copy of the m_molecule
-    return new Molecule(m_molecule);
+    return *m_molecule;
   }
-
 } // namespace

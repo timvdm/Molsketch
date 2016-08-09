@@ -107,6 +107,8 @@ namespace Molsketch {
     *chargeVisibleAction,
     *defaultColorAction;
 
+    graphicsItem* dragItem;
+
     QMap<QAction*, QPair<void (MolScene::*)(const bool&), bool (MolScene::*)() const> > booleanActions;
     void attachDockWidgetToMainWindow(MolScene* scene)
     {
@@ -141,7 +143,8 @@ namespace Molsketch {
         autoAddHydrogenAction(new QAction(tr("Auto add hydrogens"), scene)),
         electronSystemsVisibleAction(new QAction(tr("Electron systems visible"), scene)),
         chargeVisibleAction(new QAction(tr("Charges visible"), scene)),
-        defaultColorAction(new QAction(tr("Default color..."), scene))
+        defaultColorAction(new QAction(tr("Default color..."), scene)),
+        dragItem(0)
     {
       selectionRectangle->setPen(QPen(Qt::blue,0,Qt::DashLine));
       selectionRectangle->setZValue(INFINITY);
@@ -240,7 +243,12 @@ namespace Molsketch {
 	addItem(newResidue) ;
 	m_stack->push(new AddResidue(newResidue)) ;
 #endif
-                }
+  }
+
+  QString MolScene::mimeType()
+  {
+    return "molecule/molsketch";
+  }
   // Commands
 
   QColor MolScene::color() const
@@ -944,6 +952,47 @@ namespace Molsketch {
     if (event->button() != Qt::LeftButton) return;
     removeItem(d->selectionRectangle);
     event->accept();
+  }
+
+  void MolScene::dragEnterEvent(QGraphicsSceneDragDropEvent *event)
+  {
+    if (!event->mimeData()->hasFormat(mimeType())) return;
+    if (!event->proposedAction() == Qt::CopyAction) return;
+    event->accept();
+    foreach(QAction* action, findChildren<QAction*>(QString(), Qt::FindDirectChildrenOnly))
+      if (action->isCheckable())
+        action->setChecked(false);
+    d->dragItem = new Molecule;
+    QXmlStreamReader reader(event->mimeData()->data(mimeType()));
+    reader >> *(d->dragItem);
+    d->dragItem->setPos(event->pos());
+    addItem(d->dragItem);
+    updateAll();
+  }
+
+  void MolScene::dragLeaveEvent(QGraphicsSceneDragDropEvent *event)
+  {
+    if (!d->dragItem) return;
+    removeItem(d->dragItem);
+    delete d->dragItem;
+    d->dragItem = 0;
+    event->accept();
+  }
+
+  void MolScene::dropEvent(QGraphicsSceneDragDropEvent *event)
+  {
+    if (!d->dragItem) return;
+    event->accept();
+    stack()->push(new Commands::AddItem(d->dragItem, this, tr("insert molecule")));
+  }
+
+  void MolScene::dragMoveEvent(QGraphicsSceneDragDropEvent *event)
+  {
+    qDebug() << "drag moving:" << event->proposedAction();
+    if (!d->dragItem) return;
+    d->dragItem->setPos(event->scenePos());
+    event->accept();
+//    QGraphicsScene::dragMoveEvent(event);
   }
 
   void MolScene::wheelEvent(QGraphicsSceneWheelEvent *event)

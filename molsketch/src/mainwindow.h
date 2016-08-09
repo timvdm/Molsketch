@@ -28,6 +28,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "librarylistwidget.h"
+
 #include <QMainWindow>
 #if QT_VERSION >= 0x050000
 #include <QPrinter>
@@ -200,7 +202,7 @@ protected:
   /** The library widget with user-added molecules. */
   QListWidget* customLib;
   /** The library widget with common molecules. */
-  QListWidget* genericLib;
+  LibraryListWidget* genericLib;
 
   // Widgets
   /** The scene that contains the document's molecules. */
