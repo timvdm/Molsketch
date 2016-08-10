@@ -992,7 +992,6 @@ namespace Molsketch {
     if (!d->dragItem) return;
     d->dragItem->setPos(event->scenePos());
     event->accept();
-//    QGraphicsScene::dragMoveEvent(event);
   }
 
   void MolScene::wheelEvent(QGraphicsSceneWheelEvent *event)
