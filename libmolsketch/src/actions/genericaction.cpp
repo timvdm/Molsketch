@@ -39,7 +39,7 @@ namespace Molsketch{
 
   MolScene *genericAction::scene() const
   {
-    return parentWidget()->findChild<MolScene*>() ;
+    return dynamic_cast<MolScene*>(parent()) ;
   }
 
   QUndoStack *genericAction::undoStack() const

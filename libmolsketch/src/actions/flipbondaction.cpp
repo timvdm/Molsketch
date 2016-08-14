@@ -27,7 +27,7 @@ namespace Molsketch {
     : abstractItemAction(scene)
   {
     setMinimumItemCount(1);
-    setIcon(QIcon(":images/flipbond.svg"));
+    setIcon(QIcon(":images/flip-bond.svg"));
     setText(tr("Flip bond(s)"));
     setCheckable(false);
   }

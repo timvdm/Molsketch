@@ -984,10 +984,9 @@ void MainWindow::addMolecule(QListWidgetItem *item)
 {
   // Extract the molecule and add it to the sceneMolecule* m
   MolLibItem *libItem = dynamic_cast<MolLibItem*>(item);
-  qDebug() << "inserting molecule from library: " << libItem << libItem->getMolecule();
   if (!libItem)
     return;
-  m_scene->addMolecule(libItem->getMolecule());
+//  m_scene->addMolecule(libItem->getMolecule());
 }
  
 void MainWindow::addCustomMol() // TODO rework!

@@ -64,7 +64,7 @@ namespace Molsketch {
       direction += this->pos() - nbr->pos();
 
     int alignment = 0;
-    if ((this->numBonds() == 2) && (abs(direction.y()) > abs(direction.x()))) {
+    if ((this->numBonds() == 2) && (qAbs(direction.y()) > qAbs(direction.x()))) {
       if (direction.y() <= 0.0)
         alignment = Up;
       else
@@ -525,7 +525,7 @@ namespace Molsketch {
         foreach (Atom *nbr, neighbours())
           direction += pos() - nbr->pos();
 
-        if (abs(direction.y()) > abs(direction.x())) {
+        if (qAbs(direction.y()) > qAbs(direction.x())) {
           if (direction.y() <= 0.0) {
             //   ..
             //   NH2

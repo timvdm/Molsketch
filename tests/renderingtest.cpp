@@ -1,5 +1,6 @@
 #include "renderingtest.h"
 #include "molscene.h"
+#include <QDebug>
 
 #include <molecule.h>
 

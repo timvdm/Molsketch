@@ -959,9 +959,15 @@ namespace Molsketch {
     if (!event->mimeData()->hasFormat(mimeType())) return;
     if (!event->proposedAction() == Qt::CopyAction) return;
     event->accept();
+#if QT_VERSION >= 0x050000
     foreach(QAction* action, findChildren<QAction*>(QString(), Qt::FindDirectChildrenOnly))
       if (action->isCheckable())
         action->setChecked(false);
+#else
+    foreach(QAction* action, findChildren<QAction*>())
+          if (action->isCheckable() && action->parent() == this)
+            action->setChecked(false);
+#endif
     d->dragItem = new Molecule;
     QXmlStreamReader reader(event->mimeData()->data(mimeType()));
     reader >> *(d->dragItem);

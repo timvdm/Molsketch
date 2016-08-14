@@ -16,15 +16,18 @@ include_directories(${OPENBABEL2_INCLUDE_DIR}
 		    ${CMAKE_CURRENT_BINARY_DIR}/../../obabeliface/include/molsketch
 )
     
-set(molsketch_SRCS 
-    main.cpp 
-    mainwindow.cpp 
-    settings.cpp 
+set(molsketch_SRCS
+    main.cpp
+    mainwindow.cpp
+    settings.cpp
+    librarylistwidget.cpp
     )
 
 set(molsketch_MOC_HDRS
     mainwindow.h
-    settings.h)
+    settings.h
+    librarylistwidget.h
+    )
 
 # Including the resources
 file(GLOB molsketch_RCS "*.qrc")
