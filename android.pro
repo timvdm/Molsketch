@@ -97,8 +97,6 @@ HEADERS += \
     libmolsketch/src/actions/arrowtypeaction.h \
     libmolsketch/src/actions/arrowtypewidget.h \
     libmolsketch/src/actions/flipbondaction.h \
-    libmolsketch/src/actions/flipstereobondsaction.h \
-    libmolsketch/src/grid.h \
     libmolsketch/src/stringify.h \
     libmolsketch/src/frame.h \
     libmolsketch/src/actions/frameaction.h \
@@ -108,7 +106,12 @@ HEADERS += \
     libmolsketch/src/arrowpopup.h \
     libmolsketch/src/coordinatedelegate.h \
     libmolsketch/src/coordinatemodel.h \
-    libmolsketch/src/coordinatetableview.h
+    libmolsketch/src/coordinatetableview.h \
+    libmolsketch/src/grid.h \
+    libmolsketch/src/actions/flipstereobondsaction.h \
+    libmolsketch/src/generics.h \
+    libmolsketch/src/actions/changemoleculenameaction.h \
+    libmolsketch/src/moleculepopup.h
 
 SOURCES += \
     libmolsketch/src/atom.cpp \
@@ -159,8 +162,6 @@ SOURCES += \
     libmolsketch/src/actions/arrowtypeaction.cpp \
     libmolsketch/src/actions/arrowtypewidget.cpp \
     libmolsketch/src/actions/flipbondaction.cpp \
-    libmolsketch/src/actions/flipstereobondsaction.cpp \
-    libmolsketch/src/grid.cpp \
     libmolsketch/src/frame.cpp \
     libmolsketch/src/actions/frameaction.cpp \
     libmolsketch/src/actions/frametypewidget.cpp \
@@ -169,7 +170,12 @@ SOURCES += \
     libmolsketch/src/arrowpopup.cpp \
     libmolsketch/src/coordinatedelegate.cpp \
     libmolsketch/src/coordinatemodel.cpp \
-    libmolsketch/src/coordinatetableview.cpp
+    libmolsketch/src/coordinatetableview.cpp \
+    libmolsketch/src/grid.cpp \
+    libmolsketch/src/actions/flipstereobondsaction.cpp \
+    libmolsketch/src/generics.cpp \
+    libmolsketch/src/actions/changemoleculenameaction.cpp \
+    libmolsketch/src/moleculepopup.cpp
 
 FORMS += \
     libmolsketch/src/arrowpopup.ui
@@ -182,20 +188,25 @@ QT += svg printsupport
 TEMPLATE = app
 
 RESOURCES += \
-    molsketch/src/molsketch.qrc
+    molsketch/src/molsketch.qrc \
+    molsketch/src/oxygenicons.qrc
 
 FORMS += \
     molsketch/src/drawwidget.ui \
-    molsketch/src/settings.ui
+    molsketch/src/settings.ui \
+    libmolsketch/src/arrowpopup.ui \
+    libmolsketch/src/moleculepopup.ui
 
 HEADERS += \
     molsketch/src/mainwindow.h \
-    molsketch/src/settings.h
+    molsketch/src/settings.h \
+    molsketch/src/librarylistwidget.h
 
 SOURCES += \
     molsketch/src/main.cpp \
     molsketch/src/mainwindow.cpp \
-    molsketch/src/settings.cpp
+    molsketch/src/settings.cpp \
+    molsketch/src/librarylistwidget.cpp
 
 INCLUDEPATH += \
 	libmolsketch/src \
