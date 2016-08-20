@@ -1,8 +1,8 @@
 [Icon Theme]
 Name=Oxygen
-Comment=Oxygen Theme
+Comment=Oxygen Theme (extract for Molsketch)
 Inherits=default
 Directories=scalable
 
 [scalable]
-Size=16
+Size=160

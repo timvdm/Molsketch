@@ -27,6 +27,11 @@
 
 int main(int argc, char *argv[])
 {
+#ifdef QT_STATIC_BUILD
+  Q_INIT_RESOURCE(molsketch);
+  Q_INIT_RESOURCE(oxygenicons);
+  QIcon::setThemeName("oxygen");
+#endif
   QApplication app(argc, argv);
 
   QCoreApplication::setOrganizationName("SourceForge");

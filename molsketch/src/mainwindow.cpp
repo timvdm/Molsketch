@@ -80,9 +80,10 @@
 #define GRAPHIC_DEFAULT_FORMAT "Portable Network Graphics (*.png)"
 #define OSRA_GRAPHIC_FILE_FORMATS "All supported types (*.*);;Images (*.png *.bmp *.jpg *.jpeg *.gif *.tif *.tiff);;Documents (*.pdf *.ps)"
 
-#define OBABELOSSUFFIX
 #ifdef _WIN32
 #define OBABELOSSUFFIX ".dll"
+#else
+#define OBABELOSSUFFIX
 #endif
 
 #define PREPARELOADFILE \

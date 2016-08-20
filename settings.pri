@@ -45,3 +45,4 @@ for(DV, $$list($$split(defaultVars, ;))) {
 }
 
 VERSION = $${MSK_VERSION}
+win* : CONFIG(static) : DEFINES += QT_STATIC_BUILD

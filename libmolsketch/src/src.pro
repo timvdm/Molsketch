@@ -141,8 +141,6 @@ FORMS += \
 RESOURCES += \
     tools/toolicons.qrc
 
-QT += svg
-
 TARGET = molsketch$$qtVersionSuffix
 DESTDIR = ../../lib
 

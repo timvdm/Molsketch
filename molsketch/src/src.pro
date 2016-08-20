@@ -3,7 +3,8 @@ include(../../settings.pri)
 TEMPLATE = app
 
 RESOURCES += \
-    molsketch.qrc
+    molsketch.qrc \
+    oxygenicons.qrc
 
 FORMS += \
     drawwidget.ui \
