@@ -1,5 +1,4 @@
-QT += widgets printsupport
-contains(CONFIG, static) { QT += svg }
+QT += widgets printsupport svg
 
 CONFIG += silent
 CONFIG += c++14
