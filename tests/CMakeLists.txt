@@ -16,6 +16,7 @@ set(test_SRCS
     valencetest.cpp 
     drawingtest.cpp 
     xmltest.cpp
+    renderingtest.cpp
    )
    
 set(test_HDRS
@@ -23,6 +24,7 @@ set(test_HDRS
     valencetest.h 
     drawingtest.h 
     xmltest.h
+    renderingtest.h
 )
 
 link_directories(${CMAKE_BINARY_DIR}/lib)
