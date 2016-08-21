@@ -131,6 +131,7 @@ void SettingsDialog::applyChanges()
   for (int i = 0 ; i < ui.libraries->count() ; ++i)
     libraries << ui.libraries->item(i)->text();
   settings.setValue("libraries", libraries);
+  emit settingsChanged();
 }
 
 void SettingsDialog::selectFont()

@@ -52,6 +52,9 @@ class SettingsDialog : public QDialog
     /** Destructor of the dialog. */
     ~SettingsDialog();
 
+signals:
+    void settingsChanged();
+
   private:
     /** Stores the scene of which the settings should be edited. */
     QSettings* m_settings;

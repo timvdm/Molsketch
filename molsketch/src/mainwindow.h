@@ -128,6 +128,8 @@ private slots:
 
   
   void pluginActionTriggered();
+  /** Reloads the preferences */
+  void readPreferences();
 
 private:
   /** Creates the QActions of the MainWindow. */
@@ -147,8 +149,6 @@ private:
   void readSettings();
   /** Saves the current settings of molsKetch. */
   void writeSettings();
-  /** Reloads the preferences */
-  void readPreferences(const QSettings & settings);
 
   /** Ask if the document should be saved. */
   bool maybeSave();

@@ -878,15 +878,9 @@ void MainWindow::pluginActionTriggered()
 
 void MainWindow::createView()
 {
-  // Create new scene
   m_scene = new MolScene(this);
-
-  // Create and set view
   m_molView = new MolView(m_scene);
-
-  // Placing the view widget
   setCentralWidget(m_molView);
-  m_molView->show();
 }
 
 void MainWindow::initializeAssistant()
@@ -942,11 +936,12 @@ void MainWindow::readSettings()
   restoreState(state);
 
   // Load preferences
-  readPreferences(settings);
+  readPreferences();
 }
 
-void MainWindow::readPreferences(const QSettings & settings)
+void MainWindow::readPreferences()
 {
+  QSettings settings;
   // Loading auto-save time
   m_autoSaveTime = settings.value("auto-save-time", 300000).toInt();
   m_autoSaveTimer->setInterval(m_autoSaveTime);
@@ -1042,12 +1037,10 @@ void MainWindow::setCurrentFile(const QString &fileName)
 
 void MainWindow::editPreferences( )
 {
-  QSettings settings;
-
   // Opens the settings dialog
   SettingsDialog dialog;
+  connect(&dialog, SIGNAL(settingsChanged()), this, SLOT(readPreferences()));
   dialog.exec();
-  readPreferences(settings);
 }
 
 void MainWindow::submitBug()
