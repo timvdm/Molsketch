@@ -15,7 +15,9 @@
    <string>molsKetch - Preferences</string>
   </property>
   <property name="windowIcon">
-   <iconset theme="preferences-system"/>
+   <iconset theme="preferences-system">
+    <normaloff/>
+   </iconset>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
@@ -72,7 +74,9 @@
            <string>Draw settings</string>
           </property>
           <property name="icon">
-           <iconset theme="draw-freehand"/>
+           <iconset theme="draw-freehand">
+            <normaloff/>
+           </iconset>
           </property>
          </item>
          <item>
@@ -80,7 +84,9 @@
            <string>Libraries</string>
           </property>
           <property name="icon">
-           <iconset theme="document-open"/>
+           <iconset theme="document-open">
+            <normaloff/>
+           </iconset>
           </property>
          </item>
         </widget>
@@ -220,16 +226,7 @@
                 <bool>false</bool>
                </property>
                <layout class="QGridLayout">
-                <property name="leftMargin">
-                 <number>9</number>
-                </property>
-                <property name="topMargin">
-                 <number>9</number>
-                </property>
-                <property name="rightMargin">
-                 <number>9</number>
-                </property>
-                <property name="bottomMargin">
+                <property name="margin">
                  <number>9</number>
                 </property>
                 <property name="spacing">
@@ -472,47 +469,36 @@
               <x>20</x>
               <y>50</y>
               <width>361</width>
-              <height>151</height>
+              <height>301</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout">
              <item>
               <layout class="QGridLayout" name="libraryPathLayout">
-               <item row="0" column="0">
-                <widget class="QLabel" name="labelLibraryPath">
+               <item row="1" column="0">
+                <widget class="QPushButton" name="addLibrary">
                  <property name="text">
-                  <string>Library path</string>
+                  <string/>
+                 </property>
+                 <property name="icon">
+                  <iconset theme="list-add"/>
                  </property>
                 </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QLineEdit" name="lineEditLibraryPath"/>
                </item>
                <item row="1" column="1">
-                <widget class="QToolButton" name="toolButtonBrowseLibraryPath">
+                <widget class="QPushButton" name="removeLibrary">
                  <property name="text">
-                  <string>...</string>
+                  <string/>
+                 </property>
+                 <property name="icon">
+                  <iconset theme="list-remove"/>
                  </property>
                 </widget>
                </item>
-              </layout>
-             </item>
-             <item>
-              <layout class="QGridLayout" name="customLibraryPathLayout">
-               <item row="0" column="0">
-                <widget class="QLabel" name="labelCustomLibraryPath">
-                 <property name="text">
-                  <string>Custom library Path</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
-                <widget class="QLineEdit" name="lineEditCustomLibraryPath"/>
-               </item>
-               <item row="1" column="1">
-                <widget class="QToolButton" name="toolButtonBrowseCustomLibraryPath">
-                 <property name="text">
-                  <string>...</string>
+               <item row="0" column="0" colspan="2">
+                <widget class="QListWidget" name="libraries">
+                 <property name="selectionMode">
+                  <enum>QAbstractItemView::ExtendedSelection</enum>
                  </property>
                 </widget>
                </item>
@@ -541,11 +527,26 @@
   </layout>
  </widget>
  <tabstops>
+  <tabstop>listWidget</tabstop>
+  <tabstop>comboBoxFileType</tabstop>
+  <tabstop>comboBoxImageType</tabstop>
+  <tabstop>spinBoxAutoSave</tabstop>
+  <tabstop>checkBoxShowES</tabstop>
+  <tabstop>doubleSpinBoxFontSize</tabstop>
+  <tabstop>fontComboBox</tabstop>
+  <tabstop>pushButtonFont</tabstop>
+  <tabstop>checkBoxShowCarbon</tabstop>
+  <tabstop>checkBoxShowLP</tabstop>
+  <tabstop>checkBoxShowValency</tabstop>
+  <tabstop>lineEditBondLength</tabstop>
+  <tabstop>doubleSpinBoxBondWidth</tabstop>
+  <tabstop>spinBoxBondAngle</tabstop>
+  <tabstop>libraries</tabstop>
   <tabstop>buttonBox</tabstop>
+  <tabstop>addLibrary</tabstop>
+  <tabstop>removeLibrary</tabstop>
  </tabstops>
- <resources>
-  <include location="molsketch.qrc"/>
- </resources>
+ <resources/>
  <connections>
   <connection>
    <sender>buttonBox</sender>
@@ -554,8 +555,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>366</x>
-     <y>431</y>
+     <x>373</x>
+     <y>501</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
@@ -570,8 +571,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>434</x>
-     <y>431</y>
+     <x>441</x>
+     <y>501</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>

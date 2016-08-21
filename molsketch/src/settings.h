@@ -69,12 +69,10 @@ class SettingsDialog : public QDialog
     void buttonClicked(QAbstractButton * button);
     /** Slot to show the appropiate help page */
     void showHelp();
-    /** Shows a dialog to select the library path */
-    void browseLibraryPath();
-    /** Shows a dialog to select the custom library path */
-    void browseCustomLibraryPath();
     /** Shows dialog to select the font of the atom symbols */
     void selectFont();
-  };
+    void on_addLibrary_clicked();
+    void on_removeLibrary_clicked();
+};
 
 #endif

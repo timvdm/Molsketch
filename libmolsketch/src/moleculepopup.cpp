@@ -52,7 +52,7 @@ namespace Molsketch {
   }
 
   MoleculePopup::~MoleculePopup()
-  {
+  { // TODO crashes
     delete ui;
     delete d;
   }

@@ -23,5 +23,7 @@
         <file alias="scalable/zoom-in.svg">oxygen-icons/zoom-in.svg</file>
         <file alias="scalable/zoom-original.svg">oxygen-icons/zoom-original.svg</file>
         <file alias="scalable/zoom-out.svg">oxygen-icons/zoom-out.svg</file>
+        <file alias="scalable/list-add.svg">oxygen-icons/list-add.svg</file>
+        <file alias="scalable/list-remove.svg">oxygen-icons/list-remove.svg</file>
     </qresource>
 </RCC>

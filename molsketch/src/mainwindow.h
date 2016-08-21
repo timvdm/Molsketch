@@ -109,12 +109,6 @@ private slots:
   void submitBug();
   /** Open the molsKetch about dialog. */
   void about();
-
-  /** Add the selected molecule to the custom library. */
-  void addCustomMol();
-  /** Removes the selected item from the custom library. */
-  void delCustomMol();
-  void addMolecule(QListWidgetItem *item);
   
   /** Mark the current document as modified. */
   void documentWasModified( );
@@ -135,15 +129,7 @@ private slots:
   
   void pluginActionTriggered();
 
-//  /** 
-//   * Adds a new molecule with one atom to the scene.
-//   *
-//   * @param position position of the new molecule
-//   * @param element the element symbol of the new atom
-//   */
-//   Molecule* newMolecule(const QPointF& position = QPointF(0,0), const QString& element = "C");
-
-protected:
+private:
   /** Creates the QActions of the MainWindow. */
   void createActions();
   /** Creates the menus of the MainWindow. */
@@ -155,10 +141,8 @@ protected:
   /** Creates the view of the MainWindow. */
   void createView();
   /** Creates the toolboxes of the MainWindow. */
-  void createToolBoxes();
+  void createToolBox();
 
-  /** Stores the settings mol the application */
-  QSettings * m_settings;
   /** Loads the previous settings of molsKetch. */
   void readSettings();
   /** Saves the current settings of molsKetch. */
@@ -195,14 +179,6 @@ protected:
 #endif
   /** Initialize the help client. */
   void initializeAssistant();
-
-  // Libraries
-  /** The library widget of elements. */
-  QListWidget* elementLib;
-  /** The library widget with user-added molecules. */
-  QListWidget* customLib;
-  /** The library widget with common molecules. */
-  LibraryListWidget* genericLib;
 
   // Widgets
   /** The scene that contains the document's molecules. */
@@ -253,8 +229,6 @@ protected:
   QAction* saveAct;
   /** Save the current document under a new name action. */
   QAction* saveAsAct;
-  /** Save as 3D */
-  QAction* saveAs3DAct;
   /** Save a backup of the current document. */
   QAction* autoSaveAct;
   /** Import an existing file action. */
@@ -311,6 +285,7 @@ protected:
   QAction* aboutAct;
   /** Show the Qt about dialog action. */
   QAction* aboutQtAct;
+  void buildLibraries();
 
 };
 

@@ -108,38 +108,14 @@ MainWindow::MainWindow()
 {
   // Creating the menus and actions
   createView();
-  createToolBoxes();
+  createToolBox();
   createActions();
   createMenus();
   createToolBars();
   createStatusBar();
   initializeAssistant();
 
-  /*
-  QToolBar *toolbar = addToolBar(tr("Tools"));
-  toolbar->setObjectName("drawToolBar"); // needed for saveState (window state)
-  toolbar->show();
-  */
-
-/*  QHash<QString, QToolBar*> toolbars;
-  foreach (Tool *tool, tools) {
-    foreach (QAction *action, tool->actions()) {
-      QString toolbarName = tool->toolbarName(action);
-
-      // create the toolbar if it doesn't exist already
-      if (!toolbars.contains(toolbarName)) {
-        toolbars[toolbarName] = addToolBar(toolbarName);
-        toolbars[toolbarName]->setObjectName(toolbarName); // needed for saveState (window state)
-      }
-
-      toolbars[toolbarName]->addAction(action);
-    }
-  }*/
-
-  // Set icon
-  QIcon icon;
-  icon.addFile(":/images/molsketch.svg");
-  setWindowIcon(icon);
+  setWindowIcon(QIcon(":/images/molsketch.svg"));
 
   // Loading settings
   readSettings();
@@ -187,7 +163,6 @@ MainWindow::MainWindow()
   connect(m_scene,SIGNAL(editModeChange(int)),this,SLOT(updateEditMode(int)));
 
   m_molView->setAcceptDrops(true);
-  genericLib->setDefaultDropAction(Qt::CopyAction);
 }
 
 // Event handlers
@@ -298,7 +273,8 @@ bool MainWindow::save()
                           tr("Saving failed. OpenBabel support unavailable.")) ;
     return false ;
   }
-  if (!saveFilePtr(m_curFile, m_scene, saveAs3DAct->isChecked() ? 3 : 2))
+  bool threeD = QMessageBox::question(this, tr("Save as 3D?"), tr("Save as three dimensional coordinates?")) == QMessageBox::Yes;
+  if (!saveFilePtr(m_curFile, m_scene, threeD ? 3 : 2))
     return false ;
   m_scene->stack()->setClean();
   return true ;
@@ -327,7 +303,8 @@ bool MainWindow::autoSave()
       statusBar()->showMessage(tr("Autosave failed! OpenBabel unavailable."), 10000);
       return false ;
     }
-    if (!saveFilePtr(fileName.absoluteFilePath(), m_scene, saveAs3DAct->isChecked() ? 3 : 2))
+    bool threeD = QMessageBox::question(this, tr("Save as 3D?"), tr("Save as three dimensional coordinates?")) == QMessageBox::Yes; // TODO not in autosave!
+    if (!saveFilePtr(fileName.absoluteFilePath(), m_scene, threeD ? 3 : 2))
     {
       statusBar()->showMessage(tr("Autosave failed!"), 10000);
       return false;
@@ -373,7 +350,8 @@ bool MainWindow::saveAs()
       QMessageBox::critical(this, tr(PROGRAM_NAME), tr("OpenBabel support not available. Cannot save in this format.")) ;
       return false ;
     }
-    if(saveFilePtr(fileName, m_scene, 2))
+    bool threeD = QMessageBox::question(this, tr("Save as 3D?"), tr("Save as three dimensional coordinates?")) == QMessageBox::Yes;
+    if(saveFilePtr(fileName, m_scene, threeD ? 3: 2))
     {
       setCurrentFile(fileName);
       m_scene->stack()->setClean();
@@ -468,43 +446,16 @@ bool MainWindow::exportDoc()
 }
 
 void MainWindow::paintSceneOn (QPrinter *printer) {
-	Molsketch::printFile(*printer,m_scene);
+  Molsketch::printFile(*printer,m_scene);
 }
 
 bool MainWindow::print()
 {
-	QPrintPreviewDialog printPreview;
-	connect(&printPreview, SIGNAL(paintRequested(QPrinter * )), this, SLOT(paintSceneOn(QPrinter *)));
+  QPrintPreviewDialog printPreview;
+  connect(&printPreview, SIGNAL(paintRequested(QPrinter * )), this, SLOT(paintSceneOn(QPrinter *)));
 
-	printPreview.exec ();
-	
-	/*
-  // Creating a new printerobject
-  QPrinter printer(QPrinter::HighResolution);
-
-  // Prompt for the printoptions
-  QPrintDialog printDialog(&printer, this);
-
-  // Try to print the scene
-  if (printDialog.exec() == QDialog::Accepted)
-    {
-      if (Molsketch::printFile(printer,m_scene))
-      {
-      	return true;
-      }
-      else
-      {
-      	QMessageBox::critical(this,tr(PROGRAM_NAME),tr("Error while printing file"),QMessageBox::Ok,QMessageBox::Ok);
-      	return false;
-      }
-    }
-  else
-    {
-      return false;
-    }
-	 
-	 */
-        return true;
+  printPreview.exec ();
+  return true;
 }
 
 
@@ -601,11 +552,6 @@ void MainWindow::createActions()
   saveAsAct->setStatusTip(tr("Save the document under a new name"));
   connect(saveAsAct, SIGNAL(triggered()), this, SLOT(saveAs()));
 
-  saveAs3DAct = new QAction(QIcon(""),tr("Save As &3D"), this);
-  saveAs3DAct->setStatusTip(tr("Save the document as 3D"));
-  saveAs3DAct->setCheckable(true);
-//   connect(saveAs3DAct, SIGNAL(triggered()), this, SLOT(saveAs()));
-
   autoSaveAct = new QAction(tr("Autosave document"), this);
   m_autoSaveTimer = new QTimer(this);
 //   m_autoSaveTimer->setInterval(m_autoSaveTime);
@@ -672,8 +618,8 @@ void MainWindow::createActions()
   selectAllAct->setStatusTip(tr("Selects all elements on the scene"));
   connect(selectAllAct, SIGNAL(triggered()), m_scene, SLOT(selectAll()));
 
-  alignAct = new QAction(QIcon(""), tr("Align to grid"), this);
-  alignAct->setStatusTip(tr("Align all elements on the scene to the grid"));
+  alignAct = new QAction(QIcon(""), tr("Show grid"), this);
+  alignAct->setStatusTip(tr("Shows grid and snaps to it while drawing"));
   alignAct->setCheckable(true);
   connect(alignAct, SIGNAL(toggled(bool)), m_scene, SLOT(setGrid(bool)));
 
@@ -746,7 +692,6 @@ void MainWindow::createMenus()
   fileMenu->addAction(openAct);
   fileMenu->addAction(saveAct);
   fileMenu->addAction(saveAsAct);
-  fileMenu->addAction(saveAs3DAct);
   fileMenu->addSeparator();
   fileMenu->addAction(importAct);
   fileMenu->addAction(exportAct);
@@ -887,84 +832,27 @@ void MainWindow::createStatusBar()
 #endif
 }
 
-void MainWindow::createToolBoxes()
+void MainWindow::buildLibraries()
+{
+  foreach(LibraryListWidget* library, toolBox->findChildren<LibraryListWidget*>())
+    delete library;
+
+  foreach(const QString& folder, QSettings().value("libraries").toStringList())
+  {
+    LibraryListWidget* library = new LibraryListWidget(folder, toolBox);
+    toolBox->addItem(library, library->title());
+  }
+}
+
+void MainWindow::createToolBox()
 {
   // Creating the dockwidgets
-  toolBoxDock = new QDockWidget(tr("Toolbox"));
+  toolBoxDock = new QDockWidget(tr("Molecule libraries"), this);
   toolBoxDock->setObjectName("toolbox-dockwidget");
   toolBoxDock->setMinimumWidth(270);
-
-
-  // Create libraries
-  genericLib = new LibraryListWidget(this);
-  customLib = new QListWidget(this);
-
-  QPushButton* addButton = new QPushButton(tr("Add..."));
-  QPushButton* delButton = new QPushButton(tr("Delete"));
-
-  genericLib->setAlternatingRowColors(true);
-  genericLib->setIconSize(QSize(64,64));
-
-  customLib->setAlternatingRowColors(true);
-  customLib->setIconSize(QSize(128,128));
-
-  // Declaring variables
-  QDir dir;
-
-  // Loading generic molecules
-  QStringList pathList ;
-  pathList << MSK_INSTALL_LIBRARY
-           << QDir::homePath() + "/.molsketch/library"
-           << MSK_INSTALL_CUSTOM
-           << QDir::homePath() + "/.molsketch/library/custom";
-
-#ifndef __ANDROID__
-  PREPARELOADFILE
-  if (loadFilePtr)
-  {
-    Molecule* mol = 0;
-    foreach(const QString& path, pathList)
-    {
-      dir.setPath(path) ;
-      foreach(const QString& entry, dir.entryList())
-      {
-        mol = loadFilePtr(dir.filePath(entry)) ;
-        if (mol) genericLib->addItem(new MolLibItem(mol, entry)) ;
-      }
-    }
-  }
-  else
-    QMessageBox::critical(this, tr(PROGRAM_NAME), tr("Molecule library could not be loaded because OpenBabel support is missing.")) ;
-#endif
-
-    foreach(const QString& path, pathList)
-    {
-      dir.setPath(path);
-      foreach(const QString& entry, dir.entryList())
-      {
-        foreach(Molecule* molecule, moleculesFromFile(entry))
-          genericLib->addItem(new MolLibItem(molecule, entry));
-      }
-    }
-
-  // Composing customLib
-  QHBoxLayout* hLayoutCL = new QHBoxLayout;
-  hLayoutCL->addWidget(addButton);
-  hLayoutCL->addWidget(delButton);
-  QVBoxLayout* vLayoutCL = new QVBoxLayout;
-  vLayoutCL->addWidget(customLib);
-  vLayoutCL->addLayout(hLayoutCL);
-
-  QFrame* frameCustomLib = new QFrame;
-  frameCustomLib->setLayout(vLayoutCL);
-
   // Create a library toolbox and add the libraries
   toolBox = new QToolBox;
-//   toolBox->addItem(elementLib,tr("Elements"));
-  toolBox->addItem(genericLib, tr("Generic Molecules"));
-  toolBox->addItem(frameCustomLib,tr("Custom Molecules"));
   toolBoxDock->setWidget(toolBox);
-
   // Placing the dockwidgets in their default position
   setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
   setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
@@ -972,48 +860,7 @@ void MainWindow::createToolBoxes()
 #ifdef __ANDROID__
   toolBoxDock->hide();
 #endif
-
-
-  // Connecting signals and slots
-  connect(genericLib,SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(addMolecule(QListWidgetItem*)));
-  connect(customLib,SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(addMolecule(QListWidgetItem*)));
-  connect(addButton, SIGNAL(released()), this, SLOT(addCustomMol()));
-  connect(delButton, SIGNAL(released()), this, SLOT(delCustomMol()));
-}
-
-void MainWindow::addMolecule(QListWidgetItem *item)
-{
-  // Extract the molecule and add it to the sceneMolecule* m
-  MolLibItem *libItem = dynamic_cast<MolLibItem*>(item);
-  if (!libItem)
-    return;
-//  m_scene->addMolecule(libItem->getMolecule());
-}
- 
-void MainWindow::addCustomMol() // TODO rework!
-{
-  foreach(QGraphicsItem* item, m_scene->selectedItems())
-  {
-    if (item->type() == Molecule::Type)
-      {
-        Molecule* mol = dynamic_cast<Molecule*>(item);
-        QString name = QInputDialog::getText(this,tr("Enter a name"),tr("Enter a name for this item:"),QLineEdit::Normal,mol->formula());
-        customLib->addItem(new MolLibItem(mol,name));
-      }
-  }
-}
-
-void MainWindow::delCustomMol()
-{
-  //Check whether an item is selected
-  if (!customLib->currentItem()) return;
-
-  if (QMessageBox::warning(this,tr("Are you sure?"),tr("Do you really want to delete this item?"),QMessageBox::Yes|QMessageBox::No,QMessageBox::No) == QMessageBox::Yes)
-    {
-      MolLibItem* item = dynamic_cast<MolLibItem*>(customLib->currentItem());
-      QFile::remove(item->getFileName().filePath());
-      delete item;
-    }
+  buildLibraries();
 }
   
 void MainWindow::pluginActionTriggered()
@@ -1089,10 +936,6 @@ void MainWindow::readSettings()
   resize(size);
   move(pos);
 
-  // Restoring the state of the toolbars and dockwidgets
-  //QByteArray state = settings.value("window-state", QByteArray("\0\0\0\xff\0\0\0\0\xfd\0\0\0\x2\0\0\0\0\0\0\x1\xe\0\0\x2#\xfc\x2\0\0\0\x2\xfb\0\0\0$\0t\0o\0o\0l\0\x62\0o\0x\0-\0\x64\0o\0\x63\0k\0w\0i\0\x64\0g\0\x65\0t\x1\0\0\0\x43\0\0\x1G\0\0\0\xbe\0\xff\xff\xff\xfb\0\0\0$\0i\0n\0\x66\0o\0\x62\0o\0x\0-\0\x64\0o\0\x63\0k\0w\0i\0\x64\0g\0\x65\0t\x1\0\0\x1\x90\0\0\0\xd6\0\0\0R\0\xff\xff\xff\0\0\0\x1\xff\xff\xff\xfa\0\0\x2#\xfc\x2\0\0\0\x1\xfb\0\0\0\x32\0p\0\x65\0r\0i\0o\0\x64\0i\0\x63\0-\0t\0\x61\0\x62\0l\0\x65\0-\0\x64\0o\0\x63\0k\0w\0i\0\x64\0g\0\x65\0t\x3\0\0\x3 \0\0\x2g\0\0\x1\xcc\0\0\x1\x18\0\0\x2\x87\0\0\x2#\0\0\0\x1\0\0\0\x4\0\0\0\x1\0\0\0\b\xfc\0\0\0\x1\0\0\0\x2\0\0\0\x3\0\0\0\x18\0\x66\0i\0l\0\x65\0-\0t\0o\0o\0l\0\x62\0\x61\0r\x1\0\0\0\0\0\0\x1\b\0\0\0\0\0\0\0\0\0\0\0\x18\0\x65\0\x64\0i\0t\0-\0t\0o\0o\0l\0\x62\0\x61\0r\x1\0\0\x1\b\0\0\x1\xf9\0\0\0\0\0\0\0\0\0\0\0\x18\0z\0o\0o\0m\0-\0t\0o\0o\0l\0\x62\0\x61\0r\x1\0\0\x3\x1\0\0\0\x9a\0\0\0\0\0\0\0\0")).toByteArray();
-  //QByteArray state = settings.value("window-state", QByteArray("\0\0\0\xff\0\0\0\0\xfd\0\0\0\x1\0\0\0\0\0\0\x1\xe\0\0\x1\xc9\xfc\x2\0\0\0\x2\xfb\0\0\0$\0t\0o\0o\0l\0\x62\0o\0x\0-\0\x64\0o\0\x63\0k\0w\0i\0\x64\0g\0\x65\0t\x1\0\0\0x\0\0\x1I\0\0\0\xe8\0\xff\xff\xff\xfb\0\0\0$\0i\0n\0\x66\0o\0\x62\0o\0x\0-\0\x64\0o\0\x63\0k\0w\0i\0\x64\0g\0\x65\0t\x1\0\0\x1\xc7\0\0\0z\0\0\0l\0\xff\xff\xff\0\0\x1\xe1\0\0\x1\xc9\0\0\0\x1\0\0\0\x4\0\0\0\x1\0\0\0\b\xfc\0\0\0\x3\0\0\0\0\0\0\0\x2\0\0\0\n\0T\0o\0o\0l\0s\x3\0\0\0\0\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\x10\0R\0\x65\0\x61\0\x63\0t\0i\0o\0n\x3\0\0\0\xfe\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\x2\0\0\0\x3\0\0\0\x18\0\x66\0i\0l\0\x65\0-\0t\0o\0o\0l\0\x62\0\x61\0r\x1\0\0\0\0\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\x18\0\x65\0\x64\0i\0t\0-\0t\0o\0o\0l\0\x62\0\x61\0r\x1\0\0\x1\x33\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\x18\0z\0o\0o\0m\0-\0t\0o\0o\0l\0\x62\0\x61\0r\x1\0\0\x2s\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\x2\0\0\0\x2\0\0\0\b\0\x44\0r\0\x61\0w\x1\0\0\0\0\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\n\0R\0i\0n\0g\0s\x1\0\0\x2G\xff\xff\xff\xff\0\0\0\0\0\0\0\0")).toByteArray();
-
   QByteArray state = settings.value("window-state", QByteArray("@ByteArray(\0\0\0\xff\0\0\0\0\xfd\0\0\0\x1\0\0\0\0\0\0\x1\xe\0\0\x3N\xfc\x2\0\0\0\x2\xfb\0\0\0$\0t\0o\0o\0l\0\x62\0o\0x\0-\0\x64\0o\0\x63\0k\0w\0i\0\x64\0g\0\x65\0t\x1\0\0\0x\0\0\x2\x65\0\0\0\xe8\0\xff\xff\xff\xfb\0\0\0$\0i\0n\0\x66\0o\0\x62\0o\0x\0-\0\x64\0o\0\x63\0k\0w\0i\0\x64\0g\0\x65\0t\x1\0\0\x2\xe3\0\0\0\xe3\0\0\0l\0\xff\xff\xff\0\0\x6l\0\0\x3N\0\0\0\x1\0\0\0\x4\0\0\0\x1\0\0\0\b\xfc\0\0\0\x2\0\0\0\x2\0\0\0\x3\0\0\0\x18\0\x66\0i\0l\0\x65\0-\0t\0o\0o\0l\0\x62\0\x61\0r\x1\0\0\0\0\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\x18\0\x65\0\x64\0i\0t\0-\0t\0o\0o\0l\0\x62\0\x61\0r\x1\0\0\x1\x33\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\x18\0z\0o\0o\0m\0-\0t\0o\0o\0l\0\x62\0\x61\0r\x1\0\0\x2s\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\x2\0\0\0\x4\0\0\0\b\0\x44\0r\0\x61\0w\x1\0\0\0\0\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\n\0R\0i\0n\0g\0s\x1\0\0\x2G\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\n\0T\0o\0o\0l\0s\x1\0\0\x3t\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\x10\0R\0\x65\0\x61\0\x63\0t\0i\0o\0n\x1\0\0\x4\x80\xff\xff\xff\xff\0\0\0\0\0\0\0\0)")).toByteArray();
 
 
@@ -1135,6 +978,7 @@ void MainWindow::readPreferences(const QSettings & settings)
 
   // Update the scene contents
   m_scene->update();
+  buildLibraries();
 }
 
 void MainWindow::writeSettings()
@@ -1150,11 +994,9 @@ void MainWindow::writeSettings()
   settings.setValue("window-state", saveState());
 
   // Saving paths
-//   settings.setValue("library-path",m_libPath);
   settings.setValue("last-save-path", m_lastAccessedPath);
 
   // Saving preferences
-//   settings.setValue("atom-size",m_scene->atomSize());
    settings.setValue("auto-add-hydrogen",m_scene->autoAddHydrogen());
 //   settings.setValue("bond-length",m_scene->bondLength());
 //   settings.setValue("bond-angle",m_scene->bondAngle());

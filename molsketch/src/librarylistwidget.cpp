@@ -16,21 +16,53 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#include <QDir>
+#include <QDrag>
+#include <QMimeData>
+#include <QXmlStreamWriter>
+#include <QDebug>
+
 #include "librarylistwidget.h"
 #include "mollibitem.h"
 #include "molecule.h"
 #include "molscene.h"
-
-#include <QDrag>
-#include <QMimeData>
-#include <QXmlStreamWriter>
-
+#include "fileio.h"
 using namespace Molsketch;
 
-LibraryListWidget::LibraryListWidget(QWidget *parent) :
-  QListWidget(parent)
+void LibraryListWidget::buildItems(QString directory)
 {
+  QDir folder(directory);
+  Title = folder.dirName();
+  foreach(const QString& entry, folder.entryList())
+  {
+    foreach(Molecule* molecule, moleculesFromFile(folder.filePath(entry)))
+    {
+      if (molecule)
+        addItem(new MolLibItem(molecule, entry));
+    }
+  }
+}
+
+void LibraryListWidget::setGuiConfiguration(const QString& directory)
+{
+  setSortingEnabled(true);
   setDragEnabled(true);
+  setDefaultDropAction(Qt::CopyAction);
+  setAlternatingRowColors(true);
+  setIconSize(QSize(64,64)); // TODO make configurable
+  setToolTip(directory);
+}
+
+LibraryListWidget::LibraryListWidget(QString directory, QWidget *parent)
+  : QListWidget(parent)
+{
+  setGuiConfiguration(directory);
+  buildItems(directory);
+}
+
+QString LibraryListWidget::title() const
+{
+  return Title;
 }
 
 QStringList LibraryListWidget::mimeTypes() const

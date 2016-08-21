@@ -25,11 +25,16 @@ class LibraryListWidget : public QListWidget
 {
   Q_OBJECT
 public:
-  explicit LibraryListWidget(QWidget *parent = 0);
+  explicit LibraryListWidget(QString directory, QWidget *parent = 0);
+  QString title() const;
 protected:
   QStringList mimeTypes() const;
   QMimeData* mimeData(const QList<QListWidgetItem *> items) const;
   void startDrag(Qt::DropActions supportedActions);
+private:
+  void setGuiConfiguration(const QString &directory);
+  void buildItems(QString directory);
+  QString Title;
 };
 
 #endif // LIBRARYLISTWIDGET_H

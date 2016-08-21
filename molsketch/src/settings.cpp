@@ -41,8 +41,6 @@ SettingsDialog::SettingsDialog(QWidget * parent, Qt::WindowFlags f ) : QDialog(p
   ui.listWidget->setCurrentRow(0);
 
   // Connect signals and slots
-  connect(ui.toolButtonBrowseLibraryPath, SIGNAL(clicked()), this, SLOT(browseLibraryPath()));
-  connect(ui.toolButtonBrowseCustomLibraryPath, SIGNAL(clicked()), this, SLOT(browseCustomLibraryPath()));
   connect(ui.pushButtonFont, SIGNAL(clicked()), this, SLOT(selectFont()));
   connect(ui.buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(buttonClicked(QAbstractButton*)));
   connect(ui.buttonBox, SIGNAL(helpRequested()), this, SLOT(showHelp()));
@@ -65,8 +63,6 @@ SettingsDialog::SettingsDialog(QWidget * parent, Qt::WindowFlags f ) : QDialog(p
   ui.labelBondAngle->setText(tr("Bond angle: "));
 
   ui.groupBoxLibraries->setTitle(tr("Libraries"));
-  ui.labelLibraryPath->setText(tr("Library path"));
-  ui.labelCustomLibraryPath->setText(tr("Custom library path"));
 
   // Setting initial values
   setInitialValues();
@@ -98,8 +94,8 @@ void SettingsDialog::setInitialValues()
   ui.doubleSpinBoxBondWidth->setValue(settings.value("bond-width", 1).toDouble());
   ui.spinBoxBondAngle->setValue(settings.value("bond-angle", 30).toInt());
 
-  ui.lineEditLibraryPath->setText(settings.value("library-path", "/usr/share/molsketch/library/").toString());
-  ui.lineEditCustomLibraryPath->setText(settings.value("custom-library-path", QDir::homePath()).toString());
+  ui.libraries->clear();
+  ui.libraries->addItems(settings.value("libraries", QStringList()).toStringList());
 }
 
 void SettingsDialog::accept()
@@ -131,23 +127,10 @@ void SettingsDialog::applyChanges()
   settings.setValue("bond-angle", ui.spinBoxBondAngle->value());
 
   // Library settings
-  /* TODO check if the paths are valid */
-  settings.setValue("library-path", ui.lineEditLibraryPath->text());
-  settings.setValue("custom-library-path", ui.lineEditCustomLibraryPath->text());
-}
-
-void SettingsDialog::browseLibraryPath()
-{
-  QString path = QFileDialog::getExistingDirectory(this, "molsKetch - Select library path", ui.lineEditLibraryPath->text());
-  if (!path.isEmpty())
-    ui.lineEditLibraryPath->setText(path);
-}
-
-void SettingsDialog::browseCustomLibraryPath()
-{
-  QString path = QFileDialog::getExistingDirectory(this, "molsKetch - Select custom library path", ui.lineEditCustomLibraryPath->text());
-  if (!path.isEmpty())
-    ui.lineEditCustomLibraryPath->setText(path);
+  QStringList libraries;
+  for (int i = 0 ; i < ui.libraries->count() ; ++i)
+    libraries << ui.libraries->item(i)->text();
+  settings.setValue("libraries", libraries);
 }
 
 void SettingsDialog::selectFont()
@@ -180,4 +163,18 @@ void SettingsDialog::buttonClicked(QAbstractButton * button)
 void SettingsDialog::showHelp()
 {
   /* TODO this should show the right help page */
+}
+
+void SettingsDialog::on_addLibrary_clicked()
+{
+  QString newLibrary = QFileDialog::getExistingDirectory(this, tr("Select library folder"));
+  if (newLibrary.isEmpty()) return;
+  ui.libraries->addItem(newLibrary);
+  ui.libraries->sortItems();
+}
+
+void SettingsDialog::on_removeLibrary_clicked()
+{
+  foreach (QListWidgetItem* item, ui.libraries->selectedItems())
+    delete item;
 }
