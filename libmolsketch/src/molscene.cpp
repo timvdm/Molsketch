@@ -45,8 +45,10 @@
 #endif
 #include <QDebug>
 #include <QDockWidget>
+#include <QLabel>
 #include <QMainWindow>
 #include <QPair>
+#include <QVBoxLayout>
 
 #include "molscene.h"
 
@@ -88,6 +90,7 @@ namespace Molsketch {
     grid *Grid;
     MolScene *scene;
     QDockWidget *propertiesDock;
+    QLabel *propertiesHelpLabel;
 
     QAction *bondLengthAction,
     *bondWidthAction,
@@ -109,15 +112,11 @@ namespace Molsketch {
     QMap<QAction*, QPair<void (MolScene::*)(const bool&), bool (MolScene::*)() const> > booleanActions;
     void attachDockWidgetToMainWindow(MolScene* scene)
     {
-      bool visible = propertiesDock->isVisible();
-      if (scene->views().size() == 1 && scene->views().first()->parentWidget())
+      if (scene)
       {
-        QMainWindow* mainWindow = qobject_cast<QMainWindow*>(scene->views().first()->parentWidget());
+        QMainWindow* mainWindow = qobject_cast<QMainWindow*>(scene->parent());
         if (mainWindow)
-        {
           mainWindow->addDockWidget(Qt::LeftDockWidgetArea, propertiesDock);
-          propertiesDock->setVisible(visible);
-        }
       }
     }
 
@@ -127,6 +126,7 @@ namespace Molsketch {
         Grid(new grid),
         scene(scene),
         propertiesDock(new QDockWidget(tr("Properties"))),
+        propertiesHelpLabel(new QLabel(tr("Select single item to edit properties"), propertiesDock)),
         bondLengthAction(new QAction(tr("Bond length..."), scene)),
         bondWidthAction(new QAction(tr("Bond linewidth..."), scene)),
         arrowWidthAction(new QAction(tr("Arrow width..."), scene)),
@@ -159,6 +159,10 @@ namespace Molsketch {
         connect(booleanAction, SIGNAL(toggled(bool)), scene, SLOT(booleanPropertyChanged(bool)));
         connect(booleanAction, SIGNAL(toggled(bool)), scene, SLOT(updateAll()));
       }
+
+      propertiesHelpLabel->setAlignment(Qt::AlignTop);
+      propertiesHelpLabel->setDisabled(true);
+      propertiesDock->setWidget(propertiesHelpLabel);
       attachDockWidgetToMainWindow(scene);
     }
 
@@ -173,7 +177,7 @@ namespace Molsketch {
     {
       delete inputItem;
       delete selectionRectangle;
-      propertiesDock->setWidget(0);
+      propertiesDock->setWidget(propertiesHelpLabel);
       delete propertiesDock;
       if (!Grid->scene()) delete Grid;
     }
@@ -664,13 +668,12 @@ namespace Molsketch {
 
   void MolScene::selectionSlot()
   {
-        foreach(abstractItemAction* itemAction, findChildren<abstractItemAction*>())
-          itemAction->setItems(selectedItems());
-        graphicsItem* currentItem = 0;
-        if (selectedItems().size() == 1) currentItem = dynamic_cast<graphicsItem*>(selectedItems().first());
-        if (currentItem) d->propertiesDock->setWidget(currentItem->getPropertiesWidget());
-        else d->propertiesDock->setWidget(0);
-        d->attachDockWidgetToMainWindow(this);
+    foreach(abstractItemAction* itemAction, findChildren<abstractItemAction*>())
+      itemAction->setItems(selectedItems());
+    graphicsItem* currentItem = 0;
+    if (selectedItems().size() == 1) currentItem = dynamic_cast<graphicsItem*>(selectedItems().first());
+    if (currentItem) d->propertiesDock->setWidget(currentItem->getPropertiesWidget());
+    else d->propertiesDock->setWidget(d->propertiesHelpLabel);
   }
 
   void MolScene::booleanPropertyChanged(bool newValue)
@@ -678,11 +681,6 @@ namespace Molsketch {
     QAction* action = dynamic_cast<QAction*>(sender());
     if (!d->booleanActions.contains(action)) return;
     (this->*d->booleanActions.value(action).first)(newValue);
-  }
-
-  void MolScene::showCurrentItemProperties()
-  {
-    d->propertiesDock->show();
   }
 
   Atom* MolScene::atomAt(const QPointF &pos)
@@ -903,13 +901,6 @@ namespace Molsketch {
           return;
         }
         contextMenu.addMenu(d->contextSubMenu()); // TODO memory leak
-
-        if (selectedItems().size() == 1 && dynamic_cast<graphicsItem*>(selectedItems().first()))
-        {
-            QAction* propertiesAction = new QAction(tr("Properties..."), &contextMenu);
-            contextMenu.addAction(propertiesAction);
-            connect(propertiesAction, SIGNAL(triggered()), this, SLOT(showCurrentItemProperties()));
-        }
 
 	contextMenu.exec(event->screenPos());
         event->accept();

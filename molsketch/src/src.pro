@@ -13,13 +13,15 @@ FORMS += \
 HEADERS += \
     mainwindow.h \
     settings.h \
-    librarylistwidget.h
+    librarylistwidget.h \
+    helpforemptytoolbox.h
 
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
     settings.cpp \
-    librarylistwidget.cpp
+    librarylistwidget.cpp \
+    helpforemptytoolbox.cpp
 
 INCLUDEPATH += \
 	$$sourceDir/../../libmolsketch/src \

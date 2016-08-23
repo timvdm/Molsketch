@@ -279,7 +279,6 @@ namespace Molsketch {
       void updateAll() ;
       void selectionSlot();
       void booleanPropertyChanged(bool newValue);
-      void showCurrentItemProperties();
 };
 
 } // namespace

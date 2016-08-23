@@ -68,7 +68,9 @@ HEADERS += \
     actions/flipstereobondsaction.h \
     generics.h \
     actions/changemoleculenameaction.h \
-    moleculepopup.h
+    moleculepopup.h \
+    helptextonemptylabel.h \
+    helptextemptydock.h
 
 SOURCES += \
     atom.cpp \
@@ -132,7 +134,9 @@ SOURCES += \
     actions/flipstereobondsaction.cpp \
     generics.cpp \
     actions/changemoleculenameaction.cpp \
-    moleculepopup.cpp
+    moleculepopup.cpp \
+    helptextonemptylabel.cpp \
+    helptextemptydock.cpp
 
 FORMS += \
     arrowpopup.ui \

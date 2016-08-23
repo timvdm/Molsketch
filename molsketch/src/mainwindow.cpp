@@ -69,6 +69,7 @@
 #include "obabeliface.h"
 
 // widgets
+#include "helpforemptytoolbox.h"
 #include "settings.h"
 
 
@@ -851,8 +852,14 @@ void MainWindow::createToolBox()
   toolBoxDock->setObjectName("toolbox-dockwidget");
   toolBoxDock->setMinimumWidth(270);
   // Create a library toolbox and add the libraries
+  QWidget* toolBoxDockContent = new QWidget;
+  QLayout* layout = new QVBoxLayout(toolBoxDockContent);
+  toolBoxDockContent->setLayout(layout);
   toolBox = new QToolBox;
-  toolBoxDock->setWidget(toolBox);
+  layout->addWidget(new HelpForEmptyToolBox(tr("Define libraries using Edit > Preferences > Libraries."), toolBox, toolBoxDockContent));
+  layout->addWidget(toolBox);
+  layout->setMargin(0);
+  toolBoxDock->setWidget(toolBoxDockContent);
   // Placing the dockwidgets in their default position
   setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
   setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
