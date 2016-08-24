@@ -53,6 +53,7 @@ namespace Molsketch {
     Q_OBJECT
 
     public:
+    static const QString mouseWheelForCyclingTools;
       /** 
        * Enum for the different edit modes. 
        */
@@ -237,6 +238,7 @@ namespace Molsketch {
       QString xmlName() const { return "div" ; }
       QPointF snapToGrid(const QPointF& point, bool force = false);
       bool snappingToGrid() const;
+      bool cyclingByMouseWheelEnaled() const;
   protected:
       abstractXmlObject* produceChild(const QString &childName, const QString& type) ;
       QList<const abstractXmlObject*> children() const ;

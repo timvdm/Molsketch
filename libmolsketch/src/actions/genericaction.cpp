@@ -74,7 +74,8 @@ namespace Molsketch{
         enterSceneEvent(event);
         break;
       case QEvent::GraphicsSceneWheel:
-        wheelEvent(static_cast<QGraphicsSceneWheelEvent*>(event));
+        if (cyclingToolsByMouseWheelEnabled())
+          wheelEvent(static_cast<QGraphicsSceneWheelEvent*>(event));
       default: ;
     }
     if (event->isAccepted()) return true;
@@ -105,6 +106,12 @@ namespace Molsketch{
     MolScene *molscene = dynamic_cast<MolScene*>(scene());
     if (!molscene || !molscene->stack()) return;
     molscene->stack()->endMacro();
+  }
+
+  bool genericAction::cyclingToolsByMouseWheelEnabled() const
+  {
+    if (!scene()) return false;
+    return scene()->cyclingByMouseWheelEnaled();
   }
 
   void genericAction::activationSlot(const bool &b)

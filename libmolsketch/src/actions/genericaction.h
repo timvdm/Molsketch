@@ -55,6 +55,8 @@ namespace Molsketch {
     void attemptUndoPush(QUndoCommand* command) const ;
     void attemptBeginMacro(const QString& text) const;
     void attemptEndMacro() const;
+  private:
+    bool cyclingToolsByMouseWheelEnabled() const;
   private slots:
     void activationSlot(const bool& b) ;
   };

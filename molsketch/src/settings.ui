@@ -94,7 +94,7 @@
        <item>
         <widget class="QStackedWidget" name="stackedWidget">
          <property name="currentIndex">
-          <number>2</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="generalPage">
           <widget class="QGroupBox" name="groupBoxGeneral">
@@ -107,7 +107,7 @@
             </rect>
            </property>
            <property name="title">
-            <string>Save options</string>
+            <string>General options</string>
            </property>
            <widget class="QWidget" name="generalLayoutWidget">
             <property name="geometry">
@@ -115,7 +115,7 @@
               <x>20</x>
               <y>40</y>
               <width>388</width>
-              <height>116</height>
+              <height>176</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="SaveLayout">
@@ -200,6 +200,38 @@
                   <string/>
                  </property>
                 </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_3">
+               <item>
+                <widget class="QLabel" name="label">
+                 <property name="text">
+                  <string>Use mouse wheel to...</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <layout class="QVBoxLayout" name="verticalLayout_2">
+                 <item>
+                  <widget class="QRadioButton" name="mouseWheelZoom">
+                   <property name="text">
+                    <string>zoom</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QRadioButton" name="mouseWheelCycleTools">
+                   <property name="text">
+                    <string>cycle tools</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
                </item>
               </layout>
              </item>
@@ -481,7 +513,9 @@
                   <string/>
                  </property>
                  <property name="icon">
-                  <iconset theme="list-add"/>
+                  <iconset theme="list-add">
+                   <normaloff/>
+                  </iconset>
                  </property>
                 </widget>
                </item>
@@ -491,7 +525,9 @@
                   <string/>
                  </property>
                  <property name="icon">
-                  <iconset theme="list-remove"/>
+                  <iconset theme="list-remove">
+                   <normaloff/>
+                  </iconset>
                  </property>
                 </widget>
                </item>

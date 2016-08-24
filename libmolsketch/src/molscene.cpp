@@ -35,6 +35,7 @@
 #include <QLibrary>
 #include <QMessageBox>
 #include <QSvgGenerator>
+#include <QPushButton>
 #include <QBuffer>
 #if QT_VERSION < 0x050000
 #include <QtMath>
@@ -48,6 +49,7 @@
 #include <QLabel>
 #include <QMainWindow>
 #include <QPair>
+#include <QSettings>
 #include <QVBoxLayout>
 
 #include "molscene.h"
@@ -82,6 +84,8 @@ namespace Molsketch {
 #ifdef QT_STATIC_BUILD
   void initToolBarIconsMsk() { initToolBarIcons(); }
 #endif
+
+  const QString MolScene::mouseWheelForCyclingTools = "mouse-wheel-cycle-tools";
 
   struct MolScene::privateData
   {
@@ -580,6 +584,33 @@ namespace Molsketch {
   bool MolScene::snappingToGrid() const
   {
     return d->gridOn();
+  }
+
+  bool MolScene::cyclingByMouseWheelEnaled() const
+  {
+    QSettings settings;
+    QVariant mouseWheelForTools = settings.value(mouseWheelForCyclingTools);
+    if (mouseWheelForTools.isValid())
+        return mouseWheelForTools.toBool();
+    QMessageBox promptForMouseWheelUsage;
+    promptForMouseWheelUsage.setWindowTitle(tr("Mouse wheel configuration"));
+    promptForMouseWheelUsage.setText(tr("Mouse wheel use has not been configured."
+                                        "Should the wheel be used to zoom, "
+                                        "or to cycle tool settings?"));
+    QAbstractButton *zoomButton = promptForMouseWheelUsage.addButton(tr("Use to zoom"), QMessageBox::YesRole);
+    QAbstractButton *cycleButton = promptForMouseWheelUsage.addButton(tr("Use to cycle tool options"), QMessageBox::NoRole);
+    promptForMouseWheelUsage.exec();
+    if (promptForMouseWheelUsage.clickedButton() == zoomButton)
+    {
+      settings.setValue(mouseWheelForCyclingTools, false);
+      return false;
+    }
+    if (promptForMouseWheelUsage.clickedButton() == cycleButton)
+    {
+      settings.setValue(mouseWheelForCyclingTools, true);
+      return true;
+    }
+    return false;
   }
 
   void MolScene::setGrid(bool on)

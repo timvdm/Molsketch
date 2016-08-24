@@ -28,6 +28,7 @@
 #include <QFileDialog>
 #include <QFontDialog>
 #include <QSettings>
+#include <molscene.h>
 
 #include "settings.h"
 
@@ -96,6 +97,15 @@ void SettingsDialog::setInitialValues()
 
   ui.libraries->clear();
   ui.libraries->addItems(settings.value("libraries", QStringList()).toStringList());
+
+  QVariant mouseWheelForTools = settings.value(Molsketch::MolScene::mouseWheelForCyclingTools);
+  if (mouseWheelForTools.isValid())
+  {
+    if (mouseWheelForTools.toBool())
+      ui.mouseWheelCycleTools->setChecked(true);
+    else
+      ui.mouseWheelZoom->setChecked(true);
+  }
 }
 
 void SettingsDialog::accept()
@@ -131,6 +141,14 @@ void SettingsDialog::applyChanges()
   for (int i = 0 ; i < ui.libraries->count() ; ++i)
     libraries << ui.libraries->item(i)->text();
   settings.setValue("libraries", libraries);
+
+  if (ui.mouseWheelCycleTools->isChecked())
+    settings.setValue(Molsketch::MolScene::mouseWheelForCyclingTools, true);
+  else if (ui.mouseWheelZoom->isChecked())
+    settings.setValue(Molsketch::MolScene::mouseWheelForCyclingTools, true);
+  else
+    settings.remove(Molsketch::MolScene::mouseWheelForCyclingTools);
+
   emit settingsChanged();
 }
 
