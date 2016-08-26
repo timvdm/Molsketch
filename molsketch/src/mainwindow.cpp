@@ -194,10 +194,8 @@ void MainWindow::newFile()
   if (maybeSave())
     {
       m_scene->clear();
-      // Resetting the view
       setCurrentFile("");
       m_molView->resetMatrix();
-//       setWindowModified(false);
     }
 }
 

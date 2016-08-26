@@ -437,24 +437,10 @@ namespace Molsketch {
 
   void MolScene::clear()
   {
-        // Purge the undom_stack
-        m_stack->clear();
-        // remove private items
-        delete d;
-
-        QGraphicsScene::clear();
-        d = new privateData(this);
-
-	// Reinitialize the scene
-	//m_hintPoints.clear();
-	//initHintItems();
-	setEditMode(MolScene::DrawMode);
-
-//	m_inputTextItem = new TextInputItem();
-//	addItem(m_inputTextItem);
-	// hide it for now...
-//	m_inputTextItem->hide();
-
+    QGraphicsScene::clear();
+    m_stack->clear();
+    delete d;
+    d = new privateData(this);
   }
 
   QImage MolScene::renderMolToImage (Molecule *mol)

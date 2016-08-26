@@ -83,10 +83,10 @@ namespace Molsketch {
 
   void ArrowPopup::connectArrow(Arrow *a)
   {
-    d->arrow = a;
-    if (!a) return;
-    d->transferPropertiesToUi(ui,d->arrow->getProperties());
+    if (a)
+      d->transferPropertiesToUi(ui, a->getProperties());
     checkSplineEligibility();
+    d->arrow = a;
   }
 
   // immediate TODO: Enable quit by pressing Esc (revert settings first) or loosing focus
