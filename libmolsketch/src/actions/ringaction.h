@@ -24,6 +24,10 @@
 
 namespace Molsketch {
 
+  class Atom;
+  class Bond;
+  class Molecule;
+
   class ringAction : public multiAction
   {
     Q_OBJECT
@@ -39,6 +43,9 @@ namespace Molsketch {
   private:
     class privateData;
     privateData *d;
+    QList<Atom *> getRingAtoms(Molecule *newMolecule);
+    QList<Bond *> getRingBonds(QList<Atom*> ringAtoms, Molecule *newMolecule);
+    void addAromaticity(QList<Bond*> ringBonds);
   private slots:
     void changeRing();
   };

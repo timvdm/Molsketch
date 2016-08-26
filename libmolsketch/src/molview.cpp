@@ -38,7 +38,6 @@ MolView::MolView(QGraphicsScene* scene) : QGraphicsView(scene)
 	setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
         setStyleSheet("");
         setContextMenuPolicy(Qt::DefaultContextMenu);
-        qDebug() << "contextMenuPolicy:" << contextMenuPolicy() ;
 
 #if QT_VERSION >= 0x040300
         setViewportUpdateMode(QGraphicsView::FullViewportUpdate);

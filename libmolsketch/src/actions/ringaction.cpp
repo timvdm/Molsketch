@@ -199,25 +199,22 @@ namespace Molsketch {
       d->alignRingWithBond(bond, downPos);
   }
 
-  void ringAction::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+  QList<Atom *> ringAction::getRingAtoms(Molecule* newMolecule)
   {
-    event->accept();
-    Molecule *newMolecule = new Molecule();
-
-    // create/find atoms
     QList<Atom*> ringAtoms;
     foreach(const QPointF& hintPoint, d->hintRingPoints)
     {
       QPointF vertex(d->hintMoleculeItems.mapToScene(hintPoint));
       Atom *atom = scene()->atomAt(vertex);
-      if (atom)
+      if (atom && atom->molecule())
       {
-        if (atom->molecule() != newMolecule) // merge other molecule
+        Molecule* otherMolecule = atom->molecule();
+        if (otherMolecule != newMolecule) // merge other molecule
         {
-          int index = newMolecule->atoms().size() + atom->molecule()->atomIndex(atom);
-          *newMolecule += *(atom->molecule());
-          attemptUndoPush(new Commands::DelItem(atom->molecule()));
-          atom = newMolecule->atom(index);
+          int index = newMolecule->atoms().size() + otherMolecule->atomIndex(atom);
+          *newMolecule += *otherMolecule;
+          atom = newMolecule->atom(index); // TODO dangerous as this relies on indexes
+          attemptUndoPush(new Commands::DelItem(otherMolecule));
         }
       }
       else
@@ -227,8 +224,11 @@ namespace Molsketch {
       }
       ringAtoms << atom;
     }
+    return ringAtoms;
+  }
 
-    // create bonds
+  QList<Bond *> ringAction::getRingBonds(QList<Atom*> ringAtoms, Molecule* newMolecule)
+  {
     QList<Bond*> ringBonds;
     for (int i = 0 ; i < ringAtoms.size() ; ++i)
     {
@@ -239,7 +239,11 @@ namespace Molsketch {
       ringBonds << bond;
     }
 
-    // add aromatic bonds
+    return ringBonds;
+  }
+
+  void ringAction::addAromaticity(QList<Bond*> ringBonds)
+  {
     if (activeSubAction()->data().toInt() < 0) // Test for aromaticity
     {
       foreach(Bond* bond, ringBonds)
@@ -252,8 +256,21 @@ namespace Molsketch {
         bond->setType(Bond::DoubleAsymmetric);
       }
     }
+  }
 
-    attemptUndoPush(new Commands::AddItem(newMolecule, scene(), tr("Add ring")));
+  void ringAction::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+  {
+    event->accept();
+
+    attemptBeginMacro(tr("Add ring"));
+
+    Molecule *newMolecule = new Molecule();
+    attemptUndoPush(new Commands::AddItem(newMolecule, scene()));
+    QList<Atom*> ringAtoms = getRingAtoms(newMolecule);
+    QList<Bond*> ringBonds = getRingBonds(ringAtoms, newMolecule);
+    addAromaticity(ringBonds);
+
+    attemptEndMacro();
   }
 
   void ringAction::leaveSceneEvent(QEvent *event)

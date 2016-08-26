@@ -63,7 +63,7 @@ namespace Molsketch {
     QRectF boundingRect() const ;
 
     void setPoint(const int& index, const QPointF& p) ;
-    void setPoints(const QPolygonF&polygon);
+    void setPoints(const QPolygonF& polygon);
     QPointF getPoint(const int& index) const;
     QPointF lastPoint() const;
     QPointF firstPoint() const;
