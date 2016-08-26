@@ -1,5 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2015 Hendrik Vennekate                                  *
+ *   Copyright (C) 2007-2008 by Harm van Eersel                            *
+ *   Copyright (C) 2009 Tim Vandermeersch                                  *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -16,22 +17,36 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef MOLSKETCH_FLIPBONDACTION_H
-#define MOLSKETCH_FLIPBONDACTION_H
 
 #include "abstractrecursiveitemaction.h"
+#include <QUndoStack>
+#include "molscene.h"
+#include "graphicsitem.h"
+#include <QDebug>
 
 namespace Molsketch {
 
-  class flipBondAction : public abstractRecursiveItemAction
+  QList<QGraphicsItem*> getFamily(const QList<QGraphicsItem*>& list)
   {
-    Q_OBJECT
-  public:
-    explicit flipBondAction(MolScene *scene = 0);
-  private:
-    void execute();
-  };
+    QList<QGraphicsItem*> family(list);
+    foreach(QGraphicsItem* item, list)
+      family += getFamily(item->childItems());
+    return family;
+  }
 
-} // namespace Molsketch
+  abstractRecursiveItemAction::abstractRecursiveItemAction(MolScene *parent)
+    : AbstractItemAction(parent)
+  {}
 
-#endif // MOLSKETCH_FLIPBONDACTION_H
+  QSet<graphicsItem *> abstractRecursiveItemAction::filterItems(const QList<QGraphicsItem *> &list) const
+  {
+    QSet<graphicsItem*> result;
+    foreach(QGraphicsItem *item, getFamily(list))
+    {
+      graphicsItem *gItem = dynamic_cast<graphicsItem*>(item);
+      if (gItem) result << gItem;
+    }
+    return result;
+  }
+
+} // namespace

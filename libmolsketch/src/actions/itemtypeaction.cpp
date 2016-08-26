@@ -26,6 +26,7 @@ namespace Molsketch {
 
   void ItemTypeAction::applyType(int type, const QVariant &data) const
   {
+    Q_UNUSED(data);
     attemptBeginMacro(undoName());
     foreach(graphicsItem *item, items())
       applyTypeToItem(item,type);

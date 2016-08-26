@@ -1,5 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2015 Hendrik Vennekate                                  *
+ *   Copyright (C) 2007 by Harm van Eersel                                 *
+ *   devsciurus@xs4all.nl                                                  *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -16,22 +17,39 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef MOLSKETCH_FLIPBONDACTION_H
-#define MOLSKETCH_FLIPBONDACTION_H
 
-#include "abstractrecursiveitemaction.h"
+/** @file
+ * This file is part of molsKetch and contains the abstractItemAction class.
+ *
+ * This class provides the infrastructure for an action that operates on
+ * one or more items.
+ *
+ * @author Hendrik Vennekate <HVennekate@gmx.de>
+ * @since Lithium
+ */
 
-namespace Molsketch {
+#ifndef ABSTRACTRECURSIVEITEMACTION_H
+#define ABSTRACTRECURSIVEITEMACTION_H
 
-  class flipBondAction : public abstractRecursiveItemAction
+#include "abstractitemaction.h"
+#include <QList>
+
+namespace Molsketch
+{
+  class abstractRecursiveItemAction : public AbstractItemAction
   {
     Q_OBJECT
   public:
-    explicit flipBondAction(MolScene *scene = 0);
-  private:
-    void execute();
+    explicit abstractRecursiveItemAction(MolScene *parent = 0);
+  protected:
+    QSet<graphicsItem*> filterItems(const QList<QGraphicsItem *> &list) const;
   };
 
-} // namespace Molsketch
+} // namespace
 
-#endif // MOLSKETCH_FLIPBONDACTION_H
+#define ITERATEOVERITEMSMACRO(COMMENT,COMMAND,VALUE) \
+  undoStack()->beginMacro(tr(COMMENT)) ;\
+  foreach(graphicsItem* item, items())\
+  undoStack()->push(new Commands::COMMAND(VALUE, item)) ;\
+  undoStack()->endMacro() ;
+#endif // ABSTRACTITEMACTION_H

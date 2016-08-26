@@ -28,13 +28,13 @@
 #ifndef COLORACTION_H
 #define COLORACTION_H
 
-#include "actions/abstractitemaction.h"
+#include "actions/abstractrecursiveitemaction.h"
 
 
 namespace Molsketch {
   class graphicsItem ;
 
-  class colorAction : public abstractItemAction
+  class colorAction : public abstractRecursiveItemAction
   {
     Q_OBJECT
   public:

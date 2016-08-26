@@ -30,7 +30,7 @@ namespace Molsketch {
   };
 
   colorAction::colorAction(MolScene *parent) :
-    abstractItemAction(parent),
+    abstractRecursiveItemAction(parent),
     d(new privateData)
   {
     setText(tr("Color...")) ;

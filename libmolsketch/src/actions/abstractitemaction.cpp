@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2007-2008 by Harm van Eersel                            *
- *   Copyright (C) 2009 Tim Vandermeersch                                  *
+ *   Copyright (C) 2007 by Harm van Eersel                                 *
+ *   devsciurus@xs4all.nl                                                  *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -17,22 +17,20 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-
 #include "abstractitemaction.h"
-#include <QUndoStack>
+
+#include <QSet>
 #include "molscene.h"
-#include "graphicsitem.h"
-#include <QDebug>
 
 namespace Molsketch {
 
-  struct abstractItemAction::privateData
+  struct AbstractItemAction::privateData
   {
     QSet<graphicsItem *> itemList ;
-    abstractItemAction *parent;
+    AbstractItemAction *parent;
     int minItemCount;
 
-    privateData(abstractItemAction* p)
+    privateData(AbstractItemAction* p)
       : parent(p), minItemCount(0) {}
     void checkItems()
     {
@@ -42,7 +40,17 @@ namespace Molsketch {
     }
   };
 
-  abstractItemAction::abstractItemAction(MolScene *parent) :
+  QSet<graphicsItem *> AbstractItemAction::filterItems(const QList<QGraphicsItem *> &inputItems) const
+  {
+    QSet<graphicsItem*> result;
+    foreach (QGraphicsItem* item, inputItems)
+      result << dynamic_cast<graphicsItem*>(item);
+    result.remove(0);
+    return result;
+  }
+
+
+  AbstractItemAction::AbstractItemAction(MolScene *parent) :
     genericAction(parent),
     d(new privateData(this))
   {
@@ -50,83 +58,67 @@ namespace Molsketch {
     connect(parent, SIGNAL(selectionChanged()), this, SLOT(updateItems()));
   }
 
-  abstractItemAction::~abstractItemAction()
+  AbstractItemAction::~AbstractItemAction()
   {
     delete d;
   }
 
-
-
-  void abstractItemAction::setItem(graphicsItem * item)
+  void AbstractItemAction::setItem(graphicsItem * item)
   {
     setItems(QList<QGraphicsItem*>() << item);
   }
 
-  QList<QGraphicsItem*> getFamily(const QList<QGraphicsItem*>& list)
+  void AbstractItemAction::setItems(const QList<QGraphicsItem *>& list)
   {
-    QList<QGraphicsItem*> family(list);
-    foreach(QGraphicsItem* item, list)
-      family += getFamily(item->childItems());
-    return family;
-  }
-
-  void abstractItemAction::setItems(const QList<QGraphicsItem *>& list)
-  {
-    d->itemList.clear();
-    foreach(QGraphicsItem* item, getFamily(list))
-    {
-      graphicsItem *gItem = dynamic_cast<graphicsItem*>(item);
-      if (gItem) d->itemList << gItem;
-    }
+    d->itemList = filterItems(list);
     d->checkItems();
   }
 
-  void abstractItemAction::removeItem(graphicsItem *item)
+  void AbstractItemAction::removeItem(graphicsItem *item)
   {
     removeItems(QList<graphicsItem*>() << item) ;
   }
 
-  void abstractItemAction::removeItems(const QList<graphicsItem *> &list)
+  void AbstractItemAction::removeItems(const QList<graphicsItem *> &list)
   {
     foreach(graphicsItem* item, list)
       d->itemList.remove(item) ;
     d->checkItems();
   }
 
-  void abstractItemAction::clearItems()
+  void AbstractItemAction::clearItems()
   {
     d->itemList.clear();
     d->checkItems();
   }
 
-  void abstractItemAction::addItem(graphicsItem *item)
+  void AbstractItemAction::addItem(graphicsItem *item)
   {
     d->itemList << item;
     d->checkItems();
   }
 
-  void abstractItemAction::setMinimumItemCount(const int &count)
+  void AbstractItemAction::setMinimumItemCount(const int &count)
   {
     d->minItemCount = count;
     d->checkItems();
   }
 
-  QList<graphicsItem *> abstractItemAction::items() const
+  QList<graphicsItem *> AbstractItemAction::items() const
   {
     return d->itemList.toList() ;
   }
 
-  void abstractItemAction::gotTrigger()
+  void AbstractItemAction::gotTrigger()
   {
     if (d->itemList.size() < d->minItemCount) return ;
-    qDebug() << "itemaction" << scene() ;
     execute();
   }
 
-  void abstractItemAction::updateItems()
+  void AbstractItemAction::updateItems()
   {
     if (!scene()) return;
     setItems(scene()->selectedItems());
   }
 
-} // namespace
+} // namespace Molsketch

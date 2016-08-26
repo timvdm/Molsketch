@@ -1,11 +1,11 @@
 #ifndef FLIPSTEREOBONDSACTION_H
 #define FLIPSTEREOBONDSACTION_H
 
-#include "abstractitemaction.h"
+#include "abstractrecursiveitemaction.h"
 
 namespace Molsketch {
 
-  class flipStereoBondsAction : public abstractItemAction
+  class flipStereoBondsAction : public abstractRecursiveItemAction
   {
     Q_OBJECT
   public:

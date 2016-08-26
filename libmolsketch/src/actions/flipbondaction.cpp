@@ -24,7 +24,7 @@
 namespace Molsketch {
 
   flipBondAction::flipBondAction(MolScene *scene)
-    : abstractItemAction(scene)
+    : abstractRecursiveItemAction(scene)
   {
     setMinimumItemCount(1);
     setIcon(QIcon(":images/flip-bond.svg"));

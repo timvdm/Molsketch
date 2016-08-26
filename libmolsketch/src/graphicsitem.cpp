@@ -293,7 +293,7 @@ namespace Molsketch {
     prepareItemContextMenu(&contextMenu);
     foreach(QAction* action, contextMenu.actions())
     {
-      abstractItemAction *itemAction = dynamic_cast<abstractItemAction*>(action);
+      AbstractItemAction *itemAction = dynamic_cast<AbstractItemAction*>(action);
       if (itemAction) itemAction->setItem(this);
     }
 
@@ -308,7 +308,7 @@ namespace Molsketch {
     qDebug() << "removing item" ;
     foreach(QAction* action, contextMenu.actions())
     {
-      abstractItemAction *itemAction = dynamic_cast<abstractItemAction*>(action);
+      AbstractItemAction *itemAction = dynamic_cast<AbstractItemAction*>(action);
       if (itemAction) itemAction->removeItem(this);
     }
     event->accept();

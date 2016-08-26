@@ -13,7 +13,7 @@ namespace Molsketch {
   };
 
   ItemGroupTypeAction::ItemGroupTypeAction(MolScene *scene)
-    : abstractItemAction(scene),
+    : AbstractItemAction(scene),
       d(new privateData)
   {
     d->menu = new QMenu;

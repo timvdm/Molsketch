@@ -25,7 +25,7 @@
 namespace Molsketch {
 
   lineWidthAction::lineWidthAction(MolScene *parent) :
-    abstractItemAction(parent)
+    abstractRecursiveItemAction(parent)
   {
     setText(tr("Text/line width scaling...")) ;
     setIcon(QIcon(":images/linewidth.svg"));

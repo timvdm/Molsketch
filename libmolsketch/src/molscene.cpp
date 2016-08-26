@@ -699,9 +699,9 @@ namespace Molsketch {
 
   void MolScene::selectionSlot()
   {
-    foreach(abstractItemAction* itemAction, findChildren<abstractItemAction*>())
+    foreach(AbstractItemAction* itemAction, findChildren<AbstractItemAction*>())
       itemAction->setItems(selectedItems());
-    graphicsItem* currentItem = 0;
+    graphicsItem* currentItem = 0; // TODO check if focusItem is what we actually want here
     if (selectedItems().size() == 1) currentItem = dynamic_cast<graphicsItem*>(selectedItems().first());
     if (currentItem) d->propertiesDock->setWidget(currentItem->getPropertiesWidget());
     else d->propertiesDock->setWidget(d->propertiesHelpLabel);

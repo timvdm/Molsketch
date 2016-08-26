@@ -28,11 +28,11 @@
 #ifndef LINEWIDTHACTION_H
 #define LINEWIDTHACTION_H
 
-#include "abstractitemaction.h"
+#include "abstractrecursiveitemaction.h"
 
 namespace Molsketch {
 
-  class lineWidthAction : public abstractItemAction
+  class lineWidthAction : public abstractRecursiveItemAction
   {
     Q_OBJECT
   public:

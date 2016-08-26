@@ -56,6 +56,30 @@ namespace Molsketch {
     delete d;
   }
 
+  QSet<graphicsItem *> FrameTypeAction::filterItems(const QList<QGraphicsItem *> &inputItems) const
+  {
+    QSet<graphicsItem*> result;
+    foreach(QGraphicsItem* item, inputItems)
+    {
+      Frame* frame = dynamic_cast<Frame*>(item);
+      if (frame)
+      {
+        result << frame ;
+        continue;
+      }
+      Molecule* molecule = dynamic_cast<Molecule*>(item);
+      if (molecule && molecule->parentItem())
+      {
+        frame = dynamic_cast<Frame*>(molecule->parentItem());
+        if (frame) result << frame;
+        else result << molecule;
+      }
+      else result << molecule;
+    }
+    result.remove(0);
+    return result;
+  }
+
   void FrameTypeAction::getType(int &type, QVariant &data) const
   {
     Q_UNUSED(type)

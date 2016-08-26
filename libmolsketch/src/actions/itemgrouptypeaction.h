@@ -7,7 +7,7 @@ namespace Molsketch {
 
   class ItemTypeWidget;
 
-  class ItemGroupTypeAction : public abstractItemAction
+  class ItemGroupTypeAction : public AbstractItemAction
   {
     Q_OBJECT
   public:

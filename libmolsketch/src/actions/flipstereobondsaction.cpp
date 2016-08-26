@@ -6,7 +6,7 @@
 namespace Molsketch {
 
   flipStereoBondsAction::flipStereoBondsAction(Molsketch::MolScene *scene)
-    : abstractItemAction(scene)
+    : abstractRecursiveItemAction(scene)
   {
     setMinimumItemCount(1);
     setIcon(QIcon(":images/flip-stereo.png"));

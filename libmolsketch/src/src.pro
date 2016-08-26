@@ -30,7 +30,6 @@ HEADERS += \
     actions/coloraction.h \
     graphicsitem.h \
     actions/linewidthaction.h \
-    actions/abstractitemaction.h \
     abstractxmlobject.h \
     actions/genericaction.h \
     actions/multiaction.h \
@@ -70,7 +69,9 @@ HEADERS += \
     actions/changemoleculenameaction.h \
     moleculepopup.h \
     helptextonemptylabel.h \
-    helptextemptydock.h
+    helptextemptydock.h \
+    actions/abstractrecursiveitemaction.h \
+    actions/abstractitemaction.h
 
 SOURCES += \
     atom.cpp \
@@ -97,7 +98,6 @@ SOURCES += \
     actions/coloraction.cpp \
     graphicsitem.cpp \
     actions/linewidthaction.cpp \
-    actions/abstractitemaction.cpp \
     abstractxmlobject.cpp \
     actions/genericaction.cpp \
     actions/multiaction.cpp \
@@ -136,7 +136,9 @@ SOURCES += \
     actions/changemoleculenameaction.cpp \
     moleculepopup.cpp \
     helptextonemptylabel.cpp \
-    helptextemptydock.cpp
+    helptextemptydock.cpp \
+    actions/abstractrecursiveitemaction.cpp \
+    actions/abstractitemaction.cpp
 
 FORMS += \
     arrowpopup.ui \
