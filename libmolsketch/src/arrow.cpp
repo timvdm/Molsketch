@@ -39,8 +39,6 @@ namespace Molsketch {
 
   struct Arrow::privateData : public Arrow::Properties
   {
-    // TODO maybe integrate this into scene
-    ArrowPopup popup; // TODO make static to arrow class, convert to pointer
   };
 
   Arrow::Arrow(QGraphicsItem *parent)
@@ -50,7 +48,6 @@ namespace Molsketch {
     d->arrowType = LowerBackward | UpperBackward ; // TODO rename these
     d->points << QPointF(0,0) << QPointF(50.0, 0.0),
     d->spline = true ;
-    d->popup.connectArrow(this);
     qDebug() << "creating arrow" << this;
   }
 
@@ -205,13 +202,6 @@ namespace Molsketch {
     return result.adjusted(-10,-10,10,10) ;
   }
 
-  void Arrow::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
-  {
-    d->popup.move(event->screenPos());
-//    d->popup.connectArrow(this);
-    d->popup.show();
-  }
-
   void Arrow::setPoint(const int &index, const QPointF &p)
   {
     if (index == d->points.size()) setPos(p) ;
@@ -273,7 +263,9 @@ namespace Molsketch {
 
   QWidget *Arrow::getPropertiesWidget()
   {
-    return &(d->popup);
+    ArrowPopup *widget = new ArrowPopup;
+    widget->connectArrow(this);
+    return widget;
   }
 
   void Arrow::setProperties(const Arrow::Properties &p)

@@ -62,8 +62,6 @@ namespace Molsketch {
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     QRectF boundingRect() const ;
 
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-
     void setPoint(const int& index, const QPointF& p) ;
     void setPoints(const QPolygonF&polygon);
     QPointF getPoint(const int& index) const;

@@ -64,7 +64,6 @@ namespace Molsketch {
     m_atomList(this),
     m_bondList(this)
   {
-    popup.connectMolecule(this);
     m_electronSystemsUpdate = true;
     // Setting properties
     setHandlesChildEvents(false);
@@ -81,7 +80,6 @@ namespace Molsketch {
     m_atomList(this),
     m_bondList(this)
   {
-    popup.connectMolecule(this);
     m_electronSystemsUpdate = true;
     // Setting properties
     setHandlesChildEvents(false);
@@ -112,7 +110,6 @@ namespace Molsketch {
       m_bondList(this),
       name(mol.name)
   {
-    popup.connectMolecule(this);
     m_electronSystemsUpdate = true;
     // Setting properties
     setHandlesChildEvents(false);
@@ -508,7 +505,9 @@ namespace Molsketch {
 
   QWidget *Molecule::getPropertiesWidget()
   {
-    return &popup;
+    MoleculePopup* widget = new MoleculePopup;
+    widget->connectMolecule(this);
+    return widget;
   }
 
   int Molecule::charge() const

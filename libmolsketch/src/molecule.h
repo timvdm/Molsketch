@@ -278,8 +278,6 @@ class Molecule : public graphicsItem
 
 	QList<Ring*> m_rings;
         QString name;
-        MoleculePopup popup;
-
 public:
 	Molecule& operator+=(const Molecule& other);
 	Molecule operator+(const Molecule& other) const;
