@@ -323,13 +323,9 @@ namespace Molsketch {
 
     if (m_bondType == DoubleLegacy) determineDoubleBondOrientation();
 
-    // Set painter defaults
-    painter->save();
-    QPen pen;
-    pen.setWidthF(lineWidth());
-    pen.setCapStyle(Qt::RoundCap);
-    pen.setColor (getColor());
-    painter->setPen(pen);
+    if (m_beginAtom->mapRectToItem(this, m_beginAtom->boundingRect())
+        .intersects(m_endAtom->mapRectToItem(this, m_endAtom->boundingRect())))
+      return;
 
     // Get beginning and end
     QPointF begin = mapFromParent(m_beginAtom->pos());
@@ -360,6 +356,15 @@ namespace Molsketch {
 
     begin = determineBondDrawingStart(m_beginAtom, m_endAtom);
     end = determineBondDrawingStart(m_endAtom, m_beginAtom);
+
+
+    // Set painter defaults
+    painter->save();
+    QPen pen;
+    pen.setWidthF(lineWidth());
+    pen.setCapStyle(Qt::RoundCap);
+    pen.setColor (getColor());
+    painter->setPen(pen);
 
     switch ( m_bondType ) // TODO beautify
     {
