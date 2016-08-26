@@ -225,6 +225,7 @@ namespace Molsketch {
 #else
     setAcceptHoverEvents(true) ;
 #endif
+    setZValue(10);
   }
 
   Frame::~Frame()

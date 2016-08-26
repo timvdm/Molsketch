@@ -26,7 +26,7 @@ namespace Molsketch {
   FrameTypeWidget::FrameTypeWidget(QWidget *parent)
     : ItemTypeWidget(parent)
   {
-    addButton(-1, QPixmap(), QVariant());
+    addButton(-1, QPixmap(), QVariant(""));
     ADDFRAMEBUTTON(FrameAction::bracketsFrame(), "bracket");
     ADDFRAMEBUTTON(FrameAction::leftBracketFrame(), "leftbracket");
     ADDFRAMEBUTTON(FrameAction::rightBracketFrame(), "rightbracket");

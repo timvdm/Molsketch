@@ -32,6 +32,7 @@ namespace Molsketch {
     explicit FrameTypeAction(MolScene *scene = 0);
     ~FrameTypeAction();
   protected:
+    QVariant defaultData() const;
     QSet<graphicsItem*> filterItems(const QList<QGraphicsItem *> &inputItems) const;
   private:
     void getType(int &type, QVariant &data) const;

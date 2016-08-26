@@ -56,6 +56,11 @@ namespace Molsketch {
     delete d;
   }
 
+  QVariant FrameTypeAction::defaultData() const
+  {
+    return QVariant("");
+  }
+
   QSet<graphicsItem *> FrameTypeAction::filterItems(const QList<QGraphicsItem *> &inputItems) const
   {
     QSet<graphicsItem*> result;
@@ -83,7 +88,6 @@ namespace Molsketch {
   void FrameTypeAction::getType(int &type, QVariant &data) const
   {
     Q_UNUSED(type)
-    data = QVariant();
     if (!d->itemsAreOnlyFramesAndNotEmpty()) return;
     auto frame = dynamic_cast<Frame*>(items().first());
     if (!frame) return; // TODO hm...
