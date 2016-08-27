@@ -114,6 +114,7 @@ MainWindow::MainWindow()
   createMenus();
   createToolBars();
   createStatusBar();
+  createToolBarContextMenuOptions();
   initializeAssistant();
 
   setWindowIcon(QIcon(":/images/molsketch.svg"));
@@ -164,6 +165,17 @@ MainWindow::MainWindow()
   connect(m_scene,SIGNAL(editModeChange(int)),this,SLOT(updateEditMode(int)));
 
   m_molView->setAcceptDrops(true);
+}
+
+QMenu *MainWindow::createPopupMenu()
+{
+  QMenu* popupMenu = QMainWindow::createPopupMenu();
+  if (!popupMenu) return popupMenu;
+  popupMenu->addSeparator();
+  QMenu *buttonStyleMenu = new QMenu(tr("Toolbar style"), popupMenu);
+  buttonStyleMenu->addActions(toolBarTextsAndIcons->actions());
+  popupMenu->addMenu(buttonStyleMenu);
+  return popupMenu;
 }
 
 // Event handlers
@@ -457,6 +469,12 @@ bool MainWindow::print()
   return true;
 }
 
+void MainWindow::setToolButtonStyle(QAction *styleAction)
+{
+  if (!styleAction) return;
+  QMainWindow::setToolButtonStyle((Qt::ToolButtonStyle) styleAction->data().toInt());
+}
+
 
 void MainWindow::zoomIn()
 {
@@ -739,14 +757,10 @@ void MainWindow::createMenus()
 }
 
 void setAllToolBarChildren(QObject* parent,
-                           Qt::ToolButtonStyle style,
                            QSize size)
 {
   foreach (QToolBar* bar, parent->findChildren<QToolBar*>())
-  {
-    bar->setToolButtonStyle(style); // TODO configurable
     bar->setIconSize(size);
-  }
 }
 
 void MainWindow::createToolBars()
@@ -812,10 +826,8 @@ void MainWindow::createToolBars()
 
   setAllToolBarChildren(this,
 #ifdef __ANDROID__
-                        Qt::ToolButtonIconOnly,
                         QSize(48,48)
 #else
-                        Qt::ToolButtonTextUnderIcon,
                         QSize(22,22)
 #endif
                         );
@@ -866,6 +878,24 @@ void MainWindow::createToolBox()
   toolBoxDock->hide();
 #endif
   buildLibraries();
+}
+
+void MainWindow::createToolBarContextMenuOptions()
+{
+  toolBarTextsAndIcons = new QActionGroup(this);
+  toolBarTextsAndIcons->addAction(tr("Icons"))->setData(Qt::ToolButtonIconOnly);
+  toolBarTextsAndIcons->addAction(tr("Texts"))->setData(Qt::ToolButtonTextOnly);
+  toolBarTextsAndIcons->addAction(tr("Texts under icons"))->setData(Qt::ToolButtonTextUnderIcon);
+  toolBarTextsAndIcons->addAction(tr("Texts besides icons"))->setData(Qt::ToolButtonTextBesideIcon);
+  toolBarTextsAndIcons->addAction(tr("System default"))->setData(Qt::ToolButtonFollowStyle);
+  QMainWindow::setToolButtonStyle((Qt::ToolButtonStyle) QSettings().value("toolBarIconStyle").toInt());
+  for(QAction* action : toolBarTextsAndIcons->actions())
+  {
+    action->setCheckable(true);
+    if (toolButtonStyle() == action->data())
+      action->setChecked(true);
+  }
+  connect(toolBarTextsAndIcons, SIGNAL(triggered(QAction*)), this, SLOT(setToolButtonStyle(QAction*)));
 }
   
 void MainWindow::pluginActionTriggered()
@@ -989,6 +1019,7 @@ void MainWindow::writeSettings()
   // Saving the window position
   settings.setValue("pos",pos());
   settings.setValue("size",size());
+  settings.setValue("toolBarIconStyle", toolButtonStyle());
 
   // Saving the state of the toolbars and dockwidgets
   settings.setValue("window-state", saveState());

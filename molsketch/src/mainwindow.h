@@ -52,6 +52,7 @@ class QProcess ;
 #endif
 class QSettings;
 class QTimer;
+class QActionGroup;
 
 namespace Molsketch {
   class Molecule;
@@ -71,6 +72,8 @@ class MainWindow : public QMainWindow
 public:
   /** Constructor */
   MainWindow();
+
+  QMenu* createPopupMenu();
 
 protected:
   /** Reimplements the close event to asked for a save on exit. */
@@ -96,6 +99,8 @@ private slots:
   bool exportDoc();
   /** Prints the current document. */
   bool print();
+
+  void setToolButtonStyle(QAction* styleAction);
 
 	//used for print preview
 	void paintSceneOn (QPrinter *);
@@ -144,6 +149,8 @@ private:
   void createView();
   /** Creates the toolboxes of the MainWindow. */
   void createToolBox();
+
+  void createToolBarContextMenuOptions();
 
   /** Loads the previous settings of molsKetch. */
   void readSettings();
@@ -239,6 +246,8 @@ private:
   QAction* printAct;
   /** Exit molsKetch action. */
   QAction* exitAct;
+
+  QActionGroup* toolBarTextsAndIcons;
 
   // Edit actions
   /** Undo the last command action. */
