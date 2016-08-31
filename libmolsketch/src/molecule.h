@@ -73,7 +73,11 @@ class Molecule : public graphicsItem
 	Molecule(QSet<Atom*>, QSet<Bond*>, QGraphicsItem* parent = 0 GRAPHICSSCENEHEADER ) ;
         // TODO get bonds from atoms or atoms from bonds, but don't take both
 	/** Creates a copy of molecule @p mol with @p parent on MolScene @p scene. */
-	Molecule(const Molecule& mol, QGraphicsItem* parent = 0 GRAPHICSSCENEHEADER ) ;
+        Molecule(const Molecule& mol) ;
+
+        /** Creates a copy of molecule @p mol, but clones @p atoms as the new molecule's
+         * atoms, and any bonds where both atoms  are in @p atoms. */
+        Molecule(const Molecule& mol, const QSet<Atom*>& atoms, QGraphicsItem* parent = 0 GRAPHICSSCENEHEADER);
 
         static Molecule *combineMolecules(const QSet<Molecule *> &molecules, QMap<Atom*, Atom*>*atomMap, QMap<Bond *, Bond *> *bondMap);
 
@@ -254,6 +258,8 @@ class Molecule : public graphicsItem
    void readAttributes(const QXmlStreamAttributes& attributes);
    QXmlStreamAttributes xmlAttributes() const;
   private:
+   void setDefaults();
+   void clone(QSet<Atom*> atoms);
    void hideAllAtoms();
 	// Internal representation
         /** A list of pointers to the atoms of the molecule. Used as internal representation. */

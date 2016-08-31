@@ -59,39 +59,22 @@ namespace Molsketch {
     return temp < 0 ? 360 + temp : temp ;
   }
 
+#define DEFAULTINITIALIZER m_atomList(this), m_bondList(this), m_electronSystemsUpdate(true)
+
   Molecule::Molecule(QGraphicsItem* parent GRAPHICSSCENESOURCE )
     : graphicsItem(parent GRAPHICSSCENEINIT ),
-    m_atomList(this),
-    m_bondList(this)
+      DEFAULTINITIALIZER
   {
-    m_electronSystemsUpdate = true;
-    // Setting properties
-    setHandlesChildEvents(false);
-#if QT_VERSION < 0x050000
-    setAcceptsHoverEvents(true);
-#else
-    setAcceptHoverEvents(true) ;
-#endif
+    setDefaults();
   }
 
   Molecule::Molecule(QSet<Atom*> atomSet, QSet<Bond*> bondSet,
                      QGraphicsItem* parent GRAPHICSSCENESOURCE)
     : graphicsItem (parent GRAPHICSSCENEINIT ),
-    m_atomList(this),
-    m_bondList(this)
+      DEFAULTINITIALIZER
   {
-    m_electronSystemsUpdate = true;
-    // Setting properties
-    setHandlesChildEvents(false);
-#if QT_VERSION < 0x050000
-    setAcceptsHoverEvents(true);
-#else
-    setAcceptHoverEvents(true) ;
-#endif
+    setDefaults();
 
-    // TODO just take ownership of the atoms and bonds
-    // Add the new atoms
-    // TODO: why not take ownership of the old ones and set this as their parent?!
     foreach(Atom* atom, atomSet) addAtom(atom);
 
     // ...and bonds
@@ -104,42 +87,44 @@ namespace Molsketch {
     }
   }
 
-  Molecule::Molecule(const Molecule &mol, QGraphicsItem* parent GRAPHICSSCENESOURCE)
-    : graphicsItem (parent GRAPHICSSCENEINIT),
-      m_atomList(this),
-      m_bondList(this),
-      name(mol.name)
+  Molecule::Molecule(const Molecule &mol GRAPHICSSCENESOURCE)
+    : graphicsItem (mol GRAPHICSSCENEINIT),
+      DEFAULTINITIALIZER
   {
-    m_electronSystemsUpdate = true;
-    // Setting properties
-    setHandlesChildEvents(false);
-#if QT_VERSION < 0x050000
-    setAcceptsHoverEvents(true);
-#else
-    setAcceptHoverEvents(true) ;
-#endif
-
-    // Add the new atoms
-    QMap<Atom*, Atom*> oldToNewAtoms;
-    foreach(Atom* atom, mol.atoms())
-    {
-      Atom *a = new Atom(atom->pos(),atom->element(), atom->hasImplicitHydrogens(), this);
-      a ->setColor(atom ->getColor ());
-      addAtom(a);
-      oldToNewAtoms[atom] = a;
-    }
-    // ...and bonds
-    foreach(Bond* bond, mol.bonds())
-    {
-      Bond *b = new Bond(oldToNewAtoms[bond->beginAtom()],
-          oldToNewAtoms[bond->endAtom()],
-          bond->bondType());
-      b ->setColor (bond ->getColor ());
-      addBond(b);
-    }
-
-    // Set the position
+    setDefaults();
+    clone(mol.atoms().toSet());
     setPos(mol.pos());
+  }
+
+  Molecule::Molecule(const Molecule &mol, const QSet<Atom *> &atoms, QGraphicsItem *parent)
+    : graphicsItem (mol),
+      DEFAULTINITIALIZER
+  {
+    setParentItem(parent);
+    setDefaults();
+    clone(atoms);
+    setPos(mol.pos()); // TODO check this
+  }
+
+  void Molecule::clone(QSet<Atom *> atoms)
+  {
+    QMap<Atom*, Atom*> oldToNewAtoms;
+    QSet<Bond*> oldBonds;
+    foreach(Atom* atom, atoms)
+    {
+      Atom *newAtom = new Atom(*atom);
+      oldToNewAtoms[atom] = newAtom;
+      addAtom(newAtom);
+      foreach(Bond* bond, atom->bonds())
+        if (atoms.contains(bond->beginAtom())
+            && atoms.contains(bond->endAtom()))
+          oldBonds << bond;
+
+    }
+
+    foreach(Bond* bond, oldBonds)
+      addBond(new Bond(*bond, oldToNewAtoms[bond->beginAtom()],
+              oldToNewAtoms[bond->endAtom()]));
   }
 
   Molecule* Molecule::combineMolecules(const QSet<Molecule*>& molecules, QMap<Atom *, Atom *> *givenAtomMap, QMap<Bond*,Bond*> *givenBondMap)
@@ -361,57 +346,32 @@ namespace Molsketch {
     //bond = 0;
   }
 
+  QSet<Atom*> getConnectedAtoms(Atom* startAtom)
+  {
+    QSet<Atom*> connectedAtoms = {startAtom};
+    int lastSize = 0;
+    while (lastSize < connectedAtoms.size())
+    {
+      lastSize = connectedAtoms.size();
+      foreach(Atom* atom, connectedAtoms)
+        connectedAtoms += atom->neighbours().toSet();
+    }
+    return connectedAtoms;
+  }
+
   QList<Molecule*> Molecule::split()
   {
-    //pre: CanSplit
-    //post:
-    //ret: a list with the two parts of the split molecule
-
-    // Create the return list
     QList<Molecule*> molList;
 
-    // Create sets with the bonds and molcules
-    QSet<Atom*> atomSet(m_atomList.toSet());
-    QSet<Bond*> bondSet(m_bondList.toSet());
-    QSet<Atom*> atomSubSet;
-    QSet<Bond*> bondSubSet;
-
-    // Declarations
-    int lastSize;
-    Atom* atom;
-    Bond* bond;
-
-    // Main loop
-    while (!atomSet.isEmpty())
+    QSet<Atom*> atoms = m_atomList.toSet();
+    while (!atoms.empty())
     {
-      lastSize = 0;
-      atomSubSet.clear();
-      bondSubSet.clear();
-
-      // Load the first atom
-      atomSubSet << atomSet.toList().first();
-
-      while (atomSubSet.size() != lastSize)
-      {
-        lastSize = atomSubSet.size();
-        foreach (atom,atomSubSet)
-        {
-          foreach(bond,bondSet)
-            if (bond->hasAtom(atom)) bondSubSet << bond;
-          foreach(bond,bondSubSet)
-            atomSubSet << bond->beginAtom() << bond->endAtom();
-        }
-      }
-
-      atomSet -= atomSubSet;
-      bondSet -= bondSubSet;
-
-      molList.append(new Molecule(atomSubSet,bondSubSet));
-
+      QSet<Atom*> subgroup = getConnectedAtoms(*(atoms.begin()));
+      molList << new Molecule(*this, subgroup);
+      atoms -= subgroup;
     }
 
     return molList;
-
   }
 
 
@@ -595,45 +555,8 @@ namespace Molsketch {
 
   bool Molecule::canSplit() const
   {
-    /// TODO Needs improvement
-    // Create the return list
-    QList<Molecule*> molList;
-
-    // Return false if molecule is empty
     if (m_atomList.isEmpty()) return false;
-    // Create sets with the bonds and molcules
-    QSet<Atom*> atomSet(m_atomList.toSet());
-    QSet<Bond*> bondSet(m_bondList.toSet());
-    QSet<Atom*> atomSubSet;
-    QSet<Bond*> bondSubSet;
-
-    // Declarations
-    int lastSize = 0;
-    Atom* atom;
-    Bond* bond;
-
-    atomSubSet.clear();
-    bondSubSet.clear();
-
-    // Load the first atom
-    atomSubSet << atomSet.toList().first();
-
-    while (atomSubSet.size() != lastSize)
-    {
-      foreach (atom,atomSubSet)
-      {
-        lastSize = atomSubSet.size();
-        foreach(bond,bondSet)
-          if (bond->hasAtom(atom)) bondSubSet << bond;
-        foreach(bond,bondSubSet)
-          atomSubSet << bond->beginAtom() << bond->endAtom();
-      }
-    }
-
-    atomSet -= atomSubSet;
-    bondSet -= bondSubSet;
-
-    return !atomSet.isEmpty();
+    return getConnectedAtoms(m_atomList.first()) != m_atomList.toSet();
   }
 
   QVariant Molecule::itemChange(GraphicsItemChange change, const QVariant &value)
@@ -1061,6 +984,16 @@ namespace Molsketch {
     QXmlStreamAttributes attributes;
     attributes.append("name", name);
     return attributes;
+  }
+
+  void Molecule::setDefaults()
+  {
+    setHandlesChildEvents(false);
+#if QT_VERSION < 0x050000
+    setAcceptsHoverEvents(true);
+#else
+    setAcceptHoverEvents(true) ;
+#endif
   }
 
   Molecule &Molecule::operator+=(const Molecule &other)

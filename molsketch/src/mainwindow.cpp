@@ -184,7 +184,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 {
   if (maybeSave())
     {
-      writeSettings();
+        writeSettings();
       if (assistantClient)
         {
 #if QT_VERSION <= 0x040603

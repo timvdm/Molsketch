@@ -54,7 +54,7 @@ namespace Molsketch {
        */
       Atom(const QPointF & position = QPointF(), const QString & element = QString(),
           bool implicitHydrogens = true, QGraphicsItem* parent = 0 GRAPHICSSCENEHEADER ) ;
-      Atom(const Atom& other GRAPHICSSCENEHEADER); // TODO copy constructor fuer graphicsItem
+      Atom(const Atom& other GRAPHICSSCENEHEADER);
       ~Atom() ;
       //@name Inherited drawing methods
       //@{
