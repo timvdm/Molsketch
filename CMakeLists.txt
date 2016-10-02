@@ -117,8 +117,6 @@ else( CMAKE_SIZEOF_VOID_P EQUAL 8 )
 	list(APPEND msklibs Libraries MSK_INSTALL_LIBS /lib "")
 endif( CMAKE_SIZEOF_VOID_P EQUAL 8 )
 list(APPEND mskincludes Headers MSK_INSTALL_INCLUDES /include/molsketch /include)
-list(APPEND msklibrary "Molecule library" MSK_INSTALL_LIBRARY /share/molsketch/library /library)
-list(APPEND mskcustom "Custom molecule library" MSK_INSTALL_CUSTOM /share/molsketch/library/custom /library/custom)
 list(APPEND mskdocs Documentation MSK_INSTALL_DOCS /share/doc/molsketch /doc)
 
 file(STRINGS version TEMPVERSION)

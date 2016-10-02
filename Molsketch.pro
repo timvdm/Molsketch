@@ -12,9 +12,7 @@ SUBDIRS += \
 
 INSTALLS += documentation_en \
 	    documentation_cs \
-	    documentation_nl \
-	    molecule_library \
-	    custom_library
+	    documentation_nl
 
 documentation_en.files = $$PWD/doc/en/*
 documentation_cs.files = $$PWD/doc/cs/*
