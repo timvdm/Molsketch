@@ -32,16 +32,6 @@ set(CPACK_SOURCE_PACKAGE_NAME "${CMAKE_PROJECT_NAME}-${CPACK_PACKAGE_VERSION_MAJ
 set(CPACK_SOURCE_IGNORE_FILES "/build;/.git")
 include(CPack)
 
-# Unit testing, mainly useful for developers and so defaults to off
-option(ENABLE_TESTS "Enable unit testing" ON)
-if(ENABLE_TESTS)
-  set(QT_USE_QTTEST TRUE)
-  enable_testing()
-  include (CTest)
-  message(STATUS "Unit testing enabled, run make test to run them")
-endif(ENABLE_TESTS)
-
-
 # Add support for the "make uninstall" target
 configure_file("${CMAKE_MODULE_PATH}/cmake_uninstall.cmake.in"
                "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
@@ -162,10 +152,3 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libmolsketch/src)
 add_subdirectory(libmolsketch)
 add_subdirectory(obabeliface)
 add_subdirectory(molsketch)
-
-  
-if(ENABLE_TESTS)
-  add_subdirectory(tests)
-endif(ENABLE_TESTS)
-
-

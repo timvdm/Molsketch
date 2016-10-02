@@ -7,8 +7,8 @@ CONFIG += ordered
 SUBDIRS += \
 	libmolsketch/src \
 	molsketch/src \
-	obabeliface \ # TODO make optional
-	tests
+	obabeliface
+# TODO make obabeliface optional
 
 INSTALLS += documentation_en \
 	    documentation_cs \
@@ -28,7 +28,7 @@ documentation_nl.path = $${MSK_INSTALL_DOCS}/nl
 molecule_library.path = $${MSK_INSTALL_LIBRARY}
 custom_library.path = $${MSK_INSTALL_CUSTOM}
 
-contains(CONFIG, static) { SUBDIRS -= tests obabeliface }
+contains(CONFIG, static) { SUBDIRS -= obabeliface }
 
 OTHER_FILES += \
     version \
