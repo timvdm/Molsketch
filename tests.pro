@@ -1,27 +1,26 @@
-include(../settings.pri)
+OTHER_FILES +=
 
-QT += testlib widgets
+HEADERS += *.h
 
-INCLUDEPATH += $$sourceDir/../libmolsketch/src
+INCLUDEPATH += ../../cxxtest-4.4 \
+    ../libmolsketch/src
 
-SOURCES += \
-    main.cpp \
-    coordinatestest.cpp \
-    valencetest.cpp \
-    drawingtest.cpp \
-    xmltest.cpp \
-    renderingtest.cpp \
-    moleculetest.cpp
+QT += widgets printsupport svg
 
-LIBS += -L../lib -lmolsketch$$qtVersionSuffix
+TEMPLATE = app
 
-TARGET = molsketch-test$$qtVersionSuffix
-DESTDIR = ../bin
+TARGET = msktests
 
-HEADERS += \
-    coordinatestest.h \
-    valencetest.h \
-    drawingtest.h \
-    xmltest.h \
-    renderingtest.h \
-    moleculetest.h
+cxxtest.output = ${QMAKE_FILE_BASE}.cpp
+cxxtest.commands = cxxtestgen --xunit-printer --part ${QMAKE_FILE_NAME} -o ${QMAKE_FILE_OUT}
+cxxtest.depency_type = TYPE_C
+cxxtest.input = HEADERS
+cxxtest.variable_out = SOURCES
+QMAKE_EXTRA_COMPILERS += cxxtest
+
+cxxrunner.target = cxxrunner.cpp
+cxxrunner.commands = cxxtestgen --xunit-printer --root -o cxxrunner.cpp
+QMAKE_EXTRA_TARGETS += cxxrunner
+SOURCES += $$OUT_PWD/cxxrunner.cpp
+
+LIBS += -L../lib -lmolsketch-qt5
