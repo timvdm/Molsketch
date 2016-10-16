@@ -2,6 +2,8 @@ isEmpty(CXXTEST_PATH) : error("Pass CXXTEST_PATH on command line")
 
 HEADERS += *.h
 
+CONFIG += c++14
+
 INCLUDEPATH += $$CXXTEST_PATH \
     ../libmolsketch/src
 
