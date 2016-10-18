@@ -1,3 +1,21 @@
+/***************************************************************************
+ *   Copyright (C) 2016 by Hendrik Vennekate                               *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
 #include <cxxtest/TestSuite.h>
 #include <atom.h>
 #include <element.h>
@@ -87,7 +105,8 @@ QVector<ElementData> testData() {
                    << ep("Al", Al)
                    << ep("Ga", Ga)
                    << ep("In", In)
-                   << ep("Tl", Tl), 3, 13, 3, 0, 3)
+                   << ep("Tl", Tl)
+                   << ep("Uut", Uut), 3, 13, 3, 0, 3)
       << groupData(epv()
                    << ep("C", C)
                    << ep("Si", Si)
@@ -112,9 +131,85 @@ QVector<ElementData> testData() {
                    << ep("Br", Br)
                    << ep("I", I)
                    << ep("At", At), 1, 17, 7, 0, -1)
-         // TODO transition metals
-         // TODO check availability of heaviest group elements
-         ;
+      << groupData(epv()
+                   << ep("Sc", Sc)
+                   << ep("Y", Y)
+                   << ep("La", La)
+                   << ep("Ac", Ac), 0, 3, 1, 0, 1)
+      << groupData(epv()
+                   << ep("Ti", Ti)
+                   << ep("Zr", Zr)
+                   << ep("Hf", Hf)
+                   << ep("Rf", Rf), 0, 4, 2, 0, 2)
+      << groupData(epv()
+                   << ep("V", V)
+                   << ep("Nb", Nb)
+                   << ep("Ta", Ta)
+                   << ep("Db", Db), 0, 5, 3, 0, 3)
+      << groupData(epv()
+                   << ep("Cr", Cr)
+                   << ep("Mo", Mo)
+                   << ep("W", W)
+                   << ep("Sg", Sg), 0, 6, 4, 0, 4)
+      << groupData(epv()
+                   << ep("Mn", Mn)
+                   << ep("Tc", Tc)
+                   << ep("Re", Re)
+                   << ep("Bh", Bh), 0, 7, 5, 0, 5)
+      << groupData(epv()
+                   << ep("Fe", Fe)
+                   << ep("Ru", Ru)
+                   << ep("Os", Os)
+                   << ep("Hs", Hs), 0, 8, 6, 0, 6)
+      << groupData(epv()
+                   << ep("Co", Co)
+                   << ep("Rh", Rh)
+                   << ep("Ir", Ir)
+                   << ep("Mt", Mt), 0, 9, 7, 0, 7)
+      << groupData(epv()
+                   << ep("Ni", Ni)
+                   << ep("Pd", Pd)
+                   << ep("Pt", Pt)
+                   << ep("Ds", Ds), 0, 10, 8, 0, 8)
+      << groupData(epv()
+                   << ep("Cu", Cu)
+                   << ep("Ag", Ag)
+                   << ep("Au", Au)
+                   << ep("Rg", Rg), 0, 11, 9, 0, 9)
+      << groupData(epv()
+                   << ep("Zn", Zn)
+                   << ep("Cd", Cd)
+                   << ep("Hg", Hg)
+                   << ep("Uub", Uub), 0, 12, 10, 0, 10)
+      << groupData(epv()
+                   << ep("Ce", Ce)
+                   << ep("Th", Th)
+                   << ep("Pr", Pr)
+                   << ep("Pa", Pa)
+                   << ep("Nd", Nd)
+                   << ep("U", U)
+                   << ep("Pm", Pm)
+                   << ep("Np", Np)
+                   << ep("Sm", Sm)
+                   << ep("Pu", Pu)
+                   << ep("Eu", Eu)
+                   << ep("Am", Am)
+                   << ep("Gd", Gd)
+                   << ep("Cm", Cm)
+                   << ep("Tb", Tb)
+                   << ep("Bk", Bk)
+                   << ep("Dy", Dy)
+                   << ep("Cf", Cf)
+                   << ep("Ho", Ho)
+                   << ep("Es", Es)
+                   << ep("Er", Er)
+                   << ep("Fm", Fm)
+                   << ep("Tm", Tm)
+                   << ep("Md", Md)
+                   << ep("Yb", Yb)
+                   << ep("No", No)
+                   << ep("Lu", Lu)
+                   << ep("Lr", Lr), 0, 3, 1, 0, 1);
 }
 
 const char* convert(const QString& string)
