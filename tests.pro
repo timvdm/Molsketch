@@ -1,6 +1,7 @@
 isEmpty(CXXTEST_PATH) : error("Pass CXXTEST_PATH on command line")
 
-HEADERS += *.h
+HEADERS += *.h \
+    coordinatestest.h
 
 CONFIG += c++14
 
@@ -21,8 +22,14 @@ cxxtest.variable_out = SOURCES
 QMAKE_EXTRA_COMPILERS += cxxtest
 
 cxxrunner.target = cxxrunner.cpp
-cxxrunner.commands = $$CXXTEST_PATH/bin/cxxtestgen --xunit-printer --root -o cxxrunner.cpp
+cxxrunner.commands = $$CXXTEST_PATH/bin/cxxtestgen --xunit-printer --root -o cxxrunner.cpp --template $$PWD/runnerTemplate.tpl
+cxxrunner.depends = $$PWD/runnerTemplate.tpl
+#cxxrunner.output = cxxrunner.cpp
+#cxxrunner.variable_out = SOURCES
 QMAKE_EXTRA_TARGETS += cxxrunner
 SOURCES += $$OUT_PWD/cxxrunner.cpp
 
 LIBS += -L../lib -lmolsketch-qt5
+
+OTHER_FILES += \
+    runnerTemplate.tpl
