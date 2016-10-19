@@ -1,7 +1,10 @@
 isEmpty(CXXTEST_PATH) : error("Pass CXXTEST_PATH on command line")
 
-HEADERS += *.h \
-    coordinatestest.h
+TESTS = *test.h
+
+HEADERS += $$TESTS \
+    rectanglevaluetrait.h
+
 
 CONFIG += c++14
 
@@ -17,7 +20,7 @@ TARGET = msktests
 cxxtest.output = ${QMAKE_FILE_BASE}.cpp
 cxxtest.commands = $$CXXTEST_PATH/bin/cxxtestgen --xunit-printer --part ${QMAKE_FILE_NAME} -o ${QMAKE_FILE_OUT}
 cxxtest.depency_type = TYPE_C
-cxxtest.input = HEADERS
+cxxtest.input = TESTS
 cxxtest.variable_out = SOURCES
 QMAKE_EXTRA_COMPILERS += cxxtest
 
@@ -27,7 +30,8 @@ cxxrunner.depends = $$PWD/runnerTemplate.tpl
 #cxxrunner.output = cxxrunner.cpp
 #cxxrunner.variable_out = SOURCES
 QMAKE_EXTRA_TARGETS += cxxrunner
-SOURCES += $$OUT_PWD/cxxrunner.cpp
+SOURCES += $$OUT_PWD/cxxrunner.cpp \
+    rectanglevaluetrait.cpp
 
 LIBS += -L../lib -lmolsketch-qt5
 

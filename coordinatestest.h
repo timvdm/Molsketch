@@ -40,7 +40,7 @@ public:
       TSM_ASSERT_EQUALS("Bounding rectangle", atom.boundingRect(), expectedBoundingRect);
       TSM_ASSERT_EQUALS("Position", atom.pos(), coordinate);
       TSM_ASSERT_EQUALS("Coordinate", atom.coordinates().first(), coordinate);
-      TSM_ASSERT_EQUALS("Bounding rectangle in scene coordinates", atom.boundingRect(), expectedBoundingRect.translated(coordinate));
+      TSM_ASSERT_EQUALS("Bounding rect", atom.mapRectToScene(atom.boundingRect()), expectedBoundingRect.translated(coordinate));
     }
   }
 };
