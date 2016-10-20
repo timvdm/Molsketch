@@ -21,7 +21,10 @@
 #include <QApplication>
 #include <QFontMetricsF>
 #include <QRectF>
+#include <QSet>
 #include <atom.h>
+#include <bond.h>
+#include <molecule.h>
 
 using namespace Molsketch;
 
@@ -30,7 +33,7 @@ class CoordinatesTest : public CxxTest::TestSuite
 public:
   void testAtomCoordinates() {
     QVector<QPointF> coordinates;
-    coordinates << QPointF() << QPointF(10,10) << QPointF(-5,10);
+    coordinates << QPointF() << QPointF(10,10) << QPointF(-5,10); // TODO atoms in molecules
     for (QPointF coordinate : coordinates)
     {
       Atom atom(coordinate, "C");
@@ -42,5 +45,41 @@ public:
       TSM_ASSERT_EQUALS("Coordinate", atom.coordinates().first(), coordinate);
       TSM_ASSERT_EQUALS("Bounding rect", atom.mapRectToScene(atom.boundingRect()), expectedBoundingRect.translated(coordinate));
     }
+  }
+
+  void testMoleculeBoundingBox() {
+    QList<QPointF> coordinates;
+    coordinates << QPointF(0,0) << QPointF(100,0) << QPointF(0,100) << QPointF(100,100);
+    QList<Atom*> atoms = coordinatesToAtoms(coordinates, "H");
+    QSet<Bond*> bonds = allConnections(atoms);
+    Molecule molecule(atoms.toSet(), bonds);
+
+    QRectF boundingBox;
+    for(Atom* atom : atoms) boundingBox |= atom->boundingRect().translated(atom->pos());
+    for(Bond* bond : bonds) boundingBox |= bond->boundingRect().translated(bond->pos());
+
+    TSM_ASSERT_EQUALS("Molecule bounding box", molecule.boundingRect(), boundingBox);
+    // From old test:
+    // TODO check prepareGeometryChange() in items, molscene rendering refresh mode
+    // TODO seems to be a blinker
+    //FAIL!  : coordinatesTest::moleculeBoundingBox(square) Compared values are not the same
+    //   Actual   (molecule->boundingRect()): QRectF(-5,-9 110x132) (bottomright 105,123)
+    //   Expected (boundingBox)             : QRectF(-5,-9 110x118) (bottomright 105,109)
+    //   Loc: [../../../../Programme/Molsketch/tests/coordinatestest.cpp(103)]
+  }
+
+  QList<Atom*> coordinatesToAtoms(QList<QPointF> coordinates, const QString& element)
+  {
+    QList<Atom*> atoms;
+    foreach(QPointF coordinate, coordinates) atoms << new Atom(coordinate, element);
+    return atoms;
+  }
+
+  QSet<Bond*> allConnections(const QList<Atom*> atoms) {
+    QSet<Bond*> result;
+    for (int i = 0 ; i < atoms.size(); ++i)
+      for (int j = i+1 ; j < atoms.size() ; ++j)
+        result << new Bond(atoms[i], atoms[j]);
+    return result;
   }
 };
