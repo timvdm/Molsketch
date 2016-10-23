@@ -3,7 +3,9 @@ isEmpty(CXXTEST_PATH) : error("Pass CXXTEST_PATH on command line")
 TESTS = *test.h
 
 HEADERS += $$TESTS \
-    rectanglevaluetrait.h
+    rectanglevaluetrait.h \
+    renderingtest.h \
+    xmltest.h
 
 
 CONFIG += c++14

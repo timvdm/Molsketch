@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2016 Hendrik Vennekate                                  *
+ *   Copyright (C) 2016 by Hendrik Vennekate                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -16,26 +16,11 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef BASICPROPERTIESTEST_H
-#define BASICPROPERTIESTEST_H
 
-#include <QObject>
+#include <cxxtest/TestSuite.h>
 
-namespace Molsketch {
-}
+using namespace Molsketch;
 
-class BasicPropertiesTest : public QObject
+class RenderingTest : public CxxTest::TestSuite
 {
-  Q_OBJECT
-public:
-  BasicPropertiesTest(QObject *parent = 0);
-  ~BasicPropertiesTest();
-private slots:
-  void initTestCase();
-  void cleanupTestCase();
-  void init();
-  void cleanup();
-  void instantiate();
-};
-
-#endif // BASICPROPERTIESTEST_H
+}
