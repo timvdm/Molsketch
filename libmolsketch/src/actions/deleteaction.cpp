@@ -19,6 +19,8 @@
 #include "deleteaction.h"
 #include "molscene.h"
 #include "commands.h"
+#include <QDebug>
+#include <molecule.h>
 
 namespace Molsketch {
 
@@ -42,20 +44,40 @@ namespace Molsketch {
     QList<QGraphicsItem*> selectedItems(scene()->selectedItems());
     if (selectedItems.isEmpty()) return;
     attemptBeginMacro(tr("Delete items"));
+    QSet<Molecule*> molecules;
+    Atom *atom = 0;
+    Bond *bond = 0;
     foreach(QGraphicsItem* item, selectedItems)
     {
       switch(item->type())
       {
         case Atom::Type:
-          attemptUndoPush(new Commands::DelAtom(dynamic_cast<Atom*>(item)));
+          atom = dynamic_cast<Atom*>(item);
+          if (atom)
+            molecules << atom->molecule();
+          attemptUndoPush(new Commands::DelAtom(atom));
           break;
         case Bond::Type:
-          attemptUndoPush(new Commands::DelBond(dynamic_cast<Bond*>(item)));
+          bond = dynamic_cast<Bond*>(item);
+          if (bond)
+            molecules << bond->molecule();
+          attemptUndoPush(new Commands::DelBond(bond));
           break;
         default:
           attemptUndoPush(new Commands::DelItem(item));
       }
-      // TODO check if molecule is split
+      molecules.remove(0);
+
+      QList<Molecule*> splitMolecules, unsplitMolecules;
+      foreach(Molecule* molecule, molecules)
+      {
+        if (!molecule->scene()) continue;
+        if (!molecule->canSplit()) continue;
+        foreach(Molecule* subMolecule, molecule->split())
+          attemptUndoPush(new Commands::AddItem(subMolecule, scene()));
+        attemptUndoPush(new Commands::DelItem(molecule));
+      }
+
     }
     attemptEndMacro();
   }
