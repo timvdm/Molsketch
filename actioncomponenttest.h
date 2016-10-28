@@ -17,24 +17,43 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef RECTANGLEVALUETRAIT_H
-#define RECTANGLEVALUETRAIT_H
+#include <molecule.h>
+#include <molscene.h>
+#include <QSet>
+#include <actions/deleteaction.h>
+#include <cxxtest/TestSuite.h>
 
-#include <cxxtest/ValueTraits.h>
-#include <string>
-#include <QRectF>
+using namespace Molsketch;
 
-namespace CxxTest
+class ActionComponentTest : public CxxTest::TestSuite
 {
-  CXXTEST_TEMPLATE_INSTANTIATION
-  class ValueTraits<QRectF>
+public:
+  void testRemovalOfBondSplitsMolecule()
   {
-    std::string value;
+    Atom* a1 = new Atom(QPointF( 0, 0), "C"),
+        * a2 = new Atom(QPointF(50,50), "C"),
+        * a3 = new Atom(QPointF( 0,50), "C");
+    Bond* b12 = new Bond(a1, a2),
+        * b23 = new Bond(a2, a3);
+    Molecule* m = new Molecule(QSet<Atom*>() << a1 << a2 << a3,
+                               QSet<Bond*>() << b12 << b23);
 
-  public:
-    ValueTraits(const QRectF& rect);
-    const char *asString() const;
-  };
+    MolScene scene;
+    scene.addItem(m);
+
+    b23->setSelected(true);
+    TSM_ASSERT_EQUALS("Number of selected items", scene.selectedItems().size(), 1);
+    TSM_ASSERT_EQUALS("Bond is selected", scene.selectedItems().first(), b23);
+    TSM_ASSERT_EQUALS("No commands executed before deletion", scene.stack()->index(), 0);
+
+    QAction* delAction = new deleteAction(&scene);
+    delAction->trigger();
+
+    QList<Molecule*> molecules;
+    for (QGraphicsItem* item : scene.items())
+      if (Molecule* molecule = dynamic_cast<Molecule*>(item))
+        molecules << molecule;
+    TSM_ASSERT_EQUALS("Molecule count after split", molecules.size(), 2);
+    TSM_ASSERT_EQUALS("One deletion command executed", scene.stack()->index(), 1);
+  }
 };
-
-#endif // RECTANGLEVALUETRAIT_H

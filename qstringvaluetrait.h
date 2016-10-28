@@ -16,25 +16,22 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-
-#ifndef RECTANGLEVALUETRAIT_H
-#define RECTANGLEVALUETRAIT_H
+#ifndef QSTRINGVALUETRAIT_H
+#define QSTRINGVALUETRAIT_H
 
 #include <cxxtest/ValueTraits.h>
-#include <string>
-#include <QRectF>
+#include <QString>
 
 namespace CxxTest
 {
   CXXTEST_TEMPLATE_INSTANTIATION
-  class ValueTraits<QRectF>
+  class ValueTraits<QString>
   {
-    std::string value;
-
+    QString value;
   public:
-    ValueTraits(const QRectF& rect);
+    ValueTraits(const QString& string);
     const char *asString() const;
   };
 };
 
-#endif // RECTANGLEVALUETRAIT_H
+#endif // QSTRINGVALUETRAIT_H

@@ -38,7 +38,7 @@ public:
     Bond *bond = new Bond(atomA, atomB);
     Molecule *molecule = new Molecule(QSet<Atom*>() << atomA << atomB, QSet<Bond*>() << bond);
     scene.addItem(molecule);
-    TS_ASSERT_EQUALS(scene.toSvg(), expectedSvg);
+    TS_ASSERT_EQUALS(QString(scene.toSvg()), expectedSvg);
   }
 
   void testRenderNormalBond()
