@@ -16,38 +16,36 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef ARROWPOPUP_H
-#define ARROWPOPUP_H
+#ifndef ATOMPOPUP_H
+#define ATOMPOPUP_H
 
 #include <QWidget>
 
 namespace Ui {
-  class arrowPopup;
+  class AtomPopup;
 }
 
 namespace Molsketch {
+  class Atom;
 
-  class Arrow;
-
-  class ArrowPopup : public QWidget
+  class AtomPopup : public QWidget
   {
     Q_OBJECT
 
   public:
-    explicit ArrowPopup(QWidget *parent = 0);
+    explicit AtomPopup(QWidget *parent = 0);
+    ~AtomPopup();
 
-    void connectArrow(Arrow* a);
-    ~ArrowPopup();
+    void connectAtom(Atom* a);
 
   private:
-    Ui::arrowPopup *ui;
-    class privateData;
-    privateData *d;
+    Ui::AtomPopup *ui;
+    class PrivateData;
+    PrivateData *d;
   private slots:
-    void applyPropertiesToArrow();
-    void checkSplineEligibility();
+    void applyPropertiesToAtom();
   };
 
 } // namespace
 
-#endif // ARROWPOPUP_H
+#endif // ATOMPOPUP_H

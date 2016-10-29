@@ -180,11 +180,6 @@ namespace Molsketch {
       void setNumImplicitHydrogens(int number);
       /** Sets whether implicit hydrogens should be used */
       void enableImplicitHydrogens(bool enabled);
-
-
-
-
-
       /**
        * Get the number for this atom.
        *
@@ -192,10 +187,12 @@ namespace Molsketch {
        */       
       int number() const { return m_number; }
 
-	  void hoverOut () {m_hidden = true;}
-          QString xmlName() const { return "atom" ; }
-          int labelAlignment() const;
-          Bond *bondTo(Atom *other) const;
+      void hoverOut () {m_hidden = true;}
+      QString xmlName() const { return "atom" ; }
+      int labelAlignment() const;
+      Bond *bondTo(Atom *other) const;
+      QWidget* getPropertiesWidget();
+      void propertiesWidgetDestroyed();
   protected:
       // Event handlers
       /** Event handler to show hidden atoms when the mouse hovers over them. */
@@ -242,7 +239,6 @@ namespace Molsketch {
       int m_userElectrons;
 
       int m_number;
-
       /**
        * Stores the list of atoms connected to this atom by a bond
        *

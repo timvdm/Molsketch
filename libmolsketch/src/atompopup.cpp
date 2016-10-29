@@ -16,38 +16,61 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef ARROWPOPUP_H
-#define ARROWPOPUP_H
-
-#include <QWidget>
-
-namespace Ui {
-  class arrowPopup;
-}
+#include "atompopup.h"
+#include "ui_atompopup.h"
+#include "atom.h"
 
 namespace Molsketch {
 
-  class Arrow;
-
-  class ArrowPopup : public QWidget
+  struct AtomPopup::PrivateData
   {
-    Q_OBJECT
+    Atom* atom;
+    Ui::AtomPopup* ui;
 
-  public:
-    explicit ArrowPopup(QWidget *parent = 0);
+    void getFromAtom()
+    {
+      ui->element->setText(atom->element());
+      ui->charge->setValue(atom->charge());
+      ui->hydrogens->setValue(atom->numImplicitHydrogens());
+      ui->coordinates->model()->setCoordinates(atom->coordinates());
+    }
 
-    void connectArrow(Arrow* a);
-    ~ArrowPopup();
-
-  private:
-    Ui::arrowPopup *ui;
-    class privateData;
-    privateData *d;
-  private slots:
-    void applyPropertiesToArrow();
-    void checkSplineEligibility();
+    void setToAtom()
+    {
+      atom->setElement(ui->element->text());
+      atom->setCharge(ui->charge->value());
+      atom->setNumImplicitHydrogens(ui->hydrogens->value());
+      atom->setCoordinates(ui->coordinates->model()->getCoordinates());
+    }
   };
 
-} // namespace
+  AtomPopup::AtomPopup(QWidget *parent) :
+    QWidget(parent),
+    ui(new Ui::AtomPopup),
+    d(new PrivateData)
+  {
+    ui->setupUi(this);
+    ui->coordinates->setModel(new CoordinateModel(ui->coordinates)); // TODO write test against this sort of thing
+    d->ui = ui;
+  }
 
-#endif // ARROWPOPUP_H
+  AtomPopup::~AtomPopup()
+  {
+    delete ui;
+    delete d;
+  }
+
+  void AtomPopup::connectAtom(Atom *a)
+  {
+    // tell old atom to release
+    d->atom = a;
+    if (!a) return;
+    d->getFromAtom();
+  }
+
+  void AtomPopup::applyPropertiesToAtom()
+  {
+    if (!d->atom) return;
+    d->setToAtom();
+  }
+} // namespace

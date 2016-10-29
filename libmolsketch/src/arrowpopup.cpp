@@ -89,28 +89,10 @@ namespace Molsketch {
     d->arrow = a;
   }
 
-  // immediate TODO: Enable quit by pressing Esc (revert settings first) or loosing focus
-  // connect this to arrow somehow
-
-  // TODO precaution against illegal number of coordinates in spline
-  //      - disable "spline" checkbox if illegal number
-  //      - Tooltip for "spline"
   ArrowPopup::~ArrowPopup()
   {
     delete ui;
     delete d;
-  }
-
-  void ArrowPopup::focusOutEvent(QFocusEvent *e)
-  {
-    Q_UNUSED(e)
-    deleteLater();
-  }
-
-  void ArrowPopup::showEvent(QShowEvent *e)
-  {
-    connectArrow(d->arrow);
-    QWidget::showEvent(e);
   }
 
   void ArrowPopup::applyPropertiesToArrow()

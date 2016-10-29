@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>244</width>
+    <width>245</width>
     <height>264</height>
    </rect>
   </property>
@@ -86,7 +86,7 @@
    <item row="5" column="0">
     <widget class="QCheckBox" name="curved">
      <property name="toolTip">
-      <string>Number of points has to 3*n + 1 for spline</string>
+      <string>Number of points has to be 3*n + 1 for spline</string>
      </property>
      <property name="text">
       <string>Curved</string>

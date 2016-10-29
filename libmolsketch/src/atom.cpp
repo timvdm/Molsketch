@@ -27,6 +27,7 @@
 #include <QDebug>
 #include <QGraphicsSceneMouseEvent>
 
+#include "atompopup.h"
 #include "bond.h"
 #include "molecule.h"
 
@@ -166,15 +167,18 @@ namespace Molsketch {
   QFont Atom::getSymbolFont() const
   {
     QSettings settings;
-    QFont symbolFont = settings.value("atom-symbol-font").value<QFont>();
-    symbolFont.setPointSizeF(symbolFont.pointSizeF() * relativeWidth());
+    QFont defaultFont = QFont();
+    QFont symbolFont = settings.value("atom-symbol-font", defaultFont).value<QFont>();
+    if (symbolFont.pointSizeF() > 0)
+      symbolFont.setPointSizeF(symbolFont.pointSizeF() * relativeWidth());
     return symbolFont;
   }
 
   QFont Atom::getSubscriptFont(const QFont& symbolFont) const
   {
     QFont subscriptFont = symbolFont;
-    subscriptFont.setPointSize(0.75 * symbolFont.pointSize());
+    if (symbolFont.pointSizeF() > 0)
+      subscriptFont.setPointSizeF(0.75 * symbolFont.pointSizeF());
     return subscriptFont;
   }
 
@@ -205,6 +209,7 @@ namespace Molsketch {
     QString lbl = composeLabel(Left == alignment);
 
     QPair<QFont, QFont> fonts = getFonts();
+    if (fonts.first.pointSizeF() < 0) return QRectF();
     QFontMetrics fmSymbol(fonts.first), fmScript(fonts.second);
 
     qreal totalWidth = computeTotalWdith(alignment, lbl, fmSymbol, fmScript);
@@ -711,7 +716,7 @@ namespace Molsketch {
     m_elementSymbol = element;
     prepareGeometryChange();
     m_shape = computeBoundingRect();
-    molecule()->invalidateElectronSystems();
+    if (Molecule *m = molecule()) m->invalidateElectronSystems();
   }
 
   void Atom::setNumImplicitHydrogens(int number)
@@ -969,6 +974,13 @@ namespace Molsketch {
       if (bond->otherAtom(this) == other)
         return bond;
     return 0;
+  }
+
+  QWidget *Atom::getPropertiesWidget()
+  {
+    AtomPopup* widget = new AtomPopup;
+    widget->connectAtom(this);
+    return widget;
   }
 
   QList<Atom*> Atom::neighbours() const
