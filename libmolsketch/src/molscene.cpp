@@ -180,7 +180,7 @@ namespace Molsketch {
     ~privateData()
     {
       delete inputItem;
-      delete selectionRectangle;
+//      delete selectionRectangle; // TODO why?
       propertiesDock->setWidget(propertiesHelpLabel);
       delete propertiesDock;
       if (!Grid->scene()) delete Grid;
@@ -706,6 +706,22 @@ namespace Molsketch {
       if (atom->scenePos() == pos)
         return atom;
     return 0;
+  }
+
+  Atom* MolScene::atomNear(const QPointF &pos, qreal tolerance)
+  {
+    Atom* pickedAtom = atomAt(pos);
+    if (pickedAtom) return pickedAtom;
+    foreach(auto atom, atoms())
+    {
+      qreal newDistance = QLineF(atom->scenePos(), pos).length();
+      if (newDistance < tolerance)
+      {
+          pickedAtom = atom;
+          tolerance = newDistance;
+      }
+    }
+    return pickedAtom;
   }
 
   Bond* MolScene::bondAt(const QPointF &pos)

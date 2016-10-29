@@ -1,7 +1,6 @@
 QT += widgets printsupport svg
 
-CONFIG += silent
-CONFIG += c++14
+CONFIG += silent c++14
 lessThan(QT_MAJOR_VERSION,5): QMAKE_CXXFLAGS += -std=c++11
 
 qtVersionSuffix=""

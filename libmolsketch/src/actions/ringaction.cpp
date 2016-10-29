@@ -72,9 +72,7 @@ namespace Molsketch {
 
     void alignRingWithAtom(Atom *atom) // TODO partial merge with alignRingWithBond()
     {
-
       if (hintRingPoints.size() < 2) return;
-
 
       QPointF moleculeNormal = QPointF(0.0, -1.0);
       QPointF ringNormal = normalized(hintRingPoints.first());
@@ -103,6 +101,7 @@ namespace Molsketch {
 
       if (hintRingPoints.size() < 2) return;
 
+      // scale to match bond length
       // just translate ring to make 1 atom align
       QPointF bondNormal = normalized(bond->endAtom()->pos() - bond->beginAtom()->pos());
       QPointF ringNormal = normalized( (hintRingPoints[0] + hintRingPoints[1]) / 2.0 );
@@ -115,11 +114,20 @@ namespace Molsketch {
 
       double triSign = triangleSign(bond->beginAtom()->scenePos(), bond->endAtom()->scenePos(), pos);
 
+      qreal bondLengthScale = QLineF(bond->beginAtom()->pos(), bond->endAtom()->pos()).length()/40.; // TODO magic number 40
       if (triSign > 0.0) {
-        hintMoleculeItems.setTransform(QTransform().rotate(ang+270.0).translate(-rp.x(), -rp.y()));
+        hintMoleculeItems.setTransform(QTransform()
+                                       .scale(bondLengthScale, bondLengthScale)
+                                       .rotate(ang+270.0)
+                                       .translate(-rp.x(), -rp.y())
+                                       );
         hintMoleculeItems.setPos(bond->endAtom()->scenePos());
       } else {
-        hintMoleculeItems.setTransform(QTransform().rotate(ang+90.0).translate(-rp.x(), -rp.y()));
+        hintMoleculeItems.setTransform(QTransform()
+                                       .scale(bondLengthScale, bondLengthScale)
+                                       .rotate(ang+90.0)
+                                       .translate(-rp.x(), -rp.y())
+                                       );
         hintMoleculeItems.setPos(bond->beginAtom()->scenePos());
       }
     }
@@ -190,7 +198,7 @@ namespace Molsketch {
     // Get the position
     QPointF downPos = event->scenePos();
 
-    Atom *atom = scene()->atomAt(downPos);
+    Atom *atom = scene()->atomNear(downPos);
     if (atom)
       d->alignRingWithAtom(atom);
 

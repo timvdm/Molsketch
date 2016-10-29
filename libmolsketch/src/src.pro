@@ -71,7 +71,8 @@ HEADERS += \
     helptextonemptylabel.h \
     helptextemptydock.h \
     actions/abstractrecursiveitemaction.h \
-    actions/abstractitemaction.h
+    actions/abstractitemaction.h \
+    atompopup.h
 
 SOURCES += \
     atom.cpp \
@@ -138,11 +139,13 @@ SOURCES += \
     helptextonemptylabel.cpp \
     helptextemptydock.cpp \
     actions/abstractrecursiveitemaction.cpp \
-    actions/abstractitemaction.cpp
+    actions/abstractitemaction.cpp \
+    atompopup.cpp
 
 FORMS += \
     arrowpopup.ui \
-    moleculepopup.ui
+    moleculepopup.ui \
+    atompopup.ui
 
 RESOURCES += \
     tools/toolicons.qrc
@@ -151,6 +154,8 @@ TARGET = molsketch$$qtVersionSuffix
 DESTDIR = ../../lib
 
 INSTALLS += target includes
+
+QMAKE_CXXFLAGS_DEBUG +=  -g -gstabs
 win* : VERSION =
 
 target.path = $${MSK_INSTALL_LIBS}

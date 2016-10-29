@@ -108,24 +108,9 @@ namespace Molsketch {
         nPoint = hintPoint->scenePos();
       }
 
-      // Look whether an atom is nearby
-      Atom* atom = (scene ? scene->atomAt(currentPosition) : 0);
-      if (atom) nPoint = atom->scenePos();
-      else
-      {
-        qreal distance = 10;
-        foreach(auto atom, scene->atoms())
-        {
-          qreal newDistance = QLineF(atom->scenePos(), currentPosition).length();
-          if (newDistance < distance)
-          {
-            nPoint = atom->scenePos();
-            distance = newDistance;
-          }
-        }
-      }
+      Atom* atom = (scene ? scene->atomNear(currentPosition) : 0);
 
-      return nPoint;
+      return atom ? atom->scenePos() : nPoint;
     }
 
     void performAtomAction(const QPointF& position)

@@ -239,6 +239,7 @@ namespace Molsketch {
       QPointF snapToGrid(const QPointF& point, bool force = false);
       bool snappingToGrid() const;
       bool cyclingByMouseWheelEnaled() const;
+      Atom *atomNear(const QPointF &pos, qreal tolerance = 10.0);
   protected:
       abstractXmlObject* produceChild(const QString &childName, const QString& type) ;
       QList<const abstractXmlObject*> children() const ;

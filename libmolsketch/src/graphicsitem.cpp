@@ -154,6 +154,7 @@ namespace Molsketch {
       }
       ++i ;
     }
+    event->setAccepted(-1 != d->selectedPoint);
     update() ;
   }
 
