@@ -50,7 +50,7 @@ namespace Molsketch {
   class MolScene;
   class Residue;
 
-  namespace Commands {
+  namespace Commands { // TODO make null safe and rework
 
   enum CommandId {
     BondTypeId = 1,

@@ -21,6 +21,7 @@
 #include <QUndoCommand>
 #include "graphicsitem.h"
 #include "molscene.h"
+#include "propertylistener.h"
 #include "actions/coloraction.h"
 #include "actions/linewidthaction.h"
 #if QT_VERSION >= 0x050000
@@ -79,6 +80,7 @@ namespace Molsketch {
   public:
     int selectedPoint;
     privateData() : selectedPoint(-1) {}
+    QList<PropertyListener*> listeners;
   };
 
   graphicsItem::graphicsItem(QGraphicsItem *parent GRAPHICSSCENESOURCE)
@@ -101,6 +103,13 @@ namespace Molsketch {
     setFlags(QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable);
     setAcceptHoverEvents(true);
     setAcceptedMouseButtons(Qt::LeftButton | Qt::RightButton);
+  }
+
+  graphicsItem::~graphicsItem()
+  {
+    for(PropertyListener *listener : d->listeners)
+      listener->registerItem(0);
+    delete d;
   }
 
   void graphicsItem::setColor(const QColor& color)
@@ -249,6 +258,7 @@ namespace Molsketch {
 
   void graphicsItem::attemptUndoPush(QUndoCommand *command)
   {
+    if (!command) return;
     MolScene *molscene = dynamic_cast<MolScene*>(scene());
     if (!molscene || !molscene->stack())
     {
@@ -257,6 +267,8 @@ namespace Molsketch {
     }
     else
       molscene->stack()->push(command) ;
+    for(PropertyListener* listener : d->listeners)
+      listener->propertiesChanged();
   }
 
   void graphicsItem::attemptBeginMacro(const QString &text)
@@ -318,13 +330,18 @@ namespace Molsketch {
   QVariant graphicsItem::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant &value)
   {
     QVariant retVal = QGraphicsItem::itemChange(change, value);
-    if (change == QGraphicsItem::ItemSelectedChange)
+    if (QGraphicsItem::ItemSelectedChange == change)
     {
       if (parentItem() && parentItem()->isSelected())
         retVal.setValue(false);
       if (value.toBool())
         foreach(QGraphicsItem* child, childItems())
           child->setSelected(false);
+    }
+    if (QGraphicsItem::ItemSceneHasChanged && !scene())
+    {
+      while (!d->listeners.empty())
+        unregisterPropertyListener(d->listeners.first());
     }
     return retVal;
   }
@@ -409,7 +426,21 @@ namespace Molsketch {
     return 0;
   }
 
+  bool graphicsItem::registerPropertyListener(PropertyListener *listener)
+  {
+    if (d->listeners.contains(listener) || !listener) return false;
+    d->listeners << listener;
+    listener->registerItem(this);
+    return true;
+  }
 
+  bool graphicsItem::unregisterPropertyListener(PropertyListener *listener)
+  {
+    if (!d->listeners.contains(listener) || !listener) return false;
+    d->listeners.removeAll(listener);
+    listener->registerItem(0);
+    return true;
+  }
 
   qreal graphicsItem::pointSelectionDistance() const
   {

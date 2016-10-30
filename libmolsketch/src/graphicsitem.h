@@ -29,6 +29,7 @@ class QUndoCommand ;
 namespace Molsketch {
 
   class MolScene ;
+  class PropertyListener;
 
   class graphicsItem : public QGraphicsItem, public abstractXmlObject
   {
@@ -48,6 +49,7 @@ namespace Molsketch {
 
     graphicsItem(QGraphicsItem* parent = 0 GRAPHICSSCENEHEADER);
     graphicsItem(const graphicsItem& other GRAPHICSSCENEHEADER);
+    ~graphicsItem();
     // TODO XML i/o
     void setColor(const QColor &color) ;
     QColor getColor() const ;
@@ -64,7 +66,7 @@ namespace Molsketch {
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
     /** coordinate functions */
-    virtual QPolygonF coordinates() const = 0; // TODO change to QPolygonF
+    virtual QPolygonF coordinates() const = 0;
     virtual void setCoordinates(const QVector<QPointF>& c) = 0;
     virtual void setCoordinate(const int& index, const QPointF& p);
     virtual QPointF getPoint(const int& index) const;
@@ -78,6 +80,9 @@ namespace Molsketch {
 
     virtual void prepareContextMenu(QMenu* contextMenu);
     virtual QWidget *getPropertiesWidget();
+
+    bool registerPropertyListener(PropertyListener* listener);
+    bool unregisterPropertyListener(PropertyListener* listener);
   protected:
     qreal pointSelectionDistance() const;
     void readAttributes(const QXmlStreamAttributes &attributes) ;

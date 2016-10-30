@@ -72,7 +72,8 @@ HEADERS += \
     helptextemptydock.h \
     actions/abstractrecursiveitemaction.h \
     actions/abstractitemaction.h \
-    atompopup.h
+    atompopup.h \
+    propertylistener.h
 
 SOURCES += \
     atom.cpp \
@@ -140,7 +141,8 @@ SOURCES += \
     helptextemptydock.cpp \
     actions/abstractrecursiveitemaction.cpp \
     actions/abstractitemaction.cpp \
-    atompopup.cpp
+    atompopup.cpp \
+    propertylistener.cpp
 
 FORMS += \
     arrowpopup.ui \

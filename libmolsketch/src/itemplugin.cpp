@@ -159,7 +159,7 @@ namespace Molsketch {
 
   QIcon ItemPluginFactory::icon() const
   {
-    return QIcon();
+    return QIcon(":images/plugin.svg");
   }
 
   QStringList ItemPluginFactory::outputs()

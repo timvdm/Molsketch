@@ -47,9 +47,10 @@ namespace Molsketch {
     // Determine "our" bonds
     QSet<Bond*> ringBonds ;
     foreach(Atom* atom, m_atoms)
-      foreach(Bond* bond, atom->bonds())
-        if (m_atoms.contains(bond->otherAtom(atom)))
-          ringBonds << bond ;
+      if (atom)
+        foreach(Bond* bond, atom->bonds()) // TODO this seems to lead to crashes?
+          if (bond && m_atoms.contains(bond->otherAtom(atom)))
+            ringBonds << bond ;
     return ringBonds ;
   }
   
