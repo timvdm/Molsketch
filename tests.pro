@@ -26,7 +26,7 @@ cxxtest.variable_out = SOURCES
 QMAKE_EXTRA_COMPILERS += cxxtest
 
 cxxrunner.target = cxxrunner.cpp
-cxxrunner.commands = $$CXXTEST_PATH/bin/cxxtestgen --xunit-printer --root -o cxxrunner.cpp --template $$PWD/runnerTemplate.tpl
+cxxrunner.commands = $$CXXTEST_PATH/bin/cxxtestgen --have-eh --xunit-printer --root -o cxxrunner.cpp --template $$PWD/runnerTemplate.tpl
 cxxrunner.depends = $$PWD/runnerTemplate.tpl
 #cxxrunner.output = cxxrunner.cpp
 #cxxrunner.variable_out = SOURCES
