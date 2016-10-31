@@ -67,6 +67,7 @@ public:
   void testRegisteringNullItem() {
     listener->registerItem(0);
     TS_ASSERT_EQUALS(listener->getItem(), nullptr);
+    TS_ASSERT_EQUALS(listener->timesCalled, 0);
   }
 
   void testRegisteringNullListener() {
@@ -74,25 +75,26 @@ public:
     item->registerPropertyListener(0);
     item->pushToUndoStack();
     TS_ASSERT_EQUALS(listener->getItem(), item);
-    TS_ASSERT_EQUALS(listener->timesCalled, 1);
+    TS_ASSERT_EQUALS(listener->timesCalled, 2);
   }
 
   void testRegisteredListenerIsCalledWhenPushedToUndoStack() {
     item->registerPropertyListener(listener);
     item->pushToUndoStack();
-    TS_ASSERT_EQUALS(listener->timesCalled, 1);
+    TS_ASSERT_EQUALS(listener->timesCalled, 2);
   }
 
   void testRegisteringTwiceLeadsToOnlyOneCallToListener() {
     item->registerPropertyListener(listener);
     item->registerPropertyListener(listener);
     item->pushToUndoStack();
-    TS_ASSERT_EQUALS(listener->timesCalled, 1);
+    TS_ASSERT_EQUALS(listener->timesCalled, 2);
   }
 
   void testListenerKnowsWhatItemToListenTo() {
     item->registerPropertyListener(listener);
     TS_ASSERT_EQUALS(listener->getItem(), item);
+    TS_ASSERT_EQUALS(listener->timesCalled, 1);
   }
 
   void testUnregisteringViaItem() {
@@ -100,7 +102,7 @@ public:
     item->unregisterPropertyListener(listener);
     item->pushToUndoStack();
     TS_ASSERT_EQUALS(listener->getItem(), nullptr);
-    TS_ASSERT_EQUALS(listener->timesCalled, 0);
+    TS_ASSERT_EQUALS(listener->timesCalled, 2);
   }
 
   void testUnregisteringViaListener() {
@@ -108,14 +110,14 @@ public:
     listener->registerItem(0);
     item->pushToUndoStack();
     TS_ASSERT_EQUALS(listener->getItem(), nullptr);
-    TS_ASSERT_EQUALS(listener->timesCalled, 0);
+    TS_ASSERT_EQUALS(listener->timesCalled, 2);
   }
 
   void testUnregisteringNullListener() {
     item->registerPropertyListener(listener);
     item->registerPropertyListener(0);
     item->pushToUndoStack();
-    TS_ASSERT_EQUALS(listener->timesCalled, 1);
+    TS_ASSERT_EQUALS(listener->timesCalled, 2);
     TS_ASSERT_EQUALS(listener->getItem(), item);
   }
 
@@ -123,42 +125,42 @@ public:
     listener->registerItem(item);
     item->pushToUndoStack();
     TS_ASSERT_EQUALS(listener->getItem(), item);
-    TS_ASSERT_EQUALS(listener->timesCalled, 1);
+    TS_ASSERT_EQUALS(listener->timesCalled, 2);
   }
 
   void testDoubleRegistrationViaListenerLeadsToOnlyOneCallback() {
     listener->registerItem(item);
     listener->registerItem(item);
     item->pushToUndoStack();
-    TS_ASSERT_EQUALS(listener->timesCalled, 1);
+    TS_ASSERT_EQUALS(listener->timesCalled, 2);
   }
 
   void testReregisteringWorksViaListener() {
     listener->registerItem(item);
     item->pushToUndoStack();
-    TS_ASSERT_EQUALS(listener->timesCalled, 1);
+    TS_ASSERT_EQUALS(listener->timesCalled, 2);
 
     GraphicsItemForTesting otherItem;
     listener->registerItem(&otherItem);
     item->pushToUndoStack();
-    TS_ASSERT_EQUALS(listener->timesCalled, 1);
+    TS_ASSERT_EQUALS(listener->timesCalled, 3);
 
     otherItem.pushToUndoStack();
-    TS_ASSERT_EQUALS(listener->timesCalled, 2);
+    TS_ASSERT_EQUALS(listener->timesCalled, 4);
   }
 
   void testReregisteringWorksViaItem() {
     item->registerPropertyListener(listener);
     item->pushToUndoStack();
-    TS_ASSERT_EQUALS(listener->timesCalled, 1);
+    TS_ASSERT_EQUALS(listener->timesCalled, 2);
 
     GraphicsItemForTesting otherItem;
     otherItem.registerPropertyListener(listener);
     item->pushToUndoStack();
-    TS_ASSERT_EQUALS(listener->timesCalled, 1);
+    TS_ASSERT_EQUALS(listener->timesCalled, 3);
 
     otherItem.pushToUndoStack();
-    TS_ASSERT_EQUALS(listener->timesCalled, 2);
+    TS_ASSERT_EQUALS(listener->timesCalled, 4);
   }
 
   void testUnregistrationWhenItemDeleted() {
@@ -166,6 +168,7 @@ public:
     delete item;
     item = 0;
     TS_ASSERT_EQUALS(listener->getItem(), nullptr);
+    TS_ASSERT_EQUALS(listener->timesCalled, 2);
   }
 
   void testUnregistrationWhenListenerDeleted() {
