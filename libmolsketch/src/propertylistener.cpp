@@ -34,9 +34,12 @@ namespace Molsketch {
   void PropertyListener::registerItem(graphicsItem *item)
   {
     if (item == d->item) return;
-    if (d->item) d->item->unregisterPropertyListener(this);
+    graphicsItem* oldItem = d->item;
+    d->item = 0;
+    if (oldItem) oldItem->unregisterPropertyListener(this);
     d->item = item;
     if (item) item->registerPropertyListener(this);
+    propertiesChanged();
   }
 
   void PropertyListener::propertiesChanged()
@@ -48,7 +51,9 @@ namespace Molsketch {
     : d(new PrivateData) {}
 
   PropertyListener::~PropertyListener() {
-    if (d->item) d->item->unregisterPropertyListener(this);
+    graphicsItem* oldItem = d->item;
+    d->item = 0;
+    if (oldItem) oldItem->unregisterPropertyListener(this);
     delete d;
   }
 
