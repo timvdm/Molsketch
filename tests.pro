@@ -12,7 +12,7 @@ CONFIG += c++14
 INCLUDEPATH += $$CXXTEST_PATH \
     ../libmolsketch/src
 
-QT += widgets printsupport svg
+QT += widgets printsupport svg testlib
 
 TEMPLATE = app
 
