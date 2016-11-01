@@ -40,10 +40,16 @@ public:
 
 class PropertyListenerForTesting : public PropertyListener
 {
-  void reactToPropertyChange() { ++ timesCalled; }
+  void reactToPropertyChange() { ++ timesPropertyChanged; }
+  void transferProperty() {
+    TS_ASSERT(item());
+    ((GraphicsItemForTesting*) item())->pushToUndoStack();
+    ++ timesPropertyApplied;
+  }
 public:
-  int timesCalled;
-  PropertyListenerForTesting() : timesCalled(0) {}
+  int timesPropertyChanged;
+  int timesPropertyApplied;
+  PropertyListenerForTesting() : timesPropertyChanged(0), timesPropertyApplied(0) {}
   graphicsItem* getItem() { return item(); }
 };
 
@@ -52,6 +58,15 @@ class PropertyListenerUnitTest : public CxxTest::TestSuite
 private:
   PropertyListenerForTesting* listener;
   GraphicsItemForTesting* item;
+
+  void assertItemPropertyChangedPropertyApplied( graphicsItem* item,
+                                         int changeCount,
+                                         int appliedCount) {
+    TS_ASSERT_EQUALS(listener->getItem(), item);
+    TS_ASSERT_EQUALS(listener->timesPropertyChanged, changeCount);
+    TS_ASSERT_EQUALS(listener->timesPropertyApplied, appliedCount);
+  }
+
 public:
 
   void setUp() {
@@ -66,109 +81,101 @@ public:
 
   void testRegisteringNullItem() {
     listener->registerItem(0);
-    TS_ASSERT_EQUALS(listener->getItem(), nullptr);
-    TS_ASSERT_EQUALS(listener->timesCalled, 0);
+    assertItemPropertyChangedPropertyApplied(nullptr, 0, 0);
   }
 
   void testRegisteringNullListener() {
     item->registerPropertyListener(listener);
     item->registerPropertyListener(0);
     item->pushToUndoStack();
-    TS_ASSERT_EQUALS(listener->getItem(), item);
-    TS_ASSERT_EQUALS(listener->timesCalled, 2);
+    assertItemPropertyChangedPropertyApplied(item, 2, 0);
   }
 
   void testRegisteredListenerIsCalledWhenPushedToUndoStack() {
     item->registerPropertyListener(listener);
     item->pushToUndoStack();
-    TS_ASSERT_EQUALS(listener->timesCalled, 2);
+    assertItemPropertyChangedPropertyApplied(item, 2, 0);
   }
 
   void testRegisteringTwiceLeadsToOnlyOneCallToListener() {
     item->registerPropertyListener(listener);
     item->registerPropertyListener(listener);
     item->pushToUndoStack();
-    TS_ASSERT_EQUALS(listener->timesCalled, 2);
+    assertItemPropertyChangedPropertyApplied(item, 2, 0);
   }
 
   void testListenerKnowsWhatItemToListenTo() {
     item->registerPropertyListener(listener);
-    TS_ASSERT_EQUALS(listener->getItem(), item);
-    TS_ASSERT_EQUALS(listener->timesCalled, 1);
+    assertItemPropertyChangedPropertyApplied(item, 1, 0);
   }
 
   void testUnregisteringViaItem() {
     item->registerPropertyListener(listener);
     item->unregisterPropertyListener(listener);
     item->pushToUndoStack();
-    TS_ASSERT_EQUALS(listener->getItem(), nullptr);
-    TS_ASSERT_EQUALS(listener->timesCalled, 2);
+    assertItemPropertyChangedPropertyApplied(nullptr, 2, 0);
   }
 
   void testUnregisteringViaListener() {
     listener->registerItem(item);
     listener->registerItem(0);
     item->pushToUndoStack();
-    TS_ASSERT_EQUALS(listener->getItem(), nullptr);
-    TS_ASSERT_EQUALS(listener->timesCalled, 2);
+    assertItemPropertyChangedPropertyApplied(nullptr, 2, 0);
   }
 
   void testUnregisteringNullListener() {
     item->registerPropertyListener(listener);
     item->registerPropertyListener(0);
     item->pushToUndoStack();
-    TS_ASSERT_EQUALS(listener->timesCalled, 2);
-    TS_ASSERT_EQUALS(listener->getItem(), item);
+    assertItemPropertyChangedPropertyApplied(item, 2, 0);
   }
 
   void testRegisteringItemWithListenerLeadsToCallbackUponPushToUndoStack() {
     listener->registerItem(item);
     item->pushToUndoStack();
-    TS_ASSERT_EQUALS(listener->getItem(), item);
-    TS_ASSERT_EQUALS(listener->timesCalled, 2);
+    assertItemPropertyChangedPropertyApplied(item, 2, 0);
   }
 
   void testDoubleRegistrationViaListenerLeadsToOnlyOneCallback() {
     listener->registerItem(item);
     listener->registerItem(item);
     item->pushToUndoStack();
-    TS_ASSERT_EQUALS(listener->timesCalled, 2);
+    assertItemPropertyChangedPropertyApplied(item, 2, 0);
   }
 
   void testReregisteringWorksViaListener() {
     listener->registerItem(item);
     item->pushToUndoStack();
-    TS_ASSERT_EQUALS(listener->timesCalled, 2);
+    assertItemPropertyChangedPropertyApplied(item, 2, 0);
 
     GraphicsItemForTesting otherItem;
     listener->registerItem(&otherItem);
     item->pushToUndoStack();
-    TS_ASSERT_EQUALS(listener->timesCalled, 3);
+    assertItemPropertyChangedPropertyApplied(&otherItem, 3, 0);
 
     otherItem.pushToUndoStack();
-    TS_ASSERT_EQUALS(listener->timesCalled, 4);
+    assertItemPropertyChangedPropertyApplied(&otherItem, 4, 0);
   }
 
   void testReregisteringWorksViaItem() {
     item->registerPropertyListener(listener);
     item->pushToUndoStack();
-    TS_ASSERT_EQUALS(listener->timesCalled, 2);
+    assertItemPropertyChangedPropertyApplied(item, 2, 0);
 
     GraphicsItemForTesting otherItem;
     otherItem.registerPropertyListener(listener);
     item->pushToUndoStack();
-    TS_ASSERT_EQUALS(listener->timesCalled, 3);
+    assertItemPropertyChangedPropertyApplied(&otherItem, 3, 0);
 
     otherItem.pushToUndoStack();
-    TS_ASSERT_EQUALS(listener->timesCalled, 4);
+    assertItemPropertyChangedPropertyApplied(&otherItem, 4, 0);
   }
 
   void testUnregistrationWhenItemDeleted() {
     item->registerPropertyListener(listener);
     delete item;
     item = 0;
-    TS_ASSERT_EQUALS(listener->getItem(), nullptr);
-    TS_ASSERT_EQUALS(listener->timesCalled, 2);
+    assertItemPropertyChangedPropertyApplied(nullptr, 2, 0);
   }
 
   void testUnregistrationWhenListenerDeleted() {
@@ -181,12 +188,12 @@ public:
   void testListenerDisconnectsUponAddingItemToScene() {
     item->registerPropertyListener(listener);
     TS_ASSERT_EQUALS(item->scene(), nullptr);
-    TS_ASSERT_EQUALS(listener->getItem(), item);
+    assertItemPropertyChangedPropertyApplied(item, 1, 0);
 
     MolScene scene;
     scene.addItem(item);
     TS_ASSERT_EQUALS(item->scene(), &scene);
-    TS_ASSERT_EQUALS(listener->getItem(), nullptr);
+    assertItemPropertyChangedPropertyApplied(nullptr, 2, 0);
     scene.removeItem(item);
   }
 
@@ -195,11 +202,11 @@ public:
     scene.addItem(item);
     item->registerPropertyListener(listener);
     TS_ASSERT_EQUALS(item->scene(), &scene);
-    TS_ASSERT_EQUALS(listener->getItem(), item);
+    assertItemPropertyChangedPropertyApplied(item, 1, 0);
 
     scene.removeItem(item);
     TS_ASSERT_EQUALS(item->scene(), nullptr);
-    TS_ASSERT_EQUALS(listener->getItem(), nullptr);
+    assertItemPropertyChangedPropertyApplied(nullptr, 2, 0);
   }
 
   void testListenerDisconnectsUponChangeOfScene() {
@@ -207,12 +214,26 @@ public:
     scene.addItem(item);
     item->registerPropertyListener(listener);
     TS_ASSERT_EQUALS(item->scene(), &scene);
-    TS_ASSERT_EQUALS(listener->getItem(), item);
+    assertItemPropertyChangedPropertyApplied( item, 1, 0);
 
     MolScene otherScene;
     otherScene.addItem(item);
     TS_ASSERT_EQUALS(item->scene(), &otherScene);
-    TS_ASSERT_EQUALS(listener->getItem(), nullptr);
+    assertItemPropertyChangedPropertyApplied(nullptr, 2, 0);
     otherScene.removeItem(item);
+  }
+
+  void testApplyingProperty() {
+    item->registerPropertyListener(listener);
+    assertItemPropertyChangedPropertyApplied(item, 1, 0);
+
+    listener->applyProperty();
+    assertItemPropertyChangedPropertyApplied(item, 1, 1);
+  }
+
+  void testApplyingPropertyWithNullItem() {
+    listener->registerItem(0);
+    listener->applyProperty();
+    assertItemPropertyChangedPropertyApplied(nullptr, 0, 0);
   }
 };
