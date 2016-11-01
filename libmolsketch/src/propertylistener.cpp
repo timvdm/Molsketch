@@ -17,12 +17,14 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "propertylistener.h"
+#include <QMutex>
 #include "graphicsitem.h"
 
 namespace Molsketch {
 
   struct PropertyListener::PrivateData {
     graphicsItem* item;
+    QMutex lock;
     PrivateData() : item(0) {}
   };
 
@@ -44,7 +46,17 @@ namespace Molsketch {
 
   void PropertyListener::propertiesChanged()
   {
+    if (!d->lock.tryLock()) return;
     reactToPropertyChange();
+    d->lock.unlock();
+  }
+
+  void PropertyListener::applyProperty()
+  {
+    if (!d->item) return;
+    if (!d->lock.tryLock()) return;
+    transferProperty();
+    d->lock.unlock();
   }
 
   PropertyListener::PropertyListener()

@@ -30,12 +30,14 @@ namespace Molsketch {
     PrivateData *d;
   protected:
     virtual void reactToPropertyChange() = 0;
+    virtual void transferProperty() = 0;
     graphicsItem* item() const;
   public:
     PropertyListener();
     virtual ~PropertyListener();
     void registerItem(graphicsItem* item);
     void propertiesChanged();
+    void applyProperty();
   };
 
 } // namespace Molsketch

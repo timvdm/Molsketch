@@ -249,8 +249,6 @@ class Molecule : public graphicsItem
 	*/
    void updateElectronSystems();
 
-   bool m_electronSystemsUpdate;
-   QList<ElectronSystem*> m_electronSystems;
 
    QList<const abstractXmlObject*> children() const ;
    abstractXmlObject* produceChild(const QString &name, const QString &type) ;
@@ -281,6 +279,9 @@ class Molecule : public graphicsItem
 
 	/** A list of pointers to the bonds of the molecule. Used as internal representation. */
 	moleculeItemListClass<Bond> m_bondList;
+
+        bool m_electronSystemsUpdate;
+        QList<ElectronSystem*> m_electronSystems;
 
 	QList<Ring*> m_rings;
         QString name;
