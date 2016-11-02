@@ -22,36 +22,55 @@
 #include <QTest>
 #include <arrow.h>
 #include <arrowpopup.h>
+#include <coordinatetableview.h>
 
 using namespace Molsketch;
 
 class ArrowPopupAcceptanceTest : public CxxTest::TestSuite
 {
+  Arrow *arrow;
+  ArrowPopup* popup;
+
+  QCheckBox *beginningTop, *beginningBottom, *endTop, *endBottom, *spline;
+  CoordinateTableView *coordinates;
+
 public:
   void setUp() {
+    arrow = new Arrow();
+    arrow->setSpline(false);
+    arrow->setArrowType(Arrow::NoArrow);
 
+    popup = new ArrowPopup;
+    beginningTop = popup->findChild<QCheckBox*>("beginningTopTip");
+    beginningBottom = popup->findChild<QCheckBox*>("beginningBottomTip");
+    endTop = popup->findChild<QCheckBox*>("endTopTip");
+    endBottom = popup->findChild<QCheckBox*>("endBottomTip");
+    spline = popup->findChild<QCheckBox*>("curved");
+    coordinates = popup->findChild<CoordinateTableView*>();
   }
 
   void tearDown() {
+    delete arrow;
+    delete popup;
+  }
 
+  void testGuiElementsFound() {
+    TS_ASSERT(beginningTop);
+    TS_ASSERT(beginningBottom);
+    TS_ASSERT(endTop);
+    TS_ASSERT(endBottom);
+    TS_ASSERT(spline);
+    TS_ASSERT(coordinates);
   }
 
   void testGuiTestCase() {
-    Arrow arrow;
-    ArrowPopup popup;
-    popup.connectArrow(&arrow);
-    QCheckBox *box = popup.findChild<QCheckBox*>("beginningTopTip");
+    popup->connectArrow(arrow);
 
-    TS_ASSERT_EQUALS(arrow.getProperties().arrowType,
-                     Arrow::LowerBackward |
-                     Arrow::UpperBackward);
+    TS_ASSERT_EQUALS(arrow->getProperties().arrowType, Arrow::NoArrow);
 
-    QTest::mouseClick(box, Qt::LeftButton);
+    QTest::mouseClick(beginningTop, Qt::LeftButton);
 
-    TS_ASSERT_EQUALS(arrow.getProperties().arrowType,
-                     Arrow::UpperForward |
-                     Arrow::LowerBackward |
-                     Arrow::UpperBackward);
+    TS_ASSERT_EQUALS(arrow->getProperties().arrowType, Arrow::UpperForward);
   }
 
   // Situation when no arrow connected
