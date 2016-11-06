@@ -38,7 +38,7 @@ public:
   void pushToUndoStack() { attemptUndoPush(new QUndoCommand()); }
 };
 
-class PropertyListenerForTesting : public PropertyListener
+class PropertyListenerForTesting : public PropertyWidget
 {
   void reactToPropertyChange() { ++ timesPropertyChanged; }
   void transferProperty() {
