@@ -23,6 +23,8 @@
 #include <arrow.h>
 #include <arrowpopup.h>
 #include <coordinatetableview.h>
+#include <molscene.h>
+#include <molview.h>
 
 using namespace Molsketch;
 
@@ -105,7 +107,7 @@ public:
     TS_ASSERT_EQUALS(spline->checkState(), Qt::Unchecked);
     assertTipCheckBoxes(false, false, false, false);
 
-    arrow->setArrowTipPart(Arrow::UpperForward);
+    arrow->setArrowTipPart(Arrow::UpperForward); // this won't push an undo command and hence not trigger the listener
     assertTipCheckBoxes(true, false, false, false);
 
     arrow->setArrowTipPart(Arrow::LowerForward);
@@ -148,13 +150,13 @@ public:
   }
 
   void testSplineCanBeChecked() {
-// get fitting number of coordinates and verify that checking leads to spline enabled
+    for (int i = 0 ; i < 20 ; ++i) {
+      arrow->setCoordinates(QVector<QPointF>(i));
+      popup->connectArrow(arrow);
+      TS_ASSERT((i-1) % 3 ? !spline->isEnabled() : spline->isEnabled());
+      popup->connectArrow(nullptr);
+    }
   }
-
-  // check that only valid coordinate counts enable spline checkbox
-  // check that coordinates can be changed in table and change arrow
-  // check that if arrow point is moved, table is updated while moving
-  // check that if entire arrow is moved, table is updated while moving
 
   void testCoordinatesUponConnection() {
     QPolygonF testCoordinates;
@@ -167,42 +169,41 @@ public:
     TS_ASSERT_EQUALS(coordinates->model()->getCoordinates(), testCoordinates);
   }
 
-
-
-
-  void testGuiTestCase() {
+  void testCoordinateTableChangesArrowCoordinates() {
+    arrow->setCoordinates({QPointF(0,0), QPointF(5,5)});
     popup->connectArrow(arrow);
-
-    TS_ASSERT_EQUALS(arrow->getProperties().arrowType, Arrow::NoArrow);
-
-    QTest::mouseClick(beginningTop, Qt::LeftButton);
-
-    TS_ASSERT_EQUALS(arrow->getProperties().arrowType, Arrow::UpperForward);
+    QTest::keyClicks(coordinates, "5.3\t3.4\t1.2\t2.4");
+    QTest::keyClick(coordinates, Qt::Key_Enter);
+    QVector<QPointF> expectedCoordinates = {QPointF(5.3, 3.4), QPointF(1.2,2.4)};
+    TS_ASSERT_EQUALS(arrow->coordinates(), expectedCoordinates);
   }
 
-  // Situation when no arrow connected
-  // connect null arrrow
-  // destructor?
-  // check GUI elements reflect arrow:
-  //   + forward upper
-  //   + forward lower
-  //   + backward upper
-  //   + backward lower
 
-  //   + coordinates
-  //   + spline
+  void testMoveArrowPointChangesCoordinates() {
+    arrow->setCoordinates({QPointF(0,0), QPointF(5,5)});
+    MolScene scene;
+    MolView view;
+    view.setScene(&scene);
+    scene.addItem(arrow);
+    popup->connectArrow(arrow);
 
-  //   - initial connect
-  //   - when arrow is changed
+    QTest::mousePress(view, Qt::LeftButton, 0, view.mapFromScene(arrow->mapToScene(arrow->coordinates().first())));
+    QTest::mouseMove(view, view.mapFromScene(QPointF(10,10)));
+    QVector<QPointF> expectedCoordinates = {QPointF(10, 10), QPointF(5, 5)};
+    TS_ASSERT_EQUALS(arrow->coordinates(), expectedCoordinates);
+  }
 
-  // check GUI elements control arrow:
-  //   + forward upper
-  //   + forward lower
-  //   + backward upper
-  //   + backward lower
-  //   - coordinates
-  //   - spline
+  void testMoveArrowChangesCoordinates() {
+    arrow->setCoordinates({QPointF(0,0), QPointF(5,5)});
+    MolScene scene;
+    MolView view;
+    view.setScene(&scene);
+    scene.addItem(arrow);
+    popup->connectArrow(arrow);
 
-  // check availability of spline
-
+    QTest::mousePress(view, Qt::LeftButton, 0, view.mapFromScene(QPointF(2, 2));
+    QTest::mouseMove(view, view.mapFromScene(QPointF(10,10)));
+    QVector<QPointF> expectedCoordinates = {QPointF(8, 8), QPointF(13, 13)};
+    TS_ASSERT_EQUALS(arrow->coordinates(), expectedCoordinates);
+  }
 };
