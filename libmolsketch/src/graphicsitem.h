@@ -29,7 +29,6 @@ class QUndoCommand ;
 namespace Molsketch {
 
   class MolScene ;
-  class PropertyWidget;
 
   class graphicsItem : public QGraphicsItem, public abstractXmlObject
   {
@@ -81,8 +80,6 @@ namespace Molsketch {
     virtual void prepareContextMenu(QMenu* contextMenu);
     virtual QWidget *getPropertiesWidget();
 
-    bool registerPropertyListener(PropertyWidget* listener);
-    bool unregisterPropertyListener(PropertyWidget* listener);
   protected:
     qreal pointSelectionDistance() const;
     void readAttributes(const QXmlStreamAttributes &attributes) ;

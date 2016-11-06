@@ -175,8 +175,6 @@ namespace Molsketch {
       void editModeChange(int);
       /** Signal emitted if the contents of the scene change. */
       void documentChange( );
-      /** Signal emitted if the selection on the scene changes. */
-      void selectionChange( );
       //  /** Signal emitted if a new molecule is added to the scene. */
       //   void newMolecule(QPointF,QString);
       /** 

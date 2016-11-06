@@ -21,25 +21,33 @@
 
 #include <QWidget>
 
+class QUndoCommand;
+
 namespace Molsketch {
+
+  class MolScene;
 
   class graphicsItem;
 
-  class PropertyWidget : public QWidget {
+  class PropertiesWidget : public QWidget {
     Q_OBJECT
   private:
     class PrivateData;
     PrivateData *d;
   protected:
-    virtual void reactToPropertyChange() = 0;
-    virtual void transferProperty() = 0;
-    graphicsItem* item() const;
+    virtual void propertiesChanged() = 0;
+    void attemtToPushUndoCommand(QUndoCommand*cmd);
+    MolScene *scene() const;
+    QSet<graphicsItem*> items() const;
+    bool blocked() const;
   public:
-    explicit PropertyWidget(QWidget *parent = 0);
-    virtual ~PropertyWidget();
-    void registerItem(graphicsItem* item);
-    void propertiesChanged();
-    void applyProperty();
+    explicit PropertiesWidget(QWidget *parent = 0);
+    virtual ~PropertiesWidget();
+    void setScene(MolScene* scene);
+  public slots:
+    void propertiesChange();
+  private slots:
+    void sceneDeleted();
   };
 
 } // namespace Molsketch

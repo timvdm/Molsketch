@@ -21,7 +21,6 @@
 #include <QUndoCommand>
 #include "graphicsitem.h"
 #include "molscene.h"
-#include "propertywidget.h"
 #include "actions/coloraction.h"
 #include "actions/linewidthaction.h"
 #if QT_VERSION >= 0x050000
@@ -80,7 +79,6 @@ namespace Molsketch {
   public:
     int selectedPoint;
     privateData() : selectedPoint(-1) {}
-    QList<PropertyWidget*> listeners;
   };
 
   graphicsItem::graphicsItem(QGraphicsItem *parent GRAPHICSSCENESOURCE)
@@ -107,8 +105,6 @@ namespace Molsketch {
 
   graphicsItem::~graphicsItem()
   {
-    for(PropertyWidget *listener : d->listeners)
-      listener->registerItem(0);
     delete d;
   }
 
@@ -267,8 +263,6 @@ namespace Molsketch {
     }
     else
       molscene->stack()->push(command) ;
-    for(PropertyWidget* listener : d->listeners)
-      listener->propertiesChanged();
   }
 
   void graphicsItem::attemptBeginMacro(const QString &text)
@@ -337,11 +331,6 @@ namespace Molsketch {
       if (value.toBool())
         foreach(QGraphicsItem* child, childItems())
           child->setSelected(false);
-    }
-    if (QGraphicsItem::ItemSceneHasChanged && !scene())
-    {
-      while (!d->listeners.empty())
-        unregisterPropertyListener(d->listeners.first());
     }
     return retVal;
   }
@@ -424,22 +413,6 @@ namespace Molsketch {
   QWidget* graphicsItem::getPropertiesWidget()
   {
     return 0;
-  }
-
-  bool graphicsItem::registerPropertyListener(PropertyWidget *listener)
-  {
-    if (d->listeners.contains(listener) || !listener) return false;
-    d->listeners << listener;
-    listener->registerItem(this);
-    return true;
-  }
-
-  bool graphicsItem::unregisterPropertyListener(PropertyWidget *listener)
-  {
-    if (!d->listeners.contains(listener) || !listener) return false;
-    d->listeners.removeAll(listener);
-    listener->registerItem(0);
-    return true;
   }
 
   qreal graphicsItem::pointSelectionDistance() const

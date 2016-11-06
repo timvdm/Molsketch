@@ -210,7 +210,6 @@ namespace Molsketch {
     // Prepare undo m_stack
     m_stack = new QUndoStack(this);
     connect(m_stack, SIGNAL(indexChanged(int)), this, SIGNAL(documentChange()));
-    connect(m_stack, SIGNAL(indexChanged(int)), this, SIGNAL(selectionChange()));
     connect(m_stack, SIGNAL(indexChanged(int)), this, SLOT(update()));
     connect(m_stack, SIGNAL(indexChanged(int)), this, SLOT(updateAll())) ;
     connect(this, SIGNAL(selectionChanged()), this, SLOT(selectionSlot()));
@@ -234,8 +233,6 @@ namespace Molsketch {
 
   MolScene::~MolScene()
   {
-    disconnect(this,0,0,0);
-    // Clear the scene
     clear();
   }
 
@@ -743,11 +740,7 @@ namespace Molsketch {
 
 	// Check whether copying is available
 	if ((event->type() == QEvent::GraphicsSceneMouseRelease) || (event->type() == QEvent::KeyRelease))
-	{
 	  emit copyAvailable(!selectedItems().isEmpty());
-	  //     emit pasteAvailable(!m_clipItems.isEmpty());
-          emit selectionChange();
-	}
 
 	// Execute default behavior
 	return accepted;
