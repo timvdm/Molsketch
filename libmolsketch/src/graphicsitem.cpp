@@ -21,7 +21,7 @@
 #include <QUndoCommand>
 #include "graphicsitem.h"
 #include "molscene.h"
-#include "propertylistener.h"
+#include "propertywidget.h"
 #include "actions/coloraction.h"
 #include "actions/linewidthaction.h"
 #if QT_VERSION >= 0x050000
