@@ -80,7 +80,7 @@ namespace Molsketch {
   public:
     int selectedPoint;
     privateData() : selectedPoint(-1) {}
-    QList<PropertyListener*> listeners;
+    QList<PropertyWidget*> listeners;
   };
 
   graphicsItem::graphicsItem(QGraphicsItem *parent GRAPHICSSCENESOURCE)
@@ -107,7 +107,7 @@ namespace Molsketch {
 
   graphicsItem::~graphicsItem()
   {
-    for(PropertyListener *listener : d->listeners)
+    for(PropertyWidget *listener : d->listeners)
       listener->registerItem(0);
     delete d;
   }
@@ -267,7 +267,7 @@ namespace Molsketch {
     }
     else
       molscene->stack()->push(command) ;
-    for(PropertyListener* listener : d->listeners)
+    for(PropertyWidget* listener : d->listeners)
       listener->propertiesChanged();
   }
 
@@ -426,7 +426,7 @@ namespace Molsketch {
     return 0;
   }
 
-  bool graphicsItem::registerPropertyListener(PropertyListener *listener)
+  bool graphicsItem::registerPropertyListener(PropertyWidget *listener)
   {
     if (d->listeners.contains(listener) || !listener) return false;
     d->listeners << listener;
@@ -434,7 +434,7 @@ namespace Molsketch {
     return true;
   }
 
-  bool graphicsItem::unregisterPropertyListener(PropertyListener *listener)
+  bool graphicsItem::unregisterPropertyListener(PropertyWidget *listener)
   {
     if (!d->listeners.contains(listener) || !listener) return false;
     d->listeners.removeAll(listener);

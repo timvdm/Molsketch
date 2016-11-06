@@ -22,18 +22,18 @@
 
 namespace Molsketch {
 
-  struct PropertyListener::PrivateData {
+  struct PropertyWidget::PrivateData {
     graphicsItem* item;
     QMutex lock;
     PrivateData() : item(0) {}
   };
 
-  graphicsItem *PropertyListener::item() const
+  graphicsItem *PropertyWidget::item() const
   {
     return d->item;
   }
 
-  void PropertyListener::registerItem(graphicsItem *item)
+  void PropertyWidget::registerItem(graphicsItem *item)
   {
     if (item == d->item) return;
     graphicsItem* oldItem = d->item;
@@ -44,14 +44,14 @@ namespace Molsketch {
     propertiesChanged();
   }
 
-  void PropertyListener::propertiesChanged()
+  void PropertyWidget::propertiesChanged()
   {
     if (!d->lock.tryLock()) return;
     reactToPropertyChange();
     d->lock.unlock();
   }
 
-  void PropertyListener::applyProperty()
+  void PropertyWidget::applyProperty()
   {
     if (!d->item) return;
     if (!d->lock.tryLock()) return;
@@ -59,10 +59,10 @@ namespace Molsketch {
     d->lock.unlock();
   }
 
-  PropertyListener::PropertyListener()
-    : d(new PrivateData) {}
+  PropertyWidget::PropertyWidget(QWidget *parent)
+    : QWidget(parent), d(new PrivateData) {}
 
-  PropertyListener::~PropertyListener() {
+  PropertyWidget::~PropertyWidget() {
     graphicsItem* oldItem = d->item;
     d->item = 0;
     if (oldItem) oldItem->unregisterPropertyListener(this);

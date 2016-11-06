@@ -32,7 +32,6 @@
 #include "math2d.h"
 #include "actions/arrowtypeaction.h"
 #include "arrowpopup.h"
-#include <QDebug>
 
 namespace Molsketch {
 
@@ -48,7 +47,6 @@ namespace Molsketch {
     d->arrowType = LowerBackward | UpperBackward ; // TODO rename these
     d->points << QPointF(0,0) << QPointF(50.0, 0.0),
     d->spline = true ;
-    qDebug() << "creating arrow" << this;
   }
 
   Arrow::~Arrow()
@@ -414,7 +412,6 @@ namespace Molsketch {
 
   void Arrow::prepareContextMenu(QMenu *contextMenu)
   {
-    qDebug() << "arrow context menu";
     MolScene *sc = qobject_cast<MolScene*>(scene());
     if (sc)
     {

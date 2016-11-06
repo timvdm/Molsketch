@@ -19,12 +19,14 @@
 #ifndef PROPERTYLISTENER_H
 #define PROPERTYLISTENER_H
 
+#include <QWidget>
+
 namespace Molsketch {
 
   class graphicsItem;
 
-  class PropertyListener
-  {
+  class PropertyWidget : public QWidget {
+    Q_OBJECT
   private:
     class PrivateData;
     PrivateData *d;
@@ -33,8 +35,8 @@ namespace Molsketch {
     virtual void transferProperty() = 0;
     graphicsItem* item() const;
   public:
-    PropertyListener();
-    virtual ~PropertyListener();
+    explicit PropertyWidget(QWidget *parent = 0);
+    virtual ~PropertyWidget();
     void registerItem(graphicsItem* item);
     void propertiesChanged();
     void applyProperty();
