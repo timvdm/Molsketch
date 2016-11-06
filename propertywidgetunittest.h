@@ -20,7 +20,7 @@
 #include <QUndoCommand>
 #include <graphicsitem.h>
 #include <molscene.h>
-#include <propertylistener.h>
+#include <propertywidget.h>
 #include <cxxtest/TestSuite.h>
 #include <QDebug>
 
@@ -38,7 +38,7 @@ public:
   void pushToUndoStack() { attemptUndoPush(new QUndoCommand()); }
 };
 
-class PropertyListenerForTesting : public PropertyWidget
+class PropertyWidgetForTesting : public PropertyWidget
 {
   void reactToPropertyChange() { ++ timesPropertyChanged; }
   void transferProperty() {
@@ -49,14 +49,14 @@ class PropertyListenerForTesting : public PropertyWidget
 public:
   int timesPropertyChanged;
   int timesPropertyApplied;
-  PropertyListenerForTesting() : timesPropertyChanged(0), timesPropertyApplied(0) {}
+  PropertyWidgetForTesting() : timesPropertyChanged(0), timesPropertyApplied(0) {}
   graphicsItem* getItem() { return item(); }
 };
 
-class PropertyListenerUnitTest : public CxxTest::TestSuite
+class PropertyWidgetUnitTest : public CxxTest::TestSuite
 {
 private:
-  PropertyListenerForTesting* listener;
+  PropertyWidgetForTesting* listener;
   GraphicsItemForTesting* item;
 
   void assertItemPropertyChangedPropertyApplied( graphicsItem* item,
@@ -70,7 +70,7 @@ private:
 public:
 
   void setUp() {
-    listener = new PropertyListenerForTesting;
+    listener = new PropertyWidgetForTesting;
     item = new GraphicsItemForTesting;
   }
 
