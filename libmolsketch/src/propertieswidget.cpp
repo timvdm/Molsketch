@@ -30,8 +30,12 @@ namespace Molsketch {
     bool lock;
   };
 
-  void PropertiesWidget::attemtToPushUndoCommand(QUndoCommand *cmd)
+  void PropertiesWidget::attemptToPushUndoCommand(QUndoCommand *cmd)
   {
+    if (d->lock) {
+      delete cmd;
+      return;
+    }
     d->lock = true;
     if (d->scene && d->scene->stack()) {
       d->scene->stack()->push(cmd);

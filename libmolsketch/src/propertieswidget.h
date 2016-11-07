@@ -36,7 +36,7 @@ namespace Molsketch {
     PrivateData *d;
   protected:
     virtual void propertiesChanged() = 0;
-    void attemtToPushUndoCommand(QUndoCommand*cmd);
+    void attemptToPushUndoCommand(QUndoCommand*cmd);
     MolScene *scene() const;
     QSet<graphicsItem*> items() const;
     bool blocked() const;
