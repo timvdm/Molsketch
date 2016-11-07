@@ -32,7 +32,7 @@ class PropertiesWidgetForTesting : public PropertiesWidget {
 public:
   int timesPropertyChanged;
   PropertiesWidgetForTesting() : timesPropertyChanged(0) {}
-  void push(QUndoCommand* cmd) { attemtToPushUndoCommand(cmd); }
+  void push(QUndoCommand* cmd) { attemptToPushUndoCommand(cmd); }
   MolScene* getScene() { return scene(); }
   QSet<graphicsItem*> getItems() { return items(); }
 };
@@ -43,22 +43,36 @@ public:
   bool blockedDuringPropertiesChange;
   PropertiesWidgetForBlockingTest() : blockedDuringPropertiesChange(false) {}
   bool isBlocked() { return blocked(); }
-  void push(QUndoCommand* cmd) { attemtToPushUndoCommand(cmd); }
+  void push(QUndoCommand* cmd) { attemptToPushUndoCommand(cmd); }
 };
 
 class WithCallback {
 protected:
   std::function<void()> callback;
-  WithCallback() : callback([](){}) {}
+  WithCallback() : callback([]{}) {}
 public:
   void setCallback(std::function<void()> callback) { this->callback = callback; }
 };
 
-class PropertiesWidgetWithChangeCallback : public PropertiesWidget, public WithCallback {
-  void propertiesChanged() { callback(); }
+class WithDestructorCallback {
+protected:
+  std::function<void()> destructorCallback;
+  WithDestructorCallback() : destructorCallback([]{}) {}
+public:
+  void setDestructorCallback(std::function<void()> callback) { this->destructorCallback = callback; }
+  virtual ~WithDestructorCallback() { destructorCallback(); }
+  void resetDestructorCallback() { destructorCallback = []{}; }
 };
 
-class UndoCommandWithCallback : public QUndoCommand, public WithCallback {
+class PropertiesWidgetWithChangeCallback
+    : public PropertiesWidget, public WithCallback, public WithDestructorCallback {
+  void propertiesChanged() { callback(); }
+public:
+  void push(QUndoCommand *cmd) { attemptToPushUndoCommand(cmd); }
+  MolScene* getScene() { return scene(); }
+};
+
+class UndoCommandWithCallback : public QUndoCommand, public WithCallback, public WithDestructorCallback {
   void redo() { callback(); }
 };
 
@@ -286,38 +300,116 @@ public:
   void testDuringPropertiesChangePropertiesChangeIsNotBlocked() {
     bool recursivelyCalled = false;
     bool propertyChangeCalled = false;
-    PropertiesWidgetWithChangeCallback callBackWidget;
-    callBackWidget.setCallback([&]() {
+    PropertiesWidgetWithChangeCallback callbackWidget;
+    callbackWidget.setCallback([&] {
       if (propertyChangeCalled) {
         recursivelyCalled = true;
         return;
       }
       propertyChangeCalled = true;
-      callBackWidget.propertiesChange();
+      callbackWidget.propertiesChange();
     });
-    callBackWidget.propertiesChange();
+    callbackWidget.propertiesChange();
     TS_ASSERT(propertyChangeCalled);
     TS_ASSERT(recursivelyCalled);
   }
 
   void testDuringPropertiesChangeAttemptUndoPushIsBlocked() {
+    assertUndoCommandIsNotCalledDuringPropertiesChange();
+  }
 
+  void assertUndoCommandIsNotCalledDuringPropertiesChange() {
+    UndoCommandWithCallback *undoCommand = new UndoCommandWithCallback;
+    bool undoCommandExecuted = false;
+    undoCommand->setCallback([&]{ undoCommandExecuted = true; });
+    bool undoCommandDestroyed = false;
+    undoCommand->setDestructorCallback([&]{ undoCommandDestroyed = true; });
+
+    bool pushing = false;
+    callbackWidget->setCallback([&] {
+      if (pushing) return;
+      pushing = true;
+      callbackWidget->push(undoCommand);
+    });
+
+    callbackWidget->propertiesChange();
+
+    TS_ASSERT(!undoCommandExecuted);
+    TS_ASSERT(undoCommandDestroyed);
+    if (!undoCommandDestroyed) undoCommand->resetDestructorCallback();
+  }
+
+  void testDuringPropertiesChangeAttemptUndoPushIsBlockedWithScene() {
+    MolSceneForTesting scene;
+    callbackWidget->setScene(&scene);
+    TS_ASSERT_EQUALS(callbackWidget->getScene(), &scene); // TODO put into object
+    assertPushedCommandGetsExecuted();
   }
 
   void testDuringAttemptUndoPushChangePropertiesIsNotBlocked() {
+    assertPropertiesChangedCalledDuringUndoPush(0);
+  }
 
+  void assertPropertiesChangedCalledDuringUndoPush(MolScene *scene)
+  {
+    UndoCommandWithCallback *undoCommand = new UndoCommandWithCallback;
+    undoCommand->setCallback([&]{ callbackWidget->propertiesChange(); });
+    bool undoCommandDestroyed = false;
+    undoCommand->setDestructorCallback([&]{ undoCommandDestroyed = true; });
+    bool propertiesChangedCalled = false;
+    callbackWidget->setCallback([&]{ propertiesChangedCalled = true; });
+    callbackWidget->push(undoCommand);
+    TS_ASSERT(propertiesChangedCalled);
+    assertCommandOnStackOrDestroyed(scene, undoCommand, undoCommandDestroyed);
   }
 
   void testDuringAttemptUndoPushChangePropertiesIsNotBlockedWithScene() {
-
+    MolSceneForTesting scene;
+    callbackWidget->setScene(&scene);
+    assertPropertiesChangedCalledDuringUndoPush(&scene);
   }
 
   void testDuringAttemptUndoPushAttemptUndoPushIsBlocked() {
+    assertUndoPushIsBlockedDuringUndoPush(0);
+  }
 
+  void assertUndoPushIsBlockedDuringUndoPush(MolScene* scene) {
+    UndoCommandWithCallback *outerCommand = new UndoCommandWithCallback;
+    bool outerCommandDestroyed = false;
+    outerCommand->setDestructorCallback([&] { outerCommandDestroyed = true; });
+
+    UndoCommandWithCallback *innerCommand = new UndoCommandWithCallback;
+    bool innerCommandDestroyed = false;
+    innerCommand->setDestructorCallback([&] {innerCommandDestroyed = true; });
+
+    outerCommand->setCallback([&] { callbackWidget->push(innerCommand); });
+    bool innerCommandCalled = false;
+    innerCommand->setCallback([&]{ innerCommandCalled = true; });
+
+    callbackWidget->push(outerCommand);
+
+    TS_ASSERT(!innerCommandCalled);
+    TS_ASSERT(innerCommandDestroyed);
+    if (!innerCommandDestroyed) innerCommand->resetDestructorCallback();
+    assertCommandOnStackOrDestroyed(scene, outerCommand, outerCommandDestroyed);
+  }
+
+  void assertCommandOnStackOrDestroyed(MolScene *scene, UndoCommandWithCallback *cmd, const bool& wasDestroyed) {
+    if (scene) {
+     TS_ASSERT_EQUALS(scene->stack()->count(), 1);
+     TS_ASSERT_EQUALS(scene->stack()->command(0), cmd);
+     if (scene->stack()->command(0) != cmd) delete cmd;
+     else cmd->resetDestructorCallback();
+    } else {
+      TS_ASSERT(wasDestroyed);
+      if (!wasDestroyed) delete cmd;
+    }
   }
 
   void testDuringAttemptUndoPushAttemptUndoPushIsBlockedWithScene() {
-
+    MolSceneForTesting scene;
+    callbackWidget->setScene(&scene);
+    assertUndoPushIsBlockedDuringUndoPush(&scene);
   }
 
 
@@ -329,5 +421,5 @@ public:
   // + if scene deleted, undo command gets executed, but not pushed to stack
   // + selected items can be obtained from scene
   // + if scene deleted, items are no longer fetched from scene
-  // during undocommand push, no other undo command can be pushed
+  // + during undocommand push, no other undo command can be pushed
 };
