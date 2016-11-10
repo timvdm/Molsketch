@@ -43,8 +43,9 @@ namespace Molsketch {
       for (auto arrowPart : uiToPropertyAssignment)
         arrowPart.first->setChecked(originalProperties.arrowType & arrowPart.second);
       ui->curved->setChecked(originalProperties.spline);
-      qDebug() << originalProperties.points;
       ui->Coordinates->model()->setCoordinates(originalProperties.points);
+      ui->curved->setEnabled(Arrow::splinePossible(
+              ui->Coordinates->model()->rowCount(QModelIndex())));
     }
     Arrow::Properties getPropertiesFromUi(Ui::arrowPopup* ui)
     {
@@ -60,7 +61,7 @@ namespace Molsketch {
   };
 
   ArrowPopup::ArrowPopup(QWidget *parent) :
-    QWidget(parent),
+    PropertiesWidget(parent),
     ui(new Ui::arrowPopup),
     d(new privateData)
   {
@@ -83,10 +84,8 @@ namespace Molsketch {
 
   void ArrowPopup::connectArrow(Arrow *a)
   {
-    if (a)
-      d->transferPropertiesToUi(ui, a->getProperties());
-    checkSplineEligibility();
     d->arrow = a;
+    setScene(a ? dynamic_cast<MolScene*>(a->scene()) : 0);
   }
 
   ArrowPopup::~ArrowPopup()
@@ -95,22 +94,15 @@ namespace Molsketch {
     delete d;
   }
 
-  void ArrowPopup::applyPropertiesToArrow()
+  void ArrowPopup::propertiesChanged()
   {
-    if (!d->arrow) return;
-    MolScene *scene = qobject_cast<MolScene*>(d->arrow->scene());
-    if (scene)
-      scene->stack()->push(new Commands::setArrowProperties(d->arrow, d->getPropertiesFromUi(ui), tr("Modify arrow")));
-    else
-      d->arrow->setProperties(d->getPropertiesFromUi(ui));
+    if (!scene()) return; // TODO reset GUI
+    d->transferPropertiesToUi(ui, d->arrow->getProperties());
   }
 
-  void ArrowPopup::checkSplineEligibility()
+  void ArrowPopup::applyPropertiesToArrow()
   {
-    ui->curved->setEnabled(
-          Arrow::splinePossible(
-            ui->Coordinates->model()->rowCount(QModelIndex())
-            ));
+    attemptToPushUndoCommand(new Commands::setArrowProperties(d->arrow, d->getPropertiesFromUi(ui), tr("Modify arrow")));
   }
 
 } // namespace

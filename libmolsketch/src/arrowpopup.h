@@ -19,7 +19,7 @@
 #ifndef ARROWPOPUP_H
 #define ARROWPOPUP_H
 
-#include <QWidget>
+#include "propertieswidget.h"
 
 namespace Ui {
   class arrowPopup;
@@ -29,7 +29,7 @@ namespace Molsketch {
 
   class Arrow;
 
-  class ArrowPopup : public QWidget
+  class ArrowPopup : public PropertiesWidget
   {
     Q_OBJECT
 
@@ -43,9 +43,9 @@ namespace Molsketch {
     Ui::arrowPopup *ui;
     class privateData;
     privateData *d;
+    void propertiesChanged();
   private slots:
     void applyPropertiesToArrow();
-    void checkSplineEligibility();
   };
 
 } // namespace

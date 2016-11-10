@@ -68,7 +68,9 @@ namespace Molsketch {
   }
 
   PropertiesWidget::PropertiesWidget(QWidget *parent)
-    : QWidget(parent), d(new PrivateData) {}
+    : QWidget(parent), d(new PrivateData) {
+    setEnabled(false);
+  }
 
   PropertiesWidget::~PropertiesWidget() {
     delete d;
@@ -87,6 +89,7 @@ namespace Molsketch {
       connect(d->scene->stack(), SIGNAL(indexChanged(int)), this, SLOT(propertiesChange()));
     }
     propertiesChange();
+    setEnabled(d->scene);
   }
 
   void PropertiesWidget::propertiesChange()
