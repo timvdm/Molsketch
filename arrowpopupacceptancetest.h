@@ -25,6 +25,7 @@
 #include <coordinatetableview.h>
 #include <molscene.h>
 #include <molview.h>
+#include <commands.h>
 
 using namespace Molsketch;
 
@@ -32,6 +33,7 @@ class ArrowPopupAcceptanceTest : public CxxTest::TestSuite
 {
   Arrow *arrow;
   ArrowPopup* popup;
+  MolScene* scene;
 
   QCheckBox *beginningTop, *beginningBottom, *endTop, *endBottom, *spline;
   CoordinateTableView *coordinates;
@@ -59,15 +61,18 @@ public:
     endBottom = popup->findChild<QCheckBox*>("endBottomTip");
     spline = popup->findChild<QCheckBox*>("curved");
     coordinates = popup->findChild<CoordinateTableView*>();
+
+    scene = new MolScene();
+    scene->addItem(arrow);
   }
 
   void tearDown() {
     delete arrow;
+    delete scene;
     delete popup;
   }
 
   void testGuiElementsFound() {
-    TS_SKIP("Test is not yet ready");
     TS_ASSERT(beginningTop);
     TS_ASSERT(beginningBottom);
     TS_ASSERT(endTop);
@@ -77,57 +82,56 @@ public:
   }
 
   void testCheckBoxToTipLink() {
-    TS_SKIP("Test is not yet ready");
     popup->connectArrow(arrow);
     QTest::mouseClick(beginningTop, Qt::LeftButton);
-    TS_ASSERT_EQUALS(arrow->type(), Arrow::UpperForward);
+    TS_ASSERT_EQUALS(arrow->getArrowType(), Arrow::UpperForward);
 
     QTest::mouseClick(endTop, Qt::LeftButton);
-    TS_ASSERT_EQUALS(arrow->type(), Arrow::UpperForward | Arrow::UpperBackward);
+    TS_ASSERT_EQUALS(arrow->getArrowType(), Arrow::UpperForward | Arrow::UpperBackward);
 
     QTest::mouseClick(beginningBottom, Qt::LeftButton);
-    TS_ASSERT_EQUALS(arrow->type(), Arrow::UpperForward | Arrow::UpperBackward | Arrow::LowerForward);
+    TS_ASSERT_EQUALS(arrow->getArrowType(), Arrow::UpperForward | Arrow::UpperBackward | Arrow::LowerForward);
 
     QTest::mouseClick(endBottom, Qt::LeftButton);
-    TS_ASSERT_EQUALS(arrow->type(), Arrow::UpperForward | Arrow::UpperBackward | Arrow::LowerForward | Arrow::LowerBackward);
+    TS_ASSERT_EQUALS(arrow->getArrowType(), Arrow::UpperForward | Arrow::UpperBackward | Arrow::LowerForward | Arrow::LowerBackward);
 
     QTest::mouseClick(endBottom, Qt::LeftButton);
-    TS_ASSERT_EQUALS(arrow->type(), Arrow::UpperForward | Arrow::UpperBackward | Arrow::LowerForward);
+    TS_ASSERT_EQUALS(arrow->getArrowType(), Arrow::UpperForward | Arrow::UpperBackward | Arrow::LowerForward);
 
     QTest::mouseClick(beginningBottom, Qt::LeftButton);
-    TS_ASSERT_EQUALS(arrow->type(), Arrow::UpperForward | Arrow::UpperBackward);
+    TS_ASSERT_EQUALS(arrow->getArrowType(), Arrow::UpperForward | Arrow::UpperBackward);
 
     QTest::mouseClick(endTop, Qt::LeftButton);
-    TS_ASSERT_EQUALS(arrow->type(), Arrow::UpperForward);
+    TS_ASSERT_EQUALS(arrow->getArrowType(), Arrow::UpperForward);
 
     QTest::mouseClick(beginningTop, Qt::LeftButton);
-    TS_ASSERT_EQUALS(arrow->type(), Arrow::NoArrow);
+    TS_ASSERT_EQUALS(arrow->getArrowType(), Arrow::NoArrow);
   }
 
   void testTipToCheckBoxLink() {
-    TS_SKIP("Test is not yet ready");
     popup->connectArrow(arrow);
+
     TS_ASSERT_EQUALS(spline->checkState(), Qt::Unchecked);
     assertTipCheckBoxes(false, false, false, false);
 
-    arrow->setArrowTipPart(Arrow::UpperForward); // this won't push an undo command and hence not trigger the listener
+    scene->stack()->push(new Commands::SetArrowType(arrow, Arrow::UpperForward));
     assertTipCheckBoxes(true, false, false, false);
 
-    arrow->setArrowTipPart(Arrow::LowerForward);
+    scene->stack()->push(new Commands::SetArrowType(arrow, Arrow::UpperForward | Arrow::LowerForward));
     assertTipCheckBoxes(true, true, false, false);
 
+    scene->stack()->push(new Commands::SetArrowType(arrow, Arrow::UpperBackward));
     arrow->setArrowTipPart(Arrow::UpperBackward);
-    assertTipCheckBoxes(true, true, true, false);
+    assertTipCheckBoxes(false, false, true, false);
 
-    arrow->setArrowTipPart(Arrow::LowerBackward);
-    assertTipCheckBoxes(true, true, true, true);
+    scene->stack()->push(new Commands::SetArrowType(arrow, Arrow::UpperBackward | Arrow::LowerBackward));
+    assertTipCheckBoxes(false, false, true, true);
 
-    arrow->setArrowTipPart(Arrow::NoArrow);
+    scene->stack()->push(new Commands::SetArrowType(arrow, Arrow::NoArrow));
     assertTipCheckBoxes(false, false, false, false);
   }
 
   void testEnabledStates() {
-    TS_SKIP("Test is not yet ready");
     TS_ASSERT_EQUALS(popup->isEnabled(), false);
     popup->connectArrow(arrow);
     TS_ASSERT_EQUALS(popup->isEnabled(), true);
@@ -136,7 +140,6 @@ public:
   }
 
   void testArrowTipCheckboxesInitialized() {
-    TS_SKIP("Test is not yet ready");
     arrow->setArrowType(Arrow::UpperForward | Arrow::LowerBackward);
     popup->connectArrow(arrow);
     assertTipCheckBoxes(true, false, false, true);
@@ -156,7 +159,6 @@ public:
   }
 
   void testSplineCanBeChecked() {
-    TS_SKIP("Test is not yet ready");
     for (int i = 0 ; i < 20 ; ++i) {
       arrow->setCoordinates(QVector<QPointF>(i));
       popup->connectArrow(arrow);

@@ -217,11 +217,14 @@ public:
     TS_ASSERT_EQUALS(widget->timesPropertyChanged, 1);
   }
 
-  void testSceneGetsRemovedWhenDeleted() {
+  void testSceneGetsRemovedWhenDeletedAndWidgetDisabled() {
+    TS_ASSERT(!widget->isEnabled());
     MolScene *scene = new MolScene();
     widget->setScene(scene);
+    TS_ASSERT(widget->isEnabled());
     delete scene;
     TS_ASSERT_EQUALS(widget->getScene(), nullptr);
+    TS_ASSERT(!widget->isEnabled());
   }
 
   void testSignalsGetRemovedWhenChangingScene() {
