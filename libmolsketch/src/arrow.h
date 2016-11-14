@@ -51,7 +51,7 @@ namespace Molsketch {
     static bool splinePossible(const int& numberOfPoints);
 
     bool getSpline() const;
-    void setSpline(bool value);
+    void setSpline(const bool& value);
     void setArrowType(const ArrowType& type);
     void setArrowTipPart(const ArrowTypeParts& part);
     void unsetArrowTipPart(const ArrowTypeParts& part);

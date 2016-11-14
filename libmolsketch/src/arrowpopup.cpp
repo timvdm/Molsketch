@@ -42,8 +42,8 @@ namespace Molsketch {
     {
       for (auto arrowPart : uiToPropertyAssignment)
         arrowPart.first->setChecked(originalProperties.arrowType & arrowPart.second);
-      ui->curved->setChecked(originalProperties.spline);
       ui->Coordinates->model()->setCoordinates(originalProperties.points);
+      ui->curved->setChecked(arrow->getSpline());
       ui->curved->setEnabled(Arrow::splinePossible(
               ui->Coordinates->model()->rowCount(QModelIndex())));
     }

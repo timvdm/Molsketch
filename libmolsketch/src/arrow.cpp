@@ -434,7 +434,7 @@ namespace Molsketch {
     return d->spline;
   }
 
-  void Arrow::setSpline(bool value)
+  void Arrow::setSpline(const bool &value)
   {
     d->spline = value;
   }

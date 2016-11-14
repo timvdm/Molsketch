@@ -34,7 +34,7 @@ namespace Molsketch {
     return qobject_cast<CoordinateModel*>(QTableView::model());
   }
 
-  void CoordinateTableView::setModel(CoordinateModel *model)
+  void CoordinateTableView::setModel(CoordinateModel *model) // TODO dangerous: co-variant argument
   {
     QTableView::setModel(model);
   }
