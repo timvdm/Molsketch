@@ -146,15 +146,14 @@ public:
   }
 
   void testSplineReflectsArrow() {
-    TS_SKIP("Test is not yet ready");
     arrow->setSpline(true);
     popup->connectArrow(arrow);
     TS_ASSERT_EQUALS(spline->checkState(), Qt::Checked);
 
-    arrow->setSpline(false);
+    scene->stack()->push(new Commands::setArrowSplineCommand(arrow, false));
     TS_ASSERT_EQUALS(spline->checkState(), Qt::Unchecked);
 
-    arrow->setSpline(true);
+    scene->stack()->push(new Commands::setArrowSplineCommand(arrow, true));
     TS_ASSERT_EQUALS(spline->checkState(), Qt::Checked);
   }
 
