@@ -4,7 +4,9 @@ TESTS = *test.h
 
 HEADERS += $$TESTS \
     rectanglevaluetrait.h \
-    qstringvaluetrait.h
+    qstringvaluetrait.h \
+    qvariantvaluetrait.h \
+    utilities.h
 
 
 CONFIG += c++14
@@ -33,7 +35,8 @@ cxxrunner.depends = $$PWD/runnerTemplate.tpl
 QMAKE_EXTRA_TARGETS += cxxrunner
 SOURCES += $$OUT_PWD/cxxrunner.cpp \
     rectanglevaluetrait.cpp \
-    qstringvaluetrait.cpp
+    qstringvaluetrait.cpp \
+    qvariantvaluetrait.cpp
 
 LIBS += -L../lib -lmolsketch-qt5
 

@@ -16,22 +16,18 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef QSTRINGVALUETRAIT_H
-#define QSTRINGVALUETRAIT_H
+#include "qvariantvaluetrait.h"
+#include <QDebug>
 
-#include <cxxtest/ValueTraits.h>
-#include <QString>
-
-namespace CxxTest
+CxxTest::ValueTraits<QVariant>::ValueTraits(const QVariant &variant)
 {
-  CXXTEST_TEMPLATE_INSTANTIATION
-  class ValueTraits<QString>
-  {
-    QString value;
-  public:
-    ValueTraits(const QString& string);
-    const char *asString() const;
-  };
+  QString value;
+  QDebug out(&value);
+  out << variant;
+  sprintf(buffer, "%s", value.toLatin1().constData()); // TODO: why do we need this buffer for this to work?
 }
 
-#endif // QSTRINGVALUETRAIT_H
+const char *CxxTest::ValueTraits<QVariant>::asString() const
+{
+  return buffer;
+}

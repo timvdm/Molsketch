@@ -16,22 +16,21 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef QSTRINGVALUETRAIT_H
-#define QSTRINGVALUETRAIT_H
+#ifndef QVARIANTVALUETRAIT_H
+#define QVARIANTVALUETRAIT_H
 
 #include <cxxtest/ValueTraits.h>
 #include <QString>
+#include <QVariant>
 
-namespace CxxTest
-{
+namespace CxxTest {
   CXXTEST_TEMPLATE_INSTANTIATION
-  class ValueTraits<QString>
-  {
-    QString value;
+  class ValueTraits<QVariant> {
+    char buffer[256];
   public:
-    ValueTraits(const QString& string);
+    ValueTraits(const QVariant& variant);
     const char *asString() const;
   };
 }
 
-#endif // QSTRINGVALUETRAIT_H
+#endif // QVARIANTVALUETRAIT_H
