@@ -98,7 +98,7 @@ namespace Molsketch {
     beginInsertRows(parent, row, row+count-1);
     // get default value
     QPointF defaultValue;
-    if (d->coordinates.size() < d->coordinates.size()) defaultValue = d->coordinates.at(row);
+    if (row< d->coordinates.size()) defaultValue = d->coordinates.at(row);
     else if (!d->coordinates.empty()) defaultValue = d->coordinates.last();
     d->coordinates.insert(row, count, defaultValue);
     endInsertRows();
