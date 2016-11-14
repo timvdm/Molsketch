@@ -35,6 +35,6 @@ namespace CxxTest
     ValueTraits(const QRectF& rect);
     const char *asString() const;
   };
-};
+}
 
 #endif // RECTANGLEVALUETRAIT_H
