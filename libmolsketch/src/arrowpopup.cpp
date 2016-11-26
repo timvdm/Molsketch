@@ -29,6 +29,7 @@
 #include "arrow.h"
 #include "commands.h"
 #include <QDebug>
+#include "coordinatemodel.h"
 
 namespace Molsketch {
 
@@ -66,7 +67,6 @@ namespace Molsketch {
     d(new privateData)
   {
     ui->setupUi(this);
-    ui->Coordinates->setModel(new CoordinateModel(ui->Coordinates));
     d->arrow = 0;
     d->uiToPropertyAssignment = std::map<QCheckBox*, Arrow::ArrowTypeParts>
     {
@@ -78,6 +78,8 @@ namespace Molsketch {
 
     for(auto child : findChildren<QCheckBox*>())
       connect(child, SIGNAL(toggled(bool)), this, SLOT(applyPropertiesToArrow()));
+
+    connect(ui->Coordinates->model(), SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(applyPropertiesToArrow()));
 
     setWindowFlags(Qt::Popup);
   }

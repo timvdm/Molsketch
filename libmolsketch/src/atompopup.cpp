@@ -18,6 +18,7 @@
  ***************************************************************************/
 #include "atompopup.h"
 #include "ui_atompopup.h"
+#include "coordinatemodel.h"
 #include "atom.h"
 
 namespace Molsketch {
@@ -50,7 +51,6 @@ namespace Molsketch {
     d(new PrivateData)
   {
     ui->setupUi(this);
-    ui->coordinates->setModel(new CoordinateModel(ui->coordinates)); // TODO write test against this sort of thing
     d->ui = ui;
   }
 

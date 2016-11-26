@@ -19,11 +19,12 @@
 #ifndef MOLSKETCH_COORDINATETABLEVIEW_H
 #define MOLSKETCH_COORDINATETABLEVIEW_H
 
-#include "coordinatemodel.h"
 
 #include <QTableView>
 
 namespace Molsketch {
+
+  class CoordinateModel;
 
   class CoordinateTableView : public QTableView
   {
@@ -31,7 +32,6 @@ namespace Molsketch {
   public:
     explicit CoordinateTableView(QWidget *parent = 0);
     CoordinateModel* model() const;
-    void setModel(CoordinateModel* model);
   };
 
 } // namespace Molsketch

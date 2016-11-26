@@ -18,6 +18,7 @@
  ***************************************************************************/
 #include "coordinatedelegate.h"
 #include "coordinatetableview.h"
+#include "coordinatemodel.h"
 
 namespace Molsketch {
 
@@ -27,16 +28,11 @@ namespace Molsketch {
     QAbstractItemDelegate* oldDelegate = itemDelegate();
     setItemDelegate(new CoordinateDelegate(this));
     delete oldDelegate;
+    setModel(new CoordinateModel(this));
   }
 
   CoordinateModel *CoordinateTableView::model() const
   {
     return qobject_cast<CoordinateModel*>(QTableView::model());
   }
-
-  void CoordinateTableView::setModel(CoordinateModel *model) // TODO dangerous: co-variant argument
-  {
-    QTableView::setModel(model);
-  }
-
 } // namespace Molsketch
