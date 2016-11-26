@@ -26,6 +26,9 @@
 #include <molscene.h>
 #include <molview.h>
 #include <commands.h>
+#include <coordinatemodel.h>
+#include <QLineEdit>
+#include "utilities.h"
 
 using namespace Molsketch;
 
@@ -167,7 +170,6 @@ public:
   }
 
   void testCoordinatesUponConnection() {
-    TS_SKIP("Test is not yet ready");
     QPolygonF testCoordinates;
     testCoordinates
         << QPointF(1.5, 3.5)
@@ -178,29 +180,50 @@ public:
     TS_ASSERT_EQUALS(coordinates->model()->getCoordinates(), testCoordinates);
   }
 
+  void enterDataIntoCell(const QString& data, int row, int column) {
+    QPoint position(coordinates->columnViewportPosition(column), coordinates->rowViewportPosition(row));
+    QTest::mouseClick(coordinates->viewport(), Qt::LeftButton, Qt::NoModifier, position);
+    QTest::mouseDClick(coordinates->viewport(), Qt::LeftButton, Qt::NoModifier, position);
+    QWidget* editor = coordinates->viewport()->focusWidget();
+    TS_ASSERT(editor);
+    if (editor) {
+      QTest::keyClicks(editor, data);
+      QTest::keyClick(editor, Qt::Key_Tab); // TODO find out how to use Key_Return here
+//      editor = coordinates->viewport()->focusWidget(); // TODO
+//      TS_ASSERT(!editor);
+    }
+  }
+
   void testCoordinateTableChangesArrowCoordinates() {
-    TS_SKIP("Test is not yet ready");
     arrow->setCoordinates({QPointF(0,0), QPointF(5,5)});
     popup->connectArrow(arrow);
-    QTest::keyClicks(coordinates, "5.3\t3.4\t1.2\t2.4");
-    QTest::keyClick(coordinates, Qt::Key_Enter);
+    enterDataIntoCell("5.3", 0,0);
+    enterDataIntoCell("3.4", 0,1);
+    enterDataIntoCell("1.2", 1,0);
+    enterDataIntoCell("2.4", 1,1);
     QVector<QPointF> expectedCoordinates = {QPointF(5.3, 3.4), QPointF(1.2,2.4)};
-    TS_ASSERT_EQUALS(arrow->coordinates(), expectedCoordinates);
+    QS_ASSERT_EQUALS(coordinates->model()->getCoordinates(), expectedCoordinates);
+    QS_ASSERT_EQUALS(arrow->coordinates(), expectedCoordinates);
   }
 
 
   void testMoveArrowPointChangesCoordinates() {
-    TS_SKIP("Test is not yet ready");
     arrow->setCoordinates({QPointF(0,0), QPointF(5,5)});
     MolScene scene;
     MolView view(&scene);
     scene.addItem(arrow);
     popup->connectArrow(arrow);
 
-    QTest::mousePress(&view, Qt::LeftButton, Qt::NoModifier, view.mapFromScene(arrow->mapToScene(arrow->coordinates().first())));
-    QTest::mouseMove(&view, view.mapFromScene(QPointF(10,10)));
+    view.show();
+    QTest::mouseMove(view.viewport(),view.mapFromScene(QPointF(0,0)), 2000);
+    QTest::mouseClick(view.viewport(), Qt::LeftButton, Qt::NoModifier, view.mapFromScene(QPointF(2.5,2.5)), 2000);
+    QTest::mousePress(view.viewport(), Qt::LeftButton, Qt::NoModifier, view.mapFromScene(QPointF(0,0)),2000);
+    QTest::mouseMove(view.viewport(), view.mapFromScene(QPointF(-10,-10)), 2000);
+    QTest::mouseRelease(view.viewport(), Qt::LeftButton, Qt::NoModifier, view.mapFromScene(QPointF(-10,-10)), 2000);
+
     QVector<QPointF> expectedCoordinates = {QPointF(10, 10), QPointF(5, 5)};
-    TS_ASSERT_EQUALS(arrow->coordinates(), expectedCoordinates);
+    QS_ASSERT_EQUALS(arrow->coordinates(), expectedCoordinates);
+    scene.removeItem(arrow);
   }
 
   void testMoveArrowChangesCoordinates() {
@@ -215,5 +238,6 @@ public:
     QTest::mouseMove(&view, view.mapFromScene(QPointF(10,10)));
     QVector<QPointF> expectedCoordinates = {QPointF(8, 8), QPointF(13, 13)};
     TS_ASSERT_EQUALS(arrow->coordinates(), expectedCoordinates);
+    scene.removeItem(arrow);
   }
 };
