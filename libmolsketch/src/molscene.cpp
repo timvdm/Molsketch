@@ -241,9 +241,9 @@ namespace Molsketch {
 #if QT_VERSION < 0x050000
         m_stack ->push (new AddResidue (new Residue (pos, name, 0, this)));
 #else
-	Residue* newResidue = new Residue(pos, name, 0) ;
-	addItem(newResidue) ;
-	m_stack->push(new AddResidue(newResidue)) ;
+        Residue* newResidue = new Residue(pos, name, 0) ;
+        addItem(newResidue) ;
+        m_stack->push(new AddResidue(newResidue)) ;
 #endif
   }
 
@@ -303,9 +303,9 @@ namespace Molsketch {
 
 
 
-	// Set the new edit mode and signal other components
-	m_editMode = mode;
-	emit editModeChange( mode );
+        // Set the new edit mode and signal other components
+        m_editMode = mode;
+        emit editModeChange( mode );
   }
 
   void MolScene::cut()
@@ -314,14 +314,14 @@ namespace Molsketch {
         // Check if something is selected
         if (selectedItems().isEmpty()) return;
 
-	// Then do a copy
-	copy();
+        // Then do a copy
+        copy();
 
-	// Finally delete the selected items
-	m_stack->beginMacro(tr("cutting items"));
-	foreach (QGraphicsItem* item, selectedItems())
-	  if (item->type() == Molecule::Type) m_stack->push(new DelItem(item));
-	m_stack->endMacro();
+        // Finally delete the selected items
+        m_stack->beginMacro(tr("cutting items"));
+        foreach (QGraphicsItem* item, selectedItems())
+          if (item->type() == Molecule::Type) m_stack->push(new DelItem(item));
+        m_stack->endMacro();
   }
 
   void MolScene::copy()
@@ -329,39 +329,39 @@ namespace Molsketch {
         // Check if something is selected
         if (selectedItems().isEmpty()) return;
 
-	/* TODO Using the desktop clipboard */
-	// Access the clipboard
-	QClipboard* clipboard = qApp->clipboard();
+        /* TODO Using the desktop clipboard */
+        // Access the clipboard
+        QClipboard* clipboard = qApp->clipboard();
 
-	// Calculate total boundingrect
-	QRectF totalRect;
-	foreach(QGraphicsItem* item, selectedItems())
-	{
-	  QRectF itemRect = item->boundingRect();
-	  itemRect.translate(item->scenePos());
-	  totalRect |= itemRect;
-	}
-	// Add to internal clipboard
-	foreach(QGraphicsItem* item, m_clipItems) delete item;
-	m_clipItems.clear();
-	foreach(QGraphicsItem* item, selectedItems())
-	  if (item->type() == Molecule::Type)
-		m_clipItems.append(new Molecule(dynamic_cast<Molecule*>(item)));
+        // Calculate total boundingrect
+        QRectF totalRect;
+        foreach(QGraphicsItem* item, selectedItems())
+        {
+          QRectF itemRect = item->boundingRect();
+          itemRect.translate(item->scenePos());
+          totalRect |= itemRect;
+        }
+        // Add to internal clipboard
+        foreach(QGraphicsItem* item, m_clipItems) delete item;
+        m_clipItems.clear();
+        foreach(QGraphicsItem* item, selectedItems())
+          if (item->type() == Molecule::Type)
+                m_clipItems.append(new Molecule(dynamic_cast<Molecule*>(item)));
 
-	// Clear selection
-	QList<QGraphicsItem*> selList(selectedItems());
-	clearSelection();
+        // Clear selection
+        QList<QGraphicsItem*> selList(selectedItems());
+        clearSelection();
 
-	// Choose the datatype
-	//   clipboard->setText("Test");
-	clipboard->setImage(renderImage(totalRect));
-	//   clipboard->mimeData( );
+        // Choose the datatype
+        //   clipboard->setText("Test");
+        clipboard->setImage(renderImage(totalRect));
+        //   clipboard->mimeData( );
 
-	// Restore selection
-	foreach(QGraphicsItem* item, selList) item->setSelected(true);
+        // Restore selection
+        foreach(QGraphicsItem* item, selList) item->setSelected(true);
 
-	// Emit paste available signal
-	emit pasteAvailable(!m_clipItems.isEmpty());
+        // Emit paste available signal
+        emit pasteAvailable(!m_clipItems.isEmpty());
   }
 
   void MolScene::paste()
@@ -370,10 +370,10 @@ namespace Molsketch {
         //   QClipboard* clipboard = qApp->clipboard();
         /* TODO Using the system clipboard*/
 
-	// Paste all items on the internal clipboard
-	m_stack->beginMacro(tr("pasting items"));
-	foreach(Molecule* item, m_clipItems) m_stack->push(new AddItem(new Molecule(item),this));
-	m_stack->endMacro();
+        // Paste all items on the internal clipboard
+        m_stack->beginMacro(tr("pasting items"));
+        foreach(Molecule* item, m_clipItems) m_stack->push(new AddItem(new Molecule(item),this));
+        m_stack->endMacro();
   }
 
   void MolScene::convertImage()
@@ -383,28 +383,28 @@ namespace Molsketch {
         if (img.isNull()) return ;
 
         QLibrary obabeliface("obabeliface" QTVERSIONSUFFIX);
-	obabeliface.load() ;
-	callOsraFunctionPointer callOsraPtr = (callOsraFunctionPointer) obabeliface.resolve("call_osra") ;
-	if (!callOsraPtr)
-	{
-	  QMessageBox::critical(0, tr("Error importing image"), tr("OpenBabel support unavailable.")) ;
-	  return ;
-	}
+        obabeliface.load() ;
+        callOsraFunctionPointer callOsraPtr = (callOsraFunctionPointer) obabeliface.resolve("call_osra") ;
+        if (!callOsraPtr)
+        {
+          QMessageBox::critical(0, tr("Error importing image"), tr("OpenBabel support unavailable.")) ;
+          return ;
+        }
 #if QT_VERSION < 0x050000
-	QString tmpimg = QDesktopServices::storageLocation(QDesktopServices::TempLocation) + QDir::separator() + "osra.png";
+        QString tmpimg = QDesktopServices::storageLocation(QDesktopServices::TempLocation) + QDir::separator() + "osra.png";
 #else
-	QString tmpimg = QStandardPaths::writableLocation(QStandardPaths::TempLocation) + QDir::separator() + "osra.png";
+        QString tmpimg = QStandardPaths::writableLocation(QStandardPaths::TempLocation) + QDir::separator() + "osra.png";
 #endif
-	img.save(tmpimg, "PNG", 100);
-	Molecule* mol = callOsraPtr(tmpimg);
-	if (mol)
-	{
-	  m_stack->beginMacro(tr("converting image using OSRA"));
-	  m_stack->push(new AddItem(new Molecule(mol), this));
-	  m_stack->endMacro();
-	}
-	else
-	  QMessageBox::critical(0, tr("Error"), tr("OSRA conversion failed. Is OSRA installed?")) ;
+        img.save(tmpimg, "PNG", 100);
+        Molecule* mol = callOsraPtr(tmpimg);
+        if (mol)
+        {
+          m_stack->beginMacro(tr("converting image using OSRA"));
+          m_stack->push(new AddItem(new Molecule(mol), this));
+          m_stack->endMacro();
+        }
+        else
+          QMessageBox::critical(0, tr("Error"), tr("OSRA conversion failed. Is OSRA installed?")) ;
         QFile::remove(tmpimg);
   }
 
@@ -446,12 +446,12 @@ namespace Molsketch {
                 QImage image(int(rect.width()),int(rect.height()),QImage::Format_RGB32);
                 image.fill(QColor("white").rgb());
 
-		// Creating and setting the painter
-		QPainter painter(&image);
-		painter.setRenderHint(QPainter::Antialiasing);
+                // Creating and setting the painter
+                QPainter painter(&image);
+                painter.setRenderHint(QPainter::Antialiasing);
 
-		// Rendering in the image and saving to file
-		render(&painter,QRectF(0,0,rect.width(),rect.height()),QRectF (mol ->mapToScene (rect.topLeft ()), mol ->mapToScene (rect.bottomRight ())));
+                // Rendering in the image and saving to file
+                render(&painter,QRectF(0,0,rect.width(),rect.height()),QRectF (mol ->mapToScene (rect.topLeft ()), mol ->mapToScene (rect.bottomRight ())));
                 return image;
   }
 
@@ -484,12 +484,12 @@ namespace Molsketch {
         QImage image(int(rect.width()),int(rect.height()),QImage::Format_RGB32);
         image.fill(QColor("white").rgb());
 
-	// Creating and setting the painter
-	QPainter painter(&image);
-	painter.setRenderHint(QPainter::Antialiasing);
+        // Creating and setting the painter
+        QPainter painter(&image);
+        painter.setRenderHint(QPainter::Antialiasing);
 
-	// Rendering in the image and saving to file
-	render(&painter,QRectF(0,0,rect.width(),rect.height()),rect);
+        // Rendering in the image and saving to file
+        render(&painter,QRectF(0,0,rect.width(),rect.height()),rect);
 
         return image;
   }
@@ -509,15 +509,15 @@ namespace Molsketch {
         // Switch to move mode to make selection posible
         setEditMode(MolScene::MoveMode);
 
-	// Clear any previous selection
-	clearSelection();
+        // Clear any previous selection
+        clearSelection();
 
-	// Mark all atoms as selected
-	foreach (QGraphicsItem* item, items())
-	{
+        // Mark all atoms as selected
+        foreach (QGraphicsItem* item, items())
+        {
           if (item->type() == Molecule::Type || item->type() == Arrow::Type)
-		item->setSelected(true);
-	}
+                item->setSelected(true);
+        }
   }
 
 
@@ -654,8 +654,8 @@ namespace Molsketch {
         foreach(QGraphicsItem* item,items(pos))
           if (item->type() == Molecule::Type) return dynamic_cast<Molecule*>(item);
 
-	// Else return NULL
-	return 0;
+        // Else return NULL
+        return 0;
 
   }
 
@@ -727,8 +727,8 @@ namespace Molsketch {
         foreach( QGraphicsItem* item,items(pos))
           if (item->type() == Bond::Type) return dynamic_cast<Bond*>(item);
 
-	// Else return NULL
-	return 0;
+        // Else return NULL
+        return 0;
   }
 
   // Event handlers
@@ -738,12 +738,12 @@ namespace Molsketch {
         // Execute default behaivior
         bool accepted = QGraphicsScene::event(event);
 
-	// Check whether copying is available
-	if ((event->type() == QEvent::GraphicsSceneMouseRelease) || (event->type() == QEvent::KeyRelease))
-	  emit copyAvailable(!selectedItems().isEmpty());
+        // Check whether copying is available
+        if ((event->type() == QEvent::GraphicsSceneMouseRelease) || (event->type() == QEvent::KeyRelease))
+          emit copyAvailable(!selectedItems().isEmpty());
 
-	// Execute default behavior
-	return accepted;
+        // Execute default behavior
+        return accepted;
   }
 
 
@@ -883,7 +883,7 @@ namespace Molsketch {
 //	}
 //	  }
 
-	// execute default behaviour (needed for text tool)
+        // execute default behaviour (needed for text tool)
     keyEvent->ignore();
     QGraphicsScene::keyPressEvent(keyEvent);
     update();
@@ -907,17 +907,17 @@ namespace Molsketch {
 
   void MolScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
   {
-	QMenu contextMenu;
+        QMenu contextMenu;
         qDebug() << "context menu";
 //        sceneMenu->setParent(&contextMenu);
 //        contextMenu.addMenu(sceneMenu);
         qDebug() << "Generated menu";
-	foreach(QGraphicsItem* qgItem, selectedItems())
-	{
-	  graphicsItem *item = dynamic_cast<graphicsItem*>(qgItem);
-	  if (!item) continue;
-	  item->prepareContextMenu(&contextMenu);
-	}
+        foreach(QGraphicsItem* qgItem, selectedItems())
+        {
+          graphicsItem *item = dynamic_cast<graphicsItem*>(qgItem);
+          if (!item) continue;
+          item->prepareContextMenu(&contextMenu);
+        }
 
         qDebug() << "-------- context menu for no of items:" << selectedItems().size();
         if (contextMenu.actions().empty())
@@ -928,7 +928,7 @@ namespace Molsketch {
         }
         contextMenu.addMenu(d->contextSubMenu()); // TODO memory leak
 
-	contextMenu.exec(event->screenPos());
+        contextMenu.exec(event->screenPos());
         event->accept();
   }
 

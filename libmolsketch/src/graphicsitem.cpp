@@ -152,7 +152,7 @@ namespace Molsketch {
     {
       qreal currentDistance = QLineF(eventPosition, p).length() ;
       if (currentDistance < minDistance
-          && currentDistance < pointSelectionDistance())
+          && currentDistance < pointSelectionDistance()) // TODO use pointSelectionDistance as starting value of minDistance
       {
         minDistance = currentDistance ;
         d->selectedPoint = i ;
