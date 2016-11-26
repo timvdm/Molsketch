@@ -36,7 +36,8 @@ QMAKE_EXTRA_TARGETS += cxxrunner
 SOURCES += $$OUT_PWD/cxxrunner.cpp \
     rectanglevaluetrait.cpp \
     qstringvaluetrait.cpp \
-    qvariantvaluetrait.cpp
+    qvariantvaluetrait.cpp \
+    utilities.cpp
 
 LIBS += -L../lib -lmolsketch-qt5
 

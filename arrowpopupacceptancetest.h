@@ -215,11 +215,8 @@ public:
     popup->connectArrow(arrow);
 
     view.show();
-    QTest::mouseMove(view.viewport(),view.mapFromScene(QPointF(0,0)), 2000);
-    QTest::mouseClick(view.viewport(), Qt::LeftButton, Qt::NoModifier, view.mapFromScene(QPointF(2.5,2.5)), 2000);
-    QTest::mousePress(view.viewport(), Qt::LeftButton, Qt::NoModifier, view.mapFromScene(QPointF(0,0)),2000);
-    QTest::mouseMove(view.viewport(), view.mapFromScene(QPointF(-10,-10)), 2000);
-    QTest::mouseRelease(view.viewport(), Qt::LeftButton, Qt::NoModifier, view.mapFromScene(QPointF(-10,-10)), 2000);
+    QTest::mousePress(view.viewport(), Qt::LeftButton, Qt::NoModifier, view.mapFromScene(QPointF(0,0)));
+    mouseMoveEvent(view.viewport(), Qt::LeftButton, Qt::NoModifier, view.mapFromScene(QPointF(10,10)));
 
     QVector<QPointF> expectedCoordinates = {QPointF(10, 10), QPointF(5, 5)};
     QS_ASSERT_EQUALS(arrow->coordinates(), expectedCoordinates);
@@ -227,17 +224,16 @@ public:
   }
 
   void testMoveArrowChangesCoordinates() {
-    TS_SKIP("Test is not yet ready");
-    arrow->setCoordinates({QPointF(0,0), QPointF(5,5)});
+    arrow->setCoordinates({QPointF(0,0), QPointF(10,10)});
     MolScene scene;
     MolView view(&scene);
     scene.addItem(arrow);
     popup->connectArrow(arrow);
 
-    QTest::mousePress(&view, Qt::LeftButton, Qt::NoModifier, view.mapFromScene(QPointF(2, 2)));
-    QTest::mouseMove(&view, view.mapFromScene(QPointF(10,10)));
-    QVector<QPointF> expectedCoordinates = {QPointF(8, 8), QPointF(13, 13)};
-    TS_ASSERT_EQUALS(arrow->coordinates(), expectedCoordinates);
+    QTest::mousePress(view.viewport(), Qt::LeftButton, Qt::NoModifier, view.mapFromScene(QPointF(5, 5)));
+    mouseMoveEvent(view.viewport(), Qt::LeftButton, Qt::NoModifier, view.mapFromScene(QPointF(10,20)));
+    QVector<QPointF> expectedCoordinates = {QPointF(5, 15), QPointF(15, 25)};
+    QS_ASSERT_EQUALS(arrow->coordinates(), expectedCoordinates);
     scene.removeItem(arrow);
   }
 };
