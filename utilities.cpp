@@ -1,5 +1,7 @@
 #include "utilities.h"
 
+#include <QTableView>
+
 void mouseMoveEvent(QWidget *widget, Qt::MouseButton button, Qt::KeyboardModifiers stateKey, QPoint pos, int delay) {
     QTEST_ASSERT(widget);
 
@@ -19,4 +21,19 @@ void mouseMoveEvent(QWidget *widget, Qt::MouseButton button, Qt::KeyboardModifie
         QString warning = QString::fromLatin1("Mouse event \"MouseMove\" not accepted by receiving widget");
         QTest::qWarn(warning.toLatin1().data());
     }
+}
+
+
+void enterDataIntoCell(QTableView *table, const QString& data, int row, int column) {
+  QPoint position(table->columnViewportPosition(column), table->rowViewportPosition(row));
+  QTest::mouseClick(table->viewport(), Qt::LeftButton, Qt::NoModifier, position);
+  QTest::mouseDClick(table->viewport(), Qt::LeftButton, Qt::NoModifier, position);
+  QWidget* editor = table->viewport()->focusWidget();
+  TS_ASSERT(editor);
+  if (editor) {
+    QTest::keyClicks(editor, data);
+    QTest::keyClick(editor, Qt::Key_Tab); // TODO find out how to use Key_Return here
+//      editor = table->viewport()->focusWidget(); // TODO
+//      TS_ASSERT(!editor);
+  }
 }

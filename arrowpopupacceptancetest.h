@@ -180,27 +180,13 @@ public:
     TS_ASSERT_EQUALS(coordinates->model()->getCoordinates(), testCoordinates);
   }
 
-  void enterDataIntoCell(const QString& data, int row, int column) {
-    QPoint position(coordinates->columnViewportPosition(column), coordinates->rowViewportPosition(row));
-    QTest::mouseClick(coordinates->viewport(), Qt::LeftButton, Qt::NoModifier, position);
-    QTest::mouseDClick(coordinates->viewport(), Qt::LeftButton, Qt::NoModifier, position);
-    QWidget* editor = coordinates->viewport()->focusWidget();
-    TS_ASSERT(editor);
-    if (editor) {
-      QTest::keyClicks(editor, data);
-      QTest::keyClick(editor, Qt::Key_Tab); // TODO find out how to use Key_Return here
-//      editor = coordinates->viewport()->focusWidget(); // TODO
-//      TS_ASSERT(!editor);
-    }
-  }
-
   void testCoordinateTableChangesArrowCoordinates() {
     arrow->setCoordinates({QPointF(0,0), QPointF(5,5)});
     popup->connectArrow(arrow);
-    enterDataIntoCell("5.3", 0,0);
-    enterDataIntoCell("3.4", 0,1);
-    enterDataIntoCell("1.2", 1,0);
-    enterDataIntoCell("2.4", 1,1);
+    enterDataIntoCell(coordinates, "5.3", 0,0);
+    enterDataIntoCell(coordinates, "3.4", 0,1);
+    enterDataIntoCell(coordinates, "1.2", 1,0);
+    enterDataIntoCell(coordinates, "2.4", 1,1);
     QVector<QPointF> expectedCoordinates = {QPointF(5.3, 3.4), QPointF(1.2,2.4)};
     QS_ASSERT_EQUALS(coordinates->model()->getCoordinates(), expectedCoordinates);
     QS_ASSERT_EQUALS(arrow->coordinates(), expectedCoordinates);
@@ -220,6 +206,7 @@ public:
 
     QVector<QPointF> expectedCoordinates = {QPointF(10, 10), QPointF(5, 5)};
     QS_ASSERT_EQUALS(arrow->coordinates(), expectedCoordinates);
+    QS_ASSERT_EQUALS(coordinates->model()->getCoordinates(), expectedCoordinates);
     scene.removeItem(arrow);
   }
 
@@ -234,6 +221,9 @@ public:
     mouseMoveEvent(view.viewport(), Qt::LeftButton, Qt::NoModifier, view.mapFromScene(QPointF(10,20)));
     QVector<QPointF> expectedCoordinates = {QPointF(5, 15), QPointF(15, 25)};
     QS_ASSERT_EQUALS(arrow->coordinates(), expectedCoordinates);
+    QS_ASSERT_EQUALS(coordinates->model()->getCoordinates(), expectedCoordinates);
     scene.removeItem(arrow);
   }
+
+  // TODO test deletion of arrow from scene
 };
