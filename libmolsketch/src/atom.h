@@ -112,7 +112,7 @@ namespace Molsketch {
        *
        * FC = # valency electrons - 0.5 * # shared electrons - # unpaired electrons + user specified contribution
        */
-      void setCharge(int charge);
+      void setCharge(const int &charge);
       /**
        * @return The number of unpaired electrons (radicals).
        */
@@ -177,7 +177,7 @@ namespace Molsketch {
        * Changing the number of implicit hydrogens will also effect the number
        * of free valency electrons and hence the charge of the atom.
        */
-      void setNumImplicitHydrogens(int number);
+      void setNumImplicitHydrogens(const int &number);
       /** Sets whether implicit hydrogens should be used */
       void enableImplicitHydrogens(bool enabled);
       /**

@@ -58,6 +58,7 @@ namespace Molsketch {
     ArrowPropertiesId,
     FrameTypeId,
     ArrowSplineId,
+    AtomChargeId,
   };
 
 
@@ -419,6 +420,7 @@ typedef setItemPropertiesCommand<Arrow, Arrow::ArrowType, &Arrow::setArrowType, 
 typedef setItemPropertiesCommand<Arrow, Arrow::Properties, &Arrow::setProperties, &Arrow::getProperties, ArrowPropertiesId> setArrowProperties;
 typedef setItemPropertiesCommand<Frame, QString, &Frame::setFrameString, &Frame::frameString, FrameTypeId> SetFrameTypeString;
 typedef setItemPropertiesCommand<Arrow, bool, &Arrow::setSpline, &Arrow::getSpline, ArrowSplineId> setArrowSplineCommand;
+typedef setItemPropertiesCommand<Atom, int, &Atom::setCharge, &Atom::charge, AtomChargeId> setAtomChargeCommand;
 
 class SetParentItem : public QUndoCommand
 {

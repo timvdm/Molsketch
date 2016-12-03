@@ -719,7 +719,7 @@ namespace Molsketch {
     if (Molecule *m = molecule()) m->invalidateElectronSystems();
   }
 
-  void Atom::setNumImplicitHydrogens(int number)
+  void Atom::setNumImplicitHydrogens(const int& number)
   {
     m_implicitHydrogens = true;
 
@@ -856,7 +856,7 @@ namespace Molsketch {
     return Molsketch::numValenceElectrons(atomicNumber) - bondOrderSum() - numNonBondingElectrons() + m_userCharge;
   }
 
-  void Atom::setCharge(int requiredCharge)
+  void Atom::setCharge(const int& requiredCharge)
   {
     int computedCharge = charge() - m_userCharge;
     m_userCharge = requiredCharge - computedCharge;

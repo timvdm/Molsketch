@@ -33,12 +33,12 @@ namespace Molsketch {
     T* t ;
     bool plus ;
     int (T::*getFunction)()const ;
-    void (T::*setFunction)(int) ;
+    void (T::*setFunction)(const int&) ;
   public:
     incDecCommand(T* a,
                   bool increment,
                   int (T::*gf)()const,
-                  void (T::*sf)(int),
+                  void (T::*sf)(const int&),
                   QString text,
                   QUndoCommand* parent = 0)
       : QUndoCommand(text, parent),
@@ -77,7 +77,7 @@ namespace Molsketch {
     QAction *plusAction ;
     QAction *minusAction ;
     int (T::*getFunction)() const;
-    void (T::*setFunction)(int) ;
+    void (T::*setFunction)(const int&) ;
   };
 
   template <class T>
@@ -113,7 +113,7 @@ namespace Molsketch {
                                    QString UpText,
                                    QString DownText,
                                    int (T::*getFunction)()const,
-                                   void (T::*setFunction)(int))
+                                   void (T::*setFunction)(const int&))
   {
     // TODO remove old actions
     d->clear();

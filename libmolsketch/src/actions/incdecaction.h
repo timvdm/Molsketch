@@ -37,7 +37,7 @@ namespace Molsketch {
                     QString UpText,
                     QString DownText,
                     int (T::*getFunction)()const,
-                    void (T::*setFunction)(int)) ;
+                    void (T::*setFunction)(const int&)) ;
   private:
     class privateData;
     privateData *d ;
