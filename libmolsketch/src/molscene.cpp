@@ -179,7 +179,8 @@ namespace Molsketch {
 
     ~privateData()
     {
-      delete inputItem;
+//      if (inputItem && !inputItem->scene()) // TODO compare with this scene
+//        delete inputItem; // TODO should clean up this item...
 //      delete selectionRectangle; // TODO why?
       propertiesDock->setWidget(propertiesHelpLabel);
       delete propertiesDock;
