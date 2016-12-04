@@ -74,56 +74,7 @@
   </customwidget>
  </customwidgets>
  <resources/>
- <connections>
-  <connection>
-   <sender>element</sender>
-   <signal>editingFinished()</signal>
-   <receiver>AtomPopup</receiver>
-   <slot>applyPropertiesToAtom()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>187</x>
-     <y>20</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>208</x>
-     <y>65</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>charge</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>AtomPopup</receiver>
-   <slot>applyPropertiesToAtom()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>119</x>
-     <y>54</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>194</x>
-     <y>80</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>hydrogens</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>AtomPopup</receiver>
-   <slot>applyPropertiesToAtom()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>123</x>
-     <y>99</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>187</x>
-     <y>107</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
  <slots>
   <slot>applyPropertiesToAtom()</slot>
  </slots>

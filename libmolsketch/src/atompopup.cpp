@@ -19,7 +19,10 @@
 #include "atompopup.h"
 #include "ui_atompopup.h"
 #include "coordinatemodel.h"
+#include "commands.h"
 #include "atom.h"
+#include "molscene.h"
+#include <QDebug>
 
 namespace Molsketch {
 
@@ -35,23 +38,17 @@ namespace Molsketch {
       ui->hydrogens->setValue(atom->numImplicitHydrogens());
       ui->coordinates->model()->setCoordinates(atom->coordinates());
     }
-
-    void setToAtom()
-    {
-      atom->setElement(ui->element->text());
-      atom->setCharge(ui->charge->value());
-      atom->setNumImplicitHydrogens(ui->hydrogens->value());
-      atom->setCoordinates(ui->coordinates->model()->getCoordinates());
-    }
   };
 
   AtomPopup::AtomPopup(QWidget *parent) :
-    QWidget(parent),
+    PropertiesWidget(parent),
     ui(new Ui::AtomPopup),
     d(new PrivateData)
   {
     ui->setupUi(this);
     d->ui = ui;
+    d->atom = 0;
+    connect(ui->coordinates->model(), SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)), this, SLOT(onCoordinatesDatachanged()));
   }
 
   AtomPopup::~AtomPopup()
@@ -62,15 +59,37 @@ namespace Molsketch {
 
   void AtomPopup::connectAtom(Atom *a)
   {
-    // tell old atom to release
     d->atom = a;
-    if (!a) return;
-    d->getFromAtom();
+    setScene(a ? dynamic_cast<MolScene*>(a->scene()) : 0);
   }
 
-  void AtomPopup::applyPropertiesToAtom()
+  void AtomPopup::on_element_textChanged(const QString &arg1)
+  {
+    Q_UNUSED(arg1)
+    attemptToPushUndoCommand(new Commands::ChangeElement(d->atom, ui->element->text()));
+  }
+
+  void AtomPopup::on_charge_valueChanged(int arg1)
+  {
+    Q_UNUSED(arg1)
+    attemptToPushUndoCommand(new Commands::setAtomChargeCommand(d->atom, ui->charge->value()));
+  }
+
+  void AtomPopup::on_hydrogens_valueChanged(int arg1)
+  {
+    Q_UNUSED(arg1)
+    attemptToPushUndoCommand(new Commands::setImplicitHydrogensCommand(d->atom, ui->hydrogens->value()));
+  }
+
+  void AtomPopup::onCoordinatesDatachanged()
   {
     if (!d->atom) return;
-    d->setToAtom();
+    attemptToPushUndoCommand(Commands::MoveItem::absolute(d->atom, ui->coordinates->model()->getCoordinates().first()));
+  }
+
+  void AtomPopup::propertiesChanged()
+  {
+    if (!scene()) return; // TODO reset GUI
+    d->getFromAtom();
   }
 } // namespace

@@ -48,7 +48,7 @@ AddAtom::AddAtom(Atom * newAtom, Molecule * newMol, const QString & text) : QUnd
 
 AddAtom::~AddAtom()
 {
-  if (m_undone) 
+  if (m_undone)
     delete m_atom;
 }
 
@@ -74,28 +74,28 @@ void AddAtom::redo()
 
 AddResidue::AddResidue(Residue *newResidue , const QString & text) : QUndoCommand(text), m_residue(newResidue), m_scene (m_residue ->scene ())
 {
-	qDebug() << "AddResidue::AddResidue";
+        qDebug() << "AddResidue::AddResidue";
 }
 
 AddResidue::~AddResidue()
 {
-	if (m_undone) 
-		delete m_residue;
+        if (m_undone)
+                delete m_residue;
 }
 
 void AddResidue::undo()
 {
-	m_scene ->removeItem(m_residue);
-	m_scene->update();
-	m_undone = true;
+        m_scene ->removeItem(m_residue);
+        m_scene->update();
+        m_undone = true;
 }
 
 void AddResidue::redo()
 {
-	Q_CHECK_PTR(m_scene);
-	Q_CHECK_PTR(m_residue);
-	m_scene ->addItem (m_residue);
-	m_undone = false;
+        Q_CHECK_PTR(m_scene);
+        Q_CHECK_PTR(m_residue);
+        m_scene ->addItem (m_residue);
+        m_undone = false;
 }
 
 ////////////////////////////////////////
@@ -128,7 +128,7 @@ IncCharge::IncCharge(Atom* atom, const QString & text) : QUndoCommand(text), m_a
 void IncCharge::undo()
 {
   m_atom->setCharge(m_atom->charge() - 1);
-  if (m_atom->scene()) 
+  if (m_atom->scene())
     m_atom->scene()->update();
   m_undone = true;
 }
@@ -136,7 +136,7 @@ void IncCharge::undo()
 void IncCharge::redo()
 {
   m_atom->setCharge(m_atom->charge() + 1);
-  if (m_atom->scene()) 
+  if (m_atom->scene())
     m_atom->scene()->update();
   m_undone = false;
 }
@@ -152,7 +152,7 @@ DecCharge::DecCharge(Atom* atom, const QString & text) : QUndoCommand(text), m_a
 void DecCharge::undo()
 {
   m_atom->setCharge(m_atom->charge() + 1);
-  if (m_atom->scene()) 
+  if (m_atom->scene())
     m_atom->scene()->update();
   m_undone = true;
 }
@@ -160,7 +160,7 @@ void DecCharge::undo()
 void DecCharge::redo()
 {
   m_atom->setCharge(m_atom->charge() - 1);
-  if (m_atom->scene()) 
+  if (m_atom->scene())
     m_atom->scene()->update();
   m_undone = false;
 }
@@ -215,7 +215,7 @@ DelAtom::~DelAtom()
 {
   if (!m_undone)
   {
-    foreach(Bond* bond, m_bondList) 
+    foreach(Bond* bond, m_bondList)
       delete bond;
     delete m_atom;
   }
@@ -261,7 +261,7 @@ void AddBond::redo()
 {
   m_mol->addBond(m_bond);
   Atom *begin = m_bond->beginAtom();
-  Atom *end = m_bond->endAtom(); 
+  Atom *end = m_bond->endAtom();
   if (begin)
     if (!begin->neighbours().contains(end))
       begin->addBond(m_bond);
@@ -377,7 +377,7 @@ void SplitMol::undo()
 void SplitMol::redo()
 {
   m_scene->removeItem(m_oldMol);
-  foreach(Molecule* mol,m_newMolList) 
+  foreach(Molecule* mol,m_newMolList)
   {
     m_scene->addItem(mol);
   }
@@ -404,7 +404,7 @@ void AddItem::redo()
   m_scene->addItem(m_item);
   /*
   m_item->setFlag(QGraphicsItem::ItemIsSelectable, m_scene->editMode()==MolScene::MoveMode);
-  if (m_item->type() == Molecule::Type) foreach(Atom* atom, dynamic_cast<Molecule*>(m_item)->atoms()) 
+  if (m_item->type() == Molecule::Type) foreach(Atom* atom, dynamic_cast<Molecule*>(m_item)->atoms())
     atom->setFlag(QGraphicsItem::ItemIsSelectable, m_scene->editMode()==MolScene::MoveMode);
     */
   m_scene->update();
@@ -433,19 +433,30 @@ void DelItem::redo()
   m_undone = false;
 }
 
-MoveItem::MoveItem(QGraphicsItem* moveItem, const QPointF & moveVector, const QString & text) : QUndoCommand(text), m_oldPos(moveItem->pos()), m_newPos(moveItem->pos() + moveVector), m_item(moveItem)
-{}
+MoveItem::MoveItem(QGraphicsItem* item, const QPointF & pos, const QString & text)
+  : QUndoCommand(text), pos(pos), item(item) {}
 void MoveItem::undo()
 {
-  m_item -> setPos(m_oldPos);
-  if (m_item->type()==Atom::Type) dynamic_cast<Atom*>(m_item)->molecule()->rebuild();
-  m_undone = true;
+  redo();
 }
 void MoveItem::redo()
 {
-  m_item -> setPos(m_newPos);
-  if (m_item->type()==Atom::Type) dynamic_cast<Atom*>(m_item)->molecule()->rebuild();
-  m_undone = false;
+  QPointF current = item->pos();
+  item->setPos(pos);
+  pos = current;
+  if (item->type()==Atom::Type && dynamic_cast<Atom*>(item)->molecule())
+    dynamic_cast<Atom*>(item)->molecule()->rebuild();
+}
+
+MoveItem *MoveItem::relative(QGraphicsItem *item, const QPointF &shift, const QString &text)
+{
+  return absolute(item, item->pos() + shift, text);
+}
+
+MoveItem *MoveItem::absolute(QGraphicsItem *item, const QPointF &newPos, const QString &text)
+{
+  if (!item) return nullptr;
+  return new MoveItem(item, newPos, text);
 }
 
 

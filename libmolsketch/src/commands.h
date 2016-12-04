@@ -59,6 +59,7 @@ namespace Molsketch {
     FrameTypeId,
     ArrowSplineId,
     AtomChargeId,
+    AtomImplicitHydrogensId,
   };
 
 
@@ -140,7 +141,7 @@ namespace Molsketch {
  *
  * @author Harm van Eersel
  */
-    class ChangeElement : public QUndoCommand
+    class ChangeElement : public QUndoCommand // TODO use static generator functions throughout this class instead
     {
     public:
       /**
@@ -421,6 +422,7 @@ typedef setItemPropertiesCommand<Arrow, Arrow::Properties, &Arrow::setProperties
 typedef setItemPropertiesCommand<Frame, QString, &Frame::setFrameString, &Frame::frameString, FrameTypeId> SetFrameTypeString;
 typedef setItemPropertiesCommand<Arrow, bool, &Arrow::setSpline, &Arrow::getSpline, ArrowSplineId> setArrowSplineCommand;
 typedef setItemPropertiesCommand<Atom, int, &Atom::setCharge, &Atom::charge, AtomChargeId> setAtomChargeCommand;
+typedef setItemPropertiesCommand<Atom, int, &Atom::setNumImplicitHydrogens, &Atom::numImplicitHydrogens, AtomImplicitHydrogensId> setImplicitHydrogensCommand;
 
 class SetParentItem : public QUndoCommand
 {
@@ -626,20 +628,14 @@ public:
      * @param moveVector the vector representation of the move
      * @param text a description of the command
      */
-      MoveItem(QGraphicsItem* moveItem, const QPointF & moveVector, const QString & text = "");
-      /** Undo this command. */
       virtual void undo();
-      /** Redo this command. */
       virtual void redo();
+      static MoveItem* relative(QGraphicsItem* item, const QPointF& shift, const QString& text = "");
+      static MoveItem* absolute(QGraphicsItem* item, const QPointF& newPos, const QString& text = "");
     private:
-      /** Undo state of the command. */
-      bool m_undone;
-      /** The position of the item before the move. */
-      QPointF m_oldPos;
-      /** The position of the item after the move. */
-      QPointF m_newPos;
-      /** The item of this command. */
-      QGraphicsItem* m_item;
+      MoveItem(QGraphicsItem* item, const QPointF& newPosition, const QString& text = "");
+      QPointF pos;
+      QGraphicsItem* item;
     };
 
     /**

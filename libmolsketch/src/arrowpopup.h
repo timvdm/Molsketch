@@ -35,9 +35,9 @@ namespace Molsketch {
 
   public:
     explicit ArrowPopup(QWidget *parent = 0);
+    ~ArrowPopup();
 
     void connectArrow(Arrow* a);
-    ~ArrowPopup();
 
   private:
     Ui::arrowPopup *ui;

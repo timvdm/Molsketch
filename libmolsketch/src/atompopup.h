@@ -19,7 +19,7 @@
 #ifndef ATOMPOPUP_H
 #define ATOMPOPUP_H
 
-#include <QWidget>
+#include "propertieswidget.h"
 
 namespace Ui {
   class AtomPopup;
@@ -28,7 +28,7 @@ namespace Ui {
 namespace Molsketch {
   class Atom;
 
-  class AtomPopup : public QWidget
+  class AtomPopup : public PropertiesWidget
   {
     Q_OBJECT
 
@@ -38,12 +38,17 @@ namespace Molsketch {
 
     void connectAtom(Atom* a);
 
+  private slots:
+    void on_element_textChanged(const QString &arg1);
+    void on_charge_valueChanged(int arg1);
+    void on_hydrogens_valueChanged(int arg1);
+    void onCoordinatesDatachanged();
   private:
     Ui::AtomPopup *ui;
     class PrivateData;
     PrivateData *d;
-  private slots:
-    void applyPropertiesToAtom();
+    void propertiesChanged();
+    // TODO write macro instead for property popup
   };
 
 } // namespace

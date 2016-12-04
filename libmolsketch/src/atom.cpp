@@ -299,7 +299,7 @@ namespace Molsketch {
       }
     } else {
       totalWidth = fmSymbol.width(lbl.left(lbl.indexOf("H")));
-      qreal width = 0.0; 
+      qreal width = 0.0;
       for (int i = lbl.indexOf("H"); i < lbl.size(); ++i) {
         if (lbl[i].isDigit())
           width += fmScript.width(lbl[i]);
@@ -308,7 +308,7 @@ namespace Molsketch {
       }
 
       if (width > totalWidth)
-        totalWidth = width; 
+        totalWidth = width;
     }
 
     // debug
@@ -413,12 +413,12 @@ namespace Molsketch {
   {
     Q_UNUSED(option)
     Q_UNUSED(widget)
-    
+
     painter->setPen(getColor());
     // Save the original painter state
     //painter->save();
-    
-    /*    
+
+    /*
           qDebug() << "Atom::paint()";
           qDebug() << "m_hidden" << m_hidden;
           qDebug() << "isSelected" << isSelected();
@@ -430,7 +430,7 @@ namespace Molsketch {
     Q_CHECK_PTR(molScene);
 
     int element = Element::strings.indexOf(m_elementSymbol);
-    
+
     switch (molScene->renderMode()) {
       case MolScene::RenderColoredSquares:
         if (element != Element::C) {
@@ -477,7 +477,7 @@ namespace Molsketch {
       lbl += QString::number(hCount);
 
     lbl += m_elementSymbol;
-    
+
     if (hCount && !leftAligned)
       lbl += "H";
     if ((hCount > 1) && !leftAligned)
@@ -742,7 +742,7 @@ namespace Molsketch {
   int Atom::bondOrderSum() const
   {
     Molecule *mol = molecule();
-    if (!mol) 
+    if (!mol)
       return 0;
 
     // count explicit bonds
@@ -750,12 +750,12 @@ namespace Molsketch {
     foreach (Bond *bond, mol->bonds(this))
       sum += bond->bondOrder();
 
-    // take implicit hydrogens into account 
+    // take implicit hydrogens into account
     sum += numImplicitHydrogens();
 
     return sum;
   }
-      
+
   int Atom::numNonBondingElectrons() const
   {
     int boSum = bondOrderSum();
@@ -795,37 +795,25 @@ namespace Molsketch {
     }
   }
 
-	QString Atom::string () const {
-		QString el = element ();
-		int n = numImplicitHydrogens();
-		QString hs;
-		QString num = "";
-		if (n) {
-			if (n > 1) num.setNum (n);
-			hs = QString ("H") + num;
-		}
-		else hs = QString ("");
-		QString q = chargeString();
-		return el+hs+q;
-	}
-	
+        QString Atom::string () const {
+                QString el = element ();
+                int n = numImplicitHydrogens();
+                QString hs;
+                QString num = "";
+                if (n) {
+                        if (n > 1) num.setNum (n);
+                        hs = QString ("H") + num;
+                }
+                else hs = QString ("");
+                QString q = chargeString();
+                return el+hs+q;
+        }
+
   int Atom::numImplicitHydrogens() const
   {
     Molecule *mol = molecule();
-    if (!mol) 
+    if (!mol)
       return 0;
-    
-    switch (Element::strings.indexOf(m_elementSymbol)) {
-      case Element::B:
-      case Element::C:
-      case Element::N:
-      case Element::O:
-      case Element::P:
-      case Element::S:
-        break;
-      default:
-        return 0;
-    }
 
     // count explicit bonds
     int bosum = 0;
@@ -833,7 +821,7 @@ namespace Molsketch {
       bosum += bond->bondOrder();
 
     int n = Molsketch::expectedValence(Molsketch::Element::strings.indexOf(m_elementSymbol)) - bosum + m_userImplicitHydrogens;
-    
+
     return (n > 0) ? n : 0;
   }
 
@@ -848,11 +836,11 @@ namespace Molsketch {
     int atomicNumber = Element::strings.indexOf(m_elementSymbol);
     if (!atomicNumber)
       return m_userCharge;
-    
+
     // special case: He uses duet rule (<-> octet rule)
     if (atomicNumber == Element::He)
       return m_userCharge;
-    
+
     return Molsketch::numValenceElectrons(atomicNumber) - bondOrderSum() - numNonBondingElectrons() + m_userCharge;
   }
 
@@ -951,7 +939,7 @@ namespace Molsketch {
 
     if (!m_bonds.contains(bond))
       m_bonds.append(bond);
-    
+
     prepareGeometryChange();
     m_shape = computeBoundingRect();
   }
