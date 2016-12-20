@@ -42,9 +42,7 @@ using namespace Molsketch::Commands;
 /////////////////////////////////////////
 
 AddAtom::AddAtom(Atom * newAtom, Molecule * newMol, const QString & text) : QUndoCommand(text), m_atom(newAtom), m_molecule(newMol)
-{
-  qDebug() << "AddAtom::AddAtom";
-}
+{}
 
 AddAtom::~AddAtom()
 {

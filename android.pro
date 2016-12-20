@@ -73,7 +73,6 @@ HEADERS += \
     libmolsketch/src/actions/coloraction.h \
     libmolsketch/src/graphicsitem.h \
     libmolsketch/src/actions/linewidthaction.h \
-    libmolsketch/src/actions/abstractitemaction.h \
     libmolsketch/src/abstractxmlobject.h \
     libmolsketch/src/actions/genericaction.h \
     libmolsketch/src/actions/multiaction.h \
@@ -111,7 +110,14 @@ HEADERS += \
     libmolsketch/src/actions/flipstereobondsaction.h \
     libmolsketch/src/generics.h \
     libmolsketch/src/actions/changemoleculenameaction.h \
-    libmolsketch/src/moleculepopup.h
+    libmolsketch/src/moleculepopup.h \
+    libmolsketch/src/helptextonemptylabel.h \
+    libmolsketch/src/helptextemptydock.h \
+    libmolsketch/src/actions/abstractrecursiveitemaction.h \
+    libmolsketch/src/actions/abstractitemaction.h \
+    libmolsketch/src/atompopup.h \
+    libmolsketch/src/propertieswidget.h \
+    molsketch/src/helpforemptytoolbox.h
 
 SOURCES += \
     libmolsketch/src/atom.cpp \
@@ -138,7 +144,6 @@ SOURCES += \
     libmolsketch/src/actions/coloraction.cpp \
     libmolsketch/src/graphicsitem.cpp \
     libmolsketch/src/actions/linewidthaction.cpp \
-    libmolsketch/src/actions/abstractitemaction.cpp \
     libmolsketch/src/abstractxmlobject.cpp \
     libmolsketch/src/actions/genericaction.cpp \
     libmolsketch/src/actions/multiaction.cpp \
@@ -175,7 +180,14 @@ SOURCES += \
     libmolsketch/src/actions/flipstereobondsaction.cpp \
     libmolsketch/src/generics.cpp \
     libmolsketch/src/actions/changemoleculenameaction.cpp \
-    libmolsketch/src/moleculepopup.cpp
+    libmolsketch/src/moleculepopup.cpp \
+    libmolsketch/src/helptextonemptylabel.cpp \
+    libmolsketch/src/helptextemptydock.cpp \
+    libmolsketch/src/actions/abstractrecursiveitemaction.cpp \
+    libmolsketch/src/actions/abstractitemaction.cpp \
+    libmolsketch/src/atompopup.cpp \
+    libmolsketch/src/propertieswidget.cpp \
+    molsketch/src/helpforemptytoolbox.cpp
 
 FORMS += \
     libmolsketch/src/arrowpopup.ui
@@ -195,7 +207,8 @@ FORMS += \
     molsketch/src/drawwidget.ui \
     molsketch/src/settings.ui \
     libmolsketch/src/arrowpopup.ui \
-    libmolsketch/src/moleculepopup.ui
+    libmolsketch/src/moleculepopup.ui \
+    libmolsketch/src/atompopup.ui
 
 HEADERS += \
     molsketch/src/mainwindow.h \

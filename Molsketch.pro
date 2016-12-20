@@ -6,8 +6,8 @@ CONFIG += ordered
 
 SUBDIRS += \
 	libmolsketch/src \
-	molsketch/src \
-	obabeliface
+        molsketch/src
+!android : SUBDIRS += obabeliface
 # TODO make obabeliface optional
 
 INSTALLS += documentation_en \
