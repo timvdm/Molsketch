@@ -257,7 +257,7 @@ namespace Molsketch {
 
     // Show hinting
     // hint points
-    Atom* hintAtom = scene()->atomAt(downPos);
+    Atom* hintAtom = scene()->atomNear(downPos);
     d->initializeHintPoints();
     d->hintPointsGroup.setPos(hintAtom
                               ? hintAtom->scenePos()

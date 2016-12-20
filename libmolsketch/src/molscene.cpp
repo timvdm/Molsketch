@@ -703,7 +703,7 @@ namespace Molsketch {
     (this->*d->booleanActions.value(action).first)(newValue);
   }
 
-  Atom* MolScene::atomAt(const QPointF &pos)
+  Atom* MolScene::atomAt(const QPointF &pos) // TODO consider replacing with itemAt()
   {
     foreach(Atom* atom, atoms())
       if (atom->scenePos() == pos)
