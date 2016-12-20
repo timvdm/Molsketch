@@ -334,7 +334,7 @@ namespace Molsketch {
     QPointF nvb = vb / sqrt(vb.x()*vb.x() + vb.y()*vb.y());
     QPointF uvb = nvb;
     if (MolScene* s = qobject_cast<MolScene*>(scene()))
-      uvb *= s->bondLength()/10.;
+      uvb *= s->bondLength()*lineWidth()/20.;
     QPointF normalVector(uvb.y(), -uvb.x());
 
     // clip for broken bond
