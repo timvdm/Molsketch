@@ -761,135 +761,7 @@ namespace Molsketch {
 
   void MolScene::keyPressEvent(QKeyEvent* keyEvent)
   {
-//          if ( !m_inputTextItem ->hasFocus ()) {
-//        // Declare item
-//        QGraphicsItem* item;
-//        Atom* atom;
-//        //   Bond* bond;
-//        //   Molecule* mol;
-//        QSet<Molecule*> molSet;
-
-//	switch (keyEvent->key())
-//	{
-//	  case Qt::Key_Delete:
-//		m_stack->beginMacro(tr("removing item(s)"));
-//		// First delete all selected molecules
-//		foreach (item, selectedItems())
-//		  if (item->type() == Molecule::Type)
-//		  {
-//			m_stack->push(new DelItem(item));
-//		  }
-//		//       // Then delete
-//		//       foreach (item, selectedItems())
-//		//         if (item->type() == Bond::Type)
-//		//         {
-//		//           bond = dynamic_cast<Bond*>(item);
-//		//           mol = bond->molecule();
-//		//           m_stack->push(new DelBond(bond));
-//		//           if (mol->canSplit()) m_stack->push(new SplitMol(mol));
-//		//         };
-
-//		// Then delete all selected atoms
-//		foreach (item, selectedItems())
-//		  if (item->type() == Atom::Type)
-//		  {
-//			atom = dynamic_cast<Atom*>(item);
-//			molSet << atom->molecule();
-//			m_stack->push(new DelAtom(atom));
-//		  }
-
-//		// Cleanup the affected molecules
-//		foreach (Molecule* mol, molSet)
-//		{
-//		  if (mol->canSplit()) m_stack->push(new SplitMol(mol));
-//		  if (mol->atoms().isEmpty()) m_stack->push(new DelItem(mol));
-//		}
-
-//		// Finally delete all the residues
-//		foreach (item, selectedItems()) m_stack->push(new DelItem(item));
-
-//		m_stack->endMacro();
-//		keyEvent->accept();
-//		break;
-//		case Qt::Key_Backspace:
-//			m_stack->beginMacro(tr("removing item(s)"));
-//			// First delete all selected molecules
-//			foreach (item, selectedItems())
-//			if (item->type() == Molecule::Type)
-//			{
-//				m_stack->push(new DelItem(item));
-//			}
-//			//       // Then delete
-//			//       foreach (item, selectedItems())
-//			//         if (item->type() == Bond::Type)
-//			//         {
-//			//           bond = dynamic_cast<Bond*>(item);
-//			//           mol = bond->molecule();
-//			//           m_stack->push(new DelBond(bond));
-//			//           if (mol->canSplit()) m_stack->push(new SplitMol(mol));
-//			//         };
-
-//			// Then delete all selected atoms
-//			foreach (item, selectedItems())
-//			if (item->type() == Atom::Type)
-//			{
-//				atom = dynamic_cast<Atom*>(item);
-//				molSet << atom->molecule();
-//				m_stack->push(new DelAtom(atom));
-//			}
-
-//			// Cleanup the affected molecules
-//			foreach (Molecule* mol, molSet)
-//		{
-//			if (mol->canSplit()) m_stack->push(new SplitMol(mol));
-//			if (mol->atoms().isEmpty()) m_stack->push(new DelItem(mol));
-//		}
-
-//			// Finally delete all the residues
-//			foreach (item, selectedItems()) m_stack->push(new DelItem(item));
-
-//			m_stack->endMacro();
-//			keyEvent->accept();
-//			break;
-
-
-//	  case Qt::Key_Up:
-//		m_stack->beginMacro("moving item(s)");
-//		foreach (item, selectedItems())
-//		  m_stack->push(new MoveItem(item,QPointF(0,-10)));
-//		m_stack->endMacro();
-//		keyEvent->accept();
-//		break;
-//	  case Qt::Key_Down:
-//		m_stack->beginMacro("moving item(s)");
-//		foreach (item, selectedItems())
-//		  m_stack->push(new MoveItem(item,QPointF(0,10)));
-//		m_stack->endMacro();
-//		keyEvent->accept();
-//		break;
-//	  case Qt::Key_Left:
-//		m_stack->beginMacro("moving item(s)");
-//		foreach (item, selectedItems())
-//		  m_stack->push(new MoveItem(item,QPointF(-10,0)));
-//		m_stack->endMacro();
-//		keyEvent->accept();
-//		break;
-//	  case Qt::Key_Right:
-//		m_stack->beginMacro("moving item(s)");
-//		foreach (item, selectedItems())
-//		  m_stack->push(new MoveItem(item,QPointF(10,0)));
-//		m_stack->endMacro();
-//		keyEvent->accept();
-//		break;
-//	  case Qt::Key_Escape:
-//		clearSelection();
-//		break;
-//	  default:
-//		keyEvent->ignore();
-//	}
-//	  }
-
-        // execute default behaviour (needed for text tool)
+    // execute default behaviour (needed for text tool)
     keyEvent->ignore();
     QGraphicsScene::keyPressEvent(keyEvent);
     update();
@@ -898,14 +770,7 @@ namespace Molsketch {
     {
         keyEvent->accept();
         clearSelection();
-#if QT_VERSION < 0x050000
-        QList<QAction*> directActionChildren, actionChildren = findChildren<QAction*>() ;
-        std::copy_if(actionChildren.begin(), actionChildren.end(), std::back_inserter(directActionChildren),
-                     [&](QAction* a) { return a->parent() == this; });
-        for (QAction* action : directActionChildren)
-#else
-        foreach(QAction* action, findChildren<QAction*>(QString(), Qt::FindDirectChildrenOnly))
-#endif
+        for (genericAction* action : sceneActions())
           if (action->isChecked())
             action->setChecked(false);
     }
@@ -976,18 +841,11 @@ namespace Molsketch {
 
   void MolScene::dragEnterEvent(QGraphicsSceneDragDropEvent *event)
   {
-    if (!event->mimeData()->hasFormat(mimeType())) return;
+    if (!event->mimeData() || !event->mimeData()->hasFormat(mimeType())) return;
     if (!event->proposedAction() == Qt::CopyAction) return;
     event->accept();
-#if QT_VERSION >= 0x050000
-    foreach(QAction* action, findChildren<QAction*>(QString(), Qt::FindDirectChildrenOnly))
-      if (action->isCheckable())
-        action->setChecked(false);
-#else
-    foreach(QAction* action, findChildren<QAction*>())
-          if (action->isCheckable() && action->parent() == this)
-            action->setChecked(false);
-#endif
+    for (genericAction* action : sceneActions())
+      action->setChecked(false);
     d->dragItem = new Molecule;
     QXmlStreamReader reader(event->mimeData()->data(mimeType()));
     reader >> *(d->dragItem);
@@ -1038,7 +896,16 @@ namespace Molsketch {
 
   QList<genericAction *> MolScene::sceneActions() const
   {
-        return findChildren<genericAction*>();
+    QList<genericAction *> actions;
+#if QT_VERSION < 0x050000
+        QList<genericAction*> allActionChildren = findChildren<genericAction*>() ;
+        std::copy_if(allActionChildren.begin(), allActionChildren.end(), std::back_inserter(actions),
+                     [&](QAction* a) { return a->parent() == this; });
+#else
+        actions = findChildren<genericAction*>(QString(), Qt::FindDirectChildrenOnly);
+#endif
+
+        return actions;
   }
 
 } // namespace

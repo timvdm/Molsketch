@@ -487,7 +487,7 @@ namespace Molsketch {
 
     drawAtomLabel(painter, lbl, alignment);
 
-    // Drawing background
+    // Drawing rectangle
     if (this->isSelected()) {
       painter->save();
       painter->setPen(Qt::blue);

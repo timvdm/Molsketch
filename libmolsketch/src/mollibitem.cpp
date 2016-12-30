@@ -49,7 +49,7 @@ namespace Molsketch {
     if (molecule->atoms().size() > 20)
       renderScene.setRenderMode(MolScene::RenderColoredSquares);
     renderScene.addItem(m_molecule);
-    renderScene.setChargeVisible(false);
+    renderScene.setChargeVisible(true);
     renderScene.setSceneRect(m_molecule->boundingRect());
     QPixmap pixmap(int(renderScene.width()), int(renderScene.height()));
     pixmap.fill();

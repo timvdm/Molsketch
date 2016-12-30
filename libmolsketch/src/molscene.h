@@ -54,8 +54,8 @@ namespace Molsketch {
 
     public:
     static const QString mouseWheelForCyclingTools;
-      /** 
-       * Enum for the different edit modes. 
+      /**
+       * Enum for the different edit modes.
        */
       enum EditMode {
         MoveMode,     //!< Atoms and molecules are movable.
@@ -83,8 +83,8 @@ namespace Molsketch {
        * Creates a new MolScene with @p parent.
        */
       MolScene(QObject* parent = 0);
-      /** 
-       * Cleans up the UndoStack and deletes the molscene. 
+      /**
+       * Cleans up the UndoStack and deletes the molscene.
        */
       ~MolScene();
 
@@ -92,8 +92,8 @@ namespace Molsketch {
 
       static QString mimeType();
       // Queries
-      /** 
-       * @return The current EditMode of the scene. 
+      /**
+       * @return The current EditMode of the scene.
        */
       int editMode() const; // TODO obsolete?
 
@@ -123,7 +123,7 @@ namespace Molsketch {
       SCENEPROPERTY(E,e,lectronSystemsVisible, bool, false)
       SCENEPROPERTY(C,c,hargeVisible, bool, true)
       STRINGIFIEDPROPERTY(D,d,efaultColor, QColor, QColor(Qt::black))
-      
+
       QColor color() const;
       void setColor(const QColor&);
 
@@ -136,7 +136,7 @@ namespace Molsketch {
        */
       void setRenderMode(RenderMode mode);
 
-      // Commands  
+      // Commands
       /** Renders the @p rect on the scene in a image. */
       QImage renderImage(const QRectF &rect);
 
@@ -177,8 +177,8 @@ namespace Molsketch {
       void documentChange( );
       //  /** Signal emitted if a new molecule is added to the scene. */
       //   void newMolecule(QPointF,QString);
-      /** 
-       * Sets the number of hint points in the dynamic grid. 
+      /**
+       * Sets the number of hint points in the dynamic grid.
        */
       void setHintPointSize(int size);
 
