@@ -129,13 +129,13 @@ namespace Molsketch {
   template<>
   Atom *incDecAction<Atom>::getItem(const QPointF &p)
   {
-    return scene()->atomAt(p) ;
+    return scene()->atomNear(p) ;
   }
 
   template<>
   Bond *incDecAction<Bond>::getItem(const QPointF &p)
   {
-    return scene()->bondAt(p) ;
+    return scene()->bondAt(p) ; // TODO use bondNear()
   }
 
   template <class T>
@@ -168,9 +168,20 @@ namespace Molsketch {
                &Atom::setNumImplicitHydrogens);
   }
 
+  template <class T>
+
+  QAction *incDecAction<T>::decrementAction() const
+  {
+    return d->minusAction;
+  }
+
+  template <class T>
+  QAction *incDecAction<T>::incrementAction() const
+  {
+    return d->plusAction;
+  }
+
   // instantiation
   template class incDecAction<Atom> ;
-  template class incDecAction<Bond> ;
-
-
+  template class incDecAction<Bond> ; // TODO is this ever used?
 } // namespace

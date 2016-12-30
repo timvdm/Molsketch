@@ -31,6 +31,8 @@ namespace Molsketch {
     explicit incDecAction(MolScene* scene);
     ~incDecAction() ;
     void mousePressEvent(QGraphicsSceneMouseEvent *event) ;
+    QAction* decrementAction() const;
+    QAction* incrementAction() const;
   protected:
     void initialize(QIcon UpIcon,
                     QIcon DownIcon,
