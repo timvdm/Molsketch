@@ -93,7 +93,7 @@
   loadFileFunctionPointer loadFilePtr = 0 ; \
   if (obabeliface.isLoaded()) \
     loadFilePtr = (loadFileFunctionPointer) (obabeliface.resolve("loadFile")) ;
-  
+
 #define PREPARESAVEFILE \
   QLibrary obabeliface("obabeliface" QTVERSIONSUFFIX OBABELOSSUFFIX); \
   obabeliface.load() ; \
@@ -155,7 +155,7 @@ MainWindow::MainWindow()
   }
   if (openBabelNeeded)
     QMessageBox::critical(this, tr(PROGRAM_NAME), tr("Some files could not be loaded because support for OpenBabel is missing.")) ;
-  
+
   setCurrentFile("");
   if (loadedFiles.count() == 1) setCurrentFile(loadedFiles.first());
 
@@ -399,21 +399,21 @@ bool MainWindow::saveAs()
       if (mol) {
         if (mol->canSplit()) {
           QList<Molecule*> molList = mol->split();
-          foreach(Molecule* mol,molList) 
+          foreach(Molecule* mol,molList)
             m_scene->addItem(mol);
         } else {
-          m_scene->addItem(mol);          
+          m_scene->addItem(mol);
         }
-        
+
         setCurrentFile(fileName);
-	return true;
+        return true;
       } else {
         QMessageBox::critical(this, tr(PROGRAM_NAME), tr("Error importing file"), QMessageBox::Ok, QMessageBox::Ok);
-	return false;
+        return false;
       }
 
     }
-    
+
     return false;
   }
 
@@ -644,13 +644,13 @@ void MainWindow::createActions()
   prefAct->setShortcut(tr("Ctrl+F"));
   prefAct->setStatusTip(tr("Edit your preferences"));
   connect(prefAct, SIGNAL(triggered()), this, SLOT(editPreferences()));
-	
-	minimiseModeAct = new QAction(QIcon(":/images/minimise.png"),tr("Energy Refinement"),this);
-	minimiseModeAct->setCheckable(true);
-	//minimiseModeAct->setShortcut(tr("Ctrl+F"));
-	minimiseModeAct->setStatusTip(tr("Adjust Geometry"));
+
+        minimiseModeAct = new QAction(QIcon(":/images/minimise.png"),tr("Energy Refinement"),this);
+        minimiseModeAct->setCheckable(true);
+        //minimiseModeAct->setShortcut(tr("Ctrl+F"));
+        minimiseModeAct->setStatusTip(tr("Adjust Geometry"));
 //	textModeAct->setStatusTip(tr("Go to the minimise mode"));
-	connect(minimiseModeAct, SIGNAL(triggered()), this, SLOT(setMinimiseMode()));
+        connect(minimiseModeAct, SIGNAL(triggered()), this, SLOT(setMinimiseMode()));
 
 
   // Zoom actions
@@ -679,7 +679,7 @@ void MainWindow::createActions()
   helpContentsAct->setShortcut(tr("F1"));
   helpContentsAct->setStatusTip(tr("Show the application's help contents"));
   connect(helpContentsAct, SIGNAL(triggered()), this, SLOT(assistant()));
-  
+
   submitBugAct = new QAction(QIcon(""),tr("Submit &Bug..."), this);
   submitBugAct->setStatusTip(tr("Open the browser with the bug tracker"));
   connect(submitBugAct, SIGNAL(triggered()), this, SLOT(submitBug()));
@@ -738,7 +738,7 @@ void MainWindow::createMenus()
     connect(pluginAct, SIGNAL(triggered()), this, SLOT(pluginActionTriggered()));
     toolsMenu->addAction(pluginAct);
   }
-	
+
   viewMenu = menuBar()->addMenu(tr("&View"));
   viewMenu->addAction(zoomInAct);
   viewMenu->addAction(zoomOutAct);
@@ -782,8 +782,8 @@ void MainWindow::createToolBars()
   editToolBar->addAction(cutAct);
   editToolBar->addAction(copyAct);
   editToolBar->addAction(pasteAct);
-	
-	
+
+
   zoomToolBar = addToolBar(tr("Zoom"));
   zoomToolBar->setObjectName("zoom-toolbar");
   zoomToolBar->addAction(zoomInAct);
@@ -897,7 +897,7 @@ void MainWindow::createToolBarContextMenuOptions()
   }
   connect(toolBarTextsAndIcons, SIGNAL(triggered(QAction*)), this, SLOT(setToolButtonStyle(QAction*)));
 }
-  
+
 void MainWindow::pluginActionTriggered()
 {
   Q_CHECK_PTR(m_scene);
@@ -983,28 +983,15 @@ void MainWindow::readPreferences()
   m_autoSaveTimer->start();
 
   // Loading paths
-  m_libPath = settings.value("library-path","/usr/share/molsketch/library/").toString();
   m_lastAccessedPath = settings.value("last-save-path", QDir::homePath()).toString();
-
-  // Load the draw settings
-  m_scene->setAtomSize(settings.value("atom-size", m_scene->atomSize()).toDouble());
-  m_scene->setAutoAddHydrogen(settings.value("auto-add-hydrogen", m_scene->autoAddHydrogen()).toBool());
-  m_scene->setCarbonVisible(settings.value("carbon-visible", m_scene->carbonVisible()).toBool());
-  m_scene->setHydrogenVisible(settings.value("hydrogen-visible", m_scene->hydrogenVisible()).toBool());
-  m_scene->setChargeVisible(settings.value("charge-visible",m_scene->chargeVisible()).toBool());
-  m_scene->setElectronSystemsVisible(settings.value("electronSystems-visible", m_scene->electronSystemsVisible()).toBool());
-
-  m_scene->setAtomFont(settings.value("atom-symbol-font", m_scene->atomFont()).value<QFont>());
-
-  m_scene->setBondLength(settings.value("bond-length",m_scene->bondLength()).toDouble());
-  m_scene->setBondWidth(settings.value("bond-width",m_scene->bondWidth()).toDouble());
-  m_scene->setBondAngle(settings.value("bond-angle",m_scene->bondAngle()).toInt());
 
   // TODO fix this (protected in Qt4)
 #if QT_VERSION >= 0x050000
   foreach(QAction *action, m_scene->sceneActions())
     emit action->changed();
 #endif
+
+  // TODO add scene default properties
 
   // Update the scene contents
   m_scene->update();
@@ -1024,17 +1011,10 @@ void MainWindow::writeSettings()
   // Saving the state of the toolbars and dockwidgets
   settings.setValue("window-state", saveState());
 
+  // TODO add scene default properties
+
   // Saving paths
   settings.setValue("last-save-path", m_lastAccessedPath);
-
-  // Saving preferences
-   settings.setValue("auto-add-hydrogen",m_scene->autoAddHydrogen());
-//   settings.setValue("bond-length",m_scene->bondLength());
-//   settings.setValue("bond-angle",m_scene->bondAngle());
-   settings.setValue("carbon-visible",m_scene->carbonVisible());
-   settings.setValue("hydrogen-visible",m_scene->hydrogenVisible());
-   settings.setValue("charge-visible",m_scene->chargeVisible());
-   settings.setValue("electronSystems-visible",m_scene->electronSystemsVisible());
 
 }
 

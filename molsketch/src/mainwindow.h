@@ -78,8 +78,8 @@ public:
 protected:
   /** Reimplements the close event to asked for a save on exit. */
   void closeEvent(QCloseEvent *event);
-	
-	
+
+
 
 
 private slots:
@@ -102,8 +102,8 @@ private slots:
 
   void setToolButtonStyle(QAction* styleAction);
 
-	//used for print preview
-	void paintSceneOn (QPrinter *);
+        //used for print preview
+        void paintSceneOn (QPrinter *);
 
   /** Open the preferences editor. */
   void editPreferences();
@@ -114,7 +114,7 @@ private slots:
   void submitBug();
   /** Open the molsKetch about dialog. */
   void about();
-  
+
   /** Mark the current document as modified. */
   void documentWasModified( );
 
@@ -131,7 +131,7 @@ private slots:
   /** Update the window to match the edit mode @p mode. */
   void updateEditMode(int mode);
 
-  
+
   void pluginActionTriggered();
   /** Reloads the preferences */
   void readPreferences();
@@ -166,8 +166,6 @@ private:
   void setCurrentFile(const QString &fileName);
 
   // Global settings
-  /** The path of the molecule library */
-  QString m_libPath;
   /** Path where the last document was saved */
   QString m_lastAccessedPath;
   /** The time between auto-saves in miliseconds */
@@ -269,7 +267,7 @@ private:
   /** Open the settings dialog action. */
   QAction* prefAct;
   /** Minimiser **/
-  QAction *minimiseModeAct;	
+  QAction *minimiseModeAct;
 
   // Tools actions
   QAction *insertSmilesAct;
