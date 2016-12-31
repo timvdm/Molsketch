@@ -49,6 +49,7 @@ namespace Molsketch {
     d->ui = ui;
     d->atom = 0;
     connect(ui->coordinates->model(), SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)), this, SLOT(onCoordinatesDatachanged()));
+    setObjectName("atom properties");
   }
 
   AtomPopup::~AtomPopup()

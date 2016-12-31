@@ -188,6 +188,14 @@ namespace Molsketch {
     }
 
     bool gridOn()const { return Grid->scene(); }
+
+    void setPropertiesWidget(graphicsItem* item) {
+      QWidget* oldWidget = propertiesDock->widget();
+      QWidget* newWidget = item ? item->getPropertiesWidget() : propertiesHelpLabel;
+      propertiesDock->setWidget(newWidget);
+      if (oldWidget != newWidget && oldWidget != propertiesHelpLabel)
+        delete oldWidget;
+    }
   };
 
   using namespace Commands;
@@ -436,9 +444,9 @@ namespace Molsketch {
   void MolScene::clear()
   {
     clearSelection();
-    QGraphicsScene::clear();
     m_stack->clear();
     delete d;
+    QGraphicsScene::clear();
     d = new privateData(this);
   }
 
@@ -688,12 +696,7 @@ namespace Molsketch {
       itemAction->setItems(selectedItems());
     graphicsItem* currentItem = 0; // TODO check if focusItem is what we actually want here
     if (selectedItems().size() == 1) currentItem = dynamic_cast<graphicsItem*>(selectedItems().first());
-    if (currentItem) d->propertiesDock->setWidget(currentItem->getPropertiesWidget());
-    else {
-      QWidget* oldWidget = d->propertiesDock->widget();
-      d->propertiesDock->setWidget(d->propertiesHelpLabel);
-      if (oldWidget != d->propertiesHelpLabel) delete oldWidget;
-    }
+    d->setPropertiesWidget(currentItem);
   }
 
   void MolScene::booleanPropertyChanged(bool newValue)

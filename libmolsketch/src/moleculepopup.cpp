@@ -42,6 +42,7 @@ namespace Molsketch {
     connect(ui->nameEdit, SIGNAL(editingFinished()), this, SLOT(applyPropertiesToMolecule()));
 
     setWindowFlags(Qt::Popup);
+    setObjectName("molecule properties");
   }
 
   void MoleculePopup::connectMolecule(Molecule *m)

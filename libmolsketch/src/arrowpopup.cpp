@@ -82,6 +82,7 @@ namespace Molsketch {
     connect(ui->Coordinates->model(), SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(applyPropertiesToArrow()));
 
     setWindowFlags(Qt::Popup);
+    setObjectName("arrow properties");
   }
 
   void ArrowPopup::connectArrow(Arrow *a)

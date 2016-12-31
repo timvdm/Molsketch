@@ -191,7 +191,7 @@ namespace Molsketch {
           if (item->parentItem())
             br |= item->mapToParent(item->boundingRect()).boundingRect();
           else
-            br |= item->boundingRect();
+            br |= item->boundingRect(); // TODO this is not accurate for e.g. atoms (should use pos())
         shift = sc->snapToGrid(event->scenePos()) - br.center();
       }
       else
