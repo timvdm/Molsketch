@@ -684,6 +684,10 @@ void MainWindow::createActions()
   submitBugAct->setStatusTip(tr("Open the browser with the bug tracker"));
   connect(submitBugAct, SIGNAL(triggered()), this, SLOT(submitBug()));
 
+  youtubeChannelAction = new QAction(tr("YouTube channel..."), this);
+  youtubeChannelAction->setStatusTip(tr("Open the browser with the YouTube channel page"));
+  connect(youtubeChannelAction, SIGNAL(triggered()), this, SLOT(goToYouTube()));
+
   aboutAct = new QAction(QIcon::fromTheme("help-about"),tr("&About"), this);
   aboutAct->setStatusTip(tr("Show the application's About box"));
   connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));
@@ -751,6 +755,7 @@ void MainWindow::createMenus()
   helpMenu->addAction(helpContentsAct);
   helpMenu->addSeparator();
   helpMenu->addAction(submitBugAct);
+  helpMenu->addAction(youtubeChannelAction);
   helpMenu->addSeparator();
   helpMenu->addAction(aboutAct);
   helpMenu->addAction(aboutQtAct);
@@ -1063,5 +1068,10 @@ void MainWindow::submitBug()
 {
   // Opens a browser with the bug tracker
   QDesktopServices::openUrl(QUrl("http://sourceforge.net/tracker/?func=add&group_id=191562&atid=937880"));
+}
+
+void MainWindow::goToYouTube()
+{
+  QDesktopServices::openUrl(QUrl("https://www.youtube.com/channel/UCIYnNzSnI9AHpB_c48BR7fQ"));
 }
 

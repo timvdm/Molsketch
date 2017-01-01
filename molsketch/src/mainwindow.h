@@ -112,6 +112,7 @@ private slots:
   void assistant();
   /** Open a browser with the bugtracker. */
   void submitBug();
+  void goToYouTube();
   /** Open the molsKetch about dialog. */
   void about();
 
@@ -288,6 +289,7 @@ private:
   QAction* helpContentsAct;
   /** Submit a bug action. */
   QAction* submitBugAct;
+  QAction* youtubeChannelAction;
   /** Show the molsKetch about dialog action. */
   QAction* aboutAct;
   /** Show the Qt about dialog action. */
