@@ -74,22 +74,6 @@ namespace Molsketch
     }
   }
 
-
-  // Molecule* smiles(QString formula)
-  // {
-  //     Molecule* mol = new Molecule();
-  // //   QGraphicsScene scene;
-  // //   scene.addItem(mol);
-  //
-  //     for (int i = 0; i < formula.length();i++)
-  //     {
-  //         if (formula.at( i ).isLetter())
-  //             mol->addAtom( QString(formula.at( i )), QPoint(0,0) );
-  //     }
-  //
-  //     return mol;
-  // }
-
   bool exportFile(const QString &fileName, MolScene * scene)
   {
     // Clear selection

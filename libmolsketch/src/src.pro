@@ -66,7 +66,6 @@ HEADERS += \
     grid.h \
     actions/flipstereobondsaction.h \
     generics.h \
-    actions/changemoleculenameaction.h \
     moleculepopup.h \
     helptextonemptylabel.h \
     helptextemptydock.h \
@@ -135,7 +134,6 @@ SOURCES += \
     grid.cpp \
     actions/flipstereobondsaction.cpp \
     generics.cpp \
-    actions/changemoleculenameaction.cpp \
     moleculepopup.cpp \
     helptextonemptylabel.cpp \
     helptextemptydock.cpp \

@@ -192,7 +192,6 @@ namespace Molsketch {
     //pre: element is a non-empty string and point is a valid position on the canvas in scene coordinates
     Q_ASSERT(!element.isEmpty());
     //post: an atom of element has been added to the molecule
-    //   Atom* atom = new Atom(point,element,((element == "C") && !(scene()->getShowCarbon() ) || ((element == "H") && !(scene()->getShowHydrogen()))),this);
     Atom* atom = new Atom(point,element,implicitHydrogen, this);
     atom ->setColor (c);
     return addAtom(atom);
@@ -210,8 +209,6 @@ namespace Molsketch {
       atom ->setColor (dynamic_cast<MolScene *> (scene ()) ->color());
     }
 
-    //  /// Work-around qt-bug
-    //   if (scene()) scene()->addItem(atom);
     m_electronSystemsUpdate = true;
 
     return atom;
@@ -250,22 +247,12 @@ namespace Molsketch {
       if (scene ())	bondX ->setColor (dynamic_cast<MolScene *> (scene ()) ->color());
       return bondX;
     }
-    //   {
-    //     bondX->incOrder();
-    //     bondX->setType(bond->getType());
-    //     return bondX;
-    //   }
-
-    // Setting the valency
-    //bond->redoValency();
 
     // Adding the bond the the molecule
     m_bondList.append(bond);
     bond->setParentItem(this);
 
     bond->setAtoms(bond->beginAtom(), bond->endAtom());
-    //  /// Work-around qt-bug
-    //  if (scene()) scene()->addItem(bond);
 
     m_electronSystemsUpdate = true;
     refreshRings();
@@ -340,10 +327,6 @@ namespace Molsketch {
 
     m_electronSystemsUpdate = true;
     refreshRings();
-    //  bond->undoValency();
-    //  /// Superseded by undo
-    //delete bond;
-    //bond = 0;
   }
 
   QSet<Atom*> getConnectedAtoms(Atom* startAtom)
@@ -412,25 +395,8 @@ namespace Molsketch {
       if (atom->contains(atom->mapFromScene(pos))) return atom;
     }
 
-
-    // 	for ( int i = 0; i < children().count() ;i++)
-    // 	{
-    // 		if ((children()[i]->type() ==  Atom::Type) && (children()[i]->contains(pos)))
-    // 		{
-    // 			return (Atom*)children()[i];
-    // 		}
-    // 	}
-
     return 0;
   }
-
-  // Atom* Molecule::atom(int id) const
-  //   {   //pre: id does not exceed the number of atoms
-  //     Q_ASSERT(id<m_atomList.size());
-  //     //post: returns the i-th atom
-  //
-  //     return m_atomList.at(id);
-  //   }
 
   Bond* Molecule::bondAt(const QPointF &pos) const
   {
@@ -442,16 +408,6 @@ namespace Molsketch {
     }
     return 0;
   }
-
-
-  // Bond* Molecule::bond(int id) const
-  // {
-  //     //pre: id does not exceed the number of atoms
-  //     Q_ASSERT(0 <= id && id < m_bondList.size());
-  //     //post: returns the i-th atom
-  //
-  //     return m_bondList.at(id);
-  // }
 
   const QList<Atom*>& Molecule::atoms() const
   {
@@ -574,17 +530,6 @@ namespace Molsketch {
     // Remove and then readd all elements
     prepareGeometryChange();
 
-    /*
-  foreach(Bond* bond, m_bondList) 
-    removeFromGroup(bond);
-  foreach(Atom* atom, m_atomList) 
-    removeFromGroup(atom);
-  resetTransform();
-  foreach(Atom* atom, m_atomList) 
-    addToGroup(atom);
-  foreach(Bond* bond, m_bondList) 
-    addToGroup(bond);
-    */
     update();
 
   }
@@ -599,38 +544,6 @@ namespace Molsketch {
 
     return 0;
   }
-
-  // Event handlers
-
-  // void Molecule::mouseReleaseEvent(QGraphicsSceneMouseEvent * event)
-  // {
-  // //   if (scene() && scene()->getEditMode()==MolScene::MoveMode)
-  // //   {
-  // //   setFlag(QGraphicsItem::ItemIsSelectable,false);
-  // //    setSelected(true);
-  // //    }
-  //   QGraphicsItem::mouseReleaseEvent(event);
-  // }
-
-  // void Molecule::mousePressEvent(QGraphicsSceneMouseEvent * event)
-  // {
-  // //     if (scene() && scene()->getEditMode()==MolScene::MoveMode)
-  // //     {
-  // //         setFlag(QGraphicsItem::ItemIsSelectable,true);
-  // //         setSelected(true);
-  // //     }
-  // QGraphicsItem::mousePressEvent(event);
-  // }
-
-  // QVariant Molecule::itemChange(GraphicsItemChange change, const QVariant & value)
-  // {
-  // //     if (change == ItemSelectedChange && isSelected())
-  // //     {
-  // //         setFlag(QGraphicsItem::ItemIsSelectable,false);
-  // //     }
-  //
-  //     return QGraphicsItem::itemChange(change, value);
-  // }
 
   QList< Bond * > Molecule::bonds(const Atom * atom)
   {
@@ -651,19 +564,8 @@ namespace Molsketch {
         // draw a blue rectangle if this molecule is selected
         if(isSelected()) {
       painter->setPen(Qt::blue);
-      //painter->setBrush(Qt::yellow);
-      //painter->setOpacity(0.2);
       painter->drawRect(boundingRect());
     } // TODO move this somewhere else, so that it can have a different Z value
-    /*
-  if(hasFocus()) {
-    painter->setBrush(Qt::yellow);
-    painter->setPen(Qt::NoPen);
-    painter->setOpacity(0.3);
-    painter->drawRect(boundingRect());
-  }
-  */
-
 
     // draw the electron systems
 
@@ -940,10 +842,6 @@ namespace Molsketch {
           break;
       }
     }
-
-
-//    qDebug() << "# ElectronSystem =" << m_electronSystems.size();
-
   }
 
   QList<const abstractXmlObject *> Molecule::children() const

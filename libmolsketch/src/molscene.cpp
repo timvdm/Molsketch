@@ -226,18 +226,6 @@ namespace Molsketch {
     // Set initial size
     QRectF sizerect(-5000,-5000,10000,10000);
     setSceneRect(sizerect);
-//    f->setCoordinates(QPointF(0,0), QPointF(100,100));
-//    f->setParentItem(m);
-//    f->setFrameString("(r .5,r.5)+(-10,0)-+( 10,0)-(r .5,r-.5)-+(-10,0)"
-//                        "(r-.5,r.5)+( 10,0)-+(-10,0)-(r-.5,r-.5)-+( 10,0)"); // brackets
-//    f->setFrameString("(r.5,r-.5)+(-20,0)-+(20,0)-+(0,20)"); // angle
-//    f->setFrameString("(r.5,r-.5)+(-10,0).+(10,0).+(0,10)"
-//                      "$(r.5,r0)-+(0,-10).+(0,10).+(5,0)"
-//                      ".+(-5,0).+(0,10)$(r.5,r.5)-+(0,-10)"
-//                      ".+(0,10).+(-10,0)"
-//                      ); // curly bracket
-
-//    f->setFrameString("(r.5,r.5)-(r.5,r-.5)-(r-.5,r-.5)-(r-.5,r.5)-(r.5,r.5)"); // full frame
   }
 
   MolScene::~MolScene()
@@ -301,17 +289,6 @@ namespace Molsketch {
   void MolScene::setEditMode(int mode)
   {
     // TODO
-//        // Reset moveflag (movebug)
-//        foreach(QGraphicsItem* item, items())
-//          item->setFlag(QGraphicsItem::ItemIsMovable, false);
-
-//	// enable moving for all Molecule and atom items
-//	foreach(QGraphicsItem* item, items())
-//	  if (item->type() == Molecule::Type || item->type() == Atom::Type)
-//		item->setFlag(QGraphicsItem::ItemIsSelectable,mode == MolScene::MoveMode);
-
-
-
         // Set the new edit mode and signal other components
         m_editMode = mode;
         emit editModeChange( mode );

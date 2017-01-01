@@ -60,16 +60,6 @@ namespace Molsketch {
     return (a.x() - c.x()) * (b.y() - c.y()) - (a.y() - c.y()) * (b.x() - c.x());  
   }
 
-  /*
-  QPointF intersectionPoint(const QLineF &line1, const QLineF &line2)
-  {
-    return QPointF( ((line2.x2() - line2.x1()) * (line1.y1() - line2.y1()) - (line2.y2() - line2.y1()) * (line1.x1() - line2.x1())) / 
-                    ((line2.y2() - line2.y1()) * (line1.x2() - line1.x1()) - (line2.x2() - line2.x1()) * (line1.y2() - line1.y1())) ,
-                    ((line1.x2() - line1.x1()) * (line1.y1() - line2.y1()) - (line1.y2() - line1.y1()) * (line1.x1() - line2.x1())) / 
-                    ((line2.y2() - line2.y1()) * (line1.x2() - line1.x1()) - (line2.x2() - line2.x1()) * (line1.y2() - line1.y1())) );
-  }
-  */
-
 }
 
 #endif
