@@ -34,6 +34,7 @@
 namespace Molsketch {
 
   class movePointCommand : public QUndoCommand // TODO eliminate transformcommand or merge
+      // TODO Commands::MoveItem seems to be for the same purpose
   {
   private:
     int index ;
@@ -171,7 +172,7 @@ namespace Molsketch {
   }
 
   void graphicsItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
-  {
+  { // TODO this is pretty broken! cf. Commands::MoveItem
     QPointF shift = event->scenePos() - event->lastScenePos();
     QSet<graphicsItem*> selection;
     if (d->selectedPoint < 0 && scene())

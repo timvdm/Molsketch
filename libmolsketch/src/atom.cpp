@@ -925,7 +925,7 @@ namespace Molsketch {
 
   QPolygonF Atom::coordinates() const
   {
-    return QVector<QPointF>() << pos() ;
+    return QVector<QPointF>() << pos() ; // TODO change to coordinates relative to parent
   }
 
   void Atom::enableImplicitHydrogens(bool enabled)

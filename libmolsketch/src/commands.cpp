@@ -399,7 +399,7 @@ void AddItem::undo()
 }
 void AddItem::redo()
 {
-  m_scene->addItem(m_item);
+  if (m_item->scene() != m_scene) m_scene->addItem(m_item);
   /*
   m_item->setFlag(QGraphicsItem::ItemIsSelectable, m_scene->editMode()==MolScene::MoveMode);
   if (m_item->type() == Molecule::Type) foreach(Atom* atom, dynamic_cast<Molecule*>(m_item)->atoms())

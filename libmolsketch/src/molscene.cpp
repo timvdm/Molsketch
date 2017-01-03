@@ -196,6 +196,11 @@ namespace Molsketch {
       if (oldWidget != newWidget && oldWidget != propertiesHelpLabel)
         delete oldWidget;
     }
+
+    void moveDragItem(QGraphicsSceneDragDropEvent* event) {
+      if (!dragItem) return;
+      dragItem->moveItemBy(event->scenePos() - dragItem->boundingRect().center());
+    }
   };
 
   using namespace Commands;
@@ -275,7 +280,7 @@ namespace Molsketch {
       setDefaultColor(c);
   }
 
-  void MolScene::alignToGrid()
+  void MolScene::alignToGrid() // TODO this isn't used (and not correct)
   {
     setGrid(true);
         m_stack->beginMacro(tr("aligning to grid"));
@@ -829,7 +834,7 @@ namespace Molsketch {
     d->dragItem = new Molecule;
     QXmlStreamReader reader(event->mimeData()->data(mimeType()));
     reader >> *(d->dragItem);
-    d->dragItem->setPos(event->pos());
+    d->moveDragItem(event);
     addItem(d->dragItem);
     updateAll();
   }
@@ -854,7 +859,7 @@ namespace Molsketch {
   {
     qDebug() << "drag moving:" << event->proposedAction();
     if (!d->dragItem) return;
-    d->dragItem->setPos(event->scenePos());
+    d->moveDragItem(event);
     event->accept();
   }
 
