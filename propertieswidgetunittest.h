@@ -203,7 +203,7 @@ public:
   void testUndoCommandIsExecutedWhenAttemptingToPush() {
     assertPushedCommandGetsExecuted();
     TS_ASSERT_EQUALS(UndoCommandForTesting::destroyed, 1);
-    TS_ASSERT_EQUALS(widget->timesPropertyChanged, 1);
+    TS_ASSERT_EQUALS(widget->timesPropertyChanged, 0);
   }
 
   void testSceneCanBeSet() {
@@ -300,7 +300,7 @@ public:
     TS_ASSERT(UndoCommandForRecursion::blockedDuringExecution);
   }
 
-  void testDuringPropertiesChangePropertiesChangeIsNotBlocked() {
+  void testDuringPropertiesChangePropertiesChangeIsBlocked() {
     bool recursivelyCalled = false;
     bool propertyChangeCalled = false;
     PropertiesWidgetWithChangeCallback callbackWidget;
@@ -314,7 +314,7 @@ public:
     });
     callbackWidget.propertiesChange();
     TS_ASSERT(propertyChangeCalled);
-    TS_ASSERT(recursivelyCalled);
+    TS_ASSERT(!recursivelyCalled);
   }
 
   void testDuringPropertiesChangeAttemptUndoPushIsBlocked() {
@@ -349,11 +349,11 @@ public:
     assertPushedCommandGetsExecuted();
   }
 
-  void testDuringAttemptUndoPushChangePropertiesIsNotBlocked() {
-    assertPropertiesChangedCalledDuringUndoPush(0);
+  void testDuringAttemptUndoPushChangePropertiesIsBlocked() {
+    assertPropertiesChangedNotCalledDuringUndoPush(0);
   }
 
-  void assertPropertiesChangedCalledDuringUndoPush(MolScene *scene)
+  void assertPropertiesChangedNotCalledDuringUndoPush(MolScene *scene)
   {
     UndoCommandWithCallback *undoCommand = new UndoCommandWithCallback;
     undoCommand->setCallback([&]{ callbackWidget->propertiesChange(); });
@@ -362,14 +362,14 @@ public:
     bool propertiesChangedCalled = false;
     callbackWidget->setCallback([&]{ propertiesChangedCalled = true; });
     callbackWidget->push(undoCommand);
-    TS_ASSERT(propertiesChangedCalled);
+    TS_ASSERT(!propertiesChangedCalled);
     assertCommandOnStackOrDestroyed(scene, undoCommand, undoCommandDestroyed);
   }
 
-  void testDuringAttemptUndoPushChangePropertiesIsNotBlockedWithScene() {
+  void testDuringAttemptUndoPushChangePropertiesIsBlockedWithScene() {
     MolSceneForTesting scene;
     callbackWidget->setScene(&scene);
-    assertPropertiesChangedCalledDuringUndoPush(&scene);
+    assertPropertiesChangedNotCalledDuringUndoPush(&scene);
   }
 
   void testDuringAttemptUndoPushAttemptUndoPushIsBlocked() {
@@ -415,14 +415,31 @@ public:
     assertUndoPushIsBlockedDuringUndoPush(&scene);
   }
 
+  void testSequentialPushingOfTwoCommands() {
+    MolSceneForTesting scene;
+    callbackWidget->setScene(&scene);
 
+    UndoCommandWithCallback *outerCommand = new UndoCommandWithCallback;
+    bool outerCommandDestroyed = false;
+    outerCommand->setDestructorCallback([&] { outerCommandDestroyed = true; });
+    bool outerCommandCalled = false;
+    outerCommand->setCallback([&] { outerCommandCalled = true; });
 
+    UndoCommandWithCallback *innerCommand = new UndoCommandWithCallback;
+    bool innerCommandDestroyed = false;
+    innerCommand->setDestructorCallback([&] {innerCommandDestroyed = true; });
+    bool innerCommandCalled = false;
+    innerCommand->setCallback([&]{ innerCommandCalled = true; });
 
-  // + assert that connection to old scene is removed upon setting a new scene
-  // + undocommand itself gets executed
-  // + if stack available, undo command gets pushed to stack
-  // + if scene deleted, undo command gets executed, but not pushed to stack
-  // + selected items can be obtained from scene
-  // + if scene deleted, items are no longer fetched from scene
-  // + during undocommand push, no other undo command can be pushed
+    callbackWidget->push(outerCommand);
+    callbackWidget->push(innerCommand);
+
+    TS_ASSERT(outerCommandCalled);
+    TS_ASSERT(!outerCommandDestroyed);
+    if (!outerCommandDestroyed) outerCommand->resetDestructorCallback();
+    TS_ASSERT(innerCommandCalled);
+    TS_ASSERT(!innerCommandDestroyed);
+    if (!innerCommandDestroyed) innerCommand->resetDestructorCallback();
+  }
+
 };

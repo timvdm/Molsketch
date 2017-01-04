@@ -1,5 +1,6 @@
 #include "utilities.h"
 
+#include <QLineEdit>
 #include <QTableView>
 
 void mouseMoveEvent(QWidget *widget, Qt::MouseButton button, Qt::KeyboardModifiers stateKey, QPoint pos, int delay) {
@@ -36,4 +37,12 @@ void enterDataIntoCell(QTableView *table, const QString& data, int row, int colu
 //      editor = table->viewport()->focusWidget(); // TODO
 //      TS_ASSERT(!editor);
   }
+}
+
+void enterTextIntoInputWidget(QLineEdit *editor, const QString& text, int position) {
+  QTest::mouseClick(editor, Qt::LeftButton);
+  QTest::keyClick(editor, Qt::Key_Home);
+  for (int i = 0 ; i < position ; ++i)
+    QTest::keyClick(editor, Qt::Key_Right);
+  QTest::keyClicks(editor, text);
 }

@@ -40,6 +40,7 @@ class AtomPopupUnitTest : public CxxTest::TestSuite {
   QSpinBox *hydrogenBox;
   CoordinateTableView *coordinateTable;
   MolScene* scene;
+  static constexpr char* initialElement = "Ca";
 public:
   void setUp() {
     atom = new Atom;
@@ -69,7 +70,7 @@ public:
   }
 
   void testGuiElementsFilledOnSetup() {
-    const char *element = "Ca";
+    const char *element = initialElement;
     const QPolygonF coordinates(QPolygonF() << QPointF(30.5,20.5));
     const int charge = -3;
     const int numImplicitHydrogens = 2;
@@ -101,7 +102,15 @@ public:
     popup->connectAtom(atom);
     elementEditor->setText(expectedSymbol);
     QS_ASSERT_EQUALS(atom->element(), expectedSymbol);
-    // TODO check refresh while typing -> actually type into widget
+  }
+
+  void testSymbolEditingInGuiFromStartPosition() {
+    QString expectedSymbol("Ba");
+    atom->setElement(initialElement);
+    popup->connectAtom(atom);
+    QS_ASSERT_EQUALS(elementEditor->text(), initialElement);
+    enterTextIntoInputWidget(elementEditor, expectedSymbol);
+    QS_ASSERT_EQUALS(atom->element(), expectedSymbol + initialElement);
   }
 
   void testChargeTransferFromCommad() {
