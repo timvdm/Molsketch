@@ -39,11 +39,11 @@ namespace Molsketch {
     d->lock = true;
     if (d->scene && d->scene->stack()) {
       d->scene->stack()->push(cmd);
+      d->lock = false;
       return;
     }
     cmd->redo();
     delete cmd;
-    propertiesChange();
     d->lock = false;
   }
 
@@ -94,6 +94,7 @@ namespace Molsketch {
 
   void PropertiesWidget::propertiesChange()
   {
+    if (d->lock) return;
     d->lock = true;
     propertiesChanged();
     d->lock = false;
