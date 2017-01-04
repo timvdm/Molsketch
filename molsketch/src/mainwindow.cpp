@@ -871,7 +871,7 @@ void MainWindow::createToolBox()
   QLayout* layout = new QVBoxLayout(toolBoxDockContent);
   toolBoxDockContent->setLayout(layout);
   toolBox = new QToolBox;
-  layout->addWidget(new HelpForEmptyToolBox(tr("Define libraries using Edit > Preferences > Libraries."), toolBox, toolBoxDockContent));
+  layout->addWidget(new HelpForEmptyToolBox(tr("Define libraries using <b>Edit > Edit Preferences... > Libraries</b>."), toolBox, toolBoxDockContent));
   layout->addWidget(toolBox);
   layout->setMargin(0);
   toolBoxDock->setWidget(toolBoxDockContent);
