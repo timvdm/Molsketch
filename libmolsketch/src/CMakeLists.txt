@@ -51,6 +51,10 @@ set(libmolsketch_HDRS
     coordinatetableview.h
     generics.h
     moleculepopup.h
+    helptextonemptylabel.h
+    helptextemptydock.h
+    atompopup.h
+    propertieswidget.h
    )
 
 set(action_HDRS
@@ -84,7 +88,8 @@ set(action_HDRS
     actions/frametypeaction.h
     actions/itemgrouptypeaction.h
     actions/flipstereobondsaction.h
-    actions/changemoleculenameaction.h
+    actions/abstractrecursiveitemaction.h
+    actions/abstractitemaction.h
    )
 
 
@@ -145,6 +150,10 @@ set(libmolsketch_SRCS
     coordinatetableview.cpp
     generics.cpp
     moleculepopup.cpp
+    helptextonemptylabel.cpp
+    helptextemptydock.cpp
+    atompopup.cpp
+    propertieswidget.cpp
     actions/coloraction.cpp
     actions/linewidthaction.cpp
     actions/abstractitemaction.cpp
@@ -175,7 +184,8 @@ set(libmolsketch_SRCS
     actions/frametypeaction.cpp
     actions/itemgrouptypeaction.cpp
     actions/flipstereobondsaction.cpp
-    actions/changemoleculenameaction.cpp
+    actions/abstractrecursiveitemaction.cpp
+    actions/abstractitemaction.cpp
     )
 
 set(toolicon_RCS tools/toolicons.qrc)

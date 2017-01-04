@@ -21,12 +21,14 @@ set(molsketch_SRCS
     mainwindow.cpp
     settings.cpp
     librarylistwidget.cpp
+    helpforemptytoolbox.cpp
     )
 
 set(molsketch_MOC_HDRS
     mainwindow.h
     settings.h
     librarylistwidget.h
+    helpforemptytoolbox.h
     )
 
 # Including the resources
@@ -71,7 +73,6 @@ endif(FORCEQt4)
 
 # Install the documentation
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/doc/ DESTINATION ${MSK_INSTALL_DOCS})
-install(DIRECTORY ${PROJECT_SOURCE_DIR}/library/ DESTINATION ${MSK_INSTALL_LIBRARY})
 
 # Install menu entries on Linux
 if(UNIX)
