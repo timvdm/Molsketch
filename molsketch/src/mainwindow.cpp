@@ -857,6 +857,7 @@ void MainWindow::buildLibraries()
   {
     LibraryListWidget* library = new LibraryListWidget(folder, toolBox);
     toolBox->addItem(library, library->title());
+    connect(refreshLibraries, SIGNAL(clicked()), library, SLOT(refreshItems()));
   }
 }
 
@@ -872,6 +873,7 @@ void MainWindow::createToolBox()
   toolBoxDockContent->setLayout(layout);
   toolBox = new QToolBox;
   layout->addWidget(new HelpForEmptyToolBox(tr("Define libraries using <b>Edit > Edit Preferences... > Libraries</b>."), toolBox, toolBoxDockContent));
+  layout->addWidget(refreshLibraries = new QPushButton(QIcon::fromTheme("view-refresh"),""));
   layout->addWidget(toolBox);
   layout->setMargin(0);
   toolBoxDock->setWidget(toolBoxDockContent);

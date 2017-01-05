@@ -45,6 +45,7 @@ class QListWidget;
 class QListWidgetItem;
 class QTableWidget;
 class QTableWidgetItem;
+class QPushButton;
 #if QT_VERSION <= 0x040603
 class QAssistantClient;
 #else
@@ -247,6 +248,8 @@ private:
   QAction* exitAct;
 
   QActionGroup* toolBarTextsAndIcons;
+
+  QPushButton *refreshLibraries;
 
   // Edit actions
   /** Undo the last command action. */

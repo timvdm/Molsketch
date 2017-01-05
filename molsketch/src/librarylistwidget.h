@@ -19,6 +19,7 @@
 #ifndef LIBRARYLISTWIDGET_H
 #define LIBRARYLISTWIDGET_H
 
+#include <QDir>
 #include <QListWidget>
 
 class LibraryListWidget : public QListWidget
@@ -27,14 +28,16 @@ class LibraryListWidget : public QListWidget
 public:
   explicit LibraryListWidget(QString directory, QWidget *parent = 0);
   QString title() const;
+public slots:
+  void refreshItems();
 protected:
   QStringList mimeTypes() const;
   QMimeData* mimeData(const QList<QListWidgetItem *> items) const;
   void startDrag(Qt::DropActions supportedActions);
 private:
   void setGuiConfiguration(const QString &directory);
-  void buildItems(QString directory);
   QString Title;
+  QDir folder;
 };
 
 #endif // LIBRARYLISTWIDGET_H

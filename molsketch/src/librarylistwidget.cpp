@@ -29,10 +29,10 @@
 #include "fileio.h"
 using namespace Molsketch;
 
-void LibraryListWidget::buildItems(QString directory)
+void LibraryListWidget::refreshItems()
 {
-  QDir folder(directory);
-  Title = folder.dirName();
+  clear();
+  folder.refresh();
   foreach(const QString& entry, folder.entryList())
   {
     foreach(Molecule* molecule, moleculesFromFile(folder.filePath(entry)))
@@ -45,6 +45,7 @@ void LibraryListWidget::buildItems(QString directory)
 
 void LibraryListWidget::setGuiConfiguration(const QString& directory)
 {
+  Title = folder.dirName();
   setSortingEnabled(true);
   setDragEnabled(true);
   setDefaultDropAction(Qt::CopyAction);
@@ -54,10 +55,11 @@ void LibraryListWidget::setGuiConfiguration(const QString& directory)
 }
 
 LibraryListWidget::LibraryListWidget(QString directory, QWidget *parent)
-  : QListWidget(parent)
+  : QListWidget(parent),
+    folder(directory)
 {
   setGuiConfiguration(directory);
-  buildItems(directory);
+  refreshItems();
 }
 
 QString LibraryListWidget::title() const
