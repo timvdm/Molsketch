@@ -34,7 +34,6 @@ set(molsketch_MOC_HDRS
 # Including the resources
 file(GLOB molsketch_RCS "*.qrc")
 file(GLOB molsketch_UIS "*.ui")
-message("UIS = ${molsketch_UIS}")
 if(FORCEQt4)
 	qt4_wrap_cpp(molsketch_SRCS ${molsketch_MOC_HDRS})
 	qt4_automoc(${molsketch_SRCS})

@@ -20,7 +20,6 @@ set(obabeliface_HDRS
 
 # Set up the include directory and symlink/copy all headers to it.
 # Note: Windows lacks symlinks and so the files must be copied.
-message("creating ${CMAKE_CURRENT_BINARY_DIR}/include/molsketch")
 make_directory("${CMAKE_CURRENT_BINARY_DIR}/include/molsketch")
 if(UNIX)
   set(header_cmd "create_symlink")

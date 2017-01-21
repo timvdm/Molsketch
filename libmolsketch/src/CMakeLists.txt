@@ -95,7 +95,6 @@ set(action_HDRS
 
 # Set up the include directory and symlink/copy all headers to it.
 # Note: Windows lacks symlinks and so the files must be copied.
-message("creating ${CMAKE_CURRENT_BINARY_DIR}/include/molsketch")
 make_directory("${CMAKE_CURRENT_BINARY_DIR}/include/molsketch")
 if(UNIX)
   set(header_cmd "create_symlink")
@@ -191,7 +190,6 @@ set(libmolsketch_SRCS
 set(toolicon_RCS tools/toolicons.qrc)
 
 file(GLOB molsketch_UIS "*.ui")
-message("UIS = ${molsketch_UIS}")
 if(FORCEQt4)
     qt4_automoc(${libmolsketch_HDRS})
     qt4_add_resources(libmolsketch_SRCS ${toolicon_RCS})
@@ -213,7 +211,11 @@ endif(FORCEQt4)
 
 
 # Create the molsKetch libraries
-add_library(molsketch_LIB SHARED ${libmolsketch_SRCS} ${molsketch_UIS_H})
+if(MSK_STATIC_LIB)
+	add_library(molsketch_LIB STATIC ${libmolsketch_SRCS} ${molsketch_UIS_H})
+else(MSK_STATIC_LIB)
+	add_library(molsketch_LIB SHARED ${libmolsketch_SRCS} ${molsketch_UIS_H})
+endif(MSK_STATIC_LIB)
 if(FORCEQt4)
 	set_target_properties(molsketch_LIB PROPERTIES OUTPUT_NAME "molsketch")
 else(FORCEQt4)
