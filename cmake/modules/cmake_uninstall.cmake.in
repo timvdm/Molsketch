@@ -6,7 +6,7 @@ FILE(READ "@CMAKE_CURRENT_BINARY_DIR@/install_manifest.txt" files)
 STRING(REGEX REPLACE "\n" ";" files "${files}")
 FOREACH(file ${files})
   MESSAGE(STATUS "Uninstalling \"${file}\"")
-  IF(EXISTS "${file}")
+  IF(IS_SYMLINK "$ENV{DESTDIR}${file}" OR EXISTS "${file}")
     EXEC_PROGRAM(
       "@CMAKE_COMMAND@" ARGS "-E remove \"${file}\""
       OUTPUT_VARIABLE rm_out
@@ -16,7 +16,7 @@ FOREACH(file ${files})
     ELSE("${rm_retval}" STREQUAL 0)
       MESSAGE(FATAL_ERROR "Problem when removing \"${file}\"")
     ENDIF("${rm_retval}" STREQUAL 0)
-  ELSE(EXISTS "${file}")
+  ELSE(IS_SYMLINK "$ENV{DESTDIR}${file}" OR EXISTS "${file}")
     MESSAGE(STATUS "File \"${file}\" does not exist.")
-  ENDIF(EXISTS "${file}")
+  ENDIF(IS_SYMLINK "$ENV{DESTDIR}${file}" OR EXISTS "${file}")
 ENDFOREACH(file)
