@@ -5,4 +5,5 @@ CONFIG += ordered
 
 SUBDIRS += \
         ../libmolsketch/src \
+        ../molsketch/src \
         ../tests
