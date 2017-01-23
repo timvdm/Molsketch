@@ -25,18 +25,6 @@
 #include "abstractxmlobject.h"
 
 namespace Molsketch {
-  QStringList abstractXmlObject::textItemAttributes() const
-  {
-    return QStringList() ;
-  }
-
-  void abstractXmlObject::afterReadFinalization()
-  {}
-
-  abstractXmlObject::abstractXmlObject()
-  {
-  }
-
   QXmlStreamReader &abstractXmlObject::readXml(QXmlStreamReader &in)
   {
     // read own attributes
@@ -93,7 +81,6 @@ QXmlStreamReader &operator>>(QXmlStreamReader &in, Molsketch::abstractXmlObject 
 {
   return object.readXml(in) ;
 }
-
 
 QXmlStreamWriter &operator<<(QXmlStreamWriter &out, const Molsketch::abstractXmlObject &object)
 {

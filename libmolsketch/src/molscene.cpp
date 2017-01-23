@@ -231,6 +231,18 @@ namespace Molsketch {
     // Set initial size
     QRectF sizerect(-5000,-5000,10000,10000);
     setSceneRect(sizerect);
+
+    // TODO - add text item
+    // - subclass QGraphicsTextItem?
+    // - make movable
+    // - make serializable
+    // - make readable
+    // - create action
+    // (- extract parent item from graphicsItem)
+//    QGraphicsTextItem *textItem = new QGraphicsTextItem();
+//    textItem->setHtml("some <b>text</b> example");
+//    textItem->setTextInteractionFlags(Qt::TextEditorInteraction);
+//    addItem(textItem);
   }
 
   MolScene::~MolScene()
@@ -315,7 +327,7 @@ namespace Molsketch {
         m_stack->endMacro();
   }
 
-  void MolScene::copy()
+  void MolScene::copy() // TODO this doesn't seem to work
   {
         // Check if something is selected
         if (selectedItems().isEmpty()) return;

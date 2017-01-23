@@ -35,11 +35,11 @@ namespace Molsketch {
     virtual void readAttributes(const QXmlStreamAttributes& attributes) { Q_UNUSED(attributes) }
     virtual QList<const abstractXmlObject*> children() const { return QList<const abstractXmlObject*>() ; }
     virtual QXmlStreamAttributes xmlAttributes() const { return QXmlStreamAttributes() ; }
-    virtual QStringList textItemAttributes() const ;
-    virtual void afterReadFinalization();
+    virtual QStringList textItemAttributes() const { return QStringList(); }
+    virtual void afterReadFinalization() {}
   public:
     virtual QString xmlName() const = 0 ;
-    abstractXmlObject();
+    abstractXmlObject() {}
     QXmlStreamReader& readXml(QXmlStreamReader& in) ;
     QXmlStreamWriter& writeXml(QXmlStreamWriter& out) const ;
     virtual ~abstractXmlObject() {}
@@ -48,7 +48,7 @@ namespace Molsketch {
 } // namespace
 
 
-QXmlStreamReader& operator>>(QXmlStreamReader& in, Molsketch::abstractXmlObject& object) ;
-QXmlStreamWriter& operator<<(QXmlStreamWriter& out, const Molsketch::abstractXmlObject& object) ;
+QXmlStreamReader& operator>>(QXmlStreamReader& in, Molsketch::abstractXmlObject& object);
+QXmlStreamWriter& operator<<(QXmlStreamWriter& out, const Molsketch::abstractXmlObject& object);
 
 #endif // ABSTRACTXMLOBJECT_H
