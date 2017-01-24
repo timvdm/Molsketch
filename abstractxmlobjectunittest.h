@@ -20,6 +20,7 @@
 #include <cxxtest/TestSuite.h>
 #include "utilities.h"
 #include <abstractxmlobject.h>
+#include "mocks.h"
 
 using namespace Molsketch;
 
@@ -32,34 +33,13 @@ public:
     return objectName;
   }
 
-  void testDefaultImplementations() {
-    TSM_ASSERT_EQUALS("Default implementation of produceChild() should return null pointer", abstractXmlObject::produceChild(objectName, objectName), nullptr);
-    QS_ASSERT_EQUALS(abstractXmlObject::children(), QList<const abstractXmlObject*>());
-    TS_ASSERT_EQUALS(abstractXmlObject::xmlAttributes(), QXmlStreamAttributes());
-    QS_ASSERT_EQUALS(abstractXmlObject::textItemAttributes(), QStringList());
-  }
-
-  // abstractXmlObject interface
-public:
-  AbstractXmlObjectForTesting() :
-    produceChildCallback([]{})
-  {}
-  // TODO write some MOCK macro (static meta info?)
-  callback produceChildCallback;
-  abstractXmlObject *produceChild(const QString &name, const QString &type) override {
-    produceChildCallback;
-  }
-  callback readAttributesCallback;
-  void readAttributes(const QXmlStreamAttributes &attributes) override {
-  }
-  QList<const abstractXmlObject *> children() const override {
-  }
-  QXmlStreamAttributes xmlAttributes() const override {
-  }
-  QStringList textItemAttributes() const override {
-  }
-  void afterReadFinalization() override {
-  }
+  typedef abstractXmlObject super;
+  SUPERMOCK(QList<const abstractXmlObject*>, children, , )
+  SUPERMOCK(abstractXmlObject*, produceChild, const QString& name COMMA const QString& type, name COMMA type)
+  VOIDSUPERMOCK(readAttributes, const QXmlStreamAttributes& attr, attr)
+  SUPERMOCK(QXmlStreamAttributes, xmlAttributes, , )
+  SUPERMOCK(QStringList, textItemAttributes, , )
+  VOIDSUPERMOCK(afterReadFinalization, , )
 };
 
 class AbstractXmlObjectUnitTest : public CxxTest::TestSuite {
@@ -75,7 +55,10 @@ public:
   }
 
   void testDefaultImplementations() {
-    testObject->testDefaultImplementations();
+    TS_ASSERT_EQUALS(testObject->produceChild(objectName, objectName), nullptr);
+    QS_ASSERT_EQUALS(testObject->children(), QList<const abstractXmlObject*>());
+    TS_ASSERT_EQUALS(testObject->xmlAttributes(), QXmlStreamAttributes());
+    QS_ASSERT_EQUALS(testObject->textItemAttributes(), QStringList());
   }
 
   // Test: readAttributes called with attributes

@@ -61,4 +61,6 @@
             super::FUNCTIONNAME(ARGUMENTNAMES); \
     }
 
+#define COMMA ,
+
 #endif // MOCKS_H
