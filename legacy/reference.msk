@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<div>
+    <object type="MechanismArrow" arrowType="5" posx="-55.8614" posy="30.4056" p1x="-23.3345" p1y="21.2132" p2x="0" p2y="-50" p3x="50" p3y="-50" p4x="50.2046" p4y="-4.94975"/>
+    <object type="MechanismArrow" arrowType="4" posx="47.3762" posy="65.7609" p1x="-29.6985" p1y="-2.82843" p2x="0" p2y="-50" p3x="50" p3y="-50" p4x="50" p4y="0"/>
+    <object type="MechanismArrow" arrowType="3" posx="44.5477" posy="9.89949" p1x="-13.435" p1y="-2.82843" p2x="0" p2y="-50" p3x="50" p3y="-50" p4x="50" p4y="0"/>
+    <object type="MechanismArrow" arrowType="2" posx="248.194" posy="-35.3553" p1x="-65.7609" p1y="16.9706" p2x="0" p2y="-50" p3x="50" p3y="-50" p4x="50" p4y="0"/>
+    <object type="MechanismArrow" arrowType="1" posx="207.182" posy="-100.409" p1x="-46.669" p1y="9.19239" p2x="0" p2y="-50" p3x="50" p3y="-50" p4x="50" p4y="0"/>
+    <object type="MechanismArrow" arrowType="0" posx="241.123" posy="-172.534" p1x="-24.0416" p1y="6.36396" p2x="0" p2y="-50" p3x="73.5391" p3y="-67.1751" p4x="68.5894" p4y="3.53553"/>
+    <molecule>
+        <atomArray>
+            <atom id="a1" elementType="C" x2="-525.38" y2="94.1301" hydrogenCount="2" colorR="0" colorG="0" colorB="0"/>
+            <atom id="a2" elementType="C" x2="-493.02" y2="70.6187" hydrogenCount="2" colorR="0" colorG="0" colorB="0"/>
+            <atom id="a3" elementType="C" x2="-505.38" y2="32.5764" hydrogenCount="2" colorR="0" colorG="0" colorB="0"/>
+            <atom id="a4" elementType="C" x2="-545.38" y2="32.5764" hydrogenCount="2" colorR="0" colorG="0" colorB="0"/>
+            <atom id="a5" elementType="C" x2="-557.741" y2="70.6187" hydrogenCount="2" colorR="0" colorG="0" colorB="0"/>
+        </atomArray>
+        <bondArray>
+            <bond atomRefs2="a1 a2" order="1" colorR="0" colorG="0" colorB="0"/>
+            <bond atomRefs2="a2 a3" order="1" colorR="0" colorG="0" colorB="0"/>
+            <bond atomRefs2="a3 a4" order="1" colorR="0" colorG="0" colorB="0"/>
+            <bond atomRefs2="a4 a5" order="1" colorR="0" colorG="0" colorB="0"/>
+            <bond atomRefs2="a5 a1" order="1" colorR="0" colorG="0" colorB="0"/>
+        </bondArray>
+    </molecule>
+    <molecule>
+        <atomArray>
+            <atom id="a1" elementType="C" x2="-280.014" y2="111.101" hydrogenCount="2" colorR="0" colorG="0" colorB="0"/>
+            <atom id="a2" elementType="C" x2="-247.654" y2="87.5893" hydrogenCount="2" colorR="0" colorG="0" colorB="0"/>
+            <atom id="a3" elementType="C" x2="-260.014" y2="49.547" hydrogenCount="2" colorR="0" colorG="0" colorB="0"/>
+            <atom id="a4" elementType="C" x2="-300.014" y2="49.547" hydrogenCount="2" colorR="0" colorG="0" colorB="0"/>
+            <atom id="a5" elementType="C" x2="-312.375" y2="87.5893" hydrogenCount="2" colorR="0" colorG="0" colorB="0"/>
+        </atomArray>
+        <bondArray>
+            <bond atomRefs2="a1 a2" order="1" colorR="0" colorG="0" colorB="0"/>
+            <bond atomRefs2="a2 a3" order="1" colorR="0" colorG="0" colorB="0"/>
+            <bond atomRefs2="a3 a4" order="1" colorR="0" colorG="0" colorB="0"/>
+            <bond atomRefs2="a4 a5" order="1" colorR="0" colorG="0" colorB="0"/>
+            <bond atomRefs2="a5 a1" order="1" colorR="0" colorG="0" colorB="0"/>
+        </bondArray>
+    </molecule>
+    <molecule>
+        <atomArray>
+            <atom id="a1" elementType="C" x2="-385.373" y2="20.591" hydrogenCount="2" colorR="0" colorG="0" colorB="0"/>
+            <atom id="a2" elementType="C" x2="-353.013" y2="-2.92041" hydrogenCount="2" colorR="0" colorG="0" colorB="0"/>
+            <atom id="a3" elementType="C" x2="-365.373" y2="-40.9627" hydrogenCount="2" colorR="0" colorG="0" colorB="0"/>
+            <atom id="a4" elementType="C" x2="-405.373" y2="-40.9627" hydrogenCount="2" colorR="0" colorG="0" colorB="0"/>
+            <atom id="a5" elementType="C" x2="-417.734" y2="-2.92041" hydrogenCount="2" colorR="0" colorG="0" colorB="0"/>
+        </atomArray>
+        <bondArray>
+            <bond atomRefs2="a1 a2" order="1" colorR="0" colorG="0" colorB="0"/>
+            <bond atomRefs2="a2 a3" order="1" colorR="0" colorG="0" colorB="0"/>
+            <bond atomRefs2="a3 a4" order="1" colorR="0" colorG="0" colorB="0"/>
+            <bond atomRefs2="a4 a5" order="1" colorR="0" colorG="0" colorB="0"/>
+            <bond atomRefs2="a5 a1" order="1" colorR="0" colorG="0" colorB="0"/>
+        </bondArray>
+    </molecule>
+    <molecule>
+        <atomArray>
+            <atom id="a1" elementType="C" x2="-499.924" y2="18.4697" hydrogenCount="2" colorR="0" colorG="0" colorB="0"/>
+            <atom id="a2" elementType="C" x2="-467.564" y2="-5.04173" hydrogenCount="2" colorR="0" colorG="0" colorB="0"/>
+            <atom id="a3" elementType="C" x2="-479.924" y2="-43.084" hydrogenCount="2" colorR="0" colorG="0" colorB="0"/>
+            <atom id="a4" elementType="C" x2="-519.924" y2="-43.084" hydrogenCount="2" colorR="0" colorG="0" colorB="0"/>
+            <atom id="a5" elementType="C" x2="-532.285" y2="-5.04173" hydrogenCount="2" colorR="0" colorG="0" colorB="0"/>
+        </atomArray>
+        <bondArray>
+            <bond atomRefs2="a1 a2" order="1" colorR="0" colorG="0" colorB="0"/>
+            <bond atomRefs2="a2 a3" order="1" colorR="0" colorG="0" colorB="0"/>
+            <bond atomRefs2="a3 a4" order="1" colorR="0" colorG="0" colorB="0"/>
+            <bond atomRefs2="a4 a5" order="1" colorR="0" colorG="0" colorB="0"/>
+            <bond atomRefs2="a5 a1" order="1" colorR="0" colorG="0" colorB="0"/>
+        </bondArray>
+    </molecule>
+    <molecule>
+        <atomArray>
+            <atom id="a1" elementType="C" x2="-251.023" y2="-265.47" hydrogenCount="1" colorR="0" colorG="0" colorB="0"/>
+            <atom id="a2" elementType="C" x2="-216.382" y2="-285.47" hydrogenCount="3" colorR="0" colorG="0" colorB="0"/>
+            <atom id="a3" elementType="C" x2="-216.382" y2="-325.47" hydrogenCount="2" colorR="0" colorG="0" colorB="0"/>
+            <atom id="a4" elementType="C" x2="-251.023" y2="-345.47" hydrogenCount="2" colorR="0" colorG="0" colorB="0"/>
+            <atom id="a5" elementType="C" x2="-285.664" y2="-325.47" hydrogenCount="2" colorR="0" colorG="0" colorB="0"/>
+            <atom id="a6" elementType="C" x2="-285.664" y2="-285.47" hydrogenCount="2" colorR="0" colorG="0" colorB="0"/>
+        </atomArray>
+        <bondArray>
+            <bond atomRefs2="a1 a2" order="1" colorR="0" colorG="0" colorB="0"/>
+            <bond atomRefs2="a2 a3" order="1" colorR="0" colorG="0" colorB="0"/>
+            <bond atomRefs2="a3 a4" order="1" colorR="0" colorG="0" colorB="0"/>
+            <bond atomRefs2="a4 a5" order="1" colorR="0" colorG="0" colorB="0"/>
+            <bond atomRefs2="a5 a6" order="1" colorR="0" colorG="0" colorB="0"/>
+            <bond atomRefs2="a6 a1" order="1" colorR="0" colorG="0" colorB="0"/>
+        </bondArray>
+    </molecule>
+    <object type="ReactionArrow" arrowType="4" posx="62.2254" posy="-116.673" endx="95.2548" endy="-14.8492"/>
+    <object type="ReactionArrow" arrowType="3" posx="43.8406" posy="-185.262" endx="82.5269" endy="-2.12132"/>
+    <object type="ReactionArrow" arrowType="2" posx="82.0244" posy="-226.274" endx="81.1127" endy="0.707107"/>
+    <object type="ReactionArrow" arrowType="1" posx="68.5894" posy="-275.065" endx="122.832" endy="-5.65685"/>
+    <molecule>
+        <atomArray>
+            <atom id="a1" elementType="C" x2="-133.643" y2="-9.89949" hydrogenCount="1" colorR="0" colorG="0" colorB="0"/>
+            <atom id="a2" elementType="C" x2="-98.9809" y2="-29.8627" hydrogenCount="1" colorR="0" colorG="0" colorB="0"/>
+        </atomArray>
+        <bondArray>
+            <bond atomRefs2="a1 a2" order="3" colorR="0" colorG="0" colorB="0"/>
+        </bondArray>
+    </molecule>
+    <object type="ReactionArrow" arrowType="0" posx="-95.4594" posy="-226.981" endx="124.246" endy="1.41421"/>
+    <molecule>
+        <atomArray>
+            <atom id="a1" elementType="C" x2="-23.3345" y2="-52.3259" hydrogenCount="2" colorR="0" colorG="0" colorB="0"/>
+            <atom id="a2" elementType="C" x2="11.3277" y2="-72.2891" hydrogenCount="2" colorR="0" colorG="0" colorB="0"/>
+        </atomArray>
+        <bondArray>
+            <bond atomRefs2="a1 a2" order="2" colorR="0" colorG="0" colorB="0"/>
+        </bondArray>
+    </molecule>
+    <molecule>
+        <atomArray>
+            <atom id="a1" elementType="C" x2="-53.033" y2="-106.066" hydrogenCount="2" colorR="0" colorG="0" colorB="0"/>
+            <atom id="a2" elementType="C" x2="-18.3708" y2="-126.029" hydrogenCount="2" colorR="0" colorG="0" colorB="0"/>
+        </atomArray>
+        <bondArray>
+            <bond atomRefs2="a1 a2" order="2" colorR="0" colorG="0" colorB="0"/>
+        </bondArray>
+    </molecule>
+    <molecule>
+        <atomArray>
+            <atom id="a1" elementType="C" x2="-92.631" y2="-165.463" hydrogenCount="3" colorR="0" colorG="0" colorB="0"/>
+            <atom id="a2" elementType="C" x2="-57.9688" y2="-185.426" hydrogenCount="3" colorR="0" colorG="0" colorB="0"/>
+        </atomArray>
+        <bondArray>
+            <bond atomRefs2="a1 a2" order="1" colorR="0" colorG="0" colorB="0"/>
+        </bondArray>
+    </molecule>
+    <molecule>
+        <atomArray>
+            <atom id="a1" elementType="C" x2="-202.233" y2="-128.693" hydrogenCount="3" colorR="0" colorG="0" colorB="0"/>
+            <atom id="a2" elementType="C" x2="-167.57" y2="-148.657" hydrogenCount="3" colorR="0" colorG="0" colorB="0"/>
+        </atomArray>
+        <bondArray>
+            <bond atomRefs2="a2 a1" order="1" colorR="0" colorG="0" colorB="0">
+                <bondStereo>H</bondStereo>
+            </bond>
+        </bondArray>
+    </molecule>
+    <molecule>
+        <atomArray>
+            <atom id="a1" elementType="C" x2="-162.635" y2="-70.7107" hydrogenCount="3" colorR="0" colorG="0" colorB="0"/>
+            <atom id="a2" elementType="C" x2="-127.972" y2="-90.6739" hydrogenCount="3" colorR="0" colorG="0" colorB="0"/>
+        </atomArray>
+        <bondArray>
+            <bond atomRefs2="a2 a1" order="1" colorR="0" colorG="0" colorB="0">
+                <bondStereo>W</bondStereo>
+            </bond>
+        </bondArray>
+    </molecule>
+    <molecule>
+        <atomArray>
+            <atom id="a1" elementType="C" x2="-252" y2="-28" hydrogenCount="3" colorR="0" colorG="0" colorB="0"/>
+            <atom id="a2" elementType="C" x2="-217.338" y2="-47.9632" hydrogenCount="3" colorR="0" colorG="0" colorB="0"/>
+        </atomArray>
+        <bondArray>
+            <bond atomRefs2="a1 a2" order="1" colorR="0" colorG="0" colorB="0">
+                <bondStereo>W</bondStereo>
+            </bond>
+        </bondArray>
+    </molecule>
+    <molecule>
+        <atomArray>
+            <atom id="a1" elementType="C" x2="-301" y2="-83" hydrogenCount="3" colorR="0" colorG="0" colorB="0"/>
+            <atom id="a2" elementType="C" x2="-266.338" y2="-102.963" hydrogenCount="3" colorR="0" colorG="0" colorB="0"/>
+        </atomArray>
+        <bondArray>
+            <bond atomRefs2="a1 a2" order="1" colorR="0" colorG="0" colorB="0">
+                <bondStereo>H</bondStereo>
+            </bond>
+        </bondArray>
+    </molecule>
+    <molecule>
+        <atomArray>
+            <atom id="a1" elementType="Any" x2="-455" y2="-120" hydrogenCount="0" colorR="0" colorG="0" colorB="0"/>
+            <atom id="a2" elementType="Any" x2="-420.338" y2="-139.963" hydrogenCount="0" colorR="0" colorG="0" colorB="0"/>
+        </atomArray>
+        <bondArray>
+            <bond atomRefs2="a1 a2" order="1" colorR="0" colorG="0" colorB="0"/>
+        </bondArray>
+    </molecule>
+    <molecule>
+        <atomArray>
+            <atom id="a1" elementType="C" x2="-428" y2="-269" hydrogenCount="1" colorR="0" colorG="0" colorB="0"/>
+            <atom id="a2" elementType="C" x2="-393.359" y2="-289" hydrogenCount="1" colorR="0" colorG="0" colorB="0"/>
+            <atom id="a3" elementType="C" x2="-393.359" y2="-329" hydrogenCount="1" colorR="0" colorG="0" colorB="0"/>
+            <atom id="a4" elementType="C" x2="-428" y2="-349" hydrogenCount="1" colorR="0" colorG="0" colorB="0"/>
+            <atom id="a5" elementType="C" x2="-462.641" y2="-329" hydrogenCount="1" colorR="0" colorG="0" colorB="0"/>
+            <atom id="a6" elementType="C" x2="-462.641" y2="-289" hydrogenCount="1" colorR="0" colorG="0" colorB="0"/>
+        </atomArray>
+        <bondArray>
+            <bond atomRefs2="a1 a2" order="2" colorR="0" colorG="0" colorB="0"/>
+            <bond atomRefs2="a2 a3" order="1" colorR="0" colorG="0" colorB="0"/>
+            <bond atomRefs2="a3 a4" order="2" colorR="0" colorG="0" colorB="0"/>
+            <bond atomRefs2="a4 a5" order="1" colorR="0" colorG="0" colorB="0"/>
+            <bond atomRefs2="a5 a6" order="2" colorR="0" colorG="0" colorB="0"/>
+            <bond atomRefs2="a6 a1" order="1" colorR="0" colorG="0" colorB="0"/>
+        </bondArray>
+    </molecule>
+    <molecule>
+        <atomArray>
+            <atom id="a1" elementType="C" x2="-575" y2="-208.906" hydrogenCount="2" colorR="0" colorG="0" colorB="0"/>
+            <atom id="a2" elementType="C" x2="-555" y2="-243.547" hydrogenCount="2" colorR="0" colorG="0" colorB="0"/>
+            <atom id="a3" elementType="C" x2="-595" y2="-243.547" hydrogenCount="2" colorR="0" colorG="0" colorB="0"/>
+        </atomArray>
+        <bondArray>
+            <bond atomRefs2="a1 a2" order="1" colorR="0" colorG="0" colorB="0"/>
+            <bond atomRefs2="a2 a3" order="1" colorR="0" colorG="0" colorB="0"/>
+            <bond atomRefs2="a3 a1" order="1" colorR="0" colorG="0" colorB="0"/>
+        </bondArray>
+    </molecule>
+    <molecule>
+        <atomArray>
+            <atom id="a1" elementType="Any" x2="-110" y2="-279" hydrogenCount="0" colorR="0" colorG="0" colorB="0"/>
+        </atomArray>
+        <bondArray/>
+    </molecule>
+</div>
