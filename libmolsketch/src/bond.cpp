@@ -71,7 +71,7 @@ namespace Molsketch {
       m_ring(0)
   {
     setAtoms(atomA, atomB);
-  
+
     MolScene* molScene = dynamic_cast<MolScene*>(
 #if QT_VERSION < 0x050000
                 scene
@@ -79,9 +79,9 @@ namespace Molsketch {
                 scene()
 #endif
                 );
-    if (molScene) 
+    if (molScene)
       setColor(molScene->color());
-    else 
+    else
       setColor(QColor(0, 0, 0));
 
     setZValue(2);
@@ -99,7 +99,7 @@ namespace Molsketch {
   {
     setAtoms(atomA, atomB);
   }
-  
+
   Bond::~Bond()
   {
   }
@@ -535,7 +535,7 @@ namespace Molsketch {
   {
     return m_beginAtom == atom || m_endAtom == atom;
   }
-    
+
   Atom* Bond::otherAtom(const Atom *atom) const
   {
     return (atom == m_beginAtom) ? m_endAtom : m_beginAtom;
@@ -554,7 +554,7 @@ namespace Molsketch {
     }
     if (m_endAtom)   m_endAtom  ->addBond(this);
   }
-  
+
   Molecule* Bond::molecule() const
   {
     return dynamic_cast<Molecule*>(this->parentItem());
@@ -612,6 +612,8 @@ namespace Molsketch {
     setAtoms(molecule()->atom(atomIndexes.first()),
              molecule()->atom(atomIndexes.last())) ;
     m_bondType = (BondType) (attributes.value("type").toString().toInt());
+    if (attributes.hasAttribute("order"))
+      m_bondType = (BondType) (10 *attributes.value("order").toInt());
   }
 
   QStringList Bond::textItemAttributes() const

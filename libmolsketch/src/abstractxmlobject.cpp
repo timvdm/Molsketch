@@ -39,7 +39,8 @@ namespace Molsketch {
       in.readNext() ;
       if (in.isEndElement()) break ;
       if (!in.isStartElement()) continue ;
-      if (textItemAttributes().contains(in.name().toString()))
+      if (textItemAttributes().contains(in.name().toString())) // TODO actually deal with legacy "W" and "H" stereo bonds
+        // TODO get legacy files for reference
       {
         attributes.append(in.name().toString(), in.readElementText()) ;
         continue ;
