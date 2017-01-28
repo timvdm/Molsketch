@@ -19,6 +19,7 @@
 
 #include <cxxtest/TestSuite.h>
 #include "utilities.h"
+#include <QXmlStreamReader>
 #include <abstractxmlobject.h>
 #include "mocks.h"
 
@@ -59,6 +60,43 @@ public:
     QS_ASSERT_EQUALS(testObject->children(), QList<const abstractXmlObject*>());
     TS_ASSERT_EQUALS(testObject->xmlAttributes(), QXmlStreamAttributes());
     QS_ASSERT_EQUALS(testObject->textItemAttributes(), QStringList());
+  }
+
+  void testReadElementWithoutContent() {
+    QXmlStreamReader reader("<testElement testattribute=\"testvalue\" "
+                            "otherattribute=\"othervalue\">"
+                            "</testElement>");
+    reader.readNext();
+    reader.readNext();
+    testObject->produceChildCallback = [](QString a, QString b) {
+      TSM_ASSERT("produceChild() should not be called if there are no children", false);
+      return new AbstractXmlObjectForTesting; };
+    testObject->childrenCallback = []() {
+      TSM_ASSERT("children() should not be called if there are no children", false);
+      return QList<const abstractXmlObject*>(); };
+    testObject->textItemAttributesCallback;
+    testObject->xmlAttributesCallback = [] () {
+      TSM_ASSERT("xmlAtrributes() should not be called during read", false);
+      return QXmlStreamAttributes(); };
+    QXmlStreamAttributes attributes;
+    int attributesRead = 0;
+    int finalizationPerformed = 0;
+    testObject->readAttributesCallback = [&](const QXmlStreamAttributes& attribs){
+      attributes = attribs;
+      ++attributesRead;
+      TSM_ASSERT("Finalization should happen after reading attributes", !finalizationPerformed); };
+    testObject->afterReadFinalizationCallback = [&] (){
+      TSM_ASSERT("Reading attributes should precede finalization", attributesRead);
+      ++finalizationPerformed; };
+
+    testObject->readXml(reader);
+
+    TSM_ASSERT_EQUALS("Arguments should be read exactly once", attributesRead, 1);
+    TSM_ASSERT_EQUALS("Finalization should occur exaclty once", finalizationPerformed, 1);
+
+    TS_ASSERT_EQUALS(attributes.size(), 2);
+    TS_ASSERT(attributes.contains(QXmlStreamAttribute("testattribute", "testvalue")));
+    TS_ASSERT(attributes.contains(QXmlStreamAttribute("otherattribute", "othervalue")));
   }
 
   // Test: readAttributes called with attributes
