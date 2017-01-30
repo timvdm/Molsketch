@@ -42,4 +42,10 @@ SOURCES += $$OUT_PWD/cxxrunner.cpp \
 LIBS += -L../lib -lmolsketch-qt5
 
 OTHER_FILES += \
-    runnerTemplate.tpl
+    runnerTemplate.tpl \
+    legacy/Carbon-0.2.msk \
+    legacy/Carbon-0.2.svg
+
+legacy_files.commands = ${COPY_DIR} $$_PRO_FILE_PWD_/legacy ./legacy
+QMAKE_EXTRA_TARGETS += legacy_files
+PRE_TARGETDEPS += legacy_files
