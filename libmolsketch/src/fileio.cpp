@@ -65,6 +65,7 @@ namespace Molsketch
     QXmlStreamReader xml(&file);
     while (xml.name().toString() != scene->xmlName())
       xml.readNext() ;
+    scene->clear();
     xml >> *scene ;
       //if (xml.name()
 
