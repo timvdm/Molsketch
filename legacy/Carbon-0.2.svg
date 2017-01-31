@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
-<svg version="1.1"  width="938.663" height="606.348" viewBox="-614 -372.5 938.663 606.348">
+<svg version="1.1"  width="938.662" height="506.101" viewBox="-614 -372.5 938.662 506.101">
 <defs>
 <pattern id="StripedPattern" x="0" y="0" width="100" height="10" patternUnits="userSpaceOnUse" >
 <line x1="0" y1="0" x2="100" y2="0" stroke="#000000" stroke-width="1" />
@@ -13,89 +13,11 @@
 <stop offset="1" stop-color="white" />
 </linearGradient>
 </defs>
-<line x1="-525.38" y1="94.1301" x2="-493.02" y2="70.6187" stroke="#000000" stroke-width="1" />
-<line x1="-493.02" y1="70.6187" x2="-505.38" y2="32.5764" stroke="#000000" stroke-width="1" />
-<line x1="-505.38" y1="32.5764" x2="-545.38" y2="32.5764" stroke="#000000" stroke-width="1" />
-<line x1="-545.38" y1="32.5764" x2="-557.741" y2="70.6187" stroke="#000000" stroke-width="1" />
-<line x1="-557.741" y1="70.6187" x2="-525.38" y2="94.1301" stroke="#000000" stroke-width="1" />
-<line x1="-280.014" y1="111.101" x2="-247.654" y2="87.5893" stroke="#000000" stroke-width="1" />
-<line x1="-247.654" y1="87.5893" x2="-260.014" y2="49.547" stroke="#000000" stroke-width="1" />
-<line x1="-260.014" y1="49.547" x2="-300.014" y2="49.547" stroke="#000000" stroke-width="1" />
-<line x1="-300.014" y1="49.547" x2="-312.375" y2="87.5893" stroke="#000000" stroke-width="1" />
-<line x1="-312.375" y1="87.5893" x2="-280.014" y2="111.101" stroke="#000000" stroke-width="1" />
-<line x1="-358.503" y1="14.227" x2="-326.142" y2="-9.28437" stroke="#000000" stroke-width="1" />
-<line x1="-326.142" y1="-9.28437" x2="-338.503" y2="-47.3266" stroke="#000000" stroke-width="1" />
-<line x1="-338.503" y1="-47.3266" x2="-378.503" y2="-47.3266" stroke="#000000" stroke-width="1" />
-<line x1="-378.503" y1="-47.3266" x2="-390.864" y2="-9.28437" stroke="#000000" stroke-width="1" />
-<line x1="-390.864" y1="-9.28437" x2="-358.503" y2="14.227" stroke="#000000" stroke-width="1" />
-<line x1="-545.179" y1="-52.241" x2="-512.819" y2="-75.7524" stroke="#000000" stroke-width="1" />
-<line x1="-512.819" y1="-75.7524" x2="-525.179" y2="-113.795" stroke="#000000" stroke-width="1" />
-<line x1="-525.179" y1="-113.795" x2="-565.179" y2="-113.795" stroke="#000000" stroke-width="1" />
-<line x1="-565.179" y1="-113.795" x2="-577.54" y2="-75.7524" stroke="#000000" stroke-width="1" />
-<line x1="-577.54" y1="-75.7524" x2="-545.179" y2="-52.241" stroke="#000000" stroke-width="1" />
-<line x1="-251.023" y1="-265.47" x2="-216.382" y2="-285.47" stroke="#000000" stroke-width="1" />
-<line x1="-216.382" y1="-285.47" x2="-216.382" y2="-325.47" stroke="#000000" stroke-width="1" />
-<line x1="-216.382" y1="-325.47" x2="-251.023" y2="-345.47" stroke="#000000" stroke-width="1" />
-<line x1="-251.023" y1="-345.47" x2="-285.664" y2="-325.47" stroke="#000000" stroke-width="1" />
-<line x1="-285.664" y1="-325.47" x2="-285.664" y2="-285.47" stroke="#000000" stroke-width="1" />
-<line x1="-285.664" y1="-285.47" x2="-251.023" y2="-265.47" stroke="#000000" stroke-width="1" />
-<circle cx="-251.023" cy="-265.47" r="13" fill="#FFFFFF"/>
-<text x="-251.023" y="-260.47" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">CH<tspan font-size="8" dy="-10" >+</tspan></tspan></text>
-<circle cx="-216.382" cy="-285.47" r="13" fill="#FFFFFF"/>
-<text x="-216.382" y="-280.47" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">CH<tspan dy="4" font-size="8" >3</tspan><tspan font-size="8" dy="-10" >-</tspan></tspan></text>
-<circle cx="-216.382" cy="-325.47" r="13" fill="#FFFFFF"/>
-<text x="-216.382" y="-320.47" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">CH<tspan dy="4" font-size="8" >2</tspan><tspan font-size="8" dy="-10" >+</tspan></tspan></text>
-<circle cx="-251.023" cy="-345.47" r="13" fill="#FFFFFF"/>
-<text x="-251.023" y="-340.47" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">CH<tspan dy="4" font-size="8" >2</tspan><tspan font-size="8" dy="-10" >-</tspan></tspan></text>
-<line x1="-135.14" y1="-12.4992" x2="-100.478" y2="-32.4624" stroke="#000000" stroke-width="1" />
-<line x1="-132.146" y1="-7.29983" x2="-97.4837" y2="-27.263" stroke="#000000" stroke-width="1" />
-<line x1="-133.643" y1="-9.89949" x2="-98.9809" y2="-29.8627" stroke="#000000" stroke-width="1" />
-<circle cx="-133.643" cy="-9.89949" r="13" fill="#FFFFFF"/>
-<text x="-133.643" y="-4.89949" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">CH<tspan font-size="8" dy="-10" ></tspan></tspan></text>
-<circle cx="-98.9809" cy="-29.8627" r="13" fill="#FFFFFF"/>
-<text x="-98.9809" y="-24.8627" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">CH<tspan font-size="8" dy="-10" ></tspan></tspan></text>
-<line x1="-24.3327" y1="-54.059" x2="10.3295" y2="-74.0222" stroke="#000000" stroke-width="1" />
-<line x1="-22.3364" y1="-50.5928" x2="12.3259" y2="-70.556" stroke="#000000" stroke-width="1" />
-<circle cx="-23.3345" cy="-52.3259" r="13" fill="#FFFFFF"/>
-<text x="-23.3345" y="-47.3259" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">CH<tspan dy="4" font-size="8" >2</tspan><tspan font-size="8" dy="-10" ></tspan></tspan></text>
-<circle cx="11.3277" cy="-72.2891" r="13" fill="#FFFFFF"/>
-<text x="11.3277" y="-67.2891" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">CH<tspan dy="4" font-size="8" >2</tspan><tspan font-size="8" dy="-10" ></tspan></tspan></text>
-<line x1="-54.0312" y1="-107.799" x2="-19.3689" y2="-127.762" stroke="#000000" stroke-width="1" />
-<line x1="-52.0348" y1="-104.333" x2="-17.3726" y2="-124.296" stroke="#000000" stroke-width="1" />
-<circle cx="-53.033" cy="-106.066" r="13" fill="#FFFFFF"/>
-<text x="-53.033" y="-101.066" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">CH<tspan dy="4" font-size="8" >2</tspan><tspan font-size="8" dy="-10" ></tspan></tspan></text>
-<circle cx="-18.3708" cy="-126.029" r="13" fill="#FFFFFF"/>
-<text x="-18.3708" y="-121.029" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">CH<tspan dy="4" font-size="8" >2</tspan><tspan font-size="8" dy="-10" ></tspan></tspan></text>
-<line x1="-92.631" y1="-165.463" x2="-57.9688" y2="-185.426" stroke="#000000" stroke-width="1" stroke-dasharray = "9, 5" />
-<circle cx="-92.631" cy="-165.463" r="13" fill="#FFFFFF"/>
-<text x="-92.631" y="-160.463" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">CH<tspan dy="4" font-size="8" >3</tspan><tspan font-size="8" dy="-10" ></tspan></tspan></text>
-<circle cx="-57.9688" cy="-185.426" r="13" fill="#FFFFFF"/>
-<text x="-57.9688" y="-180.426" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">CH<tspan dy="4" font-size="8" >3</tspan><tspan font-size="8" dy="-10" ></tspan></tspan></text>
-<polygon points="-202.233,-128.693 -169.068,-151.256 -166.073,-146.057" fill="url(#StripedGradient)" stroke="none" />
-<circle cx="-202.233" cy="-128.693" r="13" fill="#FFFFFF"/>
-<text x="-202.233" y="-123.693" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">CH<tspan dy="4" font-size="8" >3</tspan><tspan font-size="8" dy="-10" ></tspan></tspan></text>
-<circle cx="-167.57" cy="-148.657" r="13" fill="#FFFFFF"/>
-<text x="-167.57" y="-143.657" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">CH<tspan dy="4" font-size="8" >3</tspan><tspan font-size="8" dy="-10" ></tspan></tspan></text>
-<polygon points="-162.635,-70.7107 -129.47,-93.2736 -126.475,-88.0742" fill="black" stroke="black" />
-<circle cx="-162.635" cy="-70.7107" r="13" fill="#FFFFFF"/>
-<text x="-162.635" y="-65.7107" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">CH<tspan dy="4" font-size="8" >3</tspan><tspan font-size="8" dy="-10" ></tspan></tspan></text>
-<circle cx="-127.972" cy="-90.6739" r="13" fill="#FFFFFF"/>
-<text x="-127.972" y="-85.6739" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">CH<tspan dy="4" font-size="8" >3</tspan><tspan font-size="8" dy="-10" ></tspan></tspan></text>
-<polygon points="-252,-28 -218.835,-50.5629 -215.841,-45.3635" fill="black" stroke="black" />
-<circle cx="-252" cy="-28" r="13" fill="#FFFFFF"/>
-<text x="-252" y="-23" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">CH<tspan dy="4" font-size="8" >3</tspan><tspan font-size="8" dy="-10" ></tspan></tspan></text>
-<circle cx="-217.338" cy="-47.9632" r="13" fill="#FFFFFF"/>
-<text x="-217.338" y="-42.9632" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">CH<tspan dy="4" font-size="8" >3</tspan><tspan font-size="8" dy="-10" ></tspan></tspan></text>
-<polygon points="-301,-83 -267.835,-105.563 -264.841,-100.364" fill="url(#StripedGradient)" stroke="none" />
-<circle cx="-301" cy="-83" r="13" fill="#FFFFFF"/>
-<text x="-301" y="-78" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">CH<tspan dy="4" font-size="8" >3</tspan><tspan font-size="8" dy="-10" ></tspan></tspan></text>
-<circle cx="-266.338" cy="-102.963" r="13" fill="#FFFFFF"/>
-<text x="-266.338" y="-97.9632" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">CH<tspan dy="4" font-size="8" >3</tspan><tspan font-size="8" dy="-10" ></tspan></tspan></text>
-<line x1="-455" y1="-120" x2="-420.338" y2="-139.963" stroke="#000000" stroke-width="1" />
-<circle cx="-455" cy="-120" r="13" fill="#FFFFFF"/>
-<text x="-455" y="-115" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">Any<tspan font-size="8" dy="-10" ></tspan></tspan></text>
-<circle cx="-420.338" cy="-139.963" r="13" fill="#FFFFFF"/>
-<text x="-420.338" y="-134.963" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">Any<tspan font-size="8" dy="-10" ></tspan></tspan></text>
+<circle cx="-110" cy="-279" r="13" fill="#FFFFFF"/>
+<text x="-110" y="-274" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">Any<tspan font-size="8" dy="-10" ></tspan></tspan></text>
+<line x1="-575" y1="-208.906" x2="-555" y2="-243.547" stroke="#000000" stroke-width="1" />
+<line x1="-555" y1="-243.547" x2="-595" y2="-243.547" stroke="#000000" stroke-width="1" />
+<line x1="-595" y1="-243.547" x2="-575" y2="-208.906" stroke="#000000" stroke-width="1" />
 <line x1="-429" y1="-270.732" x2="-394.359" y2="-290.732" stroke="#000000" stroke-width="1" />
 <line x1="-427" y1="-267.268" x2="-392.359" y2="-287.268" stroke="#000000" stroke-width="1" />
 <line x1="-393.359" y1="-289" x2="-393.359" y2="-329" stroke="#000000" stroke-width="1" />
@@ -105,9 +27,79 @@
 <line x1="-460.641" y1="-329" x2="-460.641" y2="-289" stroke="#000000" stroke-width="1" />
 <line x1="-464.641" y1="-329" x2="-464.641" y2="-289" stroke="#000000" stroke-width="1" />
 <line x1="-462.641" y1="-289" x2="-428" y2="-269" stroke="#000000" stroke-width="1" />
-<line x1="-575" y1="-208.906" x2="-555" y2="-243.547" stroke="#000000" stroke-width="1" />
-<line x1="-555" y1="-243.547" x2="-595" y2="-243.547" stroke="#000000" stroke-width="1" />
-<line x1="-595" y1="-243.547" x2="-575" y2="-208.906" stroke="#000000" stroke-width="1" />
-<circle cx="-110" cy="-279" r="13" fill="#FFFFFF"/>
-<text x="-110" y="-274" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">Any<tspan font-size="8" dy="-10" ></tspan></tspan></text>
+<line x1="-455" y1="-120" x2="-420.338" y2="-139.963" stroke="#000000" stroke-width="1" />
+<circle cx="-455" cy="-120" r="13" fill="#FFFFFF"/>
+<text x="-455" y="-115" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">Any<tspan font-size="8" dy="-10" ></tspan></tspan></text>
+<circle cx="-420.338" cy="-139.963" r="13" fill="#FFFFFF"/>
+<text x="-420.338" y="-134.963" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">Any<tspan font-size="8" dy="-10" ></tspan></tspan></text>
+<polygon points="-301,-83 -267.835,-105.563 -264.841,-100.363" fill="url(#StripedGradient)" stroke="none" />
+<circle cx="-301" cy="-83" r="13" fill="#FFFFFF"/>
+<text x="-301" y="-78" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">CH<tspan dy="4" font-size="8" >3</tspan><tspan font-size="8" dy="-10" ></tspan></tspan></text>
+<circle cx="-266.338" cy="-102.963" r="13" fill="#FFFFFF"/>
+<text x="-266.338" y="-97.963" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">CH<tspan dy="4" font-size="8" >3</tspan><tspan font-size="8" dy="-10" ></tspan></tspan></text>
+<polygon points="-252,-28 -218.835,-50.5629 -215.841,-45.3635" fill="black" stroke="black" />
+<circle cx="-252" cy="-28" r="13" fill="#FFFFFF"/>
+<text x="-252" y="-23" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">CH<tspan dy="4" font-size="8" >3</tspan><tspan font-size="8" dy="-10" ></tspan></tspan></text>
+<circle cx="-217.338" cy="-47.9632" r="13" fill="#FFFFFF"/>
+<text x="-217.338" y="-42.9632" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">CH<tspan dy="4" font-size="8" >3</tspan><tspan font-size="8" dy="-10" ></tspan></tspan></text>
+<polygon points="-127.972,-90.6739 -161.138,-68.111 -164.132,-73.3104" fill="black" stroke="black" />
+<circle cx="-162.635" cy="-70.7107" r="13" fill="#FFFFFF"/>
+<text x="-162.635" y="-65.7107" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">CH<tspan dy="4" font-size="8" >3</tspan><tspan font-size="8" dy="-10" ></tspan></tspan></text>
+<circle cx="-127.972" cy="-90.6739" r="13" fill="#FFFFFF"/>
+<text x="-127.972" y="-85.6739" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">CH<tspan dy="4" font-size="8" >3</tspan><tspan font-size="8" dy="-10" ></tspan></tspan></text>
+<polygon points="-167.57,-148.657 -200.736,-126.093 -203.73,-131.293" fill="url(#StripedGradient)" stroke="none" />
+<circle cx="-202.233" cy="-128.693" r="13" fill="#FFFFFF"/>
+<text x="-202.233" y="-123.693" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">CH<tspan dy="4" font-size="8" >3</tspan><tspan font-size="8" dy="-10" ></tspan></tspan></text>
+<circle cx="-167.57" cy="-148.657" r="13" fill="#FFFFFF"/>
+<text x="-167.57" y="-143.657" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">CH<tspan dy="4" font-size="8" >3</tspan><tspan font-size="8" dy="-10" ></tspan></tspan></text>
+<line x1="-92.631" y1="-165.463" x2="-57.9688" y2="-185.426" stroke="#000000" stroke-width="1" />
+<circle cx="-92.631" cy="-165.463" r="13" fill="#FFFFFF"/>
+<text x="-92.631" y="-160.463" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">CH<tspan dy="4" font-size="8" >3</tspan><tspan font-size="8" dy="-10" ></tspan></tspan></text>
+<circle cx="-57.9688" cy="-185.426" r="13" fill="#FFFFFF"/>
+<text x="-57.9688" y="-180.426" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">CH<tspan dy="4" font-size="8" >3</tspan><tspan font-size="8" dy="-10" ></tspan></tspan></text>
+<line x1="-54.0312" y1="-107.799" x2="-19.369" y2="-127.762" stroke="#000000" stroke-width="1" />
+<line x1="-52.0348" y1="-104.333" x2="-17.3726" y2="-124.296" stroke="#000000" stroke-width="1" />
+<circle cx="-53.033" cy="-106.066" r="13" fill="#FFFFFF"/>
+<text x="-53.033" y="-101.066" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">CH<tspan dy="4" font-size="8" >2</tspan><tspan font-size="8" dy="-10" ></tspan></tspan></text>
+<circle cx="-18.3708" cy="-126.029" r="13" fill="#FFFFFF"/>
+<text x="-18.3708" y="-121.029" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">CH<tspan dy="4" font-size="8" >2</tspan><tspan font-size="8" dy="-10" ></tspan></tspan></text>
+<line x1="-24.3327" y1="-54.059" x2="10.3295" y2="-74.0222" stroke="#000000" stroke-width="1" />
+<line x1="-22.3363" y1="-50.5928" x2="12.3259" y2="-70.556" stroke="#000000" stroke-width="1" />
+<circle cx="-23.3345" cy="-52.3259" r="13" fill="#FFFFFF"/>
+<text x="-23.3345" y="-47.3259" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">CH<tspan dy="4" font-size="8" >2</tspan><tspan font-size="8" dy="-10" ></tspan></tspan></text>
+<circle cx="11.3277" cy="-72.2891" r="13" fill="#FFFFFF"/>
+<text x="11.3277" y="-67.2891" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">CH<tspan dy="4" font-size="8" >2</tspan><tspan font-size="8" dy="-10" ></tspan></tspan></text>
+<line x1="-135.14" y1="-12.4992" x2="-100.478" y2="-32.4624" stroke="#000000" stroke-width="1" />
+<line x1="-132.146" y1="-7.29983" x2="-97.4837" y2="-27.263" stroke="#000000" stroke-width="1" />
+<line x1="-133.643" y1="-9.89949" x2="-98.9809" y2="-29.8627" stroke="#000000" stroke-width="1" />
+<circle cx="-133.643" cy="-9.89949" r="13" fill="#FFFFFF"/>
+<text x="-133.643" y="-4.89949" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">CH<tspan font-size="8" dy="-10" ></tspan></tspan></text>
+<circle cx="-98.9809" cy="-29.8627" r="13" fill="#FFFFFF"/>
+<text x="-98.9809" y="-24.8627" font-family="Helvetica" font-size="12" fill="#000000"><tspan text-anchor="middle">CH<tspan font-size="8" dy="-10" ></tspan></tspan></text>
+<line x1="-251.023" y1="-265.47" x2="-216.382" y2="-285.47" stroke="#000000" stroke-width="1" />
+<line x1="-216.382" y1="-285.47" x2="-216.382" y2="-325.47" stroke="#000000" stroke-width="1" />
+<line x1="-216.382" y1="-325.47" x2="-251.023" y2="-345.47" stroke="#000000" stroke-width="1" />
+<line x1="-251.023" y1="-345.47" x2="-285.664" y2="-325.47" stroke="#000000" stroke-width="1" />
+<line x1="-285.664" y1="-325.47" x2="-285.664" y2="-285.47" stroke="#000000" stroke-width="1" />
+<line x1="-285.664" y1="-285.47" x2="-251.023" y2="-265.47" stroke="#000000" stroke-width="1" />
+<line x1="-499.924" y1="18.4697" x2="-467.564" y2="-5.04173" stroke="#000000" stroke-width="1" />
+<line x1="-467.564" y1="-5.04173" x2="-479.924" y2="-43.084" stroke="#000000" stroke-width="1" />
+<line x1="-479.924" y1="-43.084" x2="-519.924" y2="-43.084" stroke="#000000" stroke-width="1" />
+<line x1="-519.924" y1="-43.084" x2="-532.285" y2="-5.04173" stroke="#000000" stroke-width="1" />
+<line x1="-532.285" y1="-5.04173" x2="-499.924" y2="18.4697" stroke="#000000" stroke-width="1" />
+<line x1="-385.373" y1="20.591" x2="-353.013" y2="-2.92041" stroke="#000000" stroke-width="1" />
+<line x1="-353.013" y1="-2.92041" x2="-365.373" y2="-40.9627" stroke="#000000" stroke-width="1" />
+<line x1="-365.373" y1="-40.9627" x2="-405.373" y2="-40.9627" stroke="#000000" stroke-width="1" />
+<line x1="-405.373" y1="-40.9627" x2="-417.734" y2="-2.92041" stroke="#000000" stroke-width="1" />
+<line x1="-417.734" y1="-2.92041" x2="-385.373" y2="20.591" stroke="#000000" stroke-width="1" />
+<line x1="-280.014" y1="111.101" x2="-247.654" y2="87.5893" stroke="#000000" stroke-width="1" />
+<line x1="-247.654" y1="87.5893" x2="-260.014" y2="49.547" stroke="#000000" stroke-width="1" />
+<line x1="-260.014" y1="49.547" x2="-300.014" y2="49.547" stroke="#000000" stroke-width="1" />
+<line x1="-300.014" y1="49.547" x2="-312.375" y2="87.5893" stroke="#000000" stroke-width="1" />
+<line x1="-312.375" y1="87.5893" x2="-280.014" y2="111.101" stroke="#000000" stroke-width="1" />
+<line x1="-525.38" y1="94.1301" x2="-493.02" y2="70.6187" stroke="#000000" stroke-width="1" />
+<line x1="-493.02" y1="70.6187" x2="-505.38" y2="32.5764" stroke="#000000" stroke-width="1" />
+<line x1="-505.38" y1="32.5764" x2="-545.38" y2="32.5764" stroke="#000000" stroke-width="1" />
+<line x1="-545.38" y1="32.5764" x2="-557.741" y2="70.6187" stroke="#000000" stroke-width="1" />
+<line x1="-557.741" y1="70.6187" x2="-525.38" y2="94.1301" stroke="#000000" stroke-width="1" />
 </svg>

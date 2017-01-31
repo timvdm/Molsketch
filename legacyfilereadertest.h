@@ -20,9 +20,10 @@
 #include <cxxtest/TestSuite.h>
 #include <QDebug>
 #include <QDir>
-//#include <fileio.h>
+#include <fileio.h>
+#include <molscene.h>
 
-//using namespace Molsketch;
+using namespace Molsketch;
 
 class LegacyFileReaderTest : public CxxTest::TestSuite {
 public:
@@ -33,10 +34,22 @@ public:
   void tearDown() {
   }
 
+  QByteArray fileContent(const QString & absoluteFilePath) {
+    QFile file(absoluteFilePath);
+    file.open(QFile::ReadOnly);
+    return file.readAll();
+  }
+
   void testFoundFiles() {
     QDir legacyMskFiles("../tests/legacy", "*.msk");
-    QDir legacySvgOutputs("../tests/legacy", "*.svg");
-    qDebug() << legacyMskFiles.absoluteFilePath("") << legacyMskFiles.entryList();
-    qDebug() << legacySvgOutputs.entryList();
+    for (QFileInfo fileInfo : legacyMskFiles.entryInfoList()) {
+      MolScene scene;
+      QString mskFileName(fileInfo.absoluteFilePath());
+      readMskFile(mskFileName, &scene);
+      QString resultFileName(mskFileName + "-current.svg");
+      saveToSVG(resultFileName, &scene);
+      QByteArray result(fileContent(resultFileName)), original(fileContent(mskFileName.replace(QRegExp("msk$"), "svg")));
+      TSM_ASSERT_EQUALS("Legacy file " + mskFileName + " not correctly rendered", original, result); // TODO this doesn't seem to work
+    }
   }
 };
