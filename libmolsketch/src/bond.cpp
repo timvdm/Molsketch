@@ -188,7 +188,6 @@ namespace Molsketch {
     for (auto b : others)
     {
       double angle = b->bondAngle(origin) - reference->bondAngle(origin);
-      qDebug() << "Bond angles:" <<origin << reference << b << b->bondAngle(origin) << reference->bondAngle(origin);
       if (clockwise) angle = 360 - angle;
       angle = Molecule::toDegrees(angle);
       minAngle = qMin(minAngle, angle);
@@ -216,7 +215,6 @@ namespace Molsketch {
     // else: unsymmetric
     m_bondType = DoubleAsymmetric;
     // consider swapping atoms
-    qDebug() << "Angles:" << this << sumUpperAngles << sumLowerAngles;
     if (sumUpperAngles > sumLowerAngles) qSwap(m_beginAtom, m_endAtom);
   }
 
