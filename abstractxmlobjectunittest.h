@@ -35,12 +35,12 @@ public:
   }
 
   typedef abstractXmlObject super;
-  SUPERMOCK(QList<const abstractXmlObject*>, children, , )
-  SUPERMOCK(abstractXmlObject*, produceChild, const QString& name COMMA const QString& type, name COMMA type)
-  VOIDSUPERMOCK(readAttributes, const QXmlStreamAttributes& attr, attr)
-  SUPERMOCK(QXmlStreamAttributes, xmlAttributes, , )
-  REJECTMOCK(QStringList, textItemAttributes, , )
-  VOIDSUPERMOCK(afterReadFinalization, , )
+  SUPER_MOCK(QList<const abstractXmlObject*>, children, , )
+  SUPER_MOCK(abstractXmlObject*, produceChild, const QString& name COMMA const QString& type, name COMMA type)
+  VOID_SUPER_MOCK(readAttributes, const QXmlStreamAttributes& attr, attr)
+  SUPER_MOCK(QXmlStreamAttributes, xmlAttributes, , )
+  REJECT_MOCK(QStringList, textItemAttributes, , )
+  VOID_SUPER_MOCK(afterReadFinalization, , )
 };
 
 class AbstractXmlObjectUnitTest : public CxxTest::TestSuite {
