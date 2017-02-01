@@ -41,6 +41,7 @@ public:
   }
 
   void testFoundFiles() {
+    TS_SKIP("To be redone");
     QDir legacyMskFiles("../tests/legacy", "*.msk");
     for (QFileInfo fileInfo : legacyMskFiles.entryInfoList()) {
       MolScene scene;
@@ -49,7 +50,7 @@ public:
       QString resultFileName(mskFileName + "-current.svg");
       saveToSVG(resultFileName, &scene);
       QByteArray result(fileContent(resultFileName)), original(fileContent(mskFileName.replace(QRegExp("msk$"), "svg")));
-      TSM_ASSERT_EQUALS("Legacy file " + mskFileName + " not correctly rendered", original, result); // TODO this doesn't seem to work
+      TSM_ASSERT_EQUALS("Legacy file " + mskFileName + " not correctly rendered", original, result);
     }
   }
 };

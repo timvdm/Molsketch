@@ -37,7 +37,8 @@ SOURCES += $$OUT_PWD/cxxrunner.cpp \
     rectanglevaluetrait.cpp \
     qstringvaluetrait.cpp \
     qvariantvaluetrait.cpp \
-    utilities.cpp
+    utilities.cpp \
+    mocks.cpp
 
 LIBS += -L../lib -lmolsketch-qt5
 

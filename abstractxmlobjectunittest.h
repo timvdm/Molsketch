@@ -39,20 +39,41 @@ public:
   SUPERMOCK(abstractXmlObject*, produceChild, const QString& name COMMA const QString& type, name COMMA type)
   VOIDSUPERMOCK(readAttributes, const QXmlStreamAttributes& attr, attr)
   SUPERMOCK(QXmlStreamAttributes, xmlAttributes, , )
-  SUPERMOCK(QStringList, textItemAttributes, , )
+  REJECTMOCK(QStringList, textItemAttributes, , )
   VOIDSUPERMOCK(afterReadFinalization, , )
 };
 
 class AbstractXmlObjectUnitTest : public CxxTest::TestSuite {
   AbstractXmlObjectForTesting* testObject;
+  QXmlStreamReader *reader;
+
+  void prepareReader(const QString& input) {
+    reader = new QXmlStreamReader(input);
+    reader->readNext();
+    reader->readNext();
+  }
+
+  std::function<abstractXmlObject *(QString, QString)> noChildrenToProduce() {
+    return [](QString a, QString b) { Q_UNUSED(a) Q_UNUSED(b)
+      TSM_ASSERT("produceChild() should not be called if there are no children", false);
+      return new AbstractXmlObjectForTesting; };
+  }
+
+  std::function<QList<const abstractXmlObject*>() > shouldNotCallChildren() {
+    return [] {
+      TSM_ASSERT("children() should not be called during read", false);
+      return QList<const abstractXmlObject*>(); };
+  }
 
 public:
   void setUp() {
     testObject = new AbstractXmlObjectForTesting;
+    reader = 0;
   }
 
   void tearDown() {
     delete testObject;
+    delete reader;
   }
 
   void testDefaultImplementations() {
@@ -63,18 +84,8 @@ public:
   }
 
   void testReadElementWithoutContent() {
-    QXmlStreamReader reader("<testElement testattribute=\"testvalue\" "
-                            "otherattribute=\"othervalue\">"
-                            "</testElement>");
-    reader.readNext();
-    reader.readNext();
-    testObject->produceChildCallback = [](QString a, QString b) {
-      TSM_ASSERT("produceChild() should not be called if there are no children", false);
-      return new AbstractXmlObjectForTesting; };
-    testObject->childrenCallback = []() {
-      TSM_ASSERT("children() should not be called if there are no children", false);
-      return QList<const abstractXmlObject*>(); };
-    testObject->textItemAttributesCallback;
+    testObject->produceChildCallback = noChildrenToProduce();
+    testObject->childrenCallback = shouldNotCallChildren();
     testObject->xmlAttributesCallback = [] () {
       TSM_ASSERT("xmlAtrributes() should not be called during read", false);
       return QXmlStreamAttributes(); };
@@ -89,7 +100,10 @@ public:
       TSM_ASSERT("Reading attributes should precede finalization", attributesRead);
       ++finalizationPerformed; };
 
-    testObject->readXml(reader);
+    prepareReader("<testElement testattribute=\"testvalue\" "
+                  "otherattribute=\"othervalue\">"
+                  "</testElement>");
+    testObject->readXml(*reader);
 
     TSM_ASSERT_EQUALS("Arguments should be read exactly once", attributesRead, 1);
     TSM_ASSERT_EQUALS("Finalization should occur exaclty once", finalizationPerformed, 1);
