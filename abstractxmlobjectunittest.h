@@ -22,6 +22,7 @@
 #include <QXmlStreamReader>
 #include <abstractxmlobject.h>
 #include "mocks.h"
+#include "utilities.h"
 
 using namespace Molsketch;
 
@@ -39,7 +40,7 @@ public:
   SUPER_MOCK(abstractXmlObject*, produceChild, const QString& name COMMA const QString& type, name COMMA type)
   VOID_SUPER_MOCK(readAttributes, const QXmlStreamAttributes& attr, attr)
   SUPER_MOCK(QXmlStreamAttributes, xmlAttributes, , )
-  REJECT_MOCK(QStringList, textItemAttributes, , )
+  SUPER_MOCK(QStringList, textItemAttributes, , )
   VOID_SUPER_MOCK(afterReadFinalization, , )
 };
 
@@ -53,17 +54,61 @@ class AbstractXmlObjectUnitTest : public CxxTest::TestSuite {
     reader->readNext();
   }
 
-  std::function<abstractXmlObject *(QString, QString)> noChildrenToProduce() {
+  static std::function<abstractXmlObject *(QString, QString)> noChildrenToProduce() {
     return [](QString a, QString b) { Q_UNUSED(a) Q_UNUSED(b)
       TSM_ASSERT("produceChild() should not be called if there are no children", false);
       return new AbstractXmlObjectForTesting; };
   }
 
-  std::function<QList<const abstractXmlObject*>() > shouldNotCallChildren() {
+  static std::function<QList<const abstractXmlObject*>() > shouldNotCallChildren() {
     return [] {
       TSM_ASSERT("children() should not be called during read", false);
       return QList<const abstractXmlObject*>(); };
   }
+
+  static std::function<QXmlStreamAttributes()> shouldNotCallAttributes() {
+    return [] () {
+      TSM_ASSERT("xmlAtrributes() should not be called during read", false);
+      return QXmlStreamAttributes(); };
+  }
+
+  struct ReadingTestSetup {
+    AbstractXmlObjectForTesting *object;
+    QXmlStreamAttributes readAttributes;
+    int timesAttributesWereRead;
+    int timesFinalized;
+
+    ReadingTestSetup(AbstractXmlObjectForTesting* object)
+      : object(object),
+        timesAttributesWereRead(0),
+        timesFinalized(0) {
+      prepareDefaultScenario();
+    }
+
+    void prepareDefaultScenario() {
+      object->produceChildCallback = noChildrenToProduce();
+      object->childrenCallback = shouldNotCallChildren();
+      object->xmlAttributesCallback = shouldNotCallAttributes();
+      object->readAttributesCallback = [&](const QXmlStreamAttributes& attribs){
+        readAttributes = attribs;
+        ++timesAttributesWereRead;
+        TSM_ASSERT("Finalization should happen after reading attributes", !timesFinalized); };
+      object->afterReadFinalizationCallback = [&] (){
+        TSM_ASSERT("Reading attributes should precede finalization", timesAttributesWereRead);
+        ++timesFinalized; };
+    }
+
+    void assertTestResult(QList<QPair<QString, QString> > expectedAttributes = {}) {
+      TSM_ASSERT_EQUALS("Arguments should be read exactly once", timesAttributesWereRead, 1);
+      TSM_ASSERT_EQUALS("Finalization should occur exaclty once", timesFinalized, 1);
+
+      TS_ASSERT_EQUALS(readAttributes.size(), expectedAttributes.size());
+      for (auto attribute : expectedAttributes)
+        TSM_ASSERT(("Did not contain " + attribute.first +"/" + attribute.second).toStdString(), readAttributes.contains(QXmlStreamAttribute(attribute.first, attribute.second)));
+    }
+
+  };
+
 
 public:
   void setUp() {
@@ -72,6 +117,10 @@ public:
   }
 
   void tearDown() {
+    if (reader) {
+      TS_ASSERT(reader->isEndElement())
+      QS_ASSERT_EQUALS(reader->name(), "testElement")
+    }
     delete testObject;
     delete reader;
   }
@@ -83,38 +132,46 @@ public:
     QS_ASSERT_EQUALS(testObject->textItemAttributes(), QStringList());
   }
 
-  void testReadElementWithoutContent() {
-    testObject->produceChildCallback = noChildrenToProduce();
-    testObject->childrenCallback = shouldNotCallChildren();
-    testObject->xmlAttributesCallback = [] () {
-      TSM_ASSERT("xmlAtrributes() should not be called during read", false);
-      return QXmlStreamAttributes(); };
-    QXmlStreamAttributes attributes;
-    int attributesRead = 0;
-    int finalizationPerformed = 0;
-    testObject->readAttributesCallback = [&](const QXmlStreamAttributes& attribs){
-      attributes = attribs;
-      ++attributesRead;
-      TSM_ASSERT("Finalization should happen after reading attributes", !finalizationPerformed); };
-    testObject->afterReadFinalizationCallback = [&] (){
-      TSM_ASSERT("Reading attributes should precede finalization", attributesRead);
-      ++finalizationPerformed; };
+  void testReadBareElement() {
+    ReadingTestSetup setup(testObject);
+    prepareReader("<testElement></testElement>");
+    testObject->readXml(*reader);
+    setup.assertTestResult();
+  }
+
+  void testReadElementWithAttributes() {
+    ReadingTestSetup setup(testObject);
 
     prepareReader("<testElement testattribute=\"testvalue\" "
                   "otherattribute=\"othervalue\">"
                   "</testElement>");
     testObject->readXml(*reader);
 
-    TSM_ASSERT_EQUALS("Arguments should be read exactly once", attributesRead, 1);
-    TSM_ASSERT_EQUALS("Finalization should occur exaclty once", finalizationPerformed, 1);
-
-    TS_ASSERT_EQUALS(attributes.size(), 2);
-    TS_ASSERT(attributes.contains(QXmlStreamAttribute("testattribute", "testvalue")));
-    TS_ASSERT(attributes.contains(QXmlStreamAttribute("otherattribute", "othervalue")));
+    setup.assertTestResult({{"testattribute", "testvalue"}, {"otherattribute", "othervalue"}});
   }
 
-  // Test: readAttributes called with attributes
-  // Test: assert that stream is read after readXml (at end or at next element)
-  // Test: afterReadFinalization called after readAttributes (and produceChild, if any)
-  // Test: child read at correct positiion
+  void testReadingChild() {
+    AbstractXmlObjectForTesting *child = new AbstractXmlObjectForTesting();
+    ReadingTestSetup setup(testObject), childSetup(child);
+
+    int timesChildProduced = 0;
+    testObject->produceChildCallback = [&](const QString& name, const QString& type) {
+      QS_ASSERT_EQUALS(name, "childObject");
+      QS_ASSERT_EQUALS(type, "childType");
+      TSM_ASSERT("Should produce children before finalization", !setup.timesFinalized);
+      TSM_ASSERT_EQUALS("Should read attributes before reading childern", setup.timesAttributesWereRead, 1);
+      ++timesChildProduced;
+      return child;
+    };
+
+    prepareReader("<testElement>"
+                  "  <childObject type=\"childType\">"
+                  "  </childObject>"
+                  "</testElement>");
+    testObject->readXml(*reader);
+
+    setup.assertTestResult();
+    childSetup.assertTestResult({{"type", "childType"}});
+  }
+
 };
