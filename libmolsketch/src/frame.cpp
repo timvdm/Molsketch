@@ -394,9 +394,9 @@ namespace Molsketch {
     return 0;
   }
 
-  QList<const abstractXmlObject *> Frame::children() const
+  QList<const XmlObjectInterface *> Frame::children() const
   {
-    QList<const abstractXmlObject*> list;
+    QList<const XmlObjectInterface*> list;
     for (auto child : childItems())
       list << dynamic_cast<graphicsItem*>(child);
     list.removeAll(0);

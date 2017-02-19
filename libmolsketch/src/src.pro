@@ -74,7 +74,8 @@ HEADERS += \
     atompopup.h \
     propertieswidget.h \
     actions/textaction.h \
-    textitem.h
+    textitem.h \
+    xmlobjectinterface.h
 
 SOURCES += \
     atom.cpp \
@@ -144,7 +145,8 @@ SOURCES += \
     atompopup.cpp \
     propertieswidget.cpp \
     actions/textaction.cpp \
-    textitem.cpp
+    textitem.cpp \
+    xmlobjectinterface.cpp
 
 FORMS += \
     arrowpopup.ui \

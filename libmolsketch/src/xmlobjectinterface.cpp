@@ -20,30 +20,14 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef ABSTRACTXMLOBJECT_H
-#define ABSTRACTXMLOBJECT_H
-
 #include "xmlobjectinterface.h"
 
-namespace Molsketch {
-  class abstractXmlObject : public XmlObjectInterface
-  {
-  protected:
-    // TODO should be factory function
-    virtual XmlObjectInterface* produceChild(const QString& name, const QString& type) { Q_UNUSED(name) Q_UNUSED(type) return 0 ; }
-    virtual void readAttributes(const QXmlStreamAttributes& attributes) { Q_UNUSED(attributes) }
-    virtual QList<const XmlObjectInterface*> children() const { return QList<const XmlObjectInterface*>() ; }
-    virtual QXmlStreamAttributes xmlAttributes() const { return QXmlStreamAttributes() ; }
-    virtual QStringList textItemAttributes() const;
-    virtual void afterReadFinalization() {}
-  public:
-    virtual QString xmlName() const = 0 ;
-    abstractXmlObject() {}
-    QXmlStreamReader& readXml(QXmlStreamReader& in) override;
-    QXmlStreamWriter& writeXml(QXmlStreamWriter& out) const override;
-    virtual ~abstractXmlObject() {}
-  };
+QXmlStreamReader &operator>>(QXmlStreamReader &in, Molsketch::XmlObjectInterface &object)
+{
+  return object.readXml(in) ;
+}
 
-} // namespace
-
-#endif // ABSTRACTXMLOBJECT_H
+QXmlStreamWriter &operator<<(QXmlStreamWriter &out, const Molsketch::XmlObjectInterface &object)
+{
+  return object.writeXml(out) ;
+}

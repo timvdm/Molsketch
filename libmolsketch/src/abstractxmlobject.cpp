@@ -36,7 +36,7 @@ namespace Molsketch {
     // read children
     while (!in.atEnd())
     {
-      in.readNext() ;
+      in.readNext() ; // TODO probably we just want to go to the next start element here
       if (in.isEndElement()) break ;
       if (!in.isStartElement()) continue ;
       if (textItemAttributes().contains(in.name().toString())) // TODO actually deal with legacy "W" and "H" stereo bonds
@@ -45,7 +45,7 @@ namespace Molsketch {
         attributes.append(in.name().toString(), in.readElementText()) ;
         continue ;
       }
-      abstractXmlObject* child = produceChild(in.name().toString(), in.attributes().value("type").toString()) ;
+      XmlObjectInterface* child = produceChild(in.name().toString(), in.attributes().value("type").toString()) ;
       if (!child) continue ;
       child->readXml(in) ;
     }
@@ -69,23 +69,14 @@ namespace Molsketch {
     }
 
     out.writeAttributes(xmlAttributes()) ;
-    foreach(const abstractXmlObject* child, children())
+    foreach(const XmlObjectInterface* child, children())
       if (child) child->writeXml(out) ;
-    out.writeEndElement();
 
-    foreach(const stringpair& textItem, textItems)
+    foreach(const stringpair& textItem, textItems) // TODO get rid of this!!
       out.writeTextElement(textItem.first, textItem.second) ;
+    out.writeEndElement();
     return out ;
   }
 
 } // namespace
 
-QXmlStreamReader &operator>>(QXmlStreamReader &in, Molsketch::abstractXmlObject &object)
-{
-  return object.readXml(in) ;
-}
-
-QXmlStreamWriter &operator<<(QXmlStreamWriter &out, const Molsketch::abstractXmlObject &object)
-{
-  return object.writeXml(out) ;
-}

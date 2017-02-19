@@ -240,7 +240,7 @@ namespace Molsketch {
       Atom *atomNear(const QPointF &pos, qreal tolerance = 10.0);
   protected:
       abstractXmlObject* produceChild(const QString &childName, const QString& type) ;
-      QList<const abstractXmlObject*> children() const ;
+      QList<const XmlObjectInterface *> children() const ;
       void readAttributes(const QXmlStreamAttributes &attributes) ;
       QXmlStreamAttributes xmlAttributes() const;
 

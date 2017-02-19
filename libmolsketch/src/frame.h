@@ -58,7 +58,7 @@ namespace Molsketch {
     QXmlStreamAttributes graphicAttributes() const;
     void prepareContextMenu(QMenu *contextMenu);
     abstractXmlObject* produceChild(const QString &name, const QString &type);
-    QList<const abstractXmlObject*> children() const;
+    QList<const XmlObjectInterface *> children() const;
   private:
     qreal sceneLineWidth(MolScene *scene) const;
   }; // TODO let classes start with capital letters.

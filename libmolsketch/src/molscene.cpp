@@ -625,9 +625,9 @@ namespace Molsketch {
     return object ;
   }
 
-  QList<const abstractXmlObject *> MolScene::children() const
+  QList<const XmlObjectInterface *> MolScene::children() const
   {
-        QList<const abstractXmlObject*> childrenList ;
+        QList<const XmlObjectInterface*> childrenList ;
         foreach(QGraphicsItem* item, items())
         {
           graphicsItem *gItem = dynamic_cast<graphicsItem*>(item);
