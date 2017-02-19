@@ -18,18 +18,52 @@
  ***************************************************************************/
 
 #include <cxxtest/TestSuite.h>
+#include <molecule.h>
+#include <atom.h>
+#include <bond.h>
+#include <QSet>
 
-//using namespace Molsketch;
+using namespace Molsketch;
 
-class nameUnitTest : public CxxTest::TestSuite {
+class bondReaderTest : public CxxTest::TestSuite {
+  Atom *atom1, *atom2;
+  Bond *bond;
+  Molecule *molecule;
+
 public:
   void setUp() {
+    atom1 = new Atom();
+    atom2 = new Atom();
+    bond = new Bond();
+    molecule = new Molecule();
+    molecule->addAtom(atom1);
+    molecule->addAtom(atom2);
+    molecule->addBond(bond);
   }
 
   void tearDown() {
+    delete molecule;
   }
 
-  void testReadBond() {
+  void testReadLegacyHashBond() {
+    QXmlStreamReader in("<bond atomRefs2=\"a1 a2\" order=\"1\" colorR=\"0\" colorG=\"0\" colorB=\"0\">"
+                        "<bondStereo>H</bondStereo>"
+                        "</bond>");
+    in.readNextStartElement();
+    bond->readXml(in);
+    TS_ASSERT_EQUALS(bond->beginAtom(), atom1);
+    TS_ASSERT_EQUALS(bond->endAtom(), atom2);
+    TS_ASSERT_EQUALS(bond->bondType(), Bond::Hash);
+  }
 
+  void testReadLegacyWedgeBond() {
+    QXmlStreamReader in("<bond atomRefs2=\"a1 a2\" order=\"1\" colorR=\"0\" colorG=\"0\" colorB=\"0\">"
+                        "<bondStereo>W</bondStereo>"
+                        "</bond>");
+    in.readNextStartElement();
+    bond->readXml(in);
+    TS_ASSERT_EQUALS(bond->beginAtom(), atom1);
+    TS_ASSERT_EQUALS(bond->endAtom(), atom2);
+    TS_ASSERT_EQUALS(bond->bondType(), Bond::Wedge);
   }
 };

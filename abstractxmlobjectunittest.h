@@ -46,7 +46,6 @@ public:
   SUPER_MOCK(XmlObjectInterface*, produceChild, const QString& name COMMA const QString& type, name COMMA type)
   VOID_SUPER_MOCK(readAttributes, const QXmlStreamAttributes& attr, attr)
   MOCK_CONST(QXmlStreamAttributes, xmlAttributes, , )
-  SUPER_MOCK(QStringList, textItemAttributes, , )
   VOID_SUPER_MOCK(afterReadFinalization, , )
   MOCK_CONST(QString, xmlName, , )
   VOID_MOCK_CONST(writeContent, QXmlStreamWriter& writer, writer)
@@ -172,7 +171,6 @@ public:
     TS_ASSERT_EQUALS(testObject->produceChild("", ""), nullptr);
     QS_ASSERT_EQUALS(testObject->children(), QList<const XmlObjectInterface*>());
     TS_ASSERT_EQUALS(testObject->xmlAttributes(), QXmlStreamAttributes());
-    QS_ASSERT_EQUALS(testObject->textItemAttributes(), QStringList());
   }
 
   void testReadBareElement() {
