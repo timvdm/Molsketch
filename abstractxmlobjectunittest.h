@@ -26,12 +26,24 @@
 
 using namespace Molsketch;
 
+struct XmlObjectInterfaceForTesting : public XmlObjectInterface {
+  QXmlStreamReader& readXml(QXmlStreamReader &in){
+    QS_ASSERT_EQUALS(in.name(), "innerTestElement");
+    TS_ASSERT_EQUALS(in.readNext(), QXmlStreamReader::EndElement);
+    return in;
+  }
+  QXmlStreamWriter& writeXml(QXmlStreamWriter &out) const {
+    out.writeEmptyElement("innerTestElement");
+    return out;
+  }
+};
+
 class AbstractXmlObjectForTesting : public abstractXmlObject {
 public:
 
   typedef abstractXmlObject super;
-  SUPER_MOCK_CONST(QList<const abstractXmlObject*>, children, , )
-  SUPER_MOCK(abstractXmlObject*, produceChild, const QString& name COMMA const QString& type, name COMMA type)
+  SUPER_MOCK_CONST(QList<const XmlObjectInterface*>, children, , )
+  SUPER_MOCK(XmlObjectInterface*, produceChild, const QString& name COMMA const QString& type, name COMMA type)
   VOID_SUPER_MOCK(readAttributes, const QXmlStreamAttributes& attr, attr)
   MOCK_CONST(QXmlStreamAttributes, xmlAttributes, , )
   SUPER_MOCK(QStringList, textItemAttributes, , )
@@ -62,10 +74,10 @@ class AbstractXmlObjectUnitTest : public CxxTest::TestSuite {
       return new AbstractXmlObjectForTesting; };
   }
 
-  static std::function<QList<const abstractXmlObject*>() > shouldNotCallChildren() {
+  static std::function<QList<const XmlObjectInterface*>() > shouldNotCallChildren() {
     return [] {
       TSM_ASSERT("children() should not be called during read", false);
-      return QList<const abstractXmlObject*>(); };
+      return QList<const XmlObjectInterface*>(); };
   }
 
   static std::function<QXmlStreamAttributes()> shouldNotCallAttributes() {
@@ -79,11 +91,16 @@ class AbstractXmlObjectUnitTest : public CxxTest::TestSuite {
     QXmlStreamAttributes readAttributes;
     int timesAttributesWereRead;
     int timesFinalized;
+    int timesChildProduced;
+    int desiredChildrenToProduce;
 
     ReadingTestSetup(AbstractXmlObjectForTesting* object)
       : object(object),
         timesAttributesWereRead(0),
-        timesFinalized(0) {
+        timesFinalized(0),
+        timesChildProduced(0),
+        desiredChildrenToProduce(0)
+    {
       prepareDefaultScenario();
     }
 
@@ -107,8 +124,23 @@ class AbstractXmlObjectUnitTest : public CxxTest::TestSuite {
       TS_ASSERT_EQUALS(readAttributes.size(), expectedAttributes.size());
       for (auto attribute : expectedAttributes)
         TSM_ASSERT(("Did not contain " + attribute.first +"/" + attribute.second).toStdString(), readAttributes.contains(QXmlStreamAttribute(attribute.first, attribute.second)));
+      TS_ASSERT_EQUALS(timesChildProduced, desiredChildrenToProduce);
     }
 
+    void setupChildCallback(const QString& expectedName,
+                            const QString& expectedType,
+                            int desiredChildrenToProduce,
+                            XmlObjectInterface* child) {
+      this->desiredChildrenToProduce = desiredChildrenToProduce;
+      object->produceChildCallback = [=](const QString& name, const QString& type) {
+        QS_ASSERT_EQUALS(name, expectedName);
+        QS_ASSERT_EQUALS(type, expectedType);
+        TSM_ASSERT("Should produce children before finalization", !timesFinalized);
+        TSM_ASSERT_EQUALS("Should read attributes before reading childern", timesAttributesWereRead, 1);
+        ++timesChildProduced;
+        return child;
+      };
+    }
   };
 
   void prepareAttributes(AbstractXmlObjectForTesting* object, const QList<QPair<QString, QString> > & input)
@@ -123,6 +155,7 @@ public:
   void setUp() {
     testObject = new AbstractXmlObjectForTesting;
     reader = 0;
+    writer = 0;
   }
 
   void tearDown() {
@@ -137,7 +170,7 @@ public:
 
   void testDefaultImplementations() {
     TS_ASSERT_EQUALS(testObject->produceChild("", ""), nullptr);
-    QS_ASSERT_EQUALS(testObject->children(), QList<const abstractXmlObject*>());
+    QS_ASSERT_EQUALS(testObject->children(), QList<const XmlObjectInterface*>());
     TS_ASSERT_EQUALS(testObject->xmlAttributes(), QXmlStreamAttributes());
     QS_ASSERT_EQUALS(testObject->textItemAttributes(), QStringList());
   }
@@ -160,19 +193,19 @@ public:
     setup.assertTestResult({{"testattribute", "testvalue"}, {"otherattribute", "othervalue"}});
   }
 
-  void testReadingChild() {
-    AbstractXmlObjectForTesting *child = new AbstractXmlObjectForTesting;
-    ReadingTestSetup setup(testObject), childSetup(child);
+  void testReadItemContent() {
+    ReadingTestSetup setup(testObject);
+    XmlObjectInterfaceForTesting content;
+    setup.setupChildCallback("innerTestElement", "", 1, &content);
+    prepareReader("<testElement><innerTestElement/></testElement>");
+    testObject->readXml(*reader);
+    setup.assertTestResult();
+  }
 
-    int timesChildProduced = 0;
-    testObject->produceChildCallback = [&](const QString& name, const QString& type) {
-      QS_ASSERT_EQUALS(name, "childObject");
-      QS_ASSERT_EQUALS(type, "childType");
-      TSM_ASSERT("Should produce children before finalization", !setup.timesFinalized);
-      TSM_ASSERT_EQUALS("Should read attributes before reading childern", setup.timesAttributesWereRead, 1);
-      ++timesChildProduced;
-      return child;
-    };
+  void testReadingChild() {
+    AbstractXmlObjectForTesting child;
+    ReadingTestSetup setup(testObject), childSetup(&child);
+    setup.setupChildCallback("childObject", "childType", 1, &child);
 
     prepareReader("<testElement>"
                   "  <childObject type=\"childType\">"
@@ -182,11 +215,9 @@ public:
 
     setup.assertTestResult();
     childSetup.assertTestResult({{"type", "childType"}});
-    delete child;
   }
 
   void testWritingPlainObject() {
-    testObject = new AbstractXmlObjectForTesting;
     testObject->xmlNameDefaultReturn = "TestObjectForWriting";
     QString output;
     prepareWriter(&output);
@@ -195,7 +226,6 @@ public:
   }
 
   void testWritingObjectWithAttribute() {
-    testObject = new AbstractXmlObjectForTesting;
     testObject->xmlNameDefaultReturn = "TestObjectForWriting";
     prepareAttributes(testObject, {{"FirstTestAttribute", "firstValue"},
                       {"SecondTestAttribute", "secondValue"}});
@@ -211,9 +241,8 @@ public:
     AbstractXmlObjectForTesting child;
     child.xmlNameDefaultReturn = "child";
 
-    testObject = new AbstractXmlObjectForTesting;
     testObject->xmlNameDefaultReturn = "parent";
-    testObject->childrenCallback = [&]() { return QList<const abstractXmlObject*>() << &child;};
+    testObject->childrenCallback = [&]() { return QList<const XmlObjectInterface*>() << &child;};
 
     QString output;
     prepareWriter(&output);
@@ -226,9 +255,8 @@ public:
     child.xmlNameDefaultReturn = "child";
     prepareAttributes(&child, {{"cAttribute", "cValue"}});
 
-    testObject = new AbstractXmlObjectForTesting;
     testObject->xmlNameDefaultReturn = "parent";
-    testObject->childrenCallback = [&]() { return QList<const abstractXmlObject*>() << &child;};
+    testObject->childrenCallback = [&]() { return QList<const XmlObjectInterface*>() << &child;};
     prepareAttributes(testObject, {{"pAttribute", "pValue"}});
 
     QString output;
@@ -237,6 +265,16 @@ public:
     QS_ASSERT_EQUALS(output, "<parent pAttribute=\"pValue\"><child cAttribute=\"cValue\"/></parent>");
   }
 
+  void testWritingItemContent() {
+    XmlObjectInterfaceForTesting child;
+    testObject->childrenCallback = [&]() { return QList<const XmlObjectInterface*>() << &child; };
+    testObject->xmlNameDefaultReturn = "TestObject";
+
+    QString output;
+    prepareWriter(&output);
+    testObject->writeXml(*writer);
+    QS_ASSERT_EQUALS(output, "<TestObject><innerTestElement/></TestObject>");
+  }
+
   // TODO write test for reading legacy bonds
-  // TODO read with child _and_ attribute
 };
