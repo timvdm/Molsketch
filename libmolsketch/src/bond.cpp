@@ -34,9 +34,6 @@
 #include "molscene.h"
 #include "math2d.h"
 #include "molecule.h"
-
-#include <QDebug>
-
 #include <actions/bondtypeaction.h>
 #include <actions/flipbondaction.h>
 #include <actions/flipstereobondsaction.h>
@@ -614,11 +611,6 @@ namespace Molsketch {
       m_bondType = (BondType) (10 *attributes.value("order").toInt());
   }
 
-  QStringList Bond::textItemAttributes() const
-  {
-    return QStringList() << "bondStereo" ;
-  }
-
   void Bond::prepareContextMenu(QMenu *contextMenu) // TODO simply use a function that returns the scene's actions pertaining to the item
   {
     // Prepare bond menu
@@ -637,6 +629,35 @@ namespace Molsketch {
       }
     }
     graphicsItem::prepareContextMenu(contextMenu);
+  }
+
+  class LegacyBondStereo : public XmlObjectInterface {
+    Bond *bond;
+  public:
+    LegacyBondStereo(Bond *bond) : bond(bond) {}
+    QXmlStreamReader& readXml(QXmlStreamReader &in) {
+      auto text = in.readElementText();
+      if ("H" == text) bond->setType(Bond::Hash);
+      if ("W" == text) bond->setType(Bond::Wedge);
+      return in;
+    }
+
+    QXmlStreamWriter& writeXml(QXmlStreamWriter &out) const {
+      return out;
+    }
+  };
+
+  XmlObjectInterface *Bond::produceChild(const QString &name, const QString &type) {
+    if (name != "bondStereo" || !type.isEmpty()) return nullptr;
+    XmlObjectInterface *helper = new LegacyBondStereo(this);
+    helpers << helper;
+    return helper;
+  }
+
+  void Bond::afterReadFinalization()
+  {
+    for (auto helper : helpers) delete helper;
+    helpers.clear();
   }
 
 } // namespace

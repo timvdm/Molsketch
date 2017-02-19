@@ -236,8 +236,8 @@ namespace Molsketch {
     //pre(1): bond is a valid pointer to a bond
     Q_CHECK_PTR(bond);
     //pre(2): the bond is between two atoms of this molecule
-    Q_ASSERT(m_atomList.contains(bond->beginAtom()));
-    Q_ASSERT(m_atomList.contains(bond->endAtom()));
+//    Q_ASSERT(m_atomList.contains(bond->beginAtom()));
+//    Q_ASSERT(m_atomList.contains(bond->endAtom()));
 
     if (scene ())	bond ->setColor (dynamic_cast<MolScene *> (scene ()) ->color()); // TODO ??
     // Checking if and altering when a bond exists
@@ -252,7 +252,7 @@ namespace Molsketch {
     m_bondList.append(bond);
     bond->setParentItem(this);
 
-    bond->setAtoms(bond->beginAtom(), bond->endAtom());
+    bond->setAtoms(bond->beginAtom(), bond->endAtom()); // TODO huh?
 
     m_electronSystemsUpdate = true;
     refreshRings();

@@ -25,8 +25,6 @@
 #include "abstractxmlobject.h"
 
 namespace Molsketch {
-  QStringList abstractXmlObject::textItemAttributes() const { return QStringList(); }
-
   QXmlStreamReader &abstractXmlObject::readXml(QXmlStreamReader &in)
   {
     // read own attributes
@@ -39,12 +37,6 @@ namespace Molsketch {
       in.readNext() ; // TODO probably we just want to go to the next start element here
       if (in.isEndElement()) break ;
       if (!in.isStartElement()) continue ;
-      if (textItemAttributes().contains(in.name().toString())) // TODO actually deal with legacy "W" and "H" stereo bonds
-        // TODO get legacy files for reference
-      {
-        attributes.append(in.name().toString(), in.readElementText()) ;
-        continue ;
-      }
       XmlObjectInterface* child = produceChild(in.name().toString(), in.attributes().value("type").toString()) ;
       if (!child) continue ;
       child->readXml(in) ;
@@ -56,24 +48,9 @@ namespace Molsketch {
   QXmlStreamWriter &abstractXmlObject::writeXml(QXmlStreamWriter &out) const
   {
     out.writeStartElement(xmlName()) ;
-    QXmlStreamAttributes attributes = xmlAttributes() ;
-    typedef QPair<QString, QString> stringpair ;
-    QList<stringpair> textItems ;
-    foreach(const QString& attribute, textItemAttributes()) // This is total nonsense, but was necessary...
-    {
-      if (!attributes.hasAttribute(attribute)) continue ;
-      textItems << qMakePair(attribute, attributes.value(attribute).toString()) ;
-      for (int i = 0 ; i < attributes.size() ; ++i)
-        if (attributes[i].qualifiedName() == attribute)
-          attributes.remove(i--) ;
-    }
-
     out.writeAttributes(xmlAttributes()) ;
     foreach(const XmlObjectInterface* child, children())
       if (child) child->writeXml(out) ;
-
-    foreach(const stringpair& textItem, textItems) // TODO get rid of this!!
-      out.writeTextElement(textItem.first, textItem.second) ;
     out.writeEndElement();
     return out ;
   }

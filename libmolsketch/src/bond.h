@@ -163,8 +163,9 @@ class Bond : public graphicsItem
   protected:
         QXmlStreamAttributes graphicAttributes() const ;
         void readGraphicAttributes(const QXmlStreamAttributes &attributes) ;
-        QStringList textItemAttributes() const override;
         void prepareContextMenu(QMenu *contextMenu);
+        XmlObjectInterface* produceChild(const QString &name, const QString &type);
+        void afterReadFinalization();
 
   private:
         void drawHashBond(QPainter *painter);
@@ -179,10 +180,8 @@ class Bond : public graphicsItem
         Atom* m_beginAtom;
         /** Stores a pointer to the second atom. */
         Atom* m_endAtom;
-
         Ring *m_ring;
-
-        void *pseudoStereoPointer ;
+        QList<XmlObjectInterface*> helpers;
 };
 
 } // namespace
