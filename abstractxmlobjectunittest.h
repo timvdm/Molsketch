@@ -274,5 +274,6 @@ public:
     QS_ASSERT_EQUALS(output, "<TestObject><innerTestElement/></TestObject>");
   }
 
-  // TODO write test for reading legacy bonds
+  // TODO write test for reading legacy bonds: check cis/trans double bond & dashed single bond new
+  // (legacy seems to be unrecoverable)
 };

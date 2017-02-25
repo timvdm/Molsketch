@@ -19,11 +19,21 @@
 
 #include <cxxtest/TestSuite.h>
 #include <textitem.h>
+#include "utilities.h"
 
 using namespace Molsketch;
 
 class TextItemUnitTest : public CxxTest::TestSuite {
   TextItem *textItem;
+
+private:
+  QString writeOut() {
+    QString output;
+    QXmlStreamWriter writer(&output);
+    textItem->writeXml(writer);
+    return output;
+  }
+
 public:
   void setUp() {
     textItem = new TextItem;
@@ -33,7 +43,37 @@ public:
     delete textItem;
   }
 
-  void testtestName() {
-//    TS_ASSERT(false);
+  void testWritingXmlEmpty() {
+    QS_ASSERT_EQUALS("<textItem><![CDATA[]]></textItem>", writeOut());
   }
+
+  void testWritingXmlWithContent() {
+    QString htmlText = QStringLiteral("Some text");
+    textItem->setHtml(htmlText);
+
+    QString output = writeOut();
+    QS_ASSERT_EQUALS("<textItem>", output.left(10));
+    QS_ASSERT_EQUALS("</textItem>", output.right(11));
+    TS_ASSERT(output.contains(htmlText));
+  }
+
+  void testReadingXmlEmpty() {
+    QString input = QStringLiteral("<textItem><![CDATA[]]></textItem>");
+    QXmlStreamReader reader(input);
+    reader.readNextStartElement();
+    textItem->readXml(reader);
+    QS_ASSERT_EQUALS("", textItem->toPlainText());
+  }
+
+  void testReadingXmlWithContent() {
+    QString input = QStringLiteral("<textItem><![CDATA[<p>Test Text</p>]]></textItem>");
+    QXmlStreamReader reader(input);
+    reader.readNextStartElement();
+    textItem->readXml(reader);
+    TS_ASSERT(textItem->toHtml().contains("Test Text"));
+    QS_ASSERT_EQUALS("Test Text", textItem->toPlainText());
+  }
+
+  // TODO can be read by MolScene
+  // TODO can be written by MolScene
 };
