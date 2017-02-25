@@ -21,9 +21,21 @@
 
 namespace Molsketch {
 
-  TextItem::TextItem()
+  TextItem::TextItem(GRAPHICSSCENESOURCE)
+    : QGraphicsTextItem(GRAPHICSSCENEINIT)
   {
 
   }
 
+  QXmlStreamReader &TextItem::readXml(QXmlStreamReader &in)
+  {
+    setHtml(in.readElementText());
+  }
+
+  QXmlStreamWriter &TextItem::writeXml(QXmlStreamWriter &out) const
+  {
+    out.writeStartElement("textItem");
+    out.writeCDATA(toHtml());
+    out.writeEndElement();
+  }
 } // namespace Molsketch

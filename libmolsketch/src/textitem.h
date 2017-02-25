@@ -21,16 +21,15 @@
 #define MOLSKETCH_TEXTITEM_H
 
 #include "abstractxmlobject.h"
+#include "qtversionmacros.h"
 #include <QGraphicsTextItem>
-
-
 
 namespace Molsketch {
 
-  class TextItem : public QGraphicsTextItem, public abstractXmlObject
+  class TextItem : public QGraphicsTextItem, public XmlObjectInterface
   {
   public:
-    TextItem();
+    TextItem(GRAPHICSSCENEHEADER);
 
     // QGraphicsItem interface
   protected:
@@ -47,11 +46,10 @@ namespace Molsketch {
     {
     }
 
-    // abstractXmlObject interface
+    // XmlObjectInterface interface
   public:
-    QString xmlName() const override
-    {
-    }
+    QXmlStreamReader& readXml(QXmlStreamReader& in);
+    QXmlStreamWriter& writeXml(QXmlStreamWriter& out) const;
   };
 
 } // namespace Molsketch
