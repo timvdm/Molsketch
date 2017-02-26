@@ -20,7 +20,7 @@
 #ifndef MOLSKETCH_TEXTITEM_H
 #define MOLSKETCH_TEXTITEM_H
 
-#include "abstractxmlobject.h"
+#include "xmlobjectinterface.h"
 #include "qtversionmacros.h"
 #include <QGraphicsTextItem>
 

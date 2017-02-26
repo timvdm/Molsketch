@@ -74,6 +74,7 @@
 #include "actions/genericaction.h"
 
 #include "frame.h"
+#include "textitem.h"
 
 #ifdef QT_STATIC_BUILD
 inline void initToolBarIcons() { Q_INIT_RESOURCE(toolicons); }
@@ -606,9 +607,9 @@ namespace Molsketch {
     else removeItem(d->Grid);
   }
 
-  abstractXmlObject *MolScene::produceChild(const QString &childName, const QString &type)
+  XmlObjectInterface *MolScene::produceChild(const QString &childName, const QString &type)
   {
-    graphicsItem *object = 0 ;
+    XmlObjectInterface *object = 0 ;
     if ("frame" == childName) object = new Frame;
     if (childName == "molecule") // TODO move those names to their classes.
       object = new Molecule;
@@ -621,7 +622,9 @@ namespace Molsketch {
     }
     if (childName == "plugin")
       object = ItemPluginFactory::createInstance(type);
-    if (object) addItem(object) ;
+    if ("textItem" == childName) object = new TextItem;
+    if (QGraphicsItem* item = dynamic_cast<QGraphicsItem*>(object)) // TODO w/o dynamic_cast
+      addItem(item) ;
     return object ;
   }
 
