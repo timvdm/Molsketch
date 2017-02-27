@@ -31,7 +31,7 @@ namespace Molsketch {
       // (also: RingAction, ArrowAction etc.)
   {
   public:
-    TextAction(MolScene *scene);
+    explicit TextAction(MolScene *scene);
     ~TextAction();
 
     void mousePressEvent(QGraphicsSceneMouseEvent *event);

@@ -55,6 +55,7 @@
 #include <actions/ringaction.h>
 #include <actions/rotateaction.h>
 #include <actions/flipstereobondsaction.h>
+#include <actions/textaction.h>
 
 #include "mainwindow.h"
 
@@ -815,6 +816,7 @@ void MainWindow::createToolBars()
   drawToolBar->addAction(new reactionArrowAction(m_scene));
   drawToolBar->addAction(new mechanismArrowAction(m_scene));
   drawToolBar->addAction(new FrameAction(m_scene));
+  drawToolBar->addAction(new TextAction(m_scene));
   drawToolBar->addAction(new pluginAction(m_scene));
 
   modifyToolBar = addToolBar(tr("Modify"));

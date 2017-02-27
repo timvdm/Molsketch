@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="icons/oxygen">
+    <qresource prefix="/icons/oxygen">
         <file alias="index.theme">oxygen-icons/index.theme</file>
         <file alias="scalable/application-exit.svg">oxygen-icons/application-exit.svg</file>
         <file alias="scalable/document-export.svg">oxygen-icons/document-export.svg</file>
@@ -25,5 +25,6 @@
         <file alias="scalable/zoom-out.svg">oxygen-icons/zoom-out.svg</file>
         <file alias="scalable/list-add.svg">oxygen-icons/list-add.svg</file>
         <file alias="scalable/list-remove.svg">oxygen-icons/list-remove.svg</file>
+        <file alias="scalable/insert-text.svg">oxygen-icons/insert-text.svg</file>
     </qresource>
 </RCC>

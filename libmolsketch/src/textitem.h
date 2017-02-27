@@ -29,7 +29,7 @@ namespace Molsketch {
   class TextItem : public QGraphicsTextItem, public XmlObjectInterface
   {
   public:
-    TextItem(GRAPHICSSCENEHEADER);
+    explicit TextItem(GRAPHICSSCENEHEADER);
 
     // QGraphicsItem interface
   protected:

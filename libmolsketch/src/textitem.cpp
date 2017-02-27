@@ -24,17 +24,26 @@ namespace Molsketch {
   TextItem::TextItem(GRAPHICSSCENESOURCE)
     : QGraphicsTextItem(GRAPHICSSCENEINIT)
   {
-
+    setFlags(flags()
+             | ItemAcceptsInputMethod
+             | ItemIsFocusable
+             | ItemIsMovable
+             | ItemIsSelectable);
+    setTextInteractionFlags(Qt::TextEditorInteraction);
   }
 
   QXmlStreamReader &TextItem::readXml(QXmlStreamReader &in)
   {
+    QString coordString = in.attributes().value("coordinates").toString();
+    setPos(coordString.section(",",0,0).toDouble(),
+           coordString.section(",",1,1).toDouble()); // TODO static utility function
     setHtml(in.readElementText());
   }
 
   QXmlStreamWriter &TextItem::writeXml(QXmlStreamWriter &out) const
   {
     out.writeStartElement("textItem");
+    out.writeAttribute("coordinates", QString::number(pos().x()) +"," + QString::number(pos().y())); // TODO static utility function for this
     out.writeCDATA(toHtml());
     out.writeEndElement();
   }

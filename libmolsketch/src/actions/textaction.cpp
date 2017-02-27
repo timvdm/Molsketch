@@ -18,6 +18,10 @@
  ***************************************************************************/
 #include "textaction.h"
 
+#include <QGraphicsSceneMouseEvent>
+#include <commands.h>
+#include <textitem.h>
+
 namespace Molsketch {
 
   struct TextAction::PrivateData {
@@ -37,19 +41,28 @@ namespace Molsketch {
     delete d;
   }
 
-  void TextAction::mousePressEvent(QGraphicsSceneMouseEvent *event)
-  {
-
+  void TextAction::mousePressEvent(QGraphicsSceneMouseEvent *event) {
+    if (event->modifiers() != Qt::NoModifier) return; // TOO extract function?
+    if (event->button() != Qt::LeftButton) return;
+    event->accept();
   }
 
-  void TextAction::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
-  {
+  // TODO test do we need mouse leave?
 
+  void TextAction::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
+    if (event->modifiers() != Qt::NoModifier) return;
+    if (event->button() != Qt::LeftButton) return;
+    event->accept();
   }
 
-  void TextAction::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
-  {
-
+  void TextAction::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
+    if (event->modifiers() != Qt::NoModifier) return;
+    if (event->button() != Qt::LeftButton) return;
+    event->accept();
+    TextItem *item = new TextItem;
+    item->setPos(event->scenePos());
+    attemptUndoPush(new Commands::AddItem(item, scene(), tr("Add text")));
+    item->setFocus();
   }
 
 } // namespace Molsketch
