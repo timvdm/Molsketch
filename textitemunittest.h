@@ -34,6 +34,12 @@ private:
     return output;
   }
 
+  void readItem(const QString& input) {
+    QXmlStreamReader reader(input);
+    reader.readNextStartElement();
+    textItem->readXml(reader);
+  }
+
 public:
   void setUp() {
     textItem = new TextItem;
@@ -44,7 +50,9 @@ public:
   }
 
   void testWritingXmlEmpty() {
-    QS_ASSERT_EQUALS("<textItem><![CDATA[]]></textItem>", writeOut());
+    QString output = writeOut();
+    QS_ASSERT_EQUALS("<textItem", output.left(9));
+    QS_ASSERT_EQUALS("</textItem>", output.right(11));
   }
 
   void testWritingXmlWithContent() {
@@ -52,17 +60,20 @@ public:
     textItem->setHtml(htmlText);
 
     QString output = writeOut();
-    QS_ASSERT_EQUALS("<textItem>", output.left(10));
+    QS_ASSERT_EQUALS("<textItem", output.left(9));
     QS_ASSERT_EQUALS("</textItem>", output.right(11));
     TS_ASSERT(output.contains(htmlText));
   }
 
   void testReadingXmlEmpty() {
-    QString input = QStringLiteral("<textItem><![CDATA[]]></textItem>");
-    QXmlStreamReader reader(input);
-    reader.readNextStartElement();
-    textItem->readXml(reader);
+    readItem("<textItem><![CDATA[]]></textItem>");
     QS_ASSERT_EQUALS("", textItem->toPlainText());
+  }
+
+  void testReadingXmlWithCoordinates() {
+    readItem("<textItem coordinates=\"10,15.3\"><![CDATA[]]></textItem>");
+    QS_ASSERT_EQUALS("", textItem->toPlainText());
+    QS_ASSERT_EQUALS(QPointF(10,15.3), textItem->pos());
   }
 
   void testReadingXmlWithContent() {
@@ -72,6 +83,31 @@ public:
     textItem->readXml(reader);
     TS_ASSERT(textItem->toHtml().contains("Test Text"));
     QS_ASSERT_EQUALS("Test Text", textItem->toPlainText());
+  }
+
+  void testBasicFlags() {
+    TS_ASSERT(textItem->flags() & QGraphicsItem::ItemAcceptsInputMethod);
+    TS_ASSERT(textItem->flags() & QGraphicsItem::ItemIsFocusable);
+    TS_ASSERT(textItem->flags() & QGraphicsItem::ItemIsMovable);
+    TS_ASSERT(textItem->flags() & QGraphicsItem::ItemIsSelectable);
+    TS_ASSERT(textItem->flags() & QGraphicsItem::ItemUsesExtendedStyleOption);
+
+    TS_ASSERT(!(textItem->flags() & QGraphicsItem::ItemClipsToShape));
+    TS_ASSERT(!(textItem->flags() & QGraphicsItem::ItemClipsChildrenToShape));
+    TS_ASSERT(!(textItem->flags() & QGraphicsItem::ItemIgnoresTransformations));
+    TS_ASSERT(!(textItem->flags() & QGraphicsItem::ItemIgnoresParentOpacity));
+    TS_ASSERT(!(textItem->flags() & QGraphicsItem::ItemDoesntPropagateOpacityToChildren));
+    TS_ASSERT(!(textItem->flags() & QGraphicsItem::ItemStacksBehindParent));
+    TS_ASSERT(!(textItem->flags() & QGraphicsItem::ItemHasNoContents));
+    TS_ASSERT(!(textItem->flags() & QGraphicsItem::ItemSendsGeometryChanges));
+    TS_ASSERT(!(textItem->flags() & QGraphicsItem::ItemNegativeZStacksBehindParent));
+    TS_ASSERT(!(textItem->flags() & QGraphicsItem::ItemIsPanel));
+    TS_ASSERT(!(textItem->flags() & QGraphicsItem::ItemSendsScenePositionChanges));
+    TS_ASSERT(!(textItem->flags() & QGraphicsItem::ItemContainsChildrenInShape));
+  }
+
+  void testTextInteractionFlags() {
+    TS_ASSERT_EQUALS(Qt::TextEditorInteraction, textItem->textInteractionFlags());
   }
 
   // TODO can be read by MolScene

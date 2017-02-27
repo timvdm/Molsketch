@@ -19,8 +19,14 @@
 
 #include <actions/textaction.h>
 #include <cxxtest/TestSuite.h>
+#include <QGraphicsSceneMouseEvent>
+#include <QGraphicsView>
+#include <QTest>
+#include <commands.h>
 #include <functional>
 #include <molscene.h>
+#include <textitem.h>
+#include "utilities.h"
 
 using namespace Molsketch;
 
@@ -28,36 +34,99 @@ using namespace Molsketch;
 class TextActionUnitTest : public CxxTest::TestSuite {
 private:
   MolScene *scene;
+  TextAction *textAction;
+  QEvent *event;
+
+  QGraphicsSceneEvent* processMousePressEvent(Qt::MouseButton button, Qt::KeyboardModifiers modifiers = Qt::NoModifier) {
+    QGraphicsSceneMouseEvent *event = new QGraphicsSceneMouseEvent(QGraphicsSceneMouseEvent::MouseButtonPress);
+    event->setButton(button);
+    event->setModifiers(modifiers);
+    event->setAccepted(false);
+    textAction->mousePressEvent(event);
+    return event;
+  }
+
+  QGraphicsSceneEvent* processMouseMoveEvent(Qt::MouseButton button, Qt::KeyboardModifiers modifiers = Qt::NoModifier) {
+    QGraphicsSceneMouseEvent *event = new QGraphicsSceneMouseEvent(QGraphicsSceneMouseEvent::MouseMove);
+    event->setButton(button);
+    event->setModifiers(modifiers);
+    event->setAccepted(false);
+    textAction->mouseMoveEvent(event);
+    return event;
+  }
+
+  QGraphicsSceneEvent* processMouseReleaseEvent(Qt::MouseButton button, Qt::KeyboardModifiers modifiers = Qt::NoModifier, QPointF position = QPointF()) {
+    QGraphicsSceneMouseEvent *event = new QGraphicsSceneMouseEvent(QGraphicsSceneMouseEvent::MouseButtonRelease);
+    event->setButton(button);
+    event->setModifiers(modifiers);
+    event->setScenePos(position);
+    event->setAccepted(false);
+    textAction->mouseReleaseEvent(event);
+    return event;
+  }
+
 public:
   void setUp() {
     scene = new MolScene();
+    textAction = new TextAction(scene);
+    event = 0;
   }
 
   void tearDown() {
     delete scene;
+    delete event;
   }
 
-  void testConstruction() {
-    TextAction *textAction = new TextAction(scene);
+  void testMousePressingAcceptedForLeftButton() {
+    event = processMousePressEvent(Qt::LeftButton);
+    TS_ASSERT(event->isAccepted());
   }
 
-  void testMousePressing() {
-
-  }
-
-  void testMouseMoving() {
-
-  }
-
-  void testMouseReleasing() {
-
+  void testMousePressingRejectedForRightButton() {
+    event = processMousePressEvent(Qt::RightButton);
+    TS_ASSERT(!event->isAccepted());
   }
 
   void testMousePressingRejectedWithModifier() {
-
+    event = processMousePressEvent(Qt::LeftButton, Qt::ShiftModifier);
+    TS_ASSERT(!event->isAccepted());
   }
 
-  void testMousePressingRejectedWithMiddleButton() {
+  void testMouseMovingAcceptedForLeftButton() {
+    event =processMouseMoveEvent(Qt::LeftButton);
+    TS_ASSERT(event->isAccepted());
+  }
 
+  void testMouseMovingRejectedForRightButton() {
+    event = processMouseMoveEvent(Qt::RightButton);
+    TS_ASSERT(!event->isAccepted());
+  }
+
+  void testMouseMovingRejectedForModifier() {
+    event = processMouseMoveEvent(Qt::LeftButton, Qt::ShiftModifier);
+    TS_ASSERT(!event->isAccepted());
+  }
+
+  void testMouseReleasingAcceptedForLeftButton() {
+    event = processMouseReleaseEvent(Qt::LeftButton, Qt::NoModifier, QPointF(10.3, -15.1));
+    TS_ASSERT(event->isAccepted());
+    TS_ASSERT_EQUALS(1, scene->items().size());
+    if (!scene->items().empty()) {
+      TextItem* item = dynamic_cast<TextItem*>(scene->items().first());
+      TS_ASSERT(item);
+      QS_ASSERT_EQUALS(QPointF(10.3, -15.1), item->pos());
+    }
+    TS_ASSERT_EQUALS(1, scene->stack()->index());
+    TS_ASSERT(dynamic_cast<const Commands::AddItem*>(scene->stack()->command(0)));
+  }
+
+  void testMouseReleasingRejectedForRightButton() {
+    event = processMouseReleaseEvent(Qt::RightButton);
+    TS_ASSERT(!event->isAccepted())
+  }
+
+  void testMouseReleasingRejectedForModifier() {
+    event = processMouseReleaseEvent(Qt::LeftButton, Qt::ShiftModifier);
+    TS_ASSERT(!event->isAccepted());
   }
 };
