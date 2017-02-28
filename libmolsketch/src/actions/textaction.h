@@ -1,8 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007-2008 by Harm van Eersel                            *
- *   Copyright (C) 2009 Tim Vandermeersch                                  *
- *   Copyright (C) 2009 by Nicola Zonta                                    *
- *   Copyright (C) 2015 Hendrik Vennekate                                  *
+ *   Copyright (C) 2017 by Hendrik Vennekate                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -20,40 +17,32 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include <QPair>
-#include <QStringList>
-#include "abstractxmlobject.h"
+#ifndef MOLSKETCH_TEXTACTION_H
+#define MOLSKETCH_TEXTACTION_H
+
+#include "genericaction.h"
+
 
 namespace Molsketch {
-  QXmlStreamReader &abstractXmlObject::readXml(QXmlStreamReader &in)
+
+  class MolScene;
+
+  class TextAction : public genericAction // TODO extract commonalities with draw action as abstract "insert item action"
+      // (also: RingAction, ArrowAction etc.)
   {
-    // read own attributes
-    QXmlStreamAttributes attributes = in.attributes() ;
-    readAttributes(attributes) ;
+  public:
+    explicit TextAction(MolScene *scene);
+    ~TextAction();
 
-    // read children
-    while (!in.atEnd())
-    {
-      in.readNext() ; // TODO probably we just want to go to the next start element here
-      if (in.isEndElement()) break ;
-      if (!in.isStartElement()) continue ;
-      XmlObjectInterface* child = produceChild(in.name().toString(), in.attributes().value("type").toString()) ;
-      if (!child) continue ;
-      child->readXml(in) ;
-    }
-    afterReadFinalization();
-    return in ;
-  }
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
-  QXmlStreamWriter &abstractXmlObject::writeXml(QXmlStreamWriter &out) const
-  {
-    out.writeStartElement(xmlName()) ;
-    out.writeAttributes(xmlAttributes()) ;
-    foreach(const XmlObjectInterface* child, children())
-      if (child) child->writeXml(out) ;
-    out.writeEndElement();
-    return out ;
-  }
+  private:
+    class PrivateData;
+    PrivateData *d;
+  };
 
-} // namespace
+} // namespace Molsketch
 
+#endif // MOLSKETCH_TEXTACTION_H

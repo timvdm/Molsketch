@@ -1,8 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007-2008 by Harm van Eersel                            *
- *   Copyright (C) 2009 Tim Vandermeersch                                  *
- *   Copyright (C) 2009 by Nicola Zonta                                    *
- *   Copyright (C) 2015 Hendrik Vennekate                                  *
+ *   Copyright (C) 2017 by Hendrik Vennekate                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -20,40 +17,34 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include <QPair>
-#include <QStringList>
-#include "abstractxmlobject.h"
+#include "textitem.h"
 
 namespace Molsketch {
-  QXmlStreamReader &abstractXmlObject::readXml(QXmlStreamReader &in)
-  {
-    // read own attributes
-    QXmlStreamAttributes attributes = in.attributes() ;
-    readAttributes(attributes) ;
 
-    // read children
-    while (!in.atEnd())
-    {
-      in.readNext() ; // TODO probably we just want to go to the next start element here
-      if (in.isEndElement()) break ;
-      if (!in.isStartElement()) continue ;
-      XmlObjectInterface* child = produceChild(in.name().toString(), in.attributes().value("type").toString()) ;
-      if (!child) continue ;
-      child->readXml(in) ;
-    }
-    afterReadFinalization();
-    return in ;
+  TextItem::TextItem(GRAPHICSSCENESOURCE)
+    : QGraphicsTextItem(GRAPHICSSCENEINIT)
+  {
+    setFlags(flags()
+             | ItemAcceptsInputMethod
+             | ItemIsFocusable
+             | ItemIsMovable
+             | ItemIsSelectable);
+    setTextInteractionFlags(Qt::TextEditorInteraction);
   }
 
-  QXmlStreamWriter &abstractXmlObject::writeXml(QXmlStreamWriter &out) const
+  QXmlStreamReader &TextItem::readXml(QXmlStreamReader &in)
   {
-    out.writeStartElement(xmlName()) ;
-    out.writeAttributes(xmlAttributes()) ;
-    foreach(const XmlObjectInterface* child, children())
-      if (child) child->writeXml(out) ;
+    QString coordString = in.attributes().value("coordinates").toString();
+    setPos(coordString.section(",",0,0).toDouble(),
+           coordString.section(",",1,1).toDouble()); // TODO static utility function
+    setHtml(in.readElementText());
+  }
+
+  QXmlStreamWriter &TextItem::writeXml(QXmlStreamWriter &out) const
+  {
+    out.writeStartElement("textItem");
+    out.writeAttribute("coordinates", QString::number(pos().x()) +"," + QString::number(pos().y())); // TODO static utility function for this
+    out.writeCDATA(toHtml());
     out.writeEndElement();
-    return out ;
   }
-
-} // namespace
-
+} // namespace Molsketch

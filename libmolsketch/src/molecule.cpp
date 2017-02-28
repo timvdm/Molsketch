@@ -236,8 +236,8 @@ namespace Molsketch {
     //pre(1): bond is a valid pointer to a bond
     Q_CHECK_PTR(bond);
     //pre(2): the bond is between two atoms of this molecule
-    Q_ASSERT(m_atomList.contains(bond->beginAtom()));
-    Q_ASSERT(m_atomList.contains(bond->endAtom()));
+//    Q_ASSERT(m_atomList.contains(bond->beginAtom()));
+//    Q_ASSERT(m_atomList.contains(bond->endAtom()));
 
     if (scene ())	bond ->setColor (dynamic_cast<MolScene *> (scene ()) ->color()); // TODO ??
     // Checking if and altering when a bond exists
@@ -252,7 +252,7 @@ namespace Molsketch {
     m_bondList.append(bond);
     bond->setParentItem(this);
 
-    bond->setAtoms(bond->beginAtom(), bond->endAtom());
+    bond->setAtoms(bond->beginAtom(), bond->endAtom()); // TODO huh?
 
     m_electronSystemsUpdate = true;
     refreshRings();
@@ -303,7 +303,7 @@ namespace Molsketch {
       com += atom->pos() ;
     return com / m_atomList.size() ;
   }
-  
+
   void Molecule::delBond(Bond* bond)
   {
     Q_CHECK_PTR(bond);
@@ -322,7 +322,7 @@ namespace Molsketch {
     // Removing the bond
     m_bondList.removeAll(bond);
     bond->setParentItem(0);
-    if (scene()) 
+    if (scene())
       scene()->removeItem(bond);
 
     m_electronSystemsUpdate = true;
@@ -550,7 +550,7 @@ namespace Molsketch {
     QList<Bond*> bondList;
 
     foreach(Bond* bond, m_bondList)
-      if (bond->hasAtom(atom)) 
+      if (bond->hasAtom(atom))
         bondList << bond;
 
     return bondList;
@@ -682,7 +682,7 @@ namespace Molsketch {
     for (int i = 0 ; i < c.size() ; ++i)
       m_atomList[i]->setCoordinates(c.mid(i,1)) ;
   }
-  
+
   QRectF Molecule::boundingRect() const
   {
     return childrenBoundingRect();
@@ -701,7 +701,7 @@ namespace Molsketch {
     foreach (Ring *ring, m_rings)
       delete ring;
     m_rings.clear();
-    
+
     // create minimum list of smallest rings
     QList<Atom*> atomList = m_atomList ;
     while (!atomList.empty()) {
@@ -744,7 +744,7 @@ namespace Molsketch {
     electronSystems.removeAll(es2);
     delete es2;
   }
-  
+
   void Molecule::invalidateElectronSystems()
   {
     m_electronSystemsUpdate = true;
@@ -802,7 +802,7 @@ namespace Molsketch {
         m_electronSystems.append(piEle);
       }
     }
-    
+
     foreach (Atom *atom, m_atomList) {
       int unboundElectrons = atom->numNonBondingElectrons();
       QList<Atom*> atoms;
@@ -844,12 +844,12 @@ namespace Molsketch {
     }
   }
 
-  QList<const abstractXmlObject *> Molecule::children() const
+  QList<const XmlObjectInterface *> Molecule::children() const
   {
-    return QList<const abstractXmlObject*>() << &m_atomList << &m_bondList ;
+    return QList<const XmlObjectInterface*>() << &m_atomList << &m_bondList ;
   }
 
-  abstractXmlObject *Molecule::produceChild(const QString &name, const QString &type)
+  XmlObjectInterface *Molecule::produceChild(const QString &name, const QString &type)
   {
     Q_UNUSED(type)
     if (m_atomList.xmlName() == name){
@@ -924,9 +924,9 @@ namespace Molsketch {
   }
 
   template <class T>
-  QList<const abstractXmlObject *> Molecule::moleculeItemListClass<T>::children() const
+  QList<const XmlObjectInterface *> Molecule::moleculeItemListClass<T>::children() const
   {
-    QList<const abstractXmlObject*> childrenList ;
+    QList<const XmlObjectInterface*> childrenList ;
     foreach (T* item, *this)
       childrenList << item ;
     return childrenList ;
@@ -948,7 +948,7 @@ namespace Molsketch {
   }
   PRODUCECHILDTEMPLATEMACRO(Atom, "atom")
   PRODUCECHILDTEMPLATEMACRO(Bond, "bond")
-  
+
   QList<Atom*> Molecule::smallestRing(QList<Atom*> atomList) const // TODO test
   { // TODO JAVA-style iterators for clarity
     if (atomList.empty()) return atomList ;

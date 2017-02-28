@@ -72,7 +72,10 @@ HEADERS += \
     actions/abstractrecursiveitemaction.h \
     actions/abstractitemaction.h \
     atompopup.h \
-    propertieswidget.h
+    propertieswidget.h \
+    actions/textaction.h \
+    textitem.h \
+    xmlobjectinterface.h
 
 SOURCES += \
     atom.cpp \
@@ -140,7 +143,10 @@ SOURCES += \
     actions/abstractrecursiveitemaction.cpp \
     actions/abstractitemaction.cpp \
     atompopup.cpp \
-    propertieswidget.cpp
+    propertieswidget.cpp \
+    actions/textaction.cpp \
+    textitem.cpp \
+    xmlobjectinterface.cpp
 
 FORMS += \
     arrowpopup.ui \

@@ -34,9 +34,6 @@
 #include "molscene.h"
 #include "math2d.h"
 #include "molecule.h"
-
-#include <QDebug>
-
 #include <actions/bondtypeaction.h>
 #include <actions/flipbondaction.h>
 #include <actions/flipstereobondsaction.h>
@@ -71,7 +68,7 @@ namespace Molsketch {
       m_ring(0)
   {
     setAtoms(atomA, atomB);
-  
+
     MolScene* molScene = dynamic_cast<MolScene*>(
 #if QT_VERSION < 0x050000
                 scene
@@ -79,9 +76,9 @@ namespace Molsketch {
                 scene()
 #endif
                 );
-    if (molScene) 
+    if (molScene)
       setColor(molScene->color());
-    else 
+    else
       setColor(QColor(0, 0, 0));
 
     setZValue(2);
@@ -99,7 +96,7 @@ namespace Molsketch {
   {
     setAtoms(atomA, atomB);
   }
-  
+
   Bond::~Bond()
   {
   }
@@ -188,7 +185,6 @@ namespace Molsketch {
     for (auto b : others)
     {
       double angle = b->bondAngle(origin) - reference->bondAngle(origin);
-      qDebug() << "Bond angles:" <<origin << reference << b << b->bondAngle(origin) << reference->bondAngle(origin);
       if (clockwise) angle = 360 - angle;
       angle = Molecule::toDegrees(angle);
       minAngle = qMin(minAngle, angle);
@@ -216,7 +212,6 @@ namespace Molsketch {
     // else: unsymmetric
     m_bondType = DoubleAsymmetric;
     // consider swapping atoms
-    qDebug() << "Angles:" << this << sumUpperAngles << sumLowerAngles;
     if (sumUpperAngles > sumLowerAngles) qSwap(m_beginAtom, m_endAtom);
   }
 
@@ -535,7 +530,7 @@ namespace Molsketch {
   {
     return m_beginAtom == atom || m_endAtom == atom;
   }
-    
+
   Atom* Bond::otherAtom(const Atom *atom) const
   {
     return (atom == m_beginAtom) ? m_endAtom : m_beginAtom;
@@ -554,7 +549,7 @@ namespace Molsketch {
     }
     if (m_endAtom)   m_endAtom  ->addBond(this);
   }
-  
+
   Molecule* Bond::molecule() const
   {
     return dynamic_cast<Molecule*>(this->parentItem());
@@ -612,11 +607,8 @@ namespace Molsketch {
     setAtoms(molecule()->atom(atomIndexes.first()),
              molecule()->atom(atomIndexes.last())) ;
     m_bondType = (BondType) (attributes.value("type").toString().toInt());
-  }
-
-  QStringList Bond::textItemAttributes() const
-  {
-    return QStringList() << "bondStereo" ;
+    if (attributes.hasAttribute("order"))
+      m_bondType = (BondType) (10 *attributes.value("order").toInt());
   }
 
   void Bond::prepareContextMenu(QMenu *contextMenu) // TODO simply use a function that returns the scene's actions pertaining to the item
@@ -637,6 +629,35 @@ namespace Molsketch {
       }
     }
     graphicsItem::prepareContextMenu(contextMenu);
+  }
+
+  class LegacyBondStereo : public XmlObjectInterface {
+    Bond *bond;
+  public:
+    LegacyBondStereo(Bond *bond) : bond(bond) {}
+    QXmlStreamReader& readXml(QXmlStreamReader &in) {
+      auto text = in.readElementText();
+      if ("H" == text) bond->setType(Bond::Hash);
+      if ("W" == text) bond->setType(Bond::Wedge);
+      return in;
+    }
+
+    QXmlStreamWriter& writeXml(QXmlStreamWriter &out) const {
+      return out;
+    }
+  };
+
+  XmlObjectInterface *Bond::produceChild(const QString &name, const QString &type) {
+    if (name != "bondStereo" || !type.isEmpty()) return nullptr;
+    XmlObjectInterface *helper = new LegacyBondStereo(this);
+    helpers << helper;
+    return helper;
+  }
+
+  void Bond::afterReadFinalization()
+  {
+    for (auto helper : helpers) delete helper;
+    helpers.clear();
   }
 
 } // namespace

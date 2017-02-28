@@ -55,6 +55,7 @@
 #include <actions/ringaction.h>
 #include <actions/rotateaction.h>
 #include <actions/flipstereobondsaction.h>
+#include <actions/textaction.h>
 
 #include "mainwindow.h"
 
@@ -513,13 +514,19 @@ void MainWindow::assistant()
 #endif
 }
 
-
+QString readFileContent(const QString& absolutePath) {
+  QFile file(absolutePath);
+  file.open(QFile::ReadOnly);
+  return file.readAll();
+}
 
 void MainWindow::about()
 {
+  QString version(readFileContent(":/version")), versionNick(readFileContent(":/versionnick"));
   QMessageBox::about(this, tr("About"),
                      tr("<H3>About Molsketch</H3>"
-                        "<P> Molsketch is a program for drawing molecular structures developed by Harm van Eersel at the"
+                        "<H4>Version: ") + version + " -- " + versionNick + tr("</H4>"
+                        "<P> Molsketch is a program for drawing molecular structures developed by Harm van Eersel at the "
                         "<A href=\"http://www.tue.nl\">Eindhoven University of Technology</A>."
                         "<P> For more info check <A href=\"http://molsketch.sourceforge.net\">http://molsketch.sourceforge.net</A>"
                         "<P> It is <A href=\"http://www.gnu.org/philosophy/free-sw.html\">free software</A> and available under the "
@@ -809,6 +816,7 @@ void MainWindow::createToolBars()
   drawToolBar->addAction(new reactionArrowAction(m_scene));
   drawToolBar->addAction(new mechanismArrowAction(m_scene));
   drawToolBar->addAction(new FrameAction(m_scene));
+  drawToolBar->addAction(new TextAction(m_scene));
   drawToolBar->addAction(new pluginAction(m_scene));
 
   modifyToolBar = addToolBar(tr("Modify"));
@@ -949,7 +957,7 @@ void MainWindow::initializeAssistant()
   arguments << "-profile" << file.absoluteFilePath();
   assistantClient->setArguments(arguments);
 #else
-  qDebug() << "Starting assistant with argumetns:" << file.absoluteFilePath() << app ;
+  qDebug() << "Starting assistant with arguments:" << file.absoluteFilePath() << app ;
 //  assistantClient->start(app, QStringList() << QLatin1String("-enableRemoteControl")) ;
   QTextStream stream(assistantClient) ;
   stream << QLatin1String("register ")

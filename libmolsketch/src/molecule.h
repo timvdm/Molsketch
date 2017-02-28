@@ -251,8 +251,8 @@ class Molecule : public graphicsItem
    void updateElectronSystems();
 
 
-   QList<const abstractXmlObject*> children() const ;
-   abstractXmlObject* produceChild(const QString &name, const QString &type) ;
+   QList<const XmlObjectInterface *> children() const ;
+   XmlObjectInterface *produceChild(const QString &name, const QString &type) ;
    void afterReadFinalization();
    void readAttributes(const QXmlStreamAttributes& attributes);
    QXmlStreamAttributes xmlAttributes() const;
@@ -270,7 +270,7 @@ class Molecule : public graphicsItem
    public:
          explicit moleculeItemListClass(Molecule* parent) : p(parent) {}
          QString xmlName() const ;
-         QList<const abstractXmlObject*> children() const ;
+         QList<const XmlObjectInterface *> children() const ;
          abstractXmlObject *produceChild(const QString &name, const QString &type) ;
    }; // TODO implement filter function for childItems() (by ID and by type) and move this to QGraphicsItem
 

@@ -1,8 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007-2008 by Harm van Eersel                            *
- *   Copyright (C) 2009 Tim Vandermeersch                                  *
- *   Copyright (C) 2009 by Nicola Zonta                                    *
- *   Copyright (C) 2015 Hendrik Vennekate                                  *
+ *   Copyright (C) 2017 by Hendrik Vennekate                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -19,41 +16,53 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#include "textaction.h"
 
-#include <QPair>
-#include <QStringList>
-#include "abstractxmlobject.h"
+#include <QGraphicsSceneMouseEvent>
+#include <commands.h>
+#include <textitem.h>
 
 namespace Molsketch {
-  QXmlStreamReader &abstractXmlObject::readXml(QXmlStreamReader &in)
-  {
-    // read own attributes
-    QXmlStreamAttributes attributes = in.attributes() ;
-    readAttributes(attributes) ;
 
-    // read children
-    while (!in.atEnd())
-    {
-      in.readNext() ; // TODO probably we just want to go to the next start element here
-      if (in.isEndElement()) break ;
-      if (!in.isStartElement()) continue ;
-      XmlObjectInterface* child = produceChild(in.name().toString(), in.attributes().value("type").toString()) ;
-      if (!child) continue ;
-      child->readXml(in) ;
-    }
-    afterReadFinalization();
-    return in ;
+  struct TextAction::PrivateData {
+
+  };
+
+  TextAction::TextAction(MolScene *scene)
+    : genericAction(scene),
+      d(new PrivateData)
+  {
+    setIcon(QIcon::fromTheme("insert-text"));
+    setText(tr("Insert text"));
   }
 
-  QXmlStreamWriter &abstractXmlObject::writeXml(QXmlStreamWriter &out) const
+  TextAction::~TextAction()
   {
-    out.writeStartElement(xmlName()) ;
-    out.writeAttributes(xmlAttributes()) ;
-    foreach(const XmlObjectInterface* child, children())
-      if (child) child->writeXml(out) ;
-    out.writeEndElement();
-    return out ;
+    delete d;
   }
 
-} // namespace
+  void TextAction::mousePressEvent(QGraphicsSceneMouseEvent *event) {
+    if (event->modifiers() != Qt::NoModifier) return; // TOO extract function?
+    if (event->button() != Qt::LeftButton) return;
+    event->accept();
+  }
 
+  // TODO test do we need mouse leave?
+
+  void TextAction::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
+    if (event->modifiers() != Qt::NoModifier) return;
+    if (event->button() != Qt::LeftButton) return;
+    event->accept();
+  }
+
+  void TextAction::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
+    if (event->modifiers() != Qt::NoModifier) return;
+    if (event->button() != Qt::LeftButton) return;
+    event->accept();
+    TextItem *item = new TextItem;
+    item->setPos(event->scenePos());
+    attemptUndoPush(new Commands::AddItem(item, scene(), tr("Add text")));
+    item->setFocus();
+  }
+
+} // namespace Molsketch

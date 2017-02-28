@@ -20,40 +20,14 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include <QPair>
-#include <QStringList>
-#include "abstractxmlobject.h"
+#include "xmlobjectinterface.h"
 
-namespace Molsketch {
-  QXmlStreamReader &abstractXmlObject::readXml(QXmlStreamReader &in)
-  {
-    // read own attributes
-    QXmlStreamAttributes attributes = in.attributes() ;
-    readAttributes(attributes) ;
+QXmlStreamReader &operator>>(QXmlStreamReader &in, Molsketch::XmlObjectInterface &object)
+{
+  return object.readXml(in) ;
+}
 
-    // read children
-    while (!in.atEnd())
-    {
-      in.readNext() ; // TODO probably we just want to go to the next start element here
-      if (in.isEndElement()) break ;
-      if (!in.isStartElement()) continue ;
-      XmlObjectInterface* child = produceChild(in.name().toString(), in.attributes().value("type").toString()) ;
-      if (!child) continue ;
-      child->readXml(in) ;
-    }
-    afterReadFinalization();
-    return in ;
-  }
-
-  QXmlStreamWriter &abstractXmlObject::writeXml(QXmlStreamWriter &out) const
-  {
-    out.writeStartElement(xmlName()) ;
-    out.writeAttributes(xmlAttributes()) ;
-    foreach(const XmlObjectInterface* child, children())
-      if (child) child->writeXml(out) ;
-    out.writeEndElement();
-    return out ;
-  }
-
-} // namespace
-
+QXmlStreamWriter &operator<<(QXmlStreamWriter &out, const Molsketch::XmlObjectInterface &object)
+{
+  return object.writeXml(out) ;
+}

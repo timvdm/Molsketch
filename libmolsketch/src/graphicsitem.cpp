@@ -236,6 +236,36 @@ namespace Molsketch {
       foreach(const QString& coordinate, attributes.value("coordinates").toString().split(";"))
         coords << QPointF(coordinate.section(",",0,0).toDouble(), coordinate.section(",",1,1).toDouble());
       setCoordinates(coords);
+    } else if (attributes.hasAttribute("x2") && attributes.hasAttribute("y2")) // legacy atom
+      setCoordinates(QPolygonF() << QPointF(attributes.value("x2").toDouble(), attributes.value("y2").toDouble()));
+    else if (attributes.hasAttribute("pox") // legacy reaction arrow
+             && attributes.hasAttribute("posy")
+             && attributes.hasAttribute("endx")
+             && attributes.hasAttribute("endy"))
+      setCoordinates(QPolygonF()
+                     << QPointF(attributes.value("posx").toDouble(),
+                                attributes.value("posy").toDouble())
+                     << QPointF(attributes.value("endx").toDouble(),
+                                attributes.value("endy").toDouble()));
+    else if (attributes.hasAttribute("posx") // legacy mechanism arrow
+             && attributes.hasAttribute("posy")
+             && attributes.hasAttribute("p1x")
+             && attributes.hasAttribute("p1y")
+             && attributes.hasAttribute("p2x")
+             && attributes.hasAttribute("p2y")
+             && attributes.hasAttribute("p3x")
+             && attributes.hasAttribute("p3y")
+             && attributes.hasAttribute("p4x")
+             && attributes.hasAttribute("p4y")){
+      QPolygonF coords;
+      for (int i = 1 ; i <= 4 ; ++i) {
+        QString prefix(QString("p") + QString::number(i));
+        coords << QPointF(attributes.value(prefix + "x").toDouble(),
+                          attributes.value(prefix + "y").toDouble());
+      }
+      coords.translate(QPointF(attributes.value("posx").toDouble(),
+                               attributes.value("posy").toDouble()));
+      setCoordinates(coords);
     }
   }
 
