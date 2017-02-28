@@ -17,7 +17,11 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
+#include "commands.h"
+#include "molscene.h"
 #include "textitem.h"
+
+#include <QGraphicsSceneMouseEvent>
 
 namespace Molsketch {
 
@@ -29,6 +33,7 @@ namespace Molsketch {
              | ItemIsFocusable
              | ItemIsMovable
              | ItemIsSelectable);
+    setAcceptedMouseButtons(Qt::LeftButton);
     setTextInteractionFlags(Qt::TextEditorInteraction);
   }
 
@@ -48,5 +53,21 @@ namespace Molsketch {
     out.writeCDATA(toHtml());
     out.writeEndElement();
     return out;
+  }
+
+  void TextItem::mousePressEvent(QGraphicsSceneMouseEvent *event) {
+    if (event->button() != Qt::LeftButton) return;
+    if (event->modifiers() != Qt::NoModifier) return;
+    event->accept();
+  }
+
+  void TextItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
+    if (event->modifiers() != Qt::NoModifier) return;
+    if (event->button() != Qt::NoButton) return;
+    event->accept();
+    QPointF newPosition = pos() + event->scenePos() - event->lastScenePos() ;
+    MolScene *sc = dynamic_cast<MolScene*>(scene());
+    if (sc) newPosition = sc->snapToGrid(newPosition);
+    Commands::MoveItem::absolute(this, newPosition, tr("Move text item"))->execute();
   }
 } // namespace Molsketch

@@ -432,7 +432,7 @@ void DelItem::redo()
 }
 
 MoveItem::MoveItem(QGraphicsItem* item, const QPointF & pos, const QString & text)
-  : QUndoCommand(text), pos(pos), item(item) {}
+  : Command(text), pos(pos), item(item) {}
 void MoveItem::undo()
 {
   redo();
@@ -446,6 +446,14 @@ void MoveItem::redo()
     dynamic_cast<Atom*>(item)->molecule()->rebuild();
 }
 
+bool MoveItem::mergeWith(const QUndoCommand *otherCommand)
+{
+  const MoveItem* other = dynamic_cast<const MoveItem*>(otherCommand);
+  if (!other) return false;
+  if (other->item != item) return false;
+  return true;
+}
+
 MoveItem *MoveItem::relative(QGraphicsItem *item, const QPointF &shift, const QString &text)
 {
   return absolute(item, item->pos() + shift, text);
@@ -455,6 +463,11 @@ MoveItem *MoveItem::absolute(QGraphicsItem *item, const QPointF &newPos, const Q
 {
   if (!item) return nullptr;
   return new MoveItem(item, newPos, text);
+}
+
+QGraphicsItem *MoveItem::getItem() const
+{
+  return item;
 }
 
 
@@ -572,4 +585,23 @@ SymmetricCommand::SymmetricCommand(const QString &name, QUndoCommand *parent)
 void SymmetricCommand::undo()
 {
   redo();
+}
+
+Command::Command(const QString &text)
+  : QUndoCommand(text){}
+
+void Command::execute()
+{
+  QGraphicsItem *item = getItem();
+  MolScene *scene = nullptr;
+  QUndoStack *stack = nullptr;
+  if (item) scene = dynamic_cast<MolScene*>(item->scene());
+  if (scene) stack = scene->stack();
+
+  if (!stack) {
+    redo();
+    delete this;
+  } else {
+    stack->push(this);
+  }
 }

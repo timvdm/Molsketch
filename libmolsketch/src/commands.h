@@ -60,6 +60,7 @@ namespace Molsketch {
     ArrowSplineId,
     AtomChargeId,
     AtomImplicitHydrogensId,
+    MoveItemId,
   };
 
 
@@ -613,12 +614,20 @@ public:
     };
 
 
+    class Command : public QUndoCommand { // TODO unit test
+      virtual QGraphicsItem* getItem() const = 0;
+    public:
+      explicit Command(const QString& text = "");
+      void execute();
+      virtual ~Command() {}
+    };
+
     /**
  * Command to move an item on the scene
  *
  * @author Harm van Eersel
  */
-    class MoveItem : public QUndoCommand
+    class MoveItem : public Command
     {
     public:
       /**
@@ -630,10 +639,13 @@ public:
      */
       virtual void undo();
       virtual void redo();
+      bool mergeWith(const QUndoCommand *other);
+      int id() const { return MoveItemId; }
       static MoveItem* relative(QGraphicsItem* item, const QPointF& shift, const QString& text = "");
       static MoveItem* absolute(QGraphicsItem* item, const QPointF& newPos, const QString& text = "");
     private:
       MoveItem(QGraphicsItem* item, const QPointF& newPosition, const QString& text = "");
+      QGraphicsItem* getItem() const;
       QPointF pos;
       QGraphicsItem* item;
     };

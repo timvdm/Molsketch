@@ -23,6 +23,7 @@
 #include "xmlobjectinterface.h"
 #include "qtversionmacros.h"
 #include <QGraphicsTextItem>
+#include <QDebug>
 
 namespace Molsketch {
 
@@ -33,18 +34,9 @@ namespace Molsketch {
 
     // QGraphicsItem interface
   protected:
-    void mousePressEvent(QGraphicsSceneMouseEvent *event) override
-    {
-    }
-    void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override
-    {
-    }
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override
-    {
-    }
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override
-    {
-    }
+    void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
+    // TODO out of focus: add undo command
 
     // XmlObjectInterface interface
   public:
