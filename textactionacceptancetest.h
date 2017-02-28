@@ -31,6 +31,7 @@ public:
   }
 
   void testInsertingTextItem() {
+    // TODO write a test that does input text
     // TODO
 //    QGraphicsView view(scene);
 //    view.show();

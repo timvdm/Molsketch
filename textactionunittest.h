@@ -114,6 +114,7 @@ public:
     if (!scene->items().empty()) {
       TextItem* item = dynamic_cast<TextItem*>(scene->items().first());
       TS_ASSERT(item);
+      if (item) TS_ASSERT(item->textInteractionFlags() == Qt::TextEditorInteraction);
       QS_ASSERT_EQUALS(QPointF(10.3, -15.1), item->pos());
     }
     TS_ASSERT_EQUALS(1, scene->stack()->index());

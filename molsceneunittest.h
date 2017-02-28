@@ -37,6 +37,9 @@ struct MolSceneForTest : public MolScene {
   XmlObjectInterface* produceChild(const QString &childName, const QString &type) {
     return MolScene::produceChild(childName, type);
   }
+  QList<const XmlObjectInterface*> children() const {
+    return MolScene::children();
+  }
 };
 
 class MolSceneUnitTest : public CxxTest::TestSuite {
@@ -60,6 +63,9 @@ public:
       QString name;
       QString type;
       std::type_index expectedType;
+      const char* toString() {
+        return (name + type).toStdString().c_str();
+      }
     };
     ExpectedChild children[] = {
       {"frame", "", typeid(Frame)},
@@ -76,8 +82,9 @@ public:
       };
     for (auto child : children) {
       XmlObjectInterface *sceneChild = scene->produceChild(child.name, child.type);
-      TS_ASSERT_EQUALS(child.expectedType, std::type_index(typeid(*(sceneChild))));
-      TS_ASSERT(scene->items().contains(dynamic_cast<QGraphicsItem*>(sceneChild)));
+      TSM_ASSERT_EQUALS(child.toString(), child.expectedType, std::type_index(typeid(*(sceneChild))));
+      TSM_ASSERT(child.toString(), scene->children().contains(sceneChild));
+      TSM_ASSERT(child.toString(), scene->items().contains(dynamic_cast<QGraphicsItem*>(sceneChild)));
     }
   }
 };

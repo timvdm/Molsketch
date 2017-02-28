@@ -18,13 +18,24 @@
  ***************************************************************************/
 
 #include <cxxtest/TestSuite.h>
+#include <QGraphicsSceneMouseEvent>
+#include <molscene.h>
 #include <textitem.h>
 #include "utilities.h"
+#include "mocks.h"
 
 using namespace Molsketch;
 
+struct TextItemForTest : public TextItem {
+  typedef TextItem super;
+  VOID_SUPER_MOCK(mousePressEvent, QGraphicsSceneMouseEvent* event, event);
+  VOID_SUPER_MOCK(mouseMoveEvent, QGraphicsSceneMouseEvent* event, event);
+  VOID_SUPER_MOCK(mouseDoubleClickEvent, QGraphicsSceneMouseEvent* event, event);
+  VOID_SUPER_MOCK(focusOutEvent, QFocusEvent* event, event);
+};
+
 class TextItemUnitTest : public CxxTest::TestSuite {
-  TextItem *textItem;
+  TextItemForTest *textItem;
 
 private:
   QString writeOut() {
@@ -40,9 +51,31 @@ private:
     textItem->readXml(reader);
   }
 
+  void checkMouseEventAcceptance(QGraphicsSceneEvent::Type type,
+                                 Qt::MouseButton button,
+                                 Qt::KeyboardModifiers modifiers,
+                                 bool shouldAccept,
+                                 void (TextItemForTest::*function)(QGraphicsSceneMouseEvent*),
+                                 const char* description) {
+    QGraphicsSceneMouseEvent *event = new QGraphicsSceneMouseEvent(type);
+    event->setButton(button);
+    event->setModifiers(modifiers);
+    event->setAccepted(false);
+    (textItem->*function)(event);
+    TSM_ASSERT_EQUALS(description, shouldAccept, event->isAccepted());
+    delete event;
+  }
+
+  void defaultTestMouseEvent(QGraphicsSceneEvent::Type type,
+                             void (TextItemForTest::*function)(QGraphicsSceneMouseEvent*)) {
+    checkMouseEventAcceptance(type, Qt::LeftButton, Qt::NoModifier, true, function, "left button");
+    checkMouseEventAcceptance(type, Qt::RightButton, Qt::NoModifier, false, function, "right button");
+    checkMouseEventAcceptance(type, Qt::LeftButton, Qt::ShiftModifier, false, function, "shift modifier");
+  }
+
 public:
   void setUp() {
-    textItem = new TextItem;
+    textItem = new TextItemForTest;
   }
 
   void tearDown() {
@@ -110,6 +143,42 @@ public:
     TS_ASSERT_EQUALS(Qt::TextEditorInteraction, textItem->textInteractionFlags());
   }
 
-  // TODO can be read by MolScene
-  // TODO can be written by MolScene
+  void testMousePressEventAcceptance() {
+    defaultTestMouseEvent(QGraphicsSceneEvent::MouseButtonPress, &TextItemForTest::mousePressEvent);
+  }
+
+  void testMouseMoveEventAcceptance() {
+    checkMouseEventAcceptance(QGraphicsSceneEvent::MouseMove, Qt::NoButton, Qt::NoModifier,
+                              true, &TextItemForTest::mouseMoveEvent, "left button");
+    checkMouseEventAcceptance(QGraphicsSceneEvent::MouseMove, Qt::LeftButton, Qt::NoModifier,
+                              false, &TextItemForTest::mouseMoveEvent, "left button");
+    checkMouseEventAcceptance(QGraphicsSceneEvent::MouseMove, Qt::RightButton, Qt::NoModifier,
+                              false, &TextItemForTest::mouseMoveEvent, "right button");
+    checkMouseEventAcceptance(QGraphicsSceneEvent::MouseMove, Qt::LeftButton, Qt::ShiftModifier,
+                              false, &TextItemForTest::mouseMoveEvent, "shift modifier");
+  }
+
+  void testMouseMovingResults() {
+    textItem->setPos(QPointF(1,1));
+    QGraphicsSceneMouseEvent* event = new QGraphicsSceneMouseEvent(QGraphicsSceneMouseEvent::MouseMove);
+    event->setLastScenePos(QPointF(5, 8.3));
+    event->setScenePos(QPointF(13.5, 24.8));
+    textItem->mouseMoveEvent(event);
+    QS_ASSERT_EQUALS(QPointF(9.5, 17.5), textItem->pos());
+  }
+
+  void testMousemovingWithSnapsToGrid() {
+    MolScene scene;
+    scene.addItem(textItem);
+    scene.setGrid();
+
+    textItem->setPos(QPointF(1,1));
+    QGraphicsSceneMouseEvent* event = new QGraphicsSceneMouseEvent(QGraphicsSceneMouseEvent::MouseMove);
+    event->setLastScenePos(QPointF(5, 8.3));
+    event->setScenePos(QPointF(13.5, 24.8));
+    textItem->mouseMoveEvent(event);
+    QS_ASSERT_EQUALS(QPointF(10, 20), textItem->pos());
+    QS_ASSERT_EQUALS(1, scene.stack()->index());
+    scene.removeItem(textItem);
+  }
 };
