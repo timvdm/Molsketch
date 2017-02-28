@@ -18,6 +18,7 @@
  ***************************************************************************/
 
 #include <cxxtest/TestSuite.h>
+#include <molscene.h>
 
 using namespace Molsketch;
 
