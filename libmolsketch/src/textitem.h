@@ -23,7 +23,6 @@
 #include "xmlobjectinterface.h"
 #include "qtversionmacros.h"
 #include <QGraphicsTextItem>
-#include <QDebug>
 
 namespace Molsketch {
 
@@ -36,12 +35,15 @@ namespace Molsketch {
   protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
-    // TODO out of focus: add undo command
+    void focusInEvent(QFocusEvent *event);
 
     // XmlObjectInterface interface
   public:
     QXmlStreamReader& readXml(QXmlStreamReader& in);
     QXmlStreamWriter& writeXml(QXmlStreamWriter& out) const;
+  private:
+    class privateData;
+    privateData *d;
   };
 
 } // namespace Molsketch

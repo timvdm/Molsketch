@@ -22,12 +22,19 @@
 #include "textitem.h"
 
 #include <QGraphicsSceneMouseEvent>
+#include <QTextDocument>
 
 namespace Molsketch {
 
+  struct TextItem::privateData {
+    bool initialFill;
+  };
+
   TextItem::TextItem(GRAPHICSSCENESOURCE)
-    : QGraphicsTextItem(GRAPHICSSCENEINIT)
+    : QGraphicsTextItem(GRAPHICSSCENEINIT),
+      d(new privateData)
   {
+    d->initialFill = true;
     setFlags(flags()
              | ItemAcceptsInputMethod
              | ItemIsFocusable
@@ -63,11 +70,40 @@ namespace Molsketch {
 
   void TextItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
     if (event->modifiers() != Qt::NoModifier) return;
-    if (event->button() != Qt::NoButton) return;
+    if (event->button() != Qt::NoButton && event->button() != Qt::LeftButton) return;
     event->accept();
     QPointF newPosition = pos() + event->scenePos() - event->lastScenePos() ;
     MolScene *sc = dynamic_cast<MolScene*>(scene());
     if (sc) newPosition = sc->snapToGrid(newPosition);
     Commands::MoveItem::absolute(this, newPosition, tr("Move text item"))->execute();
+  }
+
+  class TextEditingUndoCommand : public QUndoCommand { // TODO unit test
+    TextItem *item;
+    QTextDocument *originalContent;
+  public:
+    void redo() {
+      QTextDocument *old = item->document();
+      QObject *parent = old->parent();
+      old->setParent(nullptr);
+      originalContent->setParent(parent);
+      item->setDocument(originalContent);
+      originalContent = old;
+    }
+    void undo() { redo(); }
+    explicit TextEditingUndoCommand(TextItem *item, const QString& text )
+      : QUndoCommand(text),
+        item(item), originalContent(item->document()->clone()) {}
+    ~TextEditingUndoCommand() { delete originalContent; }
+  };
+
+  void TextItem::focusInEvent(QFocusEvent *event) {
+    if (MolScene *sc = dynamic_cast<MolScene*>(scene())) {
+      if (sc->stack() && !d->initialFill) {
+        sc->stack()->push(new TextEditingUndoCommand(this, tr("Edit text")));
+      }
+    }
+    d->initialFill = false;
+    QGraphicsTextItem::focusInEvent(event);
   }
 } // namespace Molsketch
