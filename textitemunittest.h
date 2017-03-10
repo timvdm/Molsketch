@@ -23,6 +23,8 @@
 #include <textitem.h>
 #include "utilities.h"
 #include "mocks.h"
+#include <QTextCursor>
+#include <QTextDocument>
 
 using namespace Molsketch;
 
@@ -32,6 +34,7 @@ struct TextItemForTest : public TextItem {
   VOID_SUPER_MOCK(mouseMoveEvent, QGraphicsSceneMouseEvent* event, event);
   VOID_SUPER_MOCK(mouseDoubleClickEvent, QGraphicsSceneMouseEvent* event, event);
   VOID_SUPER_MOCK(focusOutEvent, QFocusEvent* event, event);
+  VOID_SUPER_MOCK(focusInEvent, QFocusEvent* event, event);
 };
 
 class TextItemUnitTest : public CxxTest::TestSuite {
@@ -149,9 +152,9 @@ public:
 
   void testMouseMoveEventAcceptance() {
     checkMouseEventAcceptance(QGraphicsSceneEvent::MouseMove, Qt::NoButton, Qt::NoModifier,
-                              true, &TextItemForTest::mouseMoveEvent, "left button");
+                              true, &TextItemForTest::mouseMoveEvent, "no button");
     checkMouseEventAcceptance(QGraphicsSceneEvent::MouseMove, Qt::LeftButton, Qt::NoModifier,
-                              false, &TextItemForTest::mouseMoveEvent, "left button");
+                              true, &TextItemForTest::mouseMoveEvent, "left button");
     checkMouseEventAcceptance(QGraphicsSceneEvent::MouseMove, Qt::RightButton, Qt::NoModifier,
                               false, &TextItemForTest::mouseMoveEvent, "right button");
     checkMouseEventAcceptance(QGraphicsSceneEvent::MouseMove, Qt::LeftButton, Qt::ShiftModifier,
@@ -179,6 +182,44 @@ public:
     textItem->mouseMoveEvent(event);
     QS_ASSERT_EQUALS(QPointF(10, 20), textItem->pos());
     QS_ASSERT_EQUALS(1, scene.stack()->index());
+    scene.removeItem(textItem);
+  }
+
+  void prependText(const QString& text) {
+    QFocusEvent focusIn(QFocusEvent::FocusIn);
+    textItem->focusInEvent(&focusIn);
+    QTextCursor cursor = textItem->textCursor();
+    cursor.beginEditBlock();
+    cursor.insertText(text);
+    cursor.endEditBlock();
+    QFocusEvent focusOut(QFocusEvent::FocusOut);
+    textItem->focusOutEvent(&focusOut);
+  }
+
+  void testChangingTextGeneratesUndoCommand() {
+    MolScene scene;
+    scene.addItem(textItem);
+    TS_ASSERT(!textItem->document()->isModified());
+    TS_ASSERT(!textItem->document()->isUndoAvailable());
+    TS_ASSERT(!textItem->document()->isRedoAvailable());
+
+    prependText("InitialText");
+
+    TS_ASSERT(textItem->document()->isModified());
+    TS_ASSERT(textItem->document()->isUndoAvailable());
+    TS_ASSERT(!textItem->document()->isRedoAvailable());
+
+    QS_ASSERT_EQUALS("InitialText", textItem->toPlainText());
+    TS_ASSERT_EQUALS(0, scene.stack()->index());
+    TS_ASSERT(scene.stack()->isClean());
+
+    prependText("Prefix ");
+
+    QS_ASSERT_EQUALS("Prefix InitialText", textItem->toPlainText());
+    TS_ASSERT_EQUALS(1, scene.stack()->index());
+
+    scene.stack()->undo();
+    QS_ASSERT_EQUALS("InitialText", textItem->toPlainText());
     scene.removeItem(textItem);
   }
 };

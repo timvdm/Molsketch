@@ -16,7 +16,7 @@ void mouseMoveEvent(QWidget *widget, Qt::MouseButton button, Qt::KeyboardModifie
 
     stateKey &= static_cast<unsigned int>(Qt::KeyboardModifierMask);
 
-    QMouseEvent me(QEvent::MouseMove, pos, widget->mapToGlobal(pos), button, button, stateKey);
+    QMouseEvent me(QEvent::MouseMove, pos, widget->mapToGlobal(pos), button, Qt::NoButton, stateKey);
     QSpontaneKeyEvent::setSpontaneous(&me);
     if (!qApp->notify(widget, &me)) {
         QString warning = QString::fromLatin1("Mouse event \"MouseMove\" not accepted by receiving widget");
