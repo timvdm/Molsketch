@@ -23,6 +23,7 @@
 
 #include <QGraphicsSceneMouseEvent>
 #include <QTextDocument>
+#include <QFocusEvent>
 
 namespace Molsketch {
 
@@ -78,7 +79,7 @@ namespace Molsketch {
     Commands::MoveItem::absolute(this, newPosition, tr("Move text item"))->execute();
   }
 
-  class TextEditingUndoCommand : public QUndoCommand { // TODO unit test
+  class TextEditingUndoCommand : public Commands::Command { // TODO unit test
     TextItem *item;
     QTextDocument *originalContent;
   public:
@@ -92,18 +93,17 @@ namespace Molsketch {
     }
     void undo() { redo(); }
     explicit TextEditingUndoCommand(TextItem *item, const QString& text )
-      : QUndoCommand(text),
+      : Command(text),
         item(item), originalContent(item->document()->clone()) {}
     ~TextEditingUndoCommand() { delete originalContent; }
+    QGraphicsItem* getItem() const { return item; }
   };
 
   void TextItem::focusInEvent(QFocusEvent *event) {
-    if (MolScene *sc = dynamic_cast<MolScene*>(scene())) {
-      if (sc->stack() && !d->initialFill) {
-        sc->stack()->push(new TextEditingUndoCommand(this, tr("Edit text")));
-      }
-    }
+    if (!d->initialFill)
+      (new TextEditingUndoCommand(this, tr("Edit text")))->execute();
     d->initialFill = false;
     QGraphicsTextItem::focusInEvent(event);
+    event->accept();
   }
 } // namespace Molsketch
