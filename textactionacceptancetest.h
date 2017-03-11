@@ -31,8 +31,7 @@ public:
   }
 
   void testInsertingTextItem() {
-    // TODO write a test that does input text
-    // TODO
+    TS_SKIP("TODO");
 //    QGraphicsView view(scene);
 //    view.show();
 //    view.activateWindow();
@@ -49,6 +48,5 @@ public:
 //    TS_ASSERT_EQUALS(1, scene->stack()->index());
 //    TS_ASSERT(dynamic_cast<const Commands::AddItem*>(scene->stack()->command(0)));
 //    qDebug() << view.hasFocus() << view.isActiveWindow() << view.focusPolicy();
-////    QTest::qWait(5000);
   }
 };
