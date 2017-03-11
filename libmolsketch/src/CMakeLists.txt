@@ -55,6 +55,8 @@ set(libmolsketch_HDRS
     helptextemptydock.h
     atompopup.h
     propertieswidget.h
+    textitem.h
+    xmlobjectinterface.h
    )
 
 set(action_HDRS
@@ -90,6 +92,7 @@ set(action_HDRS
     actions/flipstereobondsaction.h
     actions/abstractrecursiveitemaction.h
     actions/abstractitemaction.h
+    actions/textaction.h
    )
 
 
@@ -153,6 +156,8 @@ set(libmolsketch_SRCS
     helptextemptydock.cpp
     atompopup.cpp
     propertieswidget.cpp
+    textitem.cpp
+    xmlobjectinterface.cpp
     actions/coloraction.cpp
     actions/linewidthaction.cpp
     actions/abstractitemaction.cpp
@@ -185,6 +190,7 @@ set(libmolsketch_SRCS
     actions/flipstereobondsaction.cpp
     actions/abstractrecursiveitemaction.cpp
     actions/abstractitemaction.cpp
+    actions/textaction.cpp
     )
 
 set(toolicon_RCS tools/toolicons.qrc)
