@@ -98,7 +98,7 @@ namespace Molsketch {
     if (c.isEmpty()) return;
     setPos(c.first());
   }
- 
+
   void ItemPlugin::paintDefault(QPainter *painter)
   {
     painter->drawRect(boundingRect());
@@ -113,7 +113,7 @@ namespace Molsketch {
     painter->drawText(QRectF(-100, 30, 200, 20), Qt::AlignCenter, output());
 
   }
-  
+
   QRectF ItemPlugin::defaultBoundingRect() const
   {
     return QRectF(-100, -50, 200, 100);
@@ -127,7 +127,11 @@ namespace Molsketch {
   void ItemPlugin::readAttributes(const QXmlStreamAttributes &attributes)
   {
     setPos(attributes.value("posX").toString().toDouble(), attributes.value("posY").toString().toDouble());
-    QGraphicsItem *possibleParent = scene()->items().at(attributes.value("molecule").toString().toInt()); // TODO doesn't work if plugin was created before molecule
+    int parentIndex = attributes.value("molecule").toString().toInt();
+    QGraphicsItem *possibleParent = nullptr;
+    QList<QGraphicsItem*> items = scene()->items();
+    if (0 <= parentIndex && parentIndex < items.size())
+      scene()->items().at(parentIndex); // TODO doesn't work if plugin was created before molecule
     if (possibleParent) setParentItem(possibleParent);
   }
 
@@ -140,21 +144,21 @@ namespace Molsketch {
     attributes.append("type", output());
     return attributes;
   }
-      
+
   ItemPlugin* ItemPluginFactory::createInstance(const QString &out)
   {
     foreach (ItemPluginFactory *plugin, instanceList()) {
       if (plugin->output() == out)
-        return plugin->createInstance();    
+        return plugin->createInstance();
     }
-  
+
     return 0;
   }
 
   QList<ItemPluginFactory*>& ItemPluginFactory::instanceList()
   {
     static QList<ItemPluginFactory*> list = QList<ItemPluginFactory*>();
-    return list;  
+    return list;
   }
 
   QIcon ItemPluginFactory::icon() const
@@ -167,7 +171,7 @@ namespace Molsketch {
     QStringList out;
     foreach (ItemPluginFactory *plugin, instanceList())
       out << plugin->output();
-    return out;        
+    return out;
   }
 
 }

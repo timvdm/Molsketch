@@ -27,7 +27,7 @@
 
 int main(int argc, char *argv[])
 {
-#ifdef QT_STATIC_BUILD
+#if defined(QT_STATIC_BUILD) || defined(_WIN32)
   Q_INIT_RESOURCE(molsketch);
   Q_INIT_RESOURCE(oxygenicons);
   QIcon::setThemeName("oxygen");
