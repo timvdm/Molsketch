@@ -1,10 +1,10 @@
 # CMakeLists.txt for the main sourcecode of molsKetch
 cmake_policy(SET CMP0003 NEW)
 
-# Including qt4 and OpenBabel
+# Including qt4
 set(QT_USE_QTSVG TRUE)
 if(FORCEQt4)
-	include(${QT_USE_FILE})
+        include(${QT_USE_FILE})
 endif(FORCEQt4)
 
 
@@ -12,9 +12,8 @@ endif(FORCEQt4)
 get_directory_property(tmp_include_dirs INCLUDE_DIRECTORIES)
 set_directory_properties(PROPERTIES INCLUDE_DIRECTORIES
         "${CMAKE_CURRENT_BINARY_DIR}/include;${tmp_include_dirs}")
-include_directories(${OPENBABEL2_INCLUDE_DIR} 
-		    ${CMAKE_CURRENT_BINARY_DIR}
-		    ${CMAKE_CURRENT_BINARY_DIR}/../../obabeliface/include/molsketch
+include_directories(${CMAKE_CURRENT_BINARY_DIR}
+                    ${CMAKE_CURRENT_BINARY_DIR}/../../obabeliface/include/molsketch
 )
 
 set(libmolsketch_HDRS
@@ -45,9 +44,9 @@ set(libmolsketch_HDRS
     grid.h
     stringify.h
     frame.h
-    arrowpopup.h 
-    coordinatedelegate.h 
-    coordinatemodel.h 
+    arrowpopup.h
+    coordinatedelegate.h
+    coordinatemodel.h
     coordinatetableview.h
     generics.h
     moleculepopup.h
@@ -114,13 +113,13 @@ endforeach(headerFile ${libmolsketch_HDRS})
 
 set (libmolsketch_UIS)
 if(FORCEQt4)
-	qt4_wrap_ui(libmolsketch_UIS_H ${libmolsketch_UIS})
+        qt4_wrap_ui(libmolsketch_UIS_H ${libmolsketch_UIS})
 else(FORCEQt4)
-	qt5_wrap_ui(libmolsketch_UIS_H ${libmolsketch_UIS})
+        qt5_wrap_ui(libmolsketch_UIS_H ${libmolsketch_UIS})
 endif(FORCEQt4)
 
 # Source files
-set(libmolsketch_SRCS 
+set(libmolsketch_SRCS
     atom.cpp
     atomnumberitem.cpp
     bond.cpp
@@ -218,18 +217,18 @@ endif(FORCEQt4)
 
 # Create the molsKetch libraries
 if(MSK_STATIC_LIB)
-	add_library(molsketch_LIB STATIC ${libmolsketch_SRCS} ${molsketch_UIS_H})
+        add_library(molsketch_LIB STATIC ${libmolsketch_SRCS} ${molsketch_UIS_H})
 else(MSK_STATIC_LIB)
-	add_library(molsketch_LIB SHARED ${libmolsketch_SRCS} ${molsketch_UIS_H})
+        add_library(molsketch_LIB SHARED ${libmolsketch_SRCS} ${molsketch_UIS_H})
 endif(MSK_STATIC_LIB)
 if(FORCEQt4)
-	set_target_properties(molsketch_LIB PROPERTIES OUTPUT_NAME "molsketch")
+        set_target_properties(molsketch_LIB PROPERTIES OUTPUT_NAME "molsketch")
 else(FORCEQt4)
-	set_target_properties(molsketch_LIB PROPERTIES OUTPUT_NAME "molsketch-qt5")
+        set_target_properties(molsketch_LIB PROPERTIES OUTPUT_NAME "molsketch-qt5")
 endif(FORCEQt4)
 set_property(TARGET molsketch_LIB PROPERTY CXX_STANDARD 14)
 set_target_properties(molsketch_LIB PROPERTIES VERSION ${MSK_VERSION})
-target_link_libraries(molsketch_LIB ${QT_LIBRARIES} ${OPENBABEL2_LIBRARIES}) # TODO remove Openbabel dependency
+target_link_libraries(molsketch_LIB ${QT_LIBRARIES})
 
 # Install the executable and the library
 install(TARGETS molsketch_LIB
