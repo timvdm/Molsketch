@@ -39,6 +39,16 @@ extern "C"
   namespace Molsketch
   {
 /**
+ * Get supported output file formats
+ */
+    QStringList outputFormats();
+    typedef QStringList (*formatsFunctionPointer)() ;
+
+/**
+ * Get supported input file formats
+ */
+    QStringList inputFormats();
+/**
  * Generate SMILES string from molecule
  */
     QString smiles(const Molecule*) ;
@@ -49,13 +59,13 @@ extern "C"
  * @author Harm van Eersel (modified by H. Vennekate)
  */
 
-/** 
- * Loads file with @p fileName and returns it as pointer to a new Molecule 
- * object. 
+/**
+ * Loads file with @p fileName and returns it as pointer to a new Molecule
+ * object.
  */
     Molecule* loadFile(const QString &fileName);
     typedef Molecule* (*loadFileFunctionPointer)(const QString&) ;
-/** 
+/**
  * Saves the current document under @p fileName and returns @c false if the
  * save failed.
  */

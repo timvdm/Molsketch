@@ -76,8 +76,7 @@
 
 #define PROGRAM_NAME "Molsketch"
 
-#define OB_FILE_FORMATS "MolsKetsch default (*.msk);;All supported types (*.*);;SMILES (*.smi);;MDL Molfile (*.mdl *.mol *.sd *.sdf);;XYZ (*.xyz);;ChemDraw Connection Table (*.ct);;Ghemical (*.gpr);;CML (*.cml)"
-#define OB_DEFAULT_FORMAT "MolsKetch default (*.msk)"
+#define MSK_DEFAULT_FORMAT "MolsKetch default (*.msk)"
 #define GRAPHIC_FILE_FORMATS "Scalable Vector Graphics (*.svg);;Portable Network Graphics (*.png);;Windows Bitmap (*.bmp);;Joint Photo Expert Group (*.jpeg)"
 #define GRAPHIC_DEFAULT_FORMAT "Portable Network Graphics (*.png)"
 #define OSRA_GRAPHIC_FILE_FORMATS "All supported types (*.*);;Images (*.png *.bmp *.jpg *.jpeg *.gif *.tif *.tiff);;Documents (*.pdf *.ps)"
@@ -92,15 +91,21 @@
   QLibrary obabeliface("obabeliface" QTVERSIONSUFFIX OBABELOSSUFFIX); \
   obabeliface.load() ; \
   loadFileFunctionPointer loadFilePtr = 0 ; \
-  if (obabeliface.isLoaded()) \
-    loadFilePtr = (loadFileFunctionPointer) (obabeliface.resolve("loadFile")) ;
+  formatsFunctionPointer inputFormats = 0; \
+  if (obabeliface.isLoaded()) {\
+    loadFilePtr = (loadFileFunctionPointer) (obabeliface.resolve("loadFile")) ;\
+    inputFormats = (formatsFunctionPointer) (obabeliface.resolve("inputFormats")) ;\
+  }
 
 #define PREPARESAVEFILE \
   QLibrary obabeliface("obabeliface" QTVERSIONSUFFIX OBABELOSSUFFIX); \
   obabeliface.load() ; \
   saveFileFunctionPointer saveFilePtr = 0 ; \
-  if (obabeliface.isLoaded()) \
-    saveFilePtr = (saveFileFunctionPointer) (obabeliface.resolve("saveFile")) ;
+  formatsFunctionPointer outputFormats = 0; \
+  if (obabeliface.isLoaded()) {\
+    saveFilePtr = (saveFileFunctionPointer) (obabeliface.resolve("saveFile")) ; \
+    outputFormats = (formatsFunctionPointer) (obabeliface.resolve("outputFormats")); \
+  }
 
 // Constructor
 
@@ -216,8 +221,12 @@ void MainWindow::open()
 {
   if (maybeSave())
   {
+    QStringList readableFormats;
+    readableFormats << MSK_DEFAULT_FORMAT;
+    PREPARELOADFILE
+    if (inputFormats) readableFormats << inputFormats();
     QString fileName = QFileDialog::getOpenFileName(this,tr("Open - Molsketch"), m_lastAccessedPath,
-      tr(OB_FILE_FORMATS));
+      readableFormats.join(";;"));
     if (fileName.isEmpty()) return;
 
     // Save accessed path
@@ -227,7 +236,6 @@ void MainWindow::open()
     m_scene->clear();
 
     Molecule* mol = 0;
-    PREPARELOADFILE
     if (fileName.endsWith(".msk"))
     {
       readMskFile(fileName, m_scene);
@@ -329,8 +337,15 @@ bool MainWindow::autoSave()
 bool MainWindow::saveAs()
 {
   // Get the filename to save under
-  QString filter = OB_DEFAULT_FORMAT;
-  QString fileName = QFileDialog::getSaveFileName(this, tr("Save as - Molsketch"), m_lastAccessedPath, tr(OB_FILE_FORMATS), &filter);
+  QString filter = MSK_DEFAULT_FORMAT;
+  PREPARESAVEFILE;
+  QStringList supportedFormats;
+  supportedFormats << MSK_DEFAULT_FORMAT;
+  if (outputFormats) supportedFormats << outputFormats();
+  QString fileName = QFileDialog::getSaveFileName(this,
+                                                  tr("Save as - Molsketch"),
+                                                  m_lastAccessedPath, supportedFormats.join(";;"),
+                                                  &filter);
   if (fileName.isEmpty()) return false;
 
   // Save accessed path
@@ -356,7 +371,6 @@ bool MainWindow::saveAs()
   }
   else
   {
-    PREPARESAVEFILE
     if (!saveFilePtr)
     {
       QMessageBox::critical(this, tr(PROGRAM_NAME), tr("OpenBabel support not available. Cannot save in this format.")) ;

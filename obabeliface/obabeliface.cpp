@@ -64,14 +64,14 @@ namespace Molsketch
   {
     return eTable.GetAtomicNum(symbol.STRINGCONVERSION) ;
   }
-  
+
   OpenBabel::OBMol toOBMolecule(const Molsketch::Molecule* originalMolecule, unsigned short int dim = 2)
   {
     // Create the output molecule
     OpenBabel::OBMol obmol ;
     obmol.SetDimension(dim) ;
     if (!originalMolecule) return obmol ;
-    
+
     QHash<Atom*,OpenBabel::OBAtom*> hash;
 
     obmol.BeginModify();
@@ -105,17 +105,17 @@ namespace Molsketch
     obmol.EndModify();
     return obmol;
   }
-  
+
   QString smiles(const Molecule* mol)
   {
     OpenBabel::OBConversion conv ;
     if (!conv.SetOutFormat("can"))
       return "Output format 'can' not available." ;
-    
+
     OpenBabel::OBMol obmol(toOBMolecule(mol)) ;
     return conv.WriteString(&obmol).c_str() ;
   }
-  
+
   bool saveFile(const QString &fileName, QGraphicsScene* scene, unsigned short int dim)
   {
     using namespace OpenBabel;
@@ -129,7 +129,7 @@ namespace Molsketch
 
     // Create the output molecule
     OBMol obmol;
-    obmol.SetDimension(2);
+    obmol.SetDimension(dim);
 
     // Add all molecules on the scene
     foreach(QGraphicsItem* item, scene->items())
@@ -142,7 +142,7 @@ namespace Molsketch
         obmol.AddHydrogens(); // TODO check if this works without begin/end modify
 
     // Checking if the file exists and making a backup
-    if (QFile::exists(fileName)) 
+    if (QFile::exists(fileName))
     {
       QFile::remove(fileName + "~");
       QFile::copy(fileName,fileName + "~");
@@ -153,7 +153,7 @@ namespace Molsketch
 
     return true;
   }
-  
+
   Molecule* loadFile(const QString &fileName)
   {
     // Creating and setting conversion classes
@@ -173,7 +173,7 @@ namespace Molsketch
     // Add atoms one-by-ons
     using OpenBabel::OBAtomIterator ;
     FOR_ATOMS_OF_MOL(obatom, obmol)
-      atomHash[&(*obatom)] = 
+      atomHash[&(*obatom)] =
         mol->addAtom(Molsketch::number2symbol(obatom->GetAtomicNum()),
                      QPointF(obatom->x()*40,obatom->y()*40), false);
 
@@ -185,21 +185,21 @@ namespace Molsketch
                                  atomHash[obbond->GetEndAtom()],
                                  Bond::simpleTypeFromOrder(obbond->GetBondOrder()));
       // Set special bond types
-      if (obbond->IsWedge()) 
+      if (obbond->IsWedge())
         bond->setType( Bond::Wedge );
-      if (obbond->IsHash()) 
+      if (obbond->IsHash())
         bond->setType( Bond::Hash );
     }
 
     return mol;
   }
-  
+
   void getSymmetryClasses(const Molecule* molecule, std::vector<unsigned int>& symmetry_classes)
   {
     symmetry_classes.clear() ;
     if (!molecule) return ;
     OpenBabel::OBMol obmol(toOBMolecule(molecule)) ;
-#ifdef OPENBABEL2_TRUNK      
+#ifdef OPENBABEL2_TRUNK
     OpenBabel::OBGraphSym graphsym(&obmol);
     graphsym.GetSymmetry(symmetry_classes);
 #else
@@ -222,12 +222,12 @@ namespace Molsketch
 #endif
 #endif
   }
-  
+
   QList<Atom*> chiralAtoms(const Molecule* molecule)
   {
     QList<Atom*> result ;
     if (!molecule) return result ;
-    
+
     QList<Atom*> atoms(molecule->atoms()) ;
     OpenBabel::OBMol obmol(toOBMolecule(molecule)) ;
 #ifdef OPENBABEL2_TRUNK
@@ -238,19 +238,19 @@ namespace Molsketch
 
     //std::vector<unsigned long> atomIds = FindTetrahedralAtoms(obmol, symmetry_classes);
     OpenBabel::OBStereoUnitSet units = FindStereogenicUnits(&obmol, symmetry_classes);
-    
+
     for (unsigned int i = 0; i < units.size(); ++i) {
       if (units.at(i).type == OpenBabel::OBStereo::Tetrahedral) {
         OpenBabel::OBAtom *obatom = obmol.GetAtomById(units.at(i).id);
         result << atoms[obatom->GetIndex()] ;
-      } else 
+      } else
       if (units.at(i).type == OpenBabel::OBStereo::CisTrans) {
         OpenBabel::OBBond *obbond = obmol.GetBondById(units.at(i).id);
         OpenBabel::OBAtom *obatom1 = obbond->GetBeginAtom();
         OpenBabel::OBAtom *obatom2 = obbond->GetEndAtom();
         result << atoms[obatom1->GetIndex()]
                << atoms[obatom2->GetIndex()] ;
-      } 
+      }
     }
 #else
     using OpenBabel::OBMolAtomIter;
@@ -260,7 +260,7 @@ namespace Molsketch
 #endif
     return result ;
   }
-  
+
   Molecule* call_osra(QString fileName)
   {
     int n=0;
@@ -274,9 +274,9 @@ namespace Molsketch
     char *env = getenv("OSRA");
     if (env != NULL)
       command = env;
-    else 
+    else
       command = "osra";
-    
+
     command += " -f sdf " + fileName + ">" + tmpresult;
 
     QStringList arguments;
@@ -301,12 +301,31 @@ namespace Molsketch
       if (n > 0) {
         x_avg /= n;
         y_avg /= n;
-        foreach(Atom* atom, mol->atoms()) 
+        foreach(Atom* atom, mol->atoms())
           atom->setPos(atom->x() - x_avg, y_avg - atom->y());
       }
     }
     QFile::remove(tmpresult);
     return mol;
   }
-  
+
+  QStringList getFormats(const std::vector<std::string>& originalFormats) {
+    QStringList formats;
+    for (std::string pluginDescription : originalFormats) {
+        QString fromOpenBabel(QString::fromStdString(pluginDescription));
+        formats << fromOpenBabel.section(" -- ", 1) // This split is based on OBFormat::Display
+                        + " (*." + fromOpenBabel.section(" -- ", 0, 0) + ")";
+    }
+    return formats;
+  }
+
+  QStringList outputFormats() {
+    OpenBabel::OBConversion conversion;
+    return getFormats(conversion.GetSupportedOutputFormat());
+  }
+
+  QStringList inputFormats() {
+    OpenBabel::OBConversion conversion; // TODO find out why this needs to be instantiated
+    return getFormats(conversion.GetSupportedInputFormat());
+  }
 } // namespace
