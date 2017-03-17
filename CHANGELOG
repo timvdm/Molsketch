@@ -1,3 +1,27 @@
+Beryllium-7
+-----------------------------------------------------------------------------
+- text tool
+- fixed cmake
+- fixed legacy bond import
+
+Beryllium
+-----------------------------------------------------------------------------
+- test project externalized
+- android not quite supported for now
+- windows dynamic not built regularly
+- Qt4 support to be phased out
+- typo in settings fixed (might be reverted)
+- library as folder, molecules with names
+    
+- arrows reworked
+    - several options
+    - select tip
+    - equilibrium arrows
+    - mechanism arroow
+- broken bonds
+- frames
+- context menus
+
 Lithium
 -----------------------------------------------------------------------------
 Renovation:
