@@ -2,7 +2,6 @@
 cmake_policy(SET CMP0003 NEW)
 
 set(obabeliface_HDRS
-
     obabeliface.h
    )
 
@@ -56,6 +55,7 @@ if (MSK_OPEN_BABEL)
   else(FORCEQt4)
           set_target_properties(obabeliface_LIB PROPERTIES OUTPUT_NAME "obabeliface-qt5")
   endif(FORCEQt4)
+  set_property(TARGET obabeliface_LIB PROPERTY CXX_STANDARD 14)
   set_target_properties(obabeliface_LIB PROPERTIES VERSION ${MSK_VERSION} )
   if(WIN32 OR WIN64)
           set_target_properties(obabeliface_LIB PROPERTIES PREFIX "")

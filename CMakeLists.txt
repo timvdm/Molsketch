@@ -6,7 +6,7 @@ cmake_policy(SET CMP0020 OLD)
 # The name of the project
 project(Molsketch)
 
-# Include the extra modules (OpenBabel)
+# Include the extra modules (OpenBabel/uninstall)
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
 
 ###########################################################
