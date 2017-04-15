@@ -52,25 +52,25 @@ namespace Molsketch {
 
   namespace Commands { // TODO make null safe and rework
 
-  enum CommandId {
-    BondTypeId = 1,
-    ArrowTypeId,
-    ArrowPropertiesId,
-    FrameTypeId,
-    ArrowSplineId,
-    AtomChargeId,
-    AtomImplicitHydrogensId,
-    MoveItemId,
-  };
+    enum CommandId {
+      BondTypeId = 1,
+      ArrowTypeId,
+      ArrowPropertiesId,
+      FrameTypeId,
+      ArrowSplineId,
+      AtomChargeId,
+      AtomImplicitHydrogensId,
+      MoveItemId,
+    };
 
 
-  class SymmetricCommand : public QUndoCommand {
-  public:
-    SymmetricCommand(QUndoCommand *parent = 0);
-    SymmetricCommand(const QString& name, QUndoCommand* parent = 0);
-    virtual ~SymmetricCommand(){}
-    void undo();
-  };
+    class SymmetricCommand : public QUndoCommand {
+    public:
+      SymmetricCommand(QUndoCommand *parent = 0);
+      SymmetricCommand(const QString& name, QUndoCommand* parent = 0);
+      virtual ~SymmetricCommand(){}
+      void undo();
+    };
 
     /**
  * Command to add an atom
@@ -350,85 +350,85 @@ namespace Molsketch {
       Molecule* m_mol;
     };
 
-template<class ItemClass,
-         class ItemPropertyType,
-         void (ItemClass::*setFunction)(const ItemPropertyType&),
-         ItemPropertyType (ItemClass::*getFunction)()const,
-         int CommandId = -1>
+    template<class ItemClass,
+             class ItemPropertyType,
+             void (ItemClass::*setFunction)(const ItemPropertyType&),
+             ItemPropertyType (ItemClass::*getFunction)()const,
+             int CommandId = -1>
 
-class setItemPropertiesCommand : public QUndoCommand
-{
-private:
-  ItemClass *item;
-  ItemPropertyType type;
-  typedef setItemPropertiesCommand<ItemClass, ItemPropertyType, setFunction, getFunction, CommandId> ownType;
-public:
-  setItemPropertiesCommand(ItemClass *Item, ItemPropertyType newType, const QString& text = "")
-    : QUndoCommand(text),
-      item(Item),
-      type(newType){}
-  void redo()
-  {
-    ItemPropertyType temp = (item->*getFunction)();
-    (item->*setFunction)(type);
-    type = temp;
-    item->update();
-  }
-  void undo() { redo(); }
-  int id() const { return CommandId; }
-  bool mergeWith(const QUndoCommand *other)
-  {
-    auto otherCommand = dynamic_cast<const ownType*>(other);
-    if (!otherCommand) return false;
-    if (otherCommand->item!= item) return false;
-    return true;
-  }
+    class setItemPropertiesCommand : public QUndoCommand
+    {
+    private:
+      ItemClass *item;
+      ItemPropertyType type;
+      typedef setItemPropertiesCommand<ItemClass, ItemPropertyType, setFunction, getFunction, CommandId> ownType;
+    public:
+      setItemPropertiesCommand(ItemClass *Item, ItemPropertyType newType, const QString& text = "")
+        : QUndoCommand(text),
+          item(Item),
+          type(newType){}
+      void redo()
+      {
+        ItemPropertyType temp = (item->*getFunction)();
+        (item->*setFunction)(type);
+        type = temp;
+        item->update();
+      }
+      void undo() { redo(); }
+      int id() const { return CommandId; }
+      bool mergeWith(const QUndoCommand *other)
+      {
+        auto otherCommand = dynamic_cast<const ownType*>(other);
+        if (!otherCommand) return false;
+        if (otherCommand->item!= item) return false;
+        return true;
+      }
 
-  // TODO make mergeable
-};
+      // TODO make mergeable
+    };
 
-typedef setItemPropertiesCommand<Bond, Bond::BondType, &Bond::setType, &Bond::bondType, BondTypeId> SetBondType;
-typedef setItemPropertiesCommand<Arrow, Arrow::ArrowType, &Arrow::setArrowType, &Arrow::getArrowType, ArrowTypeId> SetArrowType;
-typedef setItemPropertiesCommand<Arrow, Arrow::Properties, &Arrow::setProperties, &Arrow::getProperties, ArrowPropertiesId> setArrowProperties;
-typedef setItemPropertiesCommand<Frame, QString, &Frame::setFrameString, &Frame::frameString, FrameTypeId> SetFrameTypeString;
-typedef setItemPropertiesCommand<Arrow, bool, &Arrow::setSpline, &Arrow::getSpline, ArrowSplineId> setArrowSplineCommand;
-typedef setItemPropertiesCommand<Atom, int, &Atom::setCharge, &Atom::charge, AtomChargeId> setAtomChargeCommand;
-typedef setItemPropertiesCommand<Atom, int, &Atom::setNumImplicitHydrogens, &Atom::numImplicitHydrogens, AtomImplicitHydrogensId> setImplicitHydrogensCommand;
+    typedef setItemPropertiesCommand<Bond, Bond::BondType, &Bond::setType, &Bond::bondType, BondTypeId> SetBondType;
+    typedef setItemPropertiesCommand<Arrow, Arrow::ArrowType, &Arrow::setArrowType, &Arrow::getArrowType, ArrowTypeId> SetArrowType;
+    typedef setItemPropertiesCommand<Arrow, Arrow::Properties, &Arrow::setProperties, &Arrow::getProperties, ArrowPropertiesId> setArrowProperties;
+    typedef setItemPropertiesCommand<Frame, QString, &Frame::setFrameString, &Frame::frameString, FrameTypeId> SetFrameTypeString;
+    typedef setItemPropertiesCommand<Arrow, bool, &Arrow::setSpline, &Arrow::getSpline, ArrowSplineId> setArrowSplineCommand;
+    typedef setItemPropertiesCommand<Atom, int, &Atom::setCharge, &Atom::charge, AtomChargeId> setAtomChargeCommand;
+    typedef setItemPropertiesCommand<Atom, int, &Atom::setNumImplicitHydrogens, &Atom::numImplicitHydrogens, AtomImplicitHydrogensId> setImplicitHydrogensCommand;
 
-class SetParentItem : public QUndoCommand
-{
-private:
-  QGraphicsItem* item;
-  QGraphicsItem* parentItem;
-public:
-  SetParentItem(QGraphicsItem *item, QGraphicsItem* parentItem, const QString& text = "");
-  void redo();
-  void undo();
-};
+    class SetParentItem : public QUndoCommand
+    {
+    private:
+      QGraphicsItem* item;
+      QGraphicsItem* parentItem;
+    public:
+      SetParentItem(QGraphicsItem *item, QGraphicsItem* parentItem, const QString& text = "");
+      void redo();
+      void undo();
+    };
 
-class SwapBondAtoms : public QUndoCommand
-{
-public:
-  SwapBondAtoms(Bond* bond, const QString& text = "");
-  void redo();
-  void undo();
-private:
-  Bond* m_bond;
-};
+    class SwapBondAtoms : public QUndoCommand
+    {
+    public:
+      SwapBondAtoms(Bond* bond, const QString& text = "");
+      void redo();
+      void undo();
+    private:
+      Bond* m_bond;
+    };
 
-// Molecule commands
+    // Molecule commands
 
 
-class ChangeMoleculeName : public SymmetricCommand
-{
-  QString oldName;
-  Molecule *molecule;
-public:
-  ChangeMoleculeName(Molecule* molecule, const QString& newName ="", const QString &commandName = "", QUndoCommand *parent = 0);
-  void redo();
-};
+    class ChangeMoleculeName : public SymmetricCommand
+    {
+      QString oldName;
+      Molecule *molecule;
+    public:
+      ChangeMoleculeName(Molecule* molecule, const QString& newName ="", const QString &commandName = "", QUndoCommand *parent = 0);
+      void redo();
+    };
 
-/**
+    /**
  * Command to merge two molecules
  *
  * @author Harm van Eersel
