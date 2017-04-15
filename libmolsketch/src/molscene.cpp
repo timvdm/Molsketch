@@ -57,8 +57,6 @@
 #include "element.h"
 #include "atom.h"
 #include "bond.h"
-#include "residue.h"
-
 #include "molecule.h"
 #include "commands.h"
 #include "smilesitem.h"
@@ -251,47 +249,11 @@ namespace Molsketch {
     clear();
   }
 
-  void MolScene::addResidue (QPointF pos, QString name)
-  {
-#if QT_VERSION < 0x050000
-        m_stack ->push (new AddResidue (new Residue (pos, name, 0, this)));
-#else
-        Residue* newResidue = new Residue(pos, name, 0) ;
-        addItem(newResidue) ;
-        m_stack->push(new AddResidue(newResidue)) ;
-#endif
-  }
-
   QString MolScene::mimeType()
   {
     return "molecule/molsketch";
   }
   // Commands
-
-  QColor MolScene::color() const
-  {
-    return defaultColor();
-  }
-
-  void MolScene::setColor (const QColor& c)
-  {
-    foreach (QGraphicsItem* item, selectedItems()) {
-      if (item->type() == Atom::Type) {
-        dynamic_cast<Atom*>(item) ->setColor(c);
-      }
-      else if (item->type() == Residue::Type) {
-        dynamic_cast<Residue*>(item) ->setColor(c);
-      }
-    }
-    foreach (QGraphicsItem* item, items()) {
-      if (item->type() == Bond::Type) {
-        Bond *b = dynamic_cast<Bond*>(item);
-        if (b-> beginAtom() ->isSelected () && b->endAtom() ->isSelected()) b->setColor(c);
-      }
-    }
-    if (selectedItems().isEmpty())
-      setDefaultColor(c);
-  }
 
   void MolScene::alignToGrid() // TODO this isn't used (and not correct)
   {

@@ -206,7 +206,7 @@ namespace Molsketch {
     m_atomList.append(atom);
     atom->setParentItem(this);
     if (scene ()) {
-      atom ->setColor (dynamic_cast<MolScene *> (scene ()) ->color());
+      atom ->setColor (dynamic_cast<MolScene *> (scene ()) ->defaultColor());
     }
 
     m_electronSystemsUpdate = true;
@@ -239,12 +239,12 @@ namespace Molsketch {
 //    Q_ASSERT(m_atomList.contains(bond->beginAtom()));
 //    Q_ASSERT(m_atomList.contains(bond->endAtom()));
 
-    if (scene ())	bond ->setColor (dynamic_cast<MolScene *> (scene ()) ->color()); // TODO ??
+    if (scene ()) bond ->setColor(scene()->defaultColor()); // TODO ??
     // Checking if and altering when a bond exists
     Bond* bondX = bondBetween(bond->beginAtom(), bond->endAtom());
     if (bondX) {
       delete bond;
-      if (scene ())	bondX ->setColor (dynamic_cast<MolScene *> (scene ()) ->color());
+      if (scene ()) bondX ->setColor(scene()->defaultColor());
       return bondX;
     }
 

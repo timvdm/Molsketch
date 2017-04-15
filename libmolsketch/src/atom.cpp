@@ -236,7 +236,7 @@ namespace Molsketch {
     MolScene *molScene = dynamic_cast<MolScene*>(scene()); // @todo qobject_cast is faster
 
     if (molScene) {
-      setColor (molScene ->color());    // Setting initial parameters
+      setColor (molScene ->defaultColor());    // Setting initial parameters
     }
     else setColor (QColor (0, 0, 0));
     // Enabling hovereffects

@@ -77,7 +77,7 @@ namespace Molsketch {
 #endif
                 );
     if (molScene)
-      setColor(molScene->color());
+      setColor(molScene->defaultColor());
     else
       setColor(QColor(0, 0, 0));
 

@@ -25,10 +25,7 @@
 
 #include "atom.h"
 #include "bond.h"
-#include "residue.h"
-
 #include "molecule.h"
-
 #include "molscene.h"
 #include "graphicsitem.h"
 
@@ -64,36 +61,6 @@ void AddAtom::redo()
 
   m_molecule->addAtom(m_atom);
   m_undone = false;
-}
-
-/////////////////////////////////////////
-// AddResidue
-/////////////////////////////////////////
-
-AddResidue::AddResidue(Residue *newResidue , const QString & text) : QUndoCommand(text), m_residue(newResidue), m_scene (m_residue ->scene ())
-{
-        qDebug() << "AddResidue::AddResidue";
-}
-
-AddResidue::~AddResidue()
-{
-        if (m_undone)
-                delete m_residue;
-}
-
-void AddResidue::undo()
-{
-        m_scene ->removeItem(m_residue);
-        m_scene->update();
-        m_undone = true;
-}
-
-void AddResidue::redo()
-{
-        Q_CHECK_PTR(m_scene);
-        Q_CHECK_PTR(m_residue);
-        m_scene ->addItem (m_residue);
-        m_undone = false;
 }
 
 ////////////////////////////////////////

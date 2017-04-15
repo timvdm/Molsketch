@@ -88,8 +88,6 @@ namespace Molsketch {
        */
       ~MolScene();
 
-      void addResidue (QPointF pos = QPointF (0, 0), QString name = "");
-
       static QString mimeType();
       // Queries
       /**
@@ -123,9 +121,6 @@ namespace Molsketch {
       SCENEPROPERTY(E,e,lectronSystemsVisible, bool, false)
       SCENEPROPERTY(C,c,hargeVisible, bool, true)
       STRINGIFIEDPROPERTY(D,d,efaultColor, QColor, QColor(Qt::black))
-
-      QColor color() const;
-      void setColor(const QColor&);
 
       /**
        * @return The current RenderMode. Default is RnderLabels

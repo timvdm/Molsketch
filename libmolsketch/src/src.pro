@@ -22,7 +22,6 @@ HEADERS += \
     mollibitem.h \
     molscene.h \
     molview.h \
-    residue.h \
     ring.h \
     smilesitem.h \
     stereocenteritem.h \
@@ -94,7 +93,6 @@ SOURCES += \
     mollibitem.cpp \
     molscene.cpp \
     molview.cpp \
-    residue.cpp \
     ring.cpp \
     smilesitem.cpp \
     stereocenteritem.cpp \
