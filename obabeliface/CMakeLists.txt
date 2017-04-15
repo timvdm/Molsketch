@@ -1,28 +1,9 @@
 # CMakeLists.txt for the main sourcecode of molsKetch
 cmake_policy(SET CMP0003 NEW)
 
-set(obabeliface_HDRS
-    obabeliface.h
-   )
-
-# Set up the include directory and symlink/copy all headers to it.
-# Note: Windows lacks symlinks and so the files must be copied.
-make_directory("${CMAKE_CURRENT_BINARY_DIR}/include/molsketch")
-if(UNIX)
-  set(header_cmd "create_symlink")
-else(UNIX)
-  set(header_cmd "copy_if_different")
-endif(UNIX)
-foreach(headerFile ${obabeliface_HDRS})
-  set(from "${CMAKE_CURRENT_SOURCE_DIR}/${headerFile}")
-  set(to   "${CMAKE_CURRENT_BINARY_DIR}/include/molsketch/${headerFile}")
-  execute_process(COMMAND ${CMAKE_COMMAND} -E ${header_cmd} "${from}" "${to}")
-endforeach(headerFile ${obabeliface_HDRS})
-
-# Source files
-set(obabeliface_SRCS
-    obabeliface.cpp
-    )
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+set(obabeliface_HDRS obabeliface.h)
+set(obabeliface_SRCS obabeliface.cpp)
 
 if (MSK_OPEN_BABEL)
 

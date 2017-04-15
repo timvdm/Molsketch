@@ -9,30 +9,16 @@ endif(FORCEQt4)
 
 # Ensure the molsketch include directory is always first
 get_directory_property(tmp_include_dirs INCLUDE_DIRECTORIES)
-set_directory_properties(PROPERTIES INCLUDE_DIRECTORIES
-    "${CMAKE_CURRENT_BINARY_DIR}/../../libmolsketch/src/include;${tmp_include_dirs}")
-include_directories(${CMAKE_CURRENT_BINARY_DIR}
-                    ${CMAKE_CURRENT_BINARY_DIR}/../../obabeliface/include/molsketch
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}
+                    ${CMAKE_CURRENT_SOURCE_DIR}/../../libmolsketch/src
+                    ${CMAKE_CURRENT_SOURCE_DIR}/../../obabeliface
 )
 
-set(molsketch_SRCS
-    main.cpp
-    mainwindow.cpp
-    settings.cpp
-    librarylistwidget.cpp
-    helpforemptytoolbox.cpp
-    )
-
-set(molsketch_MOC_HDRS
-    mainwindow.h
-    settings.h
-    librarylistwidget.h
-    helpforemptytoolbox.h
-    )
-
-# Including the resources
+file(GLOB molsketch_SRCS *.cpp)
+file(GLOB molsketch_MOC_HDRS *.h)
 file(GLOB molsketch_RCS "*.qrc")
 file(GLOB molsketch_UIS "*.ui")
+
 if(FORCEQt4)
         qt4_wrap_cpp(molsketch_SRCS ${molsketch_MOC_HDRS})
         qt4_automoc(${molsketch_SRCS})
@@ -51,21 +37,19 @@ endif(WIN32)
 
 # Create the main executable
 link_directories(${CMAKE_BINARY_DIR}/lib)
+add_executable(molsketch ${molsketch_SRCS} ${molsketch_UIS_H} ${molsketch_MOC_HDRS})
+install(TARGETS molsketch DESTINATION ${MSK_INSTALL_BINS})
+set_property(TARGET molsketch PROPERTY CXX_STANDARD 14)
+target_link_libraries(molsketch molsketch_LIB)
 if(FORCEQt4)
-        add_executable(molsketch ${molsketch_SRCS} ${molsketch_UIS_H} ${molsketch_MOC_HDRS})
-        install(TARGETS molsketch DESTINATION ${MSK_INSTALL_BINS})
         # Link the code against libmolsKetch and Qt
-        target_link_libraries(molsketch molsketch_LIB ${QT_LIBRARIES})
-        set_property(TARGET molsketch PROPERTY CXX_STANDARD 14)
+        target_link_libraries(molsketch ${QT_LIBRARIES})
+        set_target_properties(molsketch PROPERTIES OUTPUT_NAME "molsketch")
 else(FORCEQt4)
-        add_executable(molsketch-qt5 ${molsketch_SRCS} ${molsketch_UIS_H} ${molsketch_MOC_HDRS})
-        install(TARGETS molsketch-qt5 DESTINATION ${MSK_INSTALL_BINS})
-        # Link the code against libmolsKetch and Qt
-        target_link_libraries(molsketch-qt5 molsketch_LIB)
-        set_property(TARGET molsketch-qt5 PROPERTY CXX_STANDARD 14)
         foreach(package ${Qt5RequiredPackages})
-                target_link_libraries(molsketch-qt5 Qt5::${package})
+                target_link_libraries(molsketch Qt5::${package})
         endforeach(package)
+        set_target_properties(molsketch PROPERTIES OUTPUT_NAME "molsketch-qt5")
 endif(FORCEQt4)
 
 
