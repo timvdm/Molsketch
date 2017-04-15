@@ -12,7 +12,7 @@ HEADERS += $$TESTS \
 CONFIG += c++14
 
 INCLUDEPATH += $$CXXTEST_PATH \
-    ../libmolsketch/src
+    ../libmolsketch
 
 QT += widgets printsupport svg testlib
 
