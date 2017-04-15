@@ -1,13 +1,13 @@
-include(../../settings.pri)
+include(../settings.pri)
 
 TEMPLATE = lib
-INCLUDEPATH += $$sourceDir/../../obabeliface
+INCLUDEPATH += $$sourceDir/../obabeliface
 HEADERS += *.h $$files(actions/*.h)
 SOURCES += *.cpp $$files(actions/*.cpp)
 FORMS += *.ui
 RESOURCES += tools/toolicons.qrc
 TARGET = molsketch$$qtVersionSuffix
-DESTDIR = ../../lib
+DESTDIR = ../lib
 QMAKE_CXXFLAGS_DEBUG +=  -g -gstabs
 win* : VERSION =
 

@@ -5,14 +5,14 @@ TEMPLATE = subdirs
 CONFIG += ordered
 
 SUBDIRS += \
-	libmolsketch/src \
-        molsketch/src
+        libmolsketch \
+        molsketch
 !android : SUBDIRS += obabeliface
 # TODO make obabeliface optional
 
 INSTALLS += documentation_en \
-	    documentation_cs \
-	    documentation_nl
+            documentation_cs \
+            documentation_nl
 
 documentation_en.files = $$PWD/doc/en/*
 documentation_cs.files = $$PWD/doc/cs/*

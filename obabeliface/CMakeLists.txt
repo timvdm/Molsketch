@@ -1,7 +1,7 @@
-# CMakeLists.txt for the main sourcecode of molsKetch
+# CMakeLists.txt for the sourcecode of auxiliary interface to OpenBabel
 cmake_policy(SET CMP0003 NEW)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/libmolsketch)
 set(obabeliface_HDRS obabeliface.h)
 set(obabeliface_SRCS obabeliface.cpp)
 
