@@ -50,7 +50,6 @@
 #include <actions/incdecaction.h>
 #include <actions/linewidthaction.h>
 #include <actions/mechanismarrowaction.h>
-#include <actions/minimizeaction.h>
 #include <actions/pluginaction.h>
 #include <actions/ringaction.h>
 #include <actions/rotateaction.h>
@@ -666,14 +665,6 @@ void MainWindow::createActions()
   prefAct->setStatusTip(tr("Edit your preferences"));
   connect(prefAct, SIGNAL(triggered()), this, SLOT(editPreferences()));
 
-        minimiseModeAct = new QAction(QIcon(":/images/minimise.png"),tr("Energy Refinement"),this);
-        minimiseModeAct->setCheckable(true);
-        //minimiseModeAct->setShortcut(tr("Ctrl+F"));
-        minimiseModeAct->setStatusTip(tr("Adjust Geometry"));
-//	textModeAct->setStatusTip(tr("Go to the minimise mode"));
-        connect(minimiseModeAct, SIGNAL(triggered()), this, SLOT(setMinimiseMode()));
-
-
   // Zoom actions
   zoomInAct = new QAction(QIcon::fromTheme("zoom-in"),tr("Zoom &In"), this);
   zoomInAct->setShortcut(tr("Ctrl++"));
@@ -841,7 +832,6 @@ void MainWindow::createToolBars()
   modifyToolBar->addAction(new chargeAction(m_scene));
   modifyToolBar->addAction(new hydrogenAction(m_scene));
   modifyToolBar->addAction(new connectAction(m_scene));
-  modifyToolBar->addAction(new minimizeAction(m_scene));
   modifyToolBar->addAction(new deleteAction(m_scene));
   modifyToolBar->addAction(new flipBondAction(m_scene));
   modifyToolBar->addAction(new flipStereoBondsAction(m_scene));

@@ -16,7 +16,6 @@ HEADERS += \
     itemplugin.h \
     math2d.h \
     mimemolecule.h \
-    minimise.h \
     molecule.h \
     molinputitem.h \
     mollibitem.h \
@@ -34,7 +33,6 @@ HEADERS += \
     actions/multiaction.h \
     actions/incdecaction.h \
     actions/connectaction.h \
-    actions/minimizeaction.h \
     actions/rotateaction.h \
     actions/transformcommand.h \
     actions/reactionarrowaction.h \
@@ -87,7 +85,6 @@ SOURCES += \
     graphsymitem.cpp \
     itemplugin.cpp \
     mimemolecule.cpp \
-    minimise.cpp \
     molecule.cpp \
     molinputitem.cpp \
     mollibitem.cpp \
@@ -105,7 +102,6 @@ SOURCES += \
     actions/multiaction.cpp \
     actions/incdecaction.cpp \
     actions/connectaction.cpp \
-    actions/minimizeaction.cpp \
     actions/rotateaction.cpp \
     actions/transformcommand.cpp \
     actions/reactionarrowaction.cpp \

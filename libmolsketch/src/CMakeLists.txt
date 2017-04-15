@@ -28,7 +28,6 @@ set(libmolsketch_HDRS
     itemplugin.h
     math2d.h
     mimemolecule.h
-    minimise.h
     molecule.h
     molinputitem.h
     mollibitem.h
@@ -66,7 +65,6 @@ set(action_HDRS
     actions/multiaction.h
     actions/incdecaction.h
     actions/connectaction.h
-    actions/minimizeaction.h
     actions/rotateaction.h
     actions/transformcommand.h
     actions/reactionarrowaction.h
@@ -129,7 +127,6 @@ set(libmolsketch_SRCS
     graphsymitem.cpp
     itemplugin.cpp
     mimemolecule.cpp
-    minimise.cpp
     molecule.cpp
     molinputitem.cpp
     mollibitem.cpp
@@ -163,7 +160,6 @@ set(libmolsketch_SRCS
     actions/multiaction.cpp
     actions/incdecaction.cpp
     actions/connectaction.cpp
-    actions/minimizeaction.cpp
     actions/rotateaction.cpp
     actions/transformcommand.cpp
     actions/reactionarrowaction.cpp

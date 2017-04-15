@@ -270,8 +270,6 @@ private:
   QAction* alignAct;
   /** Open the settings dialog action. */
   QAction* prefAct;
-  /** Minimiser **/
-  QAction *minimiseModeAct;
 
   // Tools actions
   QAction *insertSmilesAct;
