@@ -467,7 +467,11 @@ namespace Molsketch {
         if (!mol) return;
         m_stack->beginMacro(tr("add molecule"));
         m_stack->push(new AddItem(mol,this));
-        if (mol->canSplit()) m_stack->push(new SplitMol(mol));
+        if (mol->canSplit()) {
+          for(Molecule* molecule : mol->split())
+            m_stack->push(new AddItem(molecule, this));
+          m_stack->push(new DelItem(mol));
+        }
         m_stack->endMacro();
   }
 

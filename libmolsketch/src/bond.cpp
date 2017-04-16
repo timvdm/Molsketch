@@ -547,7 +547,15 @@ namespace Molsketch {
       m_beginAtom->addBond(this) ;
       setPos(m_beginAtom->scenePos()) ;
     }
-    if (m_endAtom)   m_endAtom  ->addBond(this);
+    if (m_endAtom)  m_endAtom->addBond(this);
+  }
+
+  void Bond::setAtoms(const QPair<Atom *, Atom *> &atoms) {
+    setAtoms(atoms.first, atoms.second);
+  }
+
+  QPair<Atom *, Atom *> Bond::atoms() const {
+    return qMakePair(beginAtom(), endAtom());
   }
 
   Molecule* Bond::molecule() const

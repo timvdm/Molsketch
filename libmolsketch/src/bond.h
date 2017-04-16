@@ -129,6 +129,8 @@ class Bond : public graphicsItem
         Atom* otherAtom(const Atom *atom) const;
 
         void setAtoms(Atom* A, Atom* B) ;
+        void setAtoms(const QPair<Atom*, Atom*>& atoms);
+        QPair<Atom*, Atom*> atoms() const;
 
         /** Returns the molecule this bond is part of. */
         Molecule* molecule() const;

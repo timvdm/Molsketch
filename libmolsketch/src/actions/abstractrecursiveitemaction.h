@@ -50,6 +50,6 @@ namespace Molsketch
 #define ITERATEOVERITEMSMACRO(COMMENT,COMMAND,VALUE) \
   undoStack()->beginMacro(tr(COMMENT)) ;\
   foreach(graphicsItem* item, items())\
-  undoStack()->push(new Commands::COMMAND(VALUE, item)) ;\
+  undoStack()->push(new Commands::COMMAND(item, VALUE)) ;\
   undoStack()->endMacro() ;
 #endif // ABSTRACTITEMACTION_H
