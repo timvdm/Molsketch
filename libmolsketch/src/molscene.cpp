@@ -59,7 +59,6 @@
 #include "bond.h"
 #include "molecule.h"
 #include "commands.h"
-#include "smilesitem.h"
 #include "mimemolecule.h"
 #include "TextInputItem.h"
 #include "math2d.h"
@@ -586,8 +585,6 @@ namespace Molsketch {
       if (type == "ReactionArrow") object = new Arrow ;
       if (type == "MechanismArrow") object = new Arrow ;
     }
-    if (childName == "plugin")
-      object = ItemPluginFactory::createInstance(type);
     if ("textItem" == childName) object = new TextItem;
     if (QGraphicsItem* item = dynamic_cast<QGraphicsItem*>(object)) // TODO w/o dynamic_cast
       addItem(item) ;
