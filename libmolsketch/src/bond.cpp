@@ -29,7 +29,6 @@
 #include "bond.h"
 
 #include "atom.h"
-#include "ring.h"
 #include "element.h"
 #include "molscene.h"
 #include "math2d.h"
@@ -64,8 +63,7 @@ namespace Molsketch {
     : graphicsItem (parent GRAPHICSSCENEINIT ),
       m_bondType(type),
       m_beginAtom(0),
-      m_endAtom(0),
-      m_ring(0)
+      m_endAtom(0)
   {
     setAtoms(atomA, atomB);
 
@@ -91,8 +89,7 @@ namespace Molsketch {
     : graphicsItem(other),
       m_bondType(other.m_bondType),
       m_beginAtom(0),
-      m_endAtom(0),
-      m_ring(0)
+      m_endAtom(0)
   {
     setAtoms(atomA, atomB);
   }

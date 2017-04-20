@@ -28,7 +28,6 @@
 namespace Molsketch {
 
   class Bond;
-  class Ring;
   class Molecule;
 
   /**
@@ -58,11 +57,11 @@ namespace Molsketch {
       ~Atom() ;
       //@name Inherited drawing methods
       //@{
-      /** 
-       * Returns the bounding rectangle of the atom. Needed for Qt painting. 
+      /**
+       * Returns the bounding rectangle of the atom. Needed for Qt painting.
        */
       virtual QRectF boundingRect() const;
-      /** 
+      /**
        * Paint method to draw the atom onto a QPainter. Needed for Qt painting.
        */
       void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget);
@@ -82,23 +81,23 @@ namespace Molsketch {
       //@name Chemistry methods
       //@{
       /**
-       * Get the molecule of the atom or NULL if there is none. 
+       * Get the molecule of the atom or NULL if there is none.
        */
       virtual Molecule* molecule() const;
       /**
-       * Set the molecule of the atom. 
+       * Set the molecule of the atom.
        */
       void setMolecule(Molecule *molecule);
-      /** 
-       * Get the element symbol of the atom, including the implicit hydrogens. 
+      /**
+       * Get the element symbol of the atom, including the implicit hydrogens.
        */
       QString element() const;
-      /** 
+      /**
        * Set the element symbol of the current atom to @p element (e.g. "C", "N").
        */
       void setElement(const QString & element);
-      /** 
-       * Get the valency of the atom (i.e. the number of explicit bonds). 
+      /**
+       * Get the valency of the atom (i.e. the number of explicit bonds).
        */
       int valency() const;
       /**
@@ -126,15 +125,15 @@ namespace Molsketch {
       }
 
       void setHidden(bool hidden);
-      /** 
+      /**
        * Returns the string for the superscript charge (e.g. "3-", "2-", "-", "", "+", "2+", ...).
        */
       QString chargeString() const;
 
 
       bool hasLabel() const;
-	  //Returns full atom string . e.g. CH3    Fe2+ etc
-	  QString string ()const;
+          //Returns full atom string . e.g. CH3    Fe2+ etc
+          QString string ()const;
 
 
       /**
@@ -151,12 +150,12 @@ namespace Molsketch {
        * Get the number of non-bonding electrons (e.g. 4 for O=, 2 for NH3, 1 for radicals).
        */
       int numNonBondingElectrons() const;
-      /** 
-       * Returns whether the atom uses implicit hydrogens 
+      /**
+       * Returns whether the atom uses implicit hydrogens
        */
       bool hasImplicitHydrogens() const;
-      /** 
-       * Returns the number of implicit hydrogens currently associated with the atom. 
+      /**
+       * Returns the number of implicit hydrogens currently associated with the atom.
        *
        * @note Requires molecule() to be set.
        */
@@ -184,7 +183,7 @@ namespace Molsketch {
        * Get the number for this atom.
        *
        * @sa Molecule::numberAtoms Atom::setNumber
-       */       
+       */
       int number() const { return m_number; }
 
       void hoverOut () {m_hidden = true;}

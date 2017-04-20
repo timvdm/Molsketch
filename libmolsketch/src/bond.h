@@ -147,16 +147,7 @@ class Bond : public graphicsItem
          */
         static QLineF shiftVector(const QLineF & vector, qreal shift);
 
-        /**
-         * Get the ring for this bond. If the bond is part of multiple rings,
-         * this method returns the ring that contains the most number of double
-         * bonds. This ensures that double bonds are drawn inside the correct
-         * ring.
-         */
-        Ring* ring() const { return m_ring; } // TODO maybe eliminate class Ring? (requires additional maintenance and the main use seems to be ring bonds (now manually chosen) and the "minimize" action)
-
         QString xmlName() const { return "bond" ; }
-        void setRing(Ring *ring) { m_ring = ring; }
         /** set the coordinates of the two atoms */
         void setCoordinates(const QVector<QPointF> &c) ;
         /** get the coordinates of the two atoms */
@@ -182,7 +173,6 @@ class Bond : public graphicsItem
         Atom* m_beginAtom;
         /** Stores a pointer to the second atom. */
         Atom* m_endAtom;
-        Ring *m_ring;
         QList<XmlObjectInterface*> helpers;
 };
 
