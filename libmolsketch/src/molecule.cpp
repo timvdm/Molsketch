@@ -152,13 +152,6 @@ namespace Molsketch {
     return result;
   }
 
-  void Molecule::numberAtoms () {
-    QList <Atom *> ats = atoms ();
-    for (int i = 0; i < ats.size (); i++) {
-      ats[i] ->setNumber(i);
-    }
-  }
-
   void Molecule::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
   {
     foreach (Atom* atom, atoms())

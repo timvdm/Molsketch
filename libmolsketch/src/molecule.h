@@ -154,8 +154,6 @@ class Molecule : public graphicsItem
         * of a proper solution.
         */
         void rebuild();
-          void numberAtoms ();
-
 
 //   void normalize();
 //   void setAtomSize(qreal pt);
