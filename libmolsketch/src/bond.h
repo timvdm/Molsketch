@@ -34,47 +34,40 @@
 
 namespace Molsketch {
 
-/**
+  /**
  * Represents a bond.
  *
  * @author Harm van Eersel
  */
-class Bond : public graphicsItem
-{
-        friend class Molecule;
+  class Bond : public graphicsItem
+  {
+    friend class Molecule;
 
   public:
-        // Public enums
-        enum { Type = graphicsItem::BondType };
-        /**
-         * @return the type of the class. Needed for Qt type casting.
-         */
-        int type() const {return Type; }
+    enum { Type = graphicsItem::BondType };
+    int type() const {return Type; }
 
-        /**
-         * Enum for the different bond types
-         */
-        enum BondType
-        {
-          Invalid = 0,
-          DativeDot = 1,
-          DativeDash = 2,
-          Single = 10,
-          Wedge  = 11,
-          Hash   = 12,
-          WedgeOrHash = 13,
-          DoubleLegacy = 20,
-          CisOrTrans = 21,
-          DoubleAsymmetric = 22,
-          DoubleSymmetric = 23,
-          Triple = 30,
-          TripleAsymmetric = 31,
-        };
+    enum BondType
+    {
+      Invalid = 0,
+      DativeDot = 1,
+      DativeDash = 2,
+      Single = 10,
+      Wedge  = 11,
+      Hash   = 12,
+      WedgeOrHash = 13,
+      DoubleLegacy = 20,
+      CisOrTrans = 21,
+      DoubleAsymmetric = 22,
+      DoubleSymmetric = 23,
+      Triple = 30,
+      TripleAsymmetric = 31,
+    };
 
-        static int orderFromType(const BondType& type);
-        static BondType simpleTypeFromOrder(const int& order);
+    static int orderFromType(const BondType& type);
+    static BondType simpleTypeFromOrder(const int& order);
 
-        /**
+    /**
          * Constructor. Create a new bond between @p atomA and @p atomB.
          *
          * @param atomA the origin atom of the bond
@@ -82,61 +75,39 @@ class Bond : public graphicsItem
          * @param order the bond order (@c Bond::Single for single, @c Bond::Double for double, @c Bond::Triple for tripple)
          * @param type the bond type (@c Bond::Normal, @c Bond::Up, @c Bond::Down, e.g.)
          */
-        explicit Bond(Atom* atomA = 0, // TODO check usage
-                      Atom* atomB = 0,
-                      Bond::BondType type = Single,
-                      QGraphicsItem* parent = 0 GRAPHICSSCENEHEADER ) ;
-        explicit Bond(const Bond& other, Atom *atomA = 0, Atom *atomB = 0);
+    explicit Bond(Atom* atomA = 0, // TODO check usage
+                  Atom* atomB = 0,
+                  Bond::BondType type = Single,
+                  QGraphicsItem* parent = 0 GRAPHICSSCENEHEADER ) ;
+    explicit Bond(const Bond& other, Atom *atomA = 0, Atom *atomB = 0);
 
-        /**
-         * Destructor.
-         */
-        virtual ~Bond();
+    virtual ~Bond();
 
-        // Inherited methods
-        /** Method to paint the bond on a QPainter object. Needed for Qt painting. */
-        void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget);
-        /** Event handler for changes in the bond. Needed for Qt painting. */
-        QVariant itemChange(GraphicsItemChange change, const QVariant & value);
+    void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget);
+    QVariant itemChange(GraphicsItemChange change, const QVariant & value);
 
-        // Inherited query methods
-        /** Returns the shape of the bond. Needed for Qt event handling. */
-        virtual QPainterPath shape() const;
-        /** Returns the bounding rectangle of the bond. Needed for Qt painting. */
-        virtual QRectF boundingRect() const;
-        /** Returns the angle of this bond from atom @p origin */
-        qreal bondAngle(const Atom* origin) const ;
-        /** Returns the main bond axis */
-        QLineF bondAxis() const ;
+    virtual QPainterPath shape() const;
+    virtual QRectF boundingRect() const;
+    /** Returns the angle of this bond from atom @p origin */
+    qreal bondAngle(const Atom* origin) const ;
+    /** Returns the main bond axis */
+    QLineF bondAxis() const ;
 
-        // Manipulation methods
-        /** Sets the bond type to @p type. */
-        void setType(const Bond::BondType& type);
+    void setType(const Bond::BondType& type);
+    int bondOrder() const;
+    Bond::BondType bondType() const;
+    Atom* beginAtom() const;
+    Atom* endAtom() const;
+    bool hasAtom(const Atom* atom) const;
 
-        // Query methods
-        /** Returns the bond order. */
-        int bondOrder() const;
-        /** Returns the bond type. */
-        Bond::BondType bondType() const;
+    Atom* otherAtom(const Atom *atom) const;
+    void setAtoms(Atom* A, Atom* B) ;
+    void setAtoms(const QPair<Atom*, Atom*>& atoms);
+    QPair<Atom*, Atom*> atoms() const;
 
-        /** Returns the origin atom of the bond. */
-        Atom* beginAtom() const;
-        /** Returns the target atom of the bond. */
-        Atom* endAtom() const;
-        /** Return @c true if @p atom takes part in this bond and @c false otherwise. */
-        bool hasAtom(const Atom* atom) const;
+    Molecule* molecule() const;
 
-        Atom* otherAtom(const Atom *atom) const;
-
-        void setAtoms(Atom* A, Atom* B) ;
-        void setAtoms(const QPair<Atom*, Atom*>& atoms);
-        QPair<Atom*, Atom*> atoms() const;
-
-        /** Returns the molecule this bond is part of. */
-        Molecule* molecule() const;
-
-        // Static auxillary methods
-        /**
+    /**
          * Auxillary method for shifting a bond perpendicular to the original bond.
          * Needed for the drawing of multiple bonds.
          *
@@ -145,46 +116,33 @@ class Bond : public graphicsItem
          *
          * @return the shifted vector
          */
-        static QLineF shiftVector(const QLineF & vector, qreal shift);
+    static QLineF shiftVector(const QLineF & vector, qreal shift);
 
-        /**
-         * Get the ring for this bond. If the bond is part of multiple rings,
-         * this method returns the ring that contains the most number of double
-         * bonds. This ensures that double bonds are drawn inside the correct
-         * ring.
-         */
-        Ring* ring() const { return m_ring; } // TODO maybe eliminate class Ring? (requires additional maintenance and the main use seems to be ring bonds (now manually chosen) and the "minimize" action)
-
-        QString xmlName() const { return "bond" ; }
-        void setRing(Ring *ring) { m_ring = ring; }
-        /** set the coordinates of the two atoms */
-        void setCoordinates(const QVector<QPointF> &c) ;
-        /** get the coordinates of the two atoms */
-        QPolygonF coordinates() const ;
+    QString xmlName() const { return "bond" ; }
+    /** set the coordinates of the two atoms */
+    void setCoordinates(const QVector<QPointF> &c) ;
+    /** get the coordinates of the two atoms */
+    QPolygonF coordinates() const ;
 
   protected:
-        QXmlStreamAttributes graphicAttributes() const ;
-        void readGraphicAttributes(const QXmlStreamAttributes &attributes) ;
-        void prepareContextMenu(QMenu *contextMenu);
-        XmlObjectInterface* produceChild(const QString &name, const QString &type);
-        void afterReadFinalization();
+    QXmlStreamAttributes graphicAttributes() const ;
+    void readGraphicAttributes(const QXmlStreamAttributes &attributes) ;
+    void prepareContextMenu(QMenu *contextMenu);
+    XmlObjectInterface* produceChild(const QString &name, const QString &type);
+    void afterReadFinalization();
 
   private:
-        void drawHashBond(QPainter *painter);
-        void drawWedgeBond(QPainter *painter);
-        void determineDoubleBondOrientation();
-        QPointF determineBondDrawingStart(Atom* start, Atom* end) const;
+    void drawHashBond(QPainter *painter);
+    void drawWedgeBond(QPainter *painter);
+    void determineDoubleBondOrientation();
+    QPointF determineBondDrawingStart(Atom* start, Atom* end) const;
 
-        // Internal representation
-        /** Stores the bond type as integer. */
-        Bond::BondType m_bondType;
-        /** Stores a pointer to the first atom. */
-        Atom* m_beginAtom;
-        /** Stores a pointer to the second atom. */
-        Atom* m_endAtom;
-        Ring *m_ring;
-        QList<XmlObjectInterface*> helpers;
-};
+    // Internal representation
+    Bond::BondType m_bondType;
+    Atom* m_beginAtom;
+    Atom* m_endAtom;
+    QList<XmlObjectInterface*> helpers;
+  };
 
 } // namespace
 

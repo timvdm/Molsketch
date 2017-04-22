@@ -30,7 +30,6 @@
 
 #include "atom.h"
 #include "bond.h"
-#include "ring.h"
 #include "molscene.h"
 #include "element.h"
 #include "math2d.h"
@@ -153,13 +152,6 @@ namespace Molsketch {
     return result;
   }
 
-  void Molecule::numberAtoms () {
-    QList <Atom *> ats = atoms ();
-    for (int i = 0; i < ats.size (); i++) {
-      ats[i] ->setNumber(i);
-    }
-  }
-
   void Molecule::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
   {
     foreach (Atom* atom, atoms())
@@ -255,7 +247,6 @@ namespace Molsketch {
     bond->setAtoms(bond->beginAtom(), bond->endAtom()); // TODO huh?
 
     m_electronSystemsUpdate = true;
-    refreshRings();
     return bond;
   }
 
@@ -326,7 +317,6 @@ namespace Molsketch {
       scene()->removeItem(bond);
 
     m_electronSystemsUpdate = true;
-    refreshRings();
   }
 
   QSet<Atom*> getConnectedAtoms(Atom* startAtom)
@@ -693,28 +683,6 @@ namespace Molsketch {
     return static_cast<MolScene*>(QGraphicsItem::scene());
   }
 
-  void Molecule::refreshRings()
-  {
-    // clear ring info
-    foreach (Bond *bond, m_bondList)
-      bond->setRing(0);
-    foreach (Ring *ring, m_rings)
-      delete ring;
-    m_rings.clear();
-
-    // create minimum list of smallest rings
-    QList<Atom*> atomList = m_atomList ;
-    while (!atomList.empty()) {
-      QList<Atom*> minRing = smallestRing(QList<Atom*>() << atomList.takeLast()) ;
-      if (minRing.empty()) continue ; // atom not part of a ring
-      Ring *ring = new Ring;
-      ring->setAtoms(minRing) ;
-      m_rings << ring ;
-      foreach(Atom* ringatom, ring->atoms())
-        atomList.removeAll(ringatom);
-    }
-  }
-
   bool NumAtomsLessThan(const ElectronSystem *es1, const ElectronSystem *es2)
   {
     return es1->numAtoms() < es2->numAtoms();
@@ -868,7 +836,6 @@ namespace Molsketch {
 
   void Molecule::afterReadFinalization()
   {
-    refreshRings();
     updateElectronSystems();
   }
 

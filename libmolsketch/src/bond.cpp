@@ -29,7 +29,6 @@
 #include "bond.h"
 
 #include "atom.h"
-#include "ring.h"
 #include "element.h"
 #include "molscene.h"
 #include "math2d.h"
@@ -40,12 +39,9 @@
 
 #define CHECKFORATOMS if (!m_beginAtom || !m_endAtom)
 
-// Constructor
-
 namespace Molsketch {
 
-  int Bond::orderFromType(const Bond::BondType &type)
-  {
+  int Bond::orderFromType(const Bond::BondType &type) {
     return type / 10;
   }
 
@@ -64,52 +60,41 @@ namespace Molsketch {
     : graphicsItem (parent GRAPHICSSCENEINIT ),
       m_bondType(type),
       m_beginAtom(0),
-      m_endAtom(0),
-      m_ring(0)
+      m_endAtom(0)
   {
     setAtoms(atomA, atomB);
 
     MolScene* molScene = dynamic_cast<MolScene*>(
-#if QT_VERSION < 0x050000
-                scene
-#else
-                scene()
-#endif
-                );
+      #if QT_VERSION < 0x050000
+          scene
+      #else
+          scene()
+      #endif
+          );
     if (molScene)
       setColor(molScene->defaultColor());
     else
       setColor(QColor(0, 0, 0));
 
     setZValue(2);
-
-  //   setFlag(QGraphicsItem::ItemIsSelectable);
-    //   setAcceptedMouseButtons(Qt::LeftButton);
   }
 
   Bond::Bond(const Bond &other, Atom* atomA, Atom* atomB)
     : graphicsItem(other),
       m_bondType(other.m_bondType),
       m_beginAtom(0),
-      m_endAtom(0),
-      m_ring(0)
+      m_endAtom(0)
   {
     setAtoms(atomA, atomB);
   }
 
-  Bond::~Bond()
-  {
-  }
-
-  // Inherited methods
+  Bond::~Bond() {}
 
   QRectF Bond::boundingRect() const
   {
     CHECKFORATOMS return QRect() ;
-
     qreal w = m_endAtom->x() - m_beginAtom->x();
     qreal h = m_endAtom->y() - m_beginAtom->y();
-
     return QRectF(mapFromParent(m_beginAtom->pos()) - QPointF(5,5), QSizeF(w+10,h+10)).normalized();
   }
 
@@ -125,7 +110,7 @@ namespace Molsketch {
                   mapFromParent(m_endAtom->pos())) ;
   }
 
-  void Bond::drawHashBond(QPainter *painter) // TODO make part of ::paint()
+  void Bond::drawHashBond(QPainter *painter)
   {
     qreal m_bondSpacing = 4.0;
 
@@ -147,7 +132,7 @@ namespace Molsketch {
     }
   }
 
-  void Bond::drawWedgeBond(QPainter *painter) // TODO make part of ::paint()
+  void Bond::drawWedgeBond(QPainter *painter)
   {
     qreal m_bondSpacing = 4.0;
 
@@ -162,17 +147,17 @@ namespace Molsketch {
     int i = 0;
     QPointF points[4];
     if (m_beginAtom->hasLabel()) {
-        points[i++] = begin + 0.25 * (vb - orthogonal);
-        points[i++] = begin + 0.25 * (vb + orthogonal);
+      points[i++] = begin + 0.25 * (vb - orthogonal);
+      points[i++] = begin + 0.25 * (vb + orthogonal);
     } else {
-        points[i++] = begin;
+      points[i++] = begin;
     }
     if (m_endAtom->hasLabel()) {
-        points[i++] = end - 0.25 * vb + 0.75 * orthogonal;
-        points[i++] = end - 0.25 * vb - 0.75 * orthogonal;
+      points[i++] = end - 0.25 * vb + 0.75 * orthogonal;
+      points[i++] = end - 0.25 * vb - 0.75 * orthogonal;
     } else {
-        points[i++] = end + orthogonal;
-        points[i++] = end - orthogonal;
+      points[i++] = end + orthogonal;
+      points[i++] = end - orthogonal;
     }
 
     painter->setBrush( QBrush(getColor()) );
@@ -465,11 +450,6 @@ namespace Molsketch {
       painter->drawLine(QLineF(midPoint + 5.0 * orthogonal + 5.0 * uvb, midPoint + 5.0 * orthogonal - 5.0 * uvb));
       painter->drawLine(QLineF(midPoint - 5.0 * orthogonal + 5.0 * uvb, midPoint - 5.0 * orthogonal - 5.0 * uvb));
     }
-
-
-    //painter->drawPolygon(shape().toFillPolygon());
-
-    // Restore old painter
     painter->restore();
   }
 
@@ -484,27 +464,21 @@ namespace Molsketch {
     CHECKFORATOMS return QPainterPath() ;
     QPolygonF polygon;
     polygon << shiftVector(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())),10).p1()
-    << shiftVector(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())),10).p2()
-    << shiftVector(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())),-10).p2() << shiftVector(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())),-10).p1();
+            << shiftVector(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())),10).p2()
+            << shiftVector(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())),-10).p2() << shiftVector(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())),-10).p1();
 
     QPainterPath path(mapFromParent(m_beginAtom->pos()));
-    // path.quadTo(QPointF(),m_endAtom->pos());
     path.addPolygon( polygon );
     path.closeSubpath();
 
     return path;
   }
 
-  // Manipulation methods
-
   void Bond::setType(const BondType &t)
   {
     m_bondType = t;
     update();
   }
-
-
-  // Query methods
 
   int Bond::bondOrder() const
   {
@@ -563,20 +537,12 @@ namespace Molsketch {
     return dynamic_cast<Molecule*>(this->parentItem());
   }
 
-  // Auxilary methods
-
   QLineF Bond::shiftVector(const QLineF &vector, qreal shift) // Shifts a vector on the perpendicular axis
   {
-    //pre: true
-    //ret: shifted vector
-
-    // Calculating the new coordinates
     qreal rx1 = vector.x1() + shift*(vector.unitVector().y2()-vector.unitVector().y1());
     qreal ry1 = vector.y1() + shift*-(vector.unitVector().x2()-vector.unitVector().x1());
     qreal rx2 = vector.x2() + shift*(vector.unitVector().y2()-vector.unitVector().y1());
     qreal ry2 = vector.y2() + shift*-(vector.unitVector().x2()-vector.unitVector().x1());
-
-    // Returning the new vector
     return QLineF(rx1,ry1,rx2,ry2);
   }
 
@@ -667,5 +633,4 @@ namespace Molsketch {
     for (auto helper : helpers) delete helper;
     helpers.clear();
   }
-
 } // namespace

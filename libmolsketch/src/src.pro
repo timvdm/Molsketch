@@ -6,24 +6,17 @@ INCLUDEPATH += $$sourceDir/../../obabeliface
 
 HEADERS += \
     atom.h \
-    atomnumberitem.h \
     bond.h \
     commands.h \
     electronsystem.h \
     element.h \
     fileio.h \
-    graphsymitem.h \
-    itemplugin.h \
     math2d.h \
     mimemolecule.h \
     molecule.h \
-    molinputitem.h \
     mollibitem.h \
     molscene.h \
     molview.h \
-    ring.h \
-    smilesitem.h \
-    stereocenteritem.h \
     TextInputItem.h \
     actions/coloraction.h \
     graphicsitem.h \
@@ -42,7 +35,6 @@ HEADERS += \
     actions/drawaction.h \
     actions/ringaction.h \
     actions/mechanismarrowaction.h \
-    actions/pluginaction.h \
     actions/deleteaction.h \
     actions/bondtypeaction.h \
     actions/itemtypewidget.h \
@@ -76,23 +68,16 @@ HEADERS += \
 
 SOURCES += \
     atom.cpp \
-    atomnumberitem.cpp \
     bond.cpp \
     commands.cpp \
     electronsystem.cpp \
     element.cpp \
     fileio.cpp \
-    graphsymitem.cpp \
-    itemplugin.cpp \
     mimemolecule.cpp \
     molecule.cpp \
-    molinputitem.cpp \
     mollibitem.cpp \
     molscene.cpp \
     molview.cpp \
-    ring.cpp \
-    smilesitem.cpp \
-    stereocenteritem.cpp \
     TextInputItem.cpp \
     actions/coloraction.cpp \
     graphicsitem.cpp \
@@ -111,7 +96,6 @@ SOURCES += \
     actions/drawaction.cpp \
     actions/ringaction.cpp \
     actions/mechanismarrowaction.cpp \
-    actions/pluginaction.cpp \
     actions/deleteaction.cpp \
     actions/bondtypeaction.cpp \
     actions/itemtypewidget.cpp \

@@ -50,7 +50,6 @@
 #include <actions/incdecaction.h>
 #include <actions/linewidthaction.h>
 #include <actions/mechanismarrowaction.h>
-#include <actions/pluginaction.h>
 #include <actions/ringaction.h>
 #include <actions/rotateaction.h>
 #include <actions/flipstereobondsaction.h>
@@ -64,7 +63,6 @@
 #include "element.h"
 #include "fileio.h"
 #include "mollibitem.h"
-#include "itemplugin.h"
 
 #include "obabeliface.h"
 
@@ -747,14 +745,6 @@ void MainWindow::createMenus()
   editMenu->addSeparator();
   editMenu->addAction(prefAct);
 
-  toolsMenu = menuBar()->addMenu(tr("&Insert Items"));
-  foreach (ItemPluginFactory *factory, ItemPluginFactory::factories()) {
-    QAction *pluginAct = new QAction(factory->input() + " -> " + factory->output(), this);
-    pluginAct->setData(factory->output());
-    connect(pluginAct, SIGNAL(triggered()), this, SLOT(pluginActionTriggered()));
-    toolsMenu->addAction(pluginAct);
-  }
-
   viewMenu = menuBar()->addMenu(tr("&View"));
   viewMenu->addAction(zoomInAct);
   viewMenu->addAction(zoomOutAct);
@@ -822,7 +812,6 @@ void MainWindow::createToolBars()
   drawToolBar->addAction(new mechanismArrowAction(m_scene));
   drawToolBar->addAction(new FrameAction(m_scene));
   drawToolBar->addAction(new TextAction(m_scene));
-  drawToolBar->addAction(new pluginAction(m_scene));
 
   modifyToolBar = addToolBar(tr("Modify"));
   modifyToolBar->setObjectName("modify-toolbar");
@@ -916,19 +905,6 @@ void MainWindow::createToolBarContextMenuOptions()
   }
   connect(toolBarTextsAndIcons, SIGNAL(triggered(QAction*)), this, SLOT(setToolButtonStyle(QAction*)));
 }
-
-void MainWindow::pluginActionTriggered()
-{
-  Q_CHECK_PTR(m_scene);
-
-  QAction *action = qobject_cast<QAction*>(sender());
-  Q_CHECK_PTR(action);
-
-  QString output = action->data().toString();
-  ItemPlugin *item = ItemPluginFactory::createInstance(output);
-  m_scene->addItem(item);
-}
-
 
 void MainWindow::createView()
 {
