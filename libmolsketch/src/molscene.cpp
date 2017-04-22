@@ -161,6 +161,7 @@ namespace Molsketch {
         booleanAction->setChecked((scene->*booleanActions[booleanAction].second)());
         connect(booleanAction, SIGNAL(toggled(bool)), scene, SLOT(booleanPropertyChanged(bool)));
         connect(booleanAction, SIGNAL(toggled(bool)), scene, SLOT(updateAll()));
+        connect(scene, SIGNAL(sceneRectChanged(QRectF)), scene, SLOT(updateGrid(QRectF)));
       }
 
       propertiesHelpLabel->setAlignment(Qt::AlignTop);
@@ -669,6 +670,11 @@ namespace Molsketch {
     (this->*d->booleanActions.value(action).first)(newValue);
   }
 
+  void MolScene::updateGrid(const QRectF& newSceneRect)
+  {
+    d->Grid->update(newSceneRect);
+  }
+
   Atom* MolScene::atomAt(const QPointF &pos) // TODO consider replacing with itemAt()
   {
     foreach(Atom* atom, atoms())
@@ -695,13 +701,13 @@ namespace Molsketch {
 
   Bond* MolScene::bondAt(const QPointF &pos)
   {
-        // Check if there is a bond at this position
-        foreach( QGraphicsItem* item,items(pos))
+        foreach( QGraphicsItem* item, items(pos))
           if (item->type() == Bond::Type) return dynamic_cast<Bond*>(item);
 
-        // Else return NULL
         return 0;
   }
+
+
 
   // Event handlers
 
@@ -872,6 +878,16 @@ namespace Molsketch {
 #endif
 
         return actions;
+  }
+
+  T *MolScene::itemNear<T>(const QPointF &pos, qreal tolerance) { // TODO unit test
+    qreal minDistance = tolerance;
+    T *result = nullptr;
+    for(QGraphicsItem* item : items(QRectF(pos.x()-tolerance, pos.y()-tolerance, tolerance, tolerance))) {
+      if (!(QLineF(item->scenePos(), pos).length() < minDistance)) continue;
+      if (T *itemPointer = dynamic_cast<T*>(item)) result = itemPointer;
+    }
+    return result;
   }
 
 } // namespace

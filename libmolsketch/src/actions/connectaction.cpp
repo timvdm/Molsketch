@@ -52,6 +52,4 @@ namespace Molsketch {
     drag->setPixmap(QPixmap::fromImage(molImg));
     drag->start();
   }
-
-  // TODO use undo stack
 } // namespace

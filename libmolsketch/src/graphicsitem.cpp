@@ -147,13 +147,12 @@ namespace Molsketch {
     d->selectedPoint = -1 ;
     QPointF eventPosition = event->scenePos() ;
     int i = 0 ;
-    double minDistance = INFINITY ;
+    double minDistance = pointSelectionDistance() ;
 
     foreach(const QPointF& p, moveablePoints())
     {
       qreal currentDistance = QLineF(eventPosition, p).length() ;
-      if (currentDistance < minDistance
-          && currentDistance < pointSelectionDistance()) // TODO use pointSelectionDistance as starting value of minDistance
+      if (currentDistance < minDistance)
       {
         minDistance = currentDistance ;
         d->selectedPoint = i ;

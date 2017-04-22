@@ -71,7 +71,7 @@ namespace Molsketch {
   }
 
   QRectF grid::boundingRect() const
-  { // TODO use sceneRectChanged signal to update
+  {
     if (!scene()) return QRectF();
     return scene()->sceneRect();
   }
