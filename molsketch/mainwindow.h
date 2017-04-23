@@ -129,12 +129,8 @@ private slots:
   void zoomReset();
   /** Adjust the zoom leven to fit the whole document in the view. */
   void zoomFit();
-
   /** Update the window to match the edit mode @p mode. */
   void updateEditMode(int mode);
-
-
-  void pluginActionTriggered();
   /** Reloads the preferences */
   void readPreferences();
 
@@ -206,8 +202,6 @@ private:
   QMenu* fileMenu;
   /** The edit menu. */
   QMenu* editMenu;
-  /** The tools menu. */
-  QMenu* toolsMenu;
   /** The view menu. */
   QMenu* viewMenu;
   /** The window menu. */
@@ -270,8 +264,6 @@ private:
   QAction* alignAct;
   /** Open the settings dialog action. */
   QAction* prefAct;
-  /** Minimiser **/
-  QAction *minimiseModeAct;
 
   // Tools actions
   QAction *insertSmilesAct;

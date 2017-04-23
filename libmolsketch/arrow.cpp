@@ -140,7 +140,7 @@ namespace Molsketch {
     path.moveTo(d->points.first()) ;
     if (d->spline && splinePossible(d->points.size()))
     {
-      for (int i = 1 ; i+2 < d->points.size() ; i += 3) // TODO: alternatively: straight connection
+      for (int i = 1 ; i+2 < d->points.size() ; i += 3)
         path.cubicTo(d->points[i],
                      d->points[i+1],
             d->points[i+2]);

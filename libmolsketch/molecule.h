@@ -43,7 +43,6 @@ class QPainter;
 namespace Molsketch {
 
   class Atom;
-  class Ring;
   class MolScene;
   class ElectronSystem; // under construction
 
@@ -155,8 +154,6 @@ class Molecule : public graphicsItem
         * of a proper solution.
         */
         void rebuild();
-          void numberAtoms ();
-
 
 //   void normalize();
 //   void setAtomSize(qreal pt);
@@ -200,14 +197,6 @@ class Molecule : public graphicsItem
          */
         const QList<Bond*>& bonds() const;
 
-        /**
-         * Get a list of the rings in the molecule.
-         */
-        const QList<Ring*>& rings() const
-        {
-          return m_rings;
-        }
-
         QWidget *getPropertiesWidget();
 
         /** Returns the MolScene of the molecule. */
@@ -219,8 +208,6 @@ class Molecule : public graphicsItem
         int charge() const;
         /** Returns the charge as a string with an appropiate + or - sign. */
         QString chargeID() const;
-
-        void refreshRings();
 
         /**
          * Invalidate the electron systems. To be called when Atom/Bond properties
@@ -284,7 +271,6 @@ class Molecule : public graphicsItem
         bool m_electronSystemsUpdate;
         QList<ElectronSystem*> m_electronSystems;
 
-        QList<Ring*> m_rings;
         QString name;
 public:
         Molecule& operator+=(const Molecule& other);

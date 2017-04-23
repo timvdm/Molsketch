@@ -65,7 +65,6 @@ HEADERS += \
     libmolsketch/src/mollibitem.h \
     libmolsketch/src/molscene.h \
     libmolsketch/src/molview.h \
-    libmolsketch/src/residue.h \
     libmolsketch/src/ring.h \
     libmolsketch/src/smilesitem.h \
     libmolsketch/src/stereocenteritem.h \
@@ -136,7 +135,6 @@ SOURCES += \
     libmolsketch/src/mollibitem.cpp \
     libmolsketch/src/molscene.cpp \
     libmolsketch/src/molview.cpp \
-    libmolsketch/src/residue.cpp \
     libmolsketch/src/ring.cpp \
     libmolsketch/src/smilesitem.cpp \
     libmolsketch/src/stereocenteritem.cpp \

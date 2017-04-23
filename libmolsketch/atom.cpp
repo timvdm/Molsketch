@@ -71,7 +71,6 @@ namespace Molsketch {
       else
         alignment = Down;
     } else {
-      //qDebug() << "x =" << direction.x();
       if (direction.x() < -0.1) // hack to make almost vertical lines align Right
         alignment = Left;
       else
@@ -83,7 +82,7 @@ namespace Molsketch {
 
 
   Atom::Atom(const QPointF &position, const QString &element, bool implicitHydrogens,
-     QGraphicsItem* parent GRAPHICSSCENESOURCE )
+             QGraphicsItem* parent GRAPHICSSCENESOURCE )
     : graphicsItem (parent GRAPHICSSCENEINIT )
   {
     initialize(position, element, implicitHydrogens);
@@ -95,14 +94,7 @@ namespace Molsketch {
     initialize(other.scenePos(), other.element(), other.hasImplicitHydrogens());
   }
 
-  Atom::~Atom()
-  {
-  }
-
-
-  //////////////////////////////////////////////////////////////////////////////
-  // Inherited painting methods
-  //////////////////////////////////////////////////////////////////////////////
+  Atom::~Atom() {} // TODO sign off from bonds
 
   qreal Atom::computeTotalWdith(const int& alignment,
                                 const QString& lbl,
@@ -110,7 +102,6 @@ namespace Molsketch {
                                 const QFontMetrics &fmScript)
   {
     qreal totalWidth = 0;
-    // compute the total width
     if ((alignment == Right) || (alignment == Left) || !lbl.contains("H")) {
       for (int i = 0; i < lbl.size(); ++i) {
         if (lbl[i].isDigit())
@@ -233,10 +224,10 @@ namespace Molsketch {
     setPos(position);
     setZValue(3);
 
-    MolScene *molScene = dynamic_cast<MolScene*>(scene()); // @todo qobject_cast is faster
+    MolScene *molScene = qobject_cast<MolScene*>(scene());
 
     if (molScene) {
-      setColor (molScene ->color());    // Setting initial parameters
+      setColor (molScene ->defaultColor());
     }
     else setColor (QColor (0, 0, 0));
     // Enabling hovereffects
@@ -259,7 +250,6 @@ namespace Molsketch {
 
   QRectF Atom::boundingRect() const
   {
-    // TODO cannot change atom symbol if not drawn...
     if (!isDrawn()) return QRect();
     return m_shape;
   }
@@ -279,7 +269,7 @@ namespace Molsketch {
   {
     MolScene* molScene = dynamic_cast<MolScene*>(scene());
 
-    painter->save(); // TODO mit computeBoundingRect zusammenfuehren
+    painter->save(); // TODO unite with computeBoundingRect
     QFont symbolFont = molScene->atomFont();
     symbolFont.setPointSizeF(symbolFont.pointSizeF()*relativeWidth());
     QFont subscriptFont = symbolFont;
@@ -310,14 +300,6 @@ namespace Molsketch {
       if (width > totalWidth)
         totalWidth = width;
     }
-
-    // debug
-    /*
-    painter->save();
-    painter->setPen(Qt::red);
-    painter->drawPoint(QPointF(0.0, 0.0));
-    painter->restore();
-    */
 
     QString str, subscript;
     // compute the horizontal starting position
@@ -415,16 +397,6 @@ namespace Molsketch {
     Q_UNUSED(widget)
 
     painter->setPen(getColor());
-    // Save the original painter state
-    //painter->save();
-
-    /*
-          qDebug() << "Atom::paint()";
-          qDebug() << "m_hidden" << m_hidden;
-          qDebug() << "isSelected" << isSelected();
-          qDebug() << "numBonds" << numBonds();
-    */
-    // Check the scene
     MolScene* molScene = dynamic_cast<MolScene*>(scene());
     if (!molScene) return ;
     Q_CHECK_PTR(molScene);
@@ -497,12 +469,12 @@ namespace Molsketch {
 
     // Draw charge
     if (molScene->chargeVisible()) {
-        QString chargeId = chargeString();
-        QFont superscriptFont = molScene->atomFont();
-        superscriptFont.setPointSize(0.5 * superscriptFont.pointSize());
-        QFontMetrics fmSymbol(superscriptFont);
-        int offset = 0.5 * fmSymbol.width("+");
-        painter->drawText(m_shape.right() - offset, m_shape.top() + offset, chargeId);
+      QString chargeId = chargeString();
+      QFont superscriptFont = molScene->atomFont();
+      superscriptFont.setPointSize(0.5 * superscriptFont.pointSize());
+      QFontMetrics fmSymbol(superscriptFont);
+      int offset = 0.5 * fmSymbol.width("+");
+      painter->drawText(m_shape.right() - offset, m_shape.top() + offset, chargeId);
     }
 
     if (molScene->lonePairsVisible()) {
@@ -606,7 +578,6 @@ namespace Molsketch {
 
 
       painter->save();
-//      painter->setBrush(Qt::black);
 
       for (int i = 0; i < unboundElectrons; i++)
         painter->drawEllipse(layoutList[i]);
@@ -678,38 +649,22 @@ namespace Molsketch {
     return attributes ;
   }
 
-
-  //////////////////////////////////////////////////////////////////////////////
-  // Event handlers
-  //////////////////////////////////////////////////////////////////////////////
-
   void Atom::mousePressEvent( QGraphicsSceneMouseEvent* event )
   {
-    // Execute default behavior
     graphicsItem::mousePressEvent( event );
   }
 
   void Atom::hoverEnterEvent( QGraphicsSceneHoverEvent * event )
   {
     m_hidden = false;
-    // Execute default behavior
     graphicsItem::hoverEnterEvent( event );
   }
 
   void Atom::hoverLeaveEvent( QGraphicsSceneHoverEvent * event )
   {
     m_hidden = true;
-    // Execute default behavior
     graphicsItem::hoverLeaveEvent( event );
   }
-
-
-
-
-
-
-
-  // Commands
 
   void Atom::setElement(const QString &element)
   {
@@ -725,14 +680,9 @@ namespace Molsketch {
 
     m_userImplicitHydrogens = 0;
     int deltaH = number - numImplicitHydrogens();
-//  int newNoB = m_numBonds - deltaNoIH;
-  //m_numBonds = (newNoB < 0) ? 0 : newNoB;
 
     m_userImplicitHydrogens = deltaH;
   }
-
-
-// Query methods
 
   int Atom::numBonds() const
   {
@@ -741,18 +691,9 @@ namespace Molsketch {
 
   int Atom::bondOrderSum() const
   {
-    Molecule *mol = molecule();
-    if (!mol)
-      return 0;
-
-    // count explicit bonds
-    int sum = 0;
-    foreach (Bond *bond, mol->bonds(this))
+    int sum = numImplicitHydrogens();
+    foreach (Bond *bond, bonds())
       sum += bond->bondOrder();
-
-    // take implicit hydrogens into account
-    sum += numImplicitHydrogens();
-
     return sum;
   }
 
@@ -795,34 +736,27 @@ namespace Molsketch {
     }
   }
 
-        QString Atom::string () const {
-                QString el = element ();
-                int n = numImplicitHydrogens();
-                QString hs;
-                QString num = "";
-                if (n) {
-                        if (n > 1) num.setNum (n);
-                        hs = QString ("H") + num;
-                }
-                else hs = QString ("");
-                QString q = chargeString();
-                return el+hs+q;
-        }
+  QString Atom::string () const {
+    QString el = element ();
+    int n = numImplicitHydrogens();
+    QString hs;
+    QString num = "";
+    if (n) {
+      if (n > 1) num.setNum (n);
+      hs = QString ("H") + num;
+    }
+    else hs = QString ("");
+    QString q = chargeString();
+    return el+hs+q;
+  }
 
   int Atom::numImplicitHydrogens() const
   {
-    Molecule *mol = molecule();
-    if (!mol)
-      return 0;
-
-    // count explicit bonds
     int bosum = 0;
-    foreach (Bond *bond, mol->bonds(this))
+    foreach (Bond *bond, bonds())
       bosum += bond->bondOrder();
-
-    int n = Molsketch::expectedValence(Molsketch::Element::strings.indexOf(m_elementSymbol)) - bosum + m_userImplicitHydrogens;
-
-    return (n > 0) ? n : 0;
+    int n = expectedValence(Element::strings.indexOf(m_elementSymbol)) - bosum + m_userImplicitHydrogens;
+    return qMax(n, 0);
   }
 
   QString Atom::element() const
@@ -857,7 +791,6 @@ namespace Molsketch {
 
   QString Atom::chargeString() const
   {
-    // Get the charge
     int c = charge();
 
     // Drawing text
@@ -874,7 +807,6 @@ namespace Molsketch {
     if (c > 1) // "2+", "3+", ...
       string = string + "+";
 
-    // Return the charge string
     return string;
   }
 
@@ -895,8 +827,6 @@ namespace Molsketch {
 
   bool Atom::isDrawn() const
   {
-    // If element is m_hidden, don't draw the atoms
-    // Always draw the atom when there are no bonds
     if (!m_hidden || isSelected() || !numBonds()) return true;
     bool carbonVisible = false;
     bool chargeVisible = true;
@@ -930,7 +860,7 @@ namespace Molsketch {
 
   void Atom::enableImplicitHydrogens(bool enabled)
   {
-    m_implicitHydrogens = enabled/* && (m_elementSymbol == "C" || m_elementSymbol == "N" || m_elementSymbol == "O")*/;
+    m_implicitHydrogens = enabled;
   }
 
   void Atom::addBond(Bond *bond)

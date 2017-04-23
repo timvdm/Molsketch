@@ -157,7 +157,7 @@ namespace Molsketch {
     if (!button) return QPixmap();
     QFont font = button->font();
     font.setPixelSize(2*font.pixelSize());
-    QPixmap pixmap(QFontMetrics(font).boundingRect(currentElement()).size() + QSize(2,2)); // TODO why do we have to add (2,2)?
+    QPixmap pixmap(QFontMetrics(font).boundingRect(currentElement()).size());
     pixmap.fill(Qt::transparent);
     QPainter painter(&pixmap);
     painter.setFont(font);

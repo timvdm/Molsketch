@@ -79,11 +79,11 @@ namespace Molsketch {
     Commands::MoveItem::absolute(this, newPosition, tr("Move text item"))->execute();
   }
 
-  class TextEditingUndoCommand : public Commands::Command { // TODO unit test
+  class TextEditingUndoCommand : public Commands::Command<TextItem, TextEditingUndoCommand>  { // TODO unit test
     TextItem *item;
     QTextDocument *originalContent;
   public:
-    void redo() {
+    void redo() override {
       QTextDocument *old = item->document();
       QObject *parent = old->parent();
       old->setParent(nullptr);
@@ -91,12 +91,11 @@ namespace Molsketch {
       item->setDocument(originalContent);
       originalContent = old;
     }
-    void undo() { redo(); }
     explicit TextEditingUndoCommand(TextItem *item, const QString& text )
       : Command(text),
         item(item), originalContent(item->document()->clone()) {}
     ~TextEditingUndoCommand() { delete originalContent; }
-    QGraphicsItem* getItem() const { return item; }
+    TextItem* getItem() const override { return item; }
   };
 
   void TextItem::focusInEvent(QFocusEvent *event) {

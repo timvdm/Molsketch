@@ -48,7 +48,6 @@ namespace Molsketch {
     class PrivateData;
     PrivateData *d;
     void propertiesChanged();
-    // TODO write macro instead for property popup
   };
 
 } // namespace

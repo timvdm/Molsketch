@@ -50,8 +50,6 @@
 #include <actions/incdecaction.h>
 #include <actions/linewidthaction.h>
 #include <actions/mechanismarrowaction.h>
-#include <actions/minimizeaction.h>
-#include <actions/pluginaction.h>
 #include <actions/ringaction.h>
 #include <actions/rotateaction.h>
 #include <actions/flipstereobondsaction.h>
@@ -65,7 +63,6 @@
 #include "element.h"
 #include "fileio.h"
 #include "mollibitem.h"
-#include "itemplugin.h"
 
 #include "obabeliface.h"
 
@@ -666,14 +663,6 @@ void MainWindow::createActions()
   prefAct->setStatusTip(tr("Edit your preferences"));
   connect(prefAct, SIGNAL(triggered()), this, SLOT(editPreferences()));
 
-        minimiseModeAct = new QAction(QIcon(":/images/minimise.png"),tr("Energy Refinement"),this);
-        minimiseModeAct->setCheckable(true);
-        //minimiseModeAct->setShortcut(tr("Ctrl+F"));
-        minimiseModeAct->setStatusTip(tr("Adjust Geometry"));
-//	textModeAct->setStatusTip(tr("Go to the minimise mode"));
-        connect(minimiseModeAct, SIGNAL(triggered()), this, SLOT(setMinimiseMode()));
-
-
   // Zoom actions
   zoomInAct = new QAction(QIcon::fromTheme("zoom-in"),tr("Zoom &In"), this);
   zoomInAct->setShortcut(tr("Ctrl++"));
@@ -756,14 +745,6 @@ void MainWindow::createMenus()
   editMenu->addSeparator();
   editMenu->addAction(prefAct);
 
-  toolsMenu = menuBar()->addMenu(tr("&Insert Items"));
-  foreach (ItemPluginFactory *factory, ItemPluginFactory::factories()) {
-    QAction *pluginAct = new QAction(factory->input() + " -> " + factory->output(), this);
-    pluginAct->setData(factory->output());
-    connect(pluginAct, SIGNAL(triggered()), this, SLOT(pluginActionTriggered()));
-    toolsMenu->addAction(pluginAct);
-  }
-
   viewMenu = menuBar()->addMenu(tr("&View"));
   viewMenu->addAction(zoomInAct);
   viewMenu->addAction(zoomOutAct);
@@ -831,7 +812,6 @@ void MainWindow::createToolBars()
   drawToolBar->addAction(new mechanismArrowAction(m_scene));
   drawToolBar->addAction(new FrameAction(m_scene));
   drawToolBar->addAction(new TextAction(m_scene));
-  drawToolBar->addAction(new pluginAction(m_scene));
 
   modifyToolBar = addToolBar(tr("Modify"));
   modifyToolBar->setObjectName("modify-toolbar");
@@ -841,7 +821,6 @@ void MainWindow::createToolBars()
   modifyToolBar->addAction(new chargeAction(m_scene));
   modifyToolBar->addAction(new hydrogenAction(m_scene));
   modifyToolBar->addAction(new connectAction(m_scene));
-  modifyToolBar->addAction(new minimizeAction(m_scene));
   modifyToolBar->addAction(new deleteAction(m_scene));
   modifyToolBar->addAction(new flipBondAction(m_scene));
   modifyToolBar->addAction(new flipStereoBondsAction(m_scene));
@@ -926,19 +905,6 @@ void MainWindow::createToolBarContextMenuOptions()
   }
   connect(toolBarTextsAndIcons, SIGNAL(triggered(QAction*)), this, SLOT(setToolButtonStyle(QAction*)));
 }
-
-void MainWindow::pluginActionTriggered()
-{
-  Q_CHECK_PTR(m_scene);
-
-  QAction *action = qobject_cast<QAction*>(sender());
-  Q_CHECK_PTR(action);
-
-  QString output = action->data().toString();
-  ItemPlugin *item = ItemPluginFactory::createInstance(output);
-  m_scene->addItem(item);
-}
-
 
 void MainWindow::createView()
 {

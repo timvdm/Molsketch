@@ -57,11 +57,8 @@
 #include "element.h"
 #include "atom.h"
 #include "bond.h"
-#include "residue.h"
-
 #include "molecule.h"
 #include "commands.h"
-#include "smilesitem.h"
 #include "mimemolecule.h"
 #include "TextInputItem.h"
 #include "math2d.h"
@@ -163,6 +160,7 @@ namespace Molsketch {
         booleanAction->setChecked((scene->*booleanActions[booleanAction].second)());
         connect(booleanAction, SIGNAL(toggled(bool)), scene, SLOT(booleanPropertyChanged(bool)));
         connect(booleanAction, SIGNAL(toggled(bool)), scene, SLOT(updateAll()));
+        connect(scene, SIGNAL(sceneRectChanged(QRectF)), scene, SLOT(updateGrid(QRectF)));
       }
 
       propertiesHelpLabel->setAlignment(Qt::AlignTop);
@@ -251,47 +249,11 @@ namespace Molsketch {
     clear();
   }
 
-  void MolScene::addResidue (QPointF pos, QString name)
-  {
-#if QT_VERSION < 0x050000
-        m_stack ->push (new AddResidue (new Residue (pos, name, 0, this)));
-#else
-        Residue* newResidue = new Residue(pos, name, 0) ;
-        addItem(newResidue) ;
-        m_stack->push(new AddResidue(newResidue)) ;
-#endif
-  }
-
   QString MolScene::mimeType()
   {
     return "molecule/molsketch";
   }
   // Commands
-
-  QColor MolScene::color() const
-  {
-    return defaultColor();
-  }
-
-  void MolScene::setColor (const QColor& c)
-  {
-    foreach (QGraphicsItem* item, selectedItems()) {
-      if (item->type() == Atom::Type) {
-        dynamic_cast<Atom*>(item) ->setColor(c);
-      }
-      else if (item->type() == Residue::Type) {
-        dynamic_cast<Residue*>(item) ->setColor(c);
-      }
-    }
-    foreach (QGraphicsItem* item, items()) {
-      if (item->type() == Bond::Type) {
-        Bond *b = dynamic_cast<Bond*>(item);
-        if (b-> beginAtom() ->isSelected () && b->endAtom() ->isSelected()) b->setColor(c);
-      }
-    }
-    if (selectedItems().isEmpty())
-      setDefaultColor(c);
-  }
 
   void MolScene::alignToGrid() // TODO this isn't used (and not correct)
   {
@@ -505,7 +467,11 @@ namespace Molsketch {
         if (!mol) return;
         m_stack->beginMacro(tr("add molecule"));
         m_stack->push(new AddItem(mol,this));
-        if (mol->canSplit()) m_stack->push(new SplitMol(mol));
+        if (mol->canSplit()) {
+          for(Molecule* molecule : mol->split())
+            m_stack->push(new AddItem(molecule, this));
+          m_stack->push(new DelItem(mol));
+        }
         m_stack->endMacro();
   }
 
@@ -620,8 +586,6 @@ namespace Molsketch {
       if (type == "ReactionArrow") object = new Arrow ;
       if (type == "MechanismArrow") object = new Arrow ;
     }
-    if (childName == "plugin")
-      object = ItemPluginFactory::createInstance(type);
     if ("textItem" == childName) object = new TextItem;
     if (QGraphicsItem* item = dynamic_cast<QGraphicsItem*>(object)) // TODO w/o dynamic_cast
       addItem(item) ;
@@ -703,6 +667,11 @@ namespace Molsketch {
     (this->*d->booleanActions.value(action).first)(newValue);
   }
 
+  void MolScene::updateGrid(const QRectF& newSceneRect)
+  {
+    d->Grid->update(newSceneRect);
+  }
+
   Atom* MolScene::atomAt(const QPointF &pos) // TODO consider replacing with itemAt()
   {
     foreach(Atom* atom, atoms())
@@ -729,13 +698,13 @@ namespace Molsketch {
 
   Bond* MolScene::bondAt(const QPointF &pos)
   {
-        // Check if there is a bond at this position
-        foreach( QGraphicsItem* item,items(pos))
+        foreach( QGraphicsItem* item, items(pos))
           if (item->type() == Bond::Type) return dynamic_cast<Bond*>(item);
 
-        // Else return NULL
         return 0;
   }
+
+
 
   // Event handlers
 
@@ -906,6 +875,16 @@ namespace Molsketch {
 #endif
 
         return actions;
+  }
+
+  T *MolScene::itemNear<T>(const QPointF &pos, qreal tolerance) { // TODO unit test
+    qreal minDistance = tolerance;
+    T *result = nullptr;
+    for(QGraphicsItem* item : items(QRectF(pos.x()-tolerance, pos.y()-tolerance, tolerance, tolerance))) {
+      if (!(QLineF(item->scenePos(), pos).length() < minDistance)) continue;
+      if (T *itemPointer = dynamic_cast<T*>(item)) result = itemPointer;
+    }
+    return result;
   }
 
 } // namespace
