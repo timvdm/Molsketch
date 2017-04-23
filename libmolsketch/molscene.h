@@ -233,6 +233,8 @@ namespace Molsketch {
       bool snappingToGrid() const;
       bool cyclingByMouseWheelEnaled() const;
       Atom *atomNear(const QPointF &pos, qreal tolerance = 10.0);
+      template <class T>
+      T *itemNear(const QPointF &pos, qreal tolerance);
   protected:
       XmlObjectInterface *produceChild(const QString &childName, const QString& type) ;
       QList<const XmlObjectInterface *> children() const ;
@@ -275,7 +277,8 @@ namespace Molsketch {
       void updateAll() ;
       void selectionSlot();
       void booleanPropertyChanged(bool newValue);
-};
+      void updateGrid(const QRectF &newSceneRect);
+  };
 
 } // namespace
 

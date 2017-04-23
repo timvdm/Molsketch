@@ -877,7 +877,8 @@ namespace Molsketch {
         return actions;
   }
 
-  T *MolScene::itemNear<T>(const QPointF &pos, qreal tolerance) { // TODO unit test
+  template <class T>
+  T *MolScene::itemNear(const QPointF &pos, qreal tolerance) { // TODO unit test
     qreal minDistance = tolerance;
     T *result = nullptr;
     for(QGraphicsItem* item : items(QRectF(pos.x()-tolerance, pos.y()-tolerance, tolerance, tolerance))) {
