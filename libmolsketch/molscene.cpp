@@ -377,6 +377,7 @@ namespace Molsketch {
 #ifdef QT_DEBUG
   void MolScene::debugScene()
   {
+    QtMessageHandler originalMessageHander = qInstallMessageHandler(0);
     qDebug() << "================= Scene debug =================";
     foreach(QGraphicsItem *item, items())
     {
@@ -395,6 +396,7 @@ namespace Molsketch {
       qDebug() << i << command << command->id() << command->text();
     }
     qDebug() << "===============================================";
+    qInstallMessageHandler(originalMessageHander);
   }
 #endif
 
