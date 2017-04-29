@@ -26,10 +26,6 @@
 #include <arrow.h>
 #include <textitem.h>
 #include <QDebug>
-#include <atomnumberitem.h>
-#include <graphsymitem.h>
-#include <smilesitem.h>
-#include <stereocenteritem.h>
 
 using namespace Molsketch;
 
@@ -75,10 +71,6 @@ public:
       {"object", "ReactionArrow", typeid(Arrow)},
       {"object", "MechanismArrow", typeid(Arrow)},
       {"textItem", "", typeid(TextItem)},
-      {"plugin", "Atom Numbers", typeid(AtomNumberItem)},
-      {"plugin", "Symmetry Classes", typeid(GraphSymItem)},
-      {"plugin", "SMILES", typeid(SmilesItem)},
-      {"plugin", "Stereogenic Atoms", typeid(StereoCenterItem)},
       };
     for (auto child : children) {
       XmlObjectInterface *sceneChild = scene->produceChild(child.name, child.type);
