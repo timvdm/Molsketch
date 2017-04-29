@@ -22,8 +22,11 @@
 #include <QApplication>
 #include <QTranslator>
 #include <QLocale>
+#include <QSettings>
 
 #include "mainwindow.h"
+#include "programversion.h"
+#include "releasenotesdialog.h"
 
 int main(int argc, char *argv[])
 {
@@ -46,6 +49,15 @@ int main(int argc, char *argv[])
 
   MainWindow window;
   window.show();
+
+  QSettings settings;
+  ProgramVersion latestReleaseNotesShown(settings.value("latestReleaseNotes").toString()),
+      currentVersion(readFileContent(":/version"));
+  if (latestReleaseNotesShown < currentVersion) {
+    ReleaseNotesDialog releaseNotes;
+    releaseNotes.exec();
+    settings.setValue("latestReleaseNotes", currentVersion.toString());
+  }
 
   return app.exec();
 }

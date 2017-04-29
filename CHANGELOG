@@ -1,105 +1,127 @@
-Beryllium-7
------------------------------------------------------------------------------
-- text tool
-- fixed cmake
-- fixed legacy bond import
+<body>
+<b> You are always welcome to report bugs, suggest improvements, etc.
+    <ul>
+        <li>on SourceForge: <a href="http://molsketch.sourceforge.net">http://molsketch.sourceforge.net</a></li>
+        <li>on YouTube: <a href="https://www.youtube.com/channel/UCIYnNzSnI9AHpB_c48BR7fQ">https://www.youtube.com/channel/UCIYnNzSnI9AHpB_c48BR7fQ</a></li>
+    </ul>
+</b>
 
-Beryllium
------------------------------------------------------------------------------
-- test project externalized
-- android not quite supported for now
-- windows dynamic not built regularly
-- Qt4 support to be phased out
-- typo in settings fixed (might be reverted)
-- library as folder, molecules with names
+<h2>0.4.1 Beryllium-7</h2>
+<ul>
+    <li>text tool</li>
+    <li>fixed cmake</li>
+    <li>fixed legacy bond import</li>
+</ul>
+
+
+<h1>0.4.0 Beryllium</h1>
+<ul>
+    <li>test project externalized</li>
+    <li>android not quite supported for now</li>
+    <li>windows dynamic not built regularly</li>
+    <li>Qt4 support to be phased out</li>
+    <li>typo in settings fixed (might be reverted)</li>
+    <li>library as folder, molecules with names</li>
+    <li>frames</li>
+    <li>arrows reworked</li>
+    <ul>
+        <li>several options</li>
+        <li>select tip</li>
+        <li>equilibrium arrows</li>
+        <li>mechanism arroow</li>
+    </ul>
+</ul>
     
-- arrows reworked
-    - several options
-    - select tip
-    - equilibrium arrows
-    - mechanism arroow
-- frames
 
-Lithium
------------------------------------------------------------------------------
-Renovation:
-- Reworked "tools" into "actions", more dynamic addressing via QObject
-- Qt5 support
-- qmake support
-- all actions undo-compatible
-- Use Qt SVG
+<h1>0.3.0 Lithium</h1>
+<p>Renovation:</p>
+<ul>
+    <li>Reworked "tools" into "actions", more dynamic addressing via QObject</li>
+    <li>Qt5 support</li>
+    <li>qmake support</li>
+    <li>all actions undo-compatible</li>
+    <li>Use Qt SVG</li>
+</ul>
 
-Features
-- Added context menu
-- individual line/arrow width (relative to global width)
-- draw on grid
-- rotation in discrete steps
-- MSK file format
-- more arrow types
-- Android support
-- OpenBabel via Plugin
+<p>Features:</p>
+<ul>
+    <li>Added context menu</li>
+    <li>individual line/arrow width (relative to global width)</li>
+    <li>draw on grid</li>
+    <li>rotation in discrete steps</li>
+    <li>MSK file format</li>
+    <li>more arrow types</li>
+    <li>Android support</li>
+    <li>OpenBabel via Plugin</li>
+</ul>
 
-Helium alpha 2
------------------------------------------------------------------------------
-Features:
-- the implicit hydrogens are now drawn on the right side of the parent atom
-  (thanks to Tim Vandermeersch)
-- the reusabled classes are now in a seperate (static) library
+<h2>0.1.x Helium alpha 2</h2>
+<p>Features:</p>
+<ul>
+    <li>the implicit hydrogens are now drawn on the right side of the parent atom
+    (thanks to Tim Vandermeersch)</li>
+    <li>the reusabled classes are now in a seperate (static) library</li>
+</ul>
 
-Bug fixes:
-- fixed & improved library code (thanks to Tim Vandermeersch)
-- move regression fixed
-- save implicit hydrogens
-- 
+<p>Bug fixes:</p>
+<ul>
+    <li>fixed &amp; improved library code (thanks to Tim Vandermeersch)</li>
+    <li>move regression fixed</li>
+    <li>save implicit hydrogens</li>
+</ul>
 
+<h2>0.1.x Helium alpha 1</h2>
+<p>Features:</p>
+<ul>
+    <li>added option to add/remove single implicit hydrogens</li>
+    <li>added 2D rotating</li>
+    <li>rudimentary support for 3D rotation</li>
+    <li>improved periodic table</li>
+    <li>improved settings dialog</li>
+    <li>save position of dock widgets</li>
+    <li>remember last accessed path</li>
+    <li>support for i18n</li>
+    <li>added a panel to the toolbox to directly change the draw options</li>
+    <li>support for changing the font of the atom symbols</li>
+    <li>support for changing the bond width</li>
+    <li>added an autosave feature</li>
+    <li>there is now an initial version of a KPart of the molsKetch drawing widget available</li>
+</ul>
 
+<p>Bug fixes:</p>
+<ul>
+    <li>fixed crash when trying to remove nonexisting custom molecule</li>
+    <li>file extension are now added on saving</li>
+    <li>fixed bug on loading/saving CML files</li>
+</ul>
 
-Helium alpha 1
------------------------------------------------------------------------------
-Features:
-- added option to add/remove single implicit hydrogens
-- added 2D rotating
-- rudimentary support for 3D rotation
-- improved periodic table
-- improved settings dialog
-- save position of dock widgets
-- remember last accessed path
-- support for i18n
-- added a panel to the toolbox to directly change the draw options
-- support for changing the font of the atom symbols
-- support for changing the bond width
-- added an autosave feature
-- there is now an initial version of a KPart of the molsKetch drawing
-  widget available
+<h2>0.1.1 Deuterium</h2>
+<p>Features:</p>
+<ul>
+    <li>added support for OpenBabel under Windows</li>
+    <li>switched to cmake as build system</li>
+    <li>you can now use left click to delete items in th document</li>
+    <li>loaded/imported files are now splitted in seperate molecules</li>
+    <li>made hinting less intrusive</li>
+    <li>made charge changes undoable</li>
+    <li>made scrolling on the document zoom to the cursor position (thanks to
+    Vladimir Zima for the suggestion)</li>
+    <li>made the element selector look like a periodic table (thanks to Carsten
+    Niehaus for the suggestion)</li>
+    <li>updated the element data</li>
+    <li>added bug report menu entry</li>
+    <li>updated some of the shortcuts</li>
+    <li>clean up of the code and added apidox (thanks to Carsten Niehaus)</li>
+</ul>
 
-Bug fixes:
-- fixed crash when trying to remove nonexisting custom molecule
-- file extension are now added on saving
-- fixed bug on loading/saving CML files
+<p>Bug fixes:</p>
+<ul>
+    <li>fixed some crashes on closing/opening a new document</li>
+    <li>lots of other fixes</li>
+</ul>
 
-
-Deuterium
------------------------------------------------------------------------------
-Features:
-- added support for OpenBabel under Windows
-- switched to cmake as build system
-- you can now use left click to delete items in th document
-- loaded/imported files are now splitted in seperate molecules
-- made hinting less intrusive
-- made charge changes undoable
-- made scrolling on the document zoom to the cursor position (thanks to
-  Vladimir Zima for the suggestion)
-- made the element selector look like a periodic table (thanks to Carsten
-  Niehaus for the suggestion)
-- updated the element data
-- added bug report menu entry
-- updated some of the shortcuts
-- clean up of the code and added apidox (thanks to Carsten Niehaus)
-
-Bug fixes:
-- fixed some crashes on closing/opening a new document
-- lots of other fixes
-
-Hydrogen
------------------------------------------------------------------------------
-- initial release
+<h1>0.1.0 Hydrogen</h1>
+<ul>
+    <li>initial release</li>
+</ul>
+</body>

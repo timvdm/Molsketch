@@ -14,7 +14,8 @@ INSTALLS += target
 
 INCLUDEPATH += \
         $$sourceDir/../libmolsketch \
-        $$sourceDir/../obabeliface
+        $$sourceDir/../obabeliface \
+        $$sourceDir
 
 
 

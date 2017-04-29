@@ -133,7 +133,7 @@ private slots:
   void updateEditMode(int mode);
   /** Reloads the preferences */
   void readPreferences();
-
+  void showReleaseNotes();
 private:
   /** Creates the QActions of the MainWindow. */
   void createActions();
@@ -287,10 +287,13 @@ private:
   QAction* youtubeChannelAction;
   /** Show the molsKetch about dialog action. */
   QAction* aboutAct;
+  QAction* releaseNotesAct;
   /** Show the Qt about dialog action. */
   QAction* aboutQtAct;
   void buildLibraries();
 
 };
+
+QString readFileContent(const QString& absolutePath);
 
 #endif

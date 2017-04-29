@@ -68,6 +68,7 @@
 
 // widgets
 #include "helpforemptytoolbox.h"
+#include "releasenotesdialog.h"
 #include "settings.h"
 
 
@@ -552,6 +553,10 @@ void MainWindow::about()
                         "<P>Maintenance since 12/2014: Hendrik Vennekate"));
 }
 
+void MainWindow::showReleaseNotes() {
+  ReleaseNotesDialog().exec();
+}
+
 void MainWindow::documentWasModified()
 {
   setWindowModified(!m_scene->stack()->isClean());
@@ -698,11 +703,15 @@ void MainWindow::createActions()
   youtubeChannelAction->setStatusTip(tr("Open the browser with the YouTube channel page"));
   connect(youtubeChannelAction, SIGNAL(triggered()), this, SLOT(goToYouTube()));
 
-  aboutAct = new QAction(QIcon::fromTheme("help-about"),tr("&About"), this);
+  aboutAct = new QAction(QIcon::fromTheme("help-about"),tr("&About..."), this);
   aboutAct->setStatusTip(tr("Show the application's About box"));
   connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));
 
-  aboutQtAct = new QAction(tr("About &Qt"), this);
+  releaseNotesAct = new QAction(tr("Show release notes..."), this);
+  releaseNotesAct->setStatusTip(tr("Show the entire release notes list for all versions of Molsketch"));
+  connect(releaseNotesAct, SIGNAL(triggered()), this, SLOT(showReleaseNotes()));
+
+  aboutQtAct = new QAction(tr("About &Qt..."), this);
   aboutQtAct->setStatusTip(tr("Show the Qt library's About box"));
   connect(aboutQtAct, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 
@@ -760,6 +769,7 @@ void MainWindow::createMenus()
   helpMenu->addAction(youtubeChannelAction);
   helpMenu->addSeparator();
   helpMenu->addAction(aboutAct);
+  helpMenu->addAction(releaseNotesAct);
   helpMenu->addAction(aboutQtAct);
 }
 
