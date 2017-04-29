@@ -27,6 +27,12 @@ cxxtest.input = TESTS
 cxxtest.variable_out = SOURCES
 QMAKE_EXTRA_COMPILERS += cxxtest
 
+changelogSyntax.target = changelogsuccess
+changelogSyntax.commands = xmllint --noout $$PWD/../CHANGELOG && touch $$changelogSyntax.target
+changelogSyntax.depends = $$PWD/../CHANGELOG
+QMAKE_EXTRA_TARGETS += changelogSyntax
+POST_TARGETDEPS += $$changelogSyntax.target
+
 cxxrunner.target = cxxrunner.cpp
 cxxrunner.commands = $$CXXTEST_PATH/bin/cxxtestgen --have-eh --xunit-printer --root -o cxxrunner.cpp --template $$PWD/runnerTemplate.tpl
 cxxrunner.depends = $$PWD/runnerTemplate.tpl
