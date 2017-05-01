@@ -92,7 +92,8 @@
   if (obabeliface.isLoaded()) {\
     loadFilePtr = (loadFileFunctionPointer) (obabeliface.resolve("loadFile")) ;\
     inputFormats = (formatsFunctionPointer) (obabeliface.resolve("inputFormats")) ;\
-  }
+    qInfo() << "available input formats from openbabel" << inputFormats(); \
+  } else qWarning("Could not load obabeliface");
 
 #define PREPARESAVEFILE \
   QLibrary obabeliface("obabeliface" QTVERSIONSUFFIX OBABELOSSUFFIX); \
@@ -102,7 +103,8 @@
   if (obabeliface.isLoaded()) {\
     saveFilePtr = (saveFileFunctionPointer) (obabeliface.resolve("saveFile")) ; \
     outputFormats = (formatsFunctionPointer) (obabeliface.resolve("outputFormats")); \
-  }
+    qInfo() << "available output formats from openbabel" << outputFormats(); \
+  } else qWarning("Could not load obabeliface");
 
 // Constructor
 
