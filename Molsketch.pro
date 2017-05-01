@@ -1,20 +1,16 @@
 message("======= Welcome to Molsketch build =======")
-
+include(variables.pri)
 ############## SETTINGS
 
 message("Build settings:")
 buildVars = $$cat(buildvariables)
 for(buildVar, $$list($$split(buildVars, \\n))) {
-  description = $$section(buildVar, ;, 0, 0)
-  variableName = $$section(buildVar, ;, 1, 1)
-  defaultValue = $$section(buildVar, ;, 2, 2)
-  defaultValueWindows = $$section(buildVar, ;, 3, 3)
+  variableName = $$getVarName(buildVar)
   isEmpty($$variableName) {
-    $$variableName = $$defaultValue
-    win*: $$variableName = $$defaultValueWindows
+    $$variableName = $$getVarDefault(buildVar)
     contains(variableName, ".*INSTALL.*") : $$variableName = $$MSK_PREFIX$$eval($$variableName)
   }
-  message("$$description: $${variableName} = $$eval($$variableName)")
+  message("$$getVarDescription(buildVar): $${variableName} = $$eval($$variableName)")
   write_file($$OUT_PWD/buildvars/$$variableName, $$variableName)
 }
 
