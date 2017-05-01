@@ -8,13 +8,9 @@ SOURCES += *.cpp
 LIBS += -L../lib -lmolsketch$$qtVersionSuffix
 TARGET = molsketch$$qtVersionSuffix
 DESTDIR = ../bin
-
 target.path=$${MSK_INSTALL_BINS}
 INSTALLS += target
 
 INCLUDEPATH += \
-        $$sourceDir/../libmolsketch \
-        $$sourceDir/../obabeliface
-
-
-
+        $$MSK_SOURCE_BASE/libmolsketch \
+        $$MSK_SOURCE_BASE/obabeliface

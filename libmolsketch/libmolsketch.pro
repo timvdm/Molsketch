@@ -1,7 +1,7 @@
 include(../settings.pri)
 
 TEMPLATE = lib
-INCLUDEPATH += $$sourceDir/../obabeliface
+INCLUDEPATH += $$MSK_SOURCE_BASE/obabeliface
 HEADERS += *.h $$files(actions/*.h)
 SOURCES += *.cpp $$files(actions/*.cpp)
 FORMS += *.ui
@@ -11,8 +11,6 @@ DESTDIR = ../lib
 QMAKE_CXXFLAGS_DEBUG +=  -g -gstabs
 win* : VERSION =
 
-INSTALLS += target includes
-target.path = $${MSK_INSTALL_LIBS}
-
-includes.files = $$PWD/*.h
-includes.path = $${MSK_INSTALL_INCLUDES}
+target.path=$${MSK_INSTALL_LIBS}
+contains(QT_ARCH, ".*64.*") : target.path = $${MSK_INSTALL_LIBS64}
+INSTALLS += target

@@ -27,12 +27,13 @@
 
 int main(int argc, char *argv[])
 {
-#if defined(QT_STATIC_BUILD) || defined(_WIN32)
+  QApplication app(argc, argv);
+#if defined(QT_STATIC_BUILD) || defined(_WIN32) || defined(INCLUDE_ICONS)
+#pragma message "Including own oxygen icon set"
   Q_INIT_RESOURCE(molsketch);
   Q_INIT_RESOURCE(oxygenicons);
   QIcon::setThemeName("oxygen");
 #endif
-  QApplication app(argc, argv);
 
   QCoreApplication::setOrganizationName("SourceForge");
   QCoreApplication::setOrganizationDomain("sourceforge.net");
