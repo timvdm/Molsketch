@@ -30,4 +30,5 @@ contains(CONFIG, static) { SUBDIRS -= obabeliface }
 
 OTHER_FILES += \
     version \
-    versionnick
+    versionnick \
+    CHANGELOG
