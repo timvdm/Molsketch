@@ -6,13 +6,18 @@ HEADERS += $$TESTS \
     rectanglevaluetrait.h \
     qstringvaluetrait.h \
     qvariantvaluetrait.h \
-    utilities.h
+    utilities.h \
+    programversionvaluetrait.h
 
 
 CONFIG += c++14
 
 INCLUDEPATH += $$CXXTEST_PATH \
-    ../libmolsketch
+    ../libmolsketch \
+    ../molsketch
+
+SOURCES += ../molsketch/programversion.cpp \
+    programversionvaluetrait.cpp
 
 QT += widgets printsupport svg testlib
 

@@ -17,21 +17,24 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include "rectanglevaluetrait.h"
-#include <QString>
+#ifndef RECTANGLEVALUETRAIT_H
+#define RECTANGLEVALUETRAIT_H
 
-CxxTest::ValueTraits<QRectF>::ValueTraits(const QRectF &rect)
+#include <cxxtest/ValueTraits.h>
+#include <string>
+#include <programversion.h>
+
+namespace CxxTest
 {
-  value = ("("
-           + QString::number(rect.topLeft().x()) + ", "
-           + QString::number(rect.topLeft().y()) + ", "
-           + QString::number(rect.width()) + ", "
-           + QString::number(rect.height()) + ")"
-           ).toStdString();
+  CXXTEST_TEMPLATE_INSTANTIATION
+  class ValueTraits<ProgramVersion>
+  {
+    std::string value;
+
+  public:
+    ValueTraits(const ProgramVersion& pv);
+    const char *asString() const;
+  };
 }
 
-
-const char *CxxTest::ValueTraits<QRectF>::asString() const
-{
-  return value.c_str();
-}
+#endif // RECTANGLEVALUETRAIT_H

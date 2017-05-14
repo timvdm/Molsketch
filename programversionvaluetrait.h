@@ -17,17 +17,11 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include "rectanglevaluetrait.h"
-#include <QString>
+#include "programversionvaluetrait.h"
 
-CxxTest::ValueTraits<QRectF>::ValueTraits(const QRectF &rect)
+CxxTest::ValueTraits<ProgramVersion>::ValueTraits(const ProgramVersion& pv)
 {
-  value = ("("
-           + QString::number(rect.topLeft().x()) + ", "
-           + QString::number(rect.topLeft().y()) + ", "
-           + QString::number(rect.width()) + ", "
-           + QString::number(rect.height()) + ")"
-           ).toStdString();
+  value = pv.toString().toStdString();
 }
 
 
