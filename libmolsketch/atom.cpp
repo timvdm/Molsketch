@@ -752,6 +752,8 @@ namespace Molsketch {
 
   int Atom::numImplicitHydrogens() const
   {
+    if (!molecule()) return 0; // TODO is this even really correct? Or extend valencetest to check the value if molecule is set
+
     int bosum = 0;
     foreach (Bond *bond, bonds())
       bosum += bond->bondOrder();
