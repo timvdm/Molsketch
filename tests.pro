@@ -1,20 +1,28 @@
 isEmpty(CXXTEST_PATH) : error("Pass CXXTEST_PATH on command line")
+include(../settings.pri)
 
 TESTS = *test.h
 
+originalSources = $$PWD/../libmolsketch/*.cpp $$PWD/../libmolsketch/actions/*.cpp
+originalHeaders = $$PWD/../libmolsketch/*.h $$PWD/../libmolsketch/actions/*.h
+originalForms = $$PWD/../libmolsketch/*.ui
+
 HEADERS += $$TESTS \
+    $$originalHeaders \
     rectanglevaluetrait.h \
     qstringvaluetrait.h \
     qvariantvaluetrait.h \
     utilities.h \
     programversionvaluetrait.h
 
+FORMS += $$originalForms
 
 CONFIG += c++14
 
 INCLUDEPATH += $$CXXTEST_PATH \
     ../libmolsketch \
-    ../molsketch
+    ../molsketch \
+    ../obabeliface
 
 SOURCES += ../molsketch/programversion.cpp \
     programversionvaluetrait.cpp
@@ -45,13 +53,12 @@ cxxrunner.depends = $$PWD/runnerTemplate.tpl
 #cxxrunner.variable_out = SOURCES
 QMAKE_EXTRA_TARGETS += cxxrunner
 SOURCES += $$OUT_PWD/cxxrunner.cpp \
+    $$originalSources \
     rectanglevaluetrait.cpp \
     qstringvaluetrait.cpp \
     qvariantvaluetrait.cpp \
     utilities.cpp \
     mocks.cpp
-
-LIBS += -L../lib -lmolsketch-qt5
 
 OTHER_FILES += \
     runnerTemplate.tpl \
@@ -61,3 +68,7 @@ OTHER_FILES += \
 legacy_files.commands = ${COPY_DIR} $$_PRO_FILE_PWD_/legacy ./legacy
 QMAKE_EXTRA_TARGETS += legacy_files
 PRE_TARGETDEPS += legacy_files
+
+QMAKE_CXXFLAGS += -g -Wall -fprofile-arcs -ftest-coverage -O0
+QMAKE_LFLAGS += -g -Wall -fprofile-arcs -ftest-coverage  -O0
+LIBS += -lgcov
