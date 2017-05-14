@@ -28,6 +28,14 @@
 #include "molscene.h"
 #include "fileio.h"
 using namespace Molsketch;
+/* TODO refactor this and the librarylistwidgetitem:
+ * a) they should go in _one_ project
+ * b) the item should produce the MIME data itself (using a dedicated role)
+ * c) the widget and item should be super classes to two tiers of implementations
+ *    - the file-based implementation
+ *    - the wikidata-based implementation
+ * d) the wikidata implementation should use a separate thread for querying
+*/
 
 void LibraryListWidget::refreshItems()
 {
