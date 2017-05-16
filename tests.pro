@@ -1,10 +1,11 @@
 isEmpty(CXXTEST_PATH) : error("Pass CXXTEST_PATH on command line")
+include(../findOpenBabel.pri)
 include(../settings.pri)
 
 TESTS = *test.h
 
-originalSources = $$PWD/../libmolsketch/*.cpp $$PWD/../libmolsketch/actions/*.cpp
-originalHeaders = $$PWD/../libmolsketch/*.h $$PWD/../libmolsketch/actions/*.h
+originalSources = $$PWD/../libmolsketch/*.cpp $$PWD/../libmolsketch/actions/*.cpp $$PWD/../obabeliface/*.cpp
+originalHeaders = $$PWD/../libmolsketch/*.h $$PWD/../libmolsketch/actions/*.h $$PWD/../obabeliface/*.h
 originalForms = $$PWD/../libmolsketch/*.ui
 
 HEADERS += $$TESTS \
