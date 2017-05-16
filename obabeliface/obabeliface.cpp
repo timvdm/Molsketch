@@ -154,24 +154,14 @@ namespace Molsketch
     return true;
   }
 
-  Molecule* loadFile(const QString &fileName)
-  {
-    // Creating and setting conversion classes
+  Molecule* fromOBMolecule(OpenBabel::OBMol& obmol) {
     using namespace OpenBabel;
-    OBConversion conversion ;
-    conversion.SetInFormat(conversion.FormatFromExt(fileName.toStdString())) ;
-    OBMol obmol;
-
-    if (!conversion.ReadFile(&obmol, fileName.toStdString()))
-      return 0;
-
     // Create a new molecule
     Molecule* mol = new Molecule();
     mol->setPos(QPointF(0,0));
 
     QHash<OBAtom*, Atom*> atomHash ;
     // Add atoms one-by-ons
-    using OpenBabel::OBAtomIterator ;
     FOR_ATOMS_OF_MOL(obatom, obmol)
       atomHash[&(*obatom)] =
         mol->addAtom(Molsketch::number2symbol(obatom->GetAtomicNum()),
@@ -190,8 +180,21 @@ namespace Molsketch
       if (obbond->IsHash())
         bond->setType( Bond::Hash );
     }
-
     return mol;
+  }
+
+  Molecule* loadFile(const QString &fileName)
+  {
+    // Creating and setting conversion classes
+    using namespace OpenBabel;
+    OBConversion conversion ;
+    conversion.SetInFormat(conversion.FormatFromExt(fileName.toStdString())) ;
+    OBMol obmol;
+
+    if (!conversion.ReadFile(&obmol, fileName.toStdString()))
+      return 0;
+
+    return fromOBMolecule(obmol);
   }
 
   void getSymmetryClasses(const Molecule* molecule, std::vector<unsigned int>& symmetry_classes)
@@ -328,4 +331,16 @@ namespace Molsketch
     OpenBabel::OBConversion conversion; // TODO find out why this needs to be instantiated
     return getFormats(conversion.GetSupportedInputFormat());
   }
+
+  Molecule *fromSmiles(const QString &input)
+  {
+    OpenBabel::OBConversion conv ;
+    if (!conv.SetInFormat("can"))
+      return 0;
+
+    OpenBabel::OBMol obmol;
+    conv.ReadString(&obmol, input.toStdString()); // TODO do we need error handling if false?
+    return fromOBMolecule(obmol);
+  }
+
 } // namespace

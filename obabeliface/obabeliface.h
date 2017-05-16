@@ -53,7 +53,12 @@ extern "C"
  */
     QString smiles(const Molecule*) ;
     typedef QString (*smilesFunctionPointer)(const Molecule*) ;
-    /**
+/**
+ * Generate molecule from SMILES string
+ */
+    Molecule* fromSmiles(const QString&);
+    typedef Molecule* (*fromSmilesFunctionPointer)(const QString&);
+/**
  * Load and save routines
  *
  * @author Harm van Eersel (modified by H. Vennekate)
