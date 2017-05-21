@@ -26,4 +26,16 @@ void enterDataIntoCell(QTableView *table, const QString& data, int row, int colu
 
 void enterTextIntoInputWidget(QLineEdit *editor, const QString& text, int position = 0);
 
+template<class T>
+class ForTesting {
+public:
+  static int instanceCounter;
+  ForTesting<T>() { ++ instanceCounter; }
+  ~ForTesting<T>() { -- instanceCounter; }
+};
+
+#define CLASS_FOR_TESTING(CLASSNAME) class CLASSNAME##ForTesting : public CLASSNAME, public ForTesting<CLASSNAME>{}; \
+  template<> int ForTesting<CLASSNAME>::instanceCounter = 0;
+
+
 #endif // UTILITIES_H
