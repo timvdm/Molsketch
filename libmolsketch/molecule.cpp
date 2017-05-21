@@ -228,6 +228,7 @@ namespace Molsketch {
     //pre(1): bond is a valid pointer to a bond
     Q_CHECK_PTR(bond);
     //pre(2): the bond is between two atoms of this molecule
+    // TODO this is broken...
 //    Q_ASSERT(m_atomList.contains(bond->beginAtom()));
 //    Q_ASSERT(m_atomList.contains(bond->endAtom()));
 
@@ -942,6 +943,25 @@ namespace Molsketch {
   void Molecule::setName(const QString &value)
   {
     name = value;
+  }
+
+  QPixmap renderMolecule(const Molecule &input) {
+    Molecule *molecule = new Molecule(input);
+    MolScene renderScene;
+    if (molecule->atoms().size() > 20)
+      renderScene.setRenderMode(MolScene::RenderColoredSquares);
+    renderScene.addItem(molecule);
+    renderScene.setChargeVisible(true);
+    renderScene.setSceneRect(molecule->boundingRect());
+    QPixmap pixmap(qCeil(renderScene.width()), qCeil(renderScene.height()));
+    if (pixmap.isNull()) return pixmap;
+
+    pixmap.fill();
+    // Creating and setting the painter
+    QPainter painter(&pixmap);
+    painter.setRenderHint(QPainter::Antialiasing);
+    renderScene.render(&painter);
+    return pixmap;
   }
 
 
