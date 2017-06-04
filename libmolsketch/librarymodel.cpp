@@ -85,14 +85,18 @@ QMimeData *LibraryModel::mimeData(const QModelIndexList &indexes) const {
 void LibraryModel::setMolecules(QList<Molecule *> molecules) {
   qDebug("Setting molecules");
   Q_D(LibraryModel);
+  beginResetModel();
   d->cleanMolecules();
   d->molecules = molecules;
+  endResetModel();
 }
 
 void LibraryModel::addMolecule(Molecule *molecule) {
   qDebug("Adding molecule");
   Q_D(LibraryModel);
+  beginInsertRows(QModelIndex(), d->molecules.size(), d->molecules.size());
   d->molecules << molecule;
+  endInsertRows();
 }
 
 QStringList LibraryModel::mimeTypes() const {
