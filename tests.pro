@@ -14,7 +14,10 @@ HEADERS += $$TESTS \
     qstringvaluetrait.h \
     qvariantvaluetrait.h \
     utilities.h \
-    programversionvaluetrait.h
+    programversionvaluetrait.h \
+    noargsignalcounter.h \
+    signalcounter.h \
+    modelindexsignalcounter.h
 
 FORMS += $$originalForms
 
@@ -59,7 +62,9 @@ SOURCES += $$OUT_PWD/cxxrunner.cpp \
     qstringvaluetrait.cpp \
     qvariantvaluetrait.cpp \
     utilities.cpp \
-    mocks.cpp
+    mocks.cpp \
+    noargsignalcounter.cpp \
+    modelindexsignalcounter.cpp
 
 OTHER_FILES += \
     runnerTemplate.tpl \

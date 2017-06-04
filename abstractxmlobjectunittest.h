@@ -48,8 +48,6 @@ public:
   MOCK_CONST(QXmlStreamAttributes, xmlAttributes, , )
   VOID_SUPER_MOCK(afterReadFinalization, , )
   MOCK_CONST(QString, xmlName, , )
-  VOID_MOCK_CONST(writeContent, QXmlStreamWriter& writer, writer)
-  VOID_MOCK(readContent, QXmlStreamReader& reader, reader)
 };
 
 class AbstractXmlObjectUnitTest : public CxxTest::TestSuite {

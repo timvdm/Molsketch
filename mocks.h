@@ -12,7 +12,7 @@
 #define MOCK(RETURNTYPE, FUNCTIONNAME, ARGUMENTS, ARGUMENTNAMES) \
     std::function<RETURNTYPE(ARGUMENTS)> FUNCTIONNAME##Callback; \
     RETURNTYPE FUNCTIONNAME##DefaultReturn; \
-    RETURNTYPE FUNCTIONNAME(ARGUMENTS) { \
+    RETURNTYPE FUNCTIONNAME(ARGUMENTS) override { \
         if(FUNCTIONNAME##Callback) \
             return FUNCTIONNAME##Callback(ARGUMENTNAMES) ; \
         return FUNCTIONNAME##DefaultReturn; \
@@ -30,7 +30,7 @@
 #define MOCK_CONST(RETURNTYPE, FUNCTIONNAME, ARGUMENTS, ARGUMENTNAMES) \
     std::function<RETURNTYPE(ARGUMENTS)> FUNCTIONNAME##Callback; \
     RETURNTYPE FUNCTIONNAME##DefaultReturn; \
-    RETURNTYPE FUNCTIONNAME(ARGUMENTS) const { \
+    RETURNTYPE FUNCTIONNAME(ARGUMENTS) const override { \
         if(FUNCTIONNAME##Callback) \
             return FUNCTIONNAME##Callback(ARGUMENTNAMES) ; \
         return FUNCTIONNAME##DefaultReturn; \
@@ -44,7 +44,7 @@
  */
 #define VOID_MOCK(FUNCTIONNAME, ARGUMENTS, ARGUMENTNAMES) \
     std::function<void(ARGUMENTS)> FUNCTIONNAME##Callback; \
-    void FUNCTIONNAME(ARGUMENTS) { \
+    void FUNCTIONNAME(ARGUMENTS) override { \
         if(FUNCTIONNAME##Callback) \
             FUNCTIONNAME##Callback(ARGUMENTNAMES) ; \
         }
@@ -57,7 +57,7 @@
  */
 #define VOID_MOCK_CONST(FUNCTIONNAME, ARGUMENTS, ARGUMENTNAMES) \
     std::function<void(ARGUMENTS)> FUNCTIONNAME##Callback; \
-    void FUNCTIONNAME(ARGUMENTS) const { \
+    void FUNCTIONNAME(ARGUMENTS) const override { \
         if(FUNCTIONNAME##Callback) \
             FUNCTIONNAME##Callback(ARGUMENTNAMES) ; \
         }
@@ -71,7 +71,7 @@
  */
 #define SUPER_MOCK(RETURNTYPE, FUNCTIONNAME, ARGUMENTS, ARGUMENTNAMES) \
     std::function<RETURNTYPE(ARGUMENTS)> FUNCTIONNAME##Callback; \
-    RETURNTYPE FUNCTIONNAME(ARGUMENTS) { \
+    RETURNTYPE FUNCTIONNAME(ARGUMENTS) override { \
         if(FUNCTIONNAME##Callback) \
             return FUNCTIONNAME##Callback(ARGUMENTNAMES) ;\
         return super::FUNCTIONNAME(ARGUMENTNAMES); \
@@ -87,7 +87,7 @@
  */
 #define SUPER_MOCK_CONST(RETURNTYPE, FUNCTIONNAME, ARGUMENTS, ARGUMENTNAMES) \
     std::function<RETURNTYPE(ARGUMENTS)> FUNCTIONNAME##Callback; \
-    RETURNTYPE FUNCTIONNAME(ARGUMENTS) const { \
+    RETURNTYPE FUNCTIONNAME(ARGUMENTS) const override { \
         if(FUNCTIONNAME##Callback) \
             return FUNCTIONNAME##Callback(ARGUMENTNAMES) ;\
         return super::FUNCTIONNAME(ARGUMENTNAMES); \
@@ -103,7 +103,7 @@
  */
 #define VOID_SUPER_MOCK(FUNCTIONNAME, ARGUMENTS, ARGUMENTNAMES) \
     std::function<void(ARGUMENTS)> FUNCTIONNAME##Callback; \
-    void FUNCTIONNAME(ARGUMENTS) { \
+    void FUNCTIONNAME(ARGUMENTS) override { \
         if(FUNCTIONNAME##Callback) \
             FUNCTIONNAME##Callback(ARGUMENTNAMES) ;\
         else \
@@ -120,7 +120,7 @@
  */
 #define REJECT_MOCK(RETURNTYPE, FUNCTIONNAME, ARGUMENTS, ARGUMENTNAMES) \
     std::function<RETURNTYPE(ARGUMENTS)> FUNCTIONNAME##Callback; \
-    RETURNTYPE FUNCTIONNAME(ARGUMENTS) { \
+    RETURNTYPE FUNCTIONNAME(ARGUMENTS) override { \
         if(FUNCTIONNAME##Callback) \
             return FUNCTIONNAME##Callback(ARGUMENTNAMES) ; \
         Mocks::reject(#FUNCTIONNAME " should not be called"); \
@@ -131,21 +131,18 @@
  * Use to create a mock function of void return type.
  * Creates a callback ("Callback" appended to the function name)
  * which will be executed if it has been defined.
- * Otherwise, the parent implementation will be called and a
- * failing assertion will be executed.
+ * Otherwise, a failing assertion will be executed.
+ * Afterwards, the parent implementation will be called.
  * Requires `super` to be defined as the parent class.
  */
 #define VOID_REJECT_MOCK(FUNCTIONNAME, ARGUMENTS, ARGUMENTNAMES) \
     std::function<void(ARGUMENTS)> FUNCTIONNAME##Callback; \
-    void FUNCTIONNAME(ARGUMENTS) { \
-        if(FUNCTIONNAME##Callback) {\
-            FUNCTIONNAME##Callback(ARGUMENTNAMES) ;\
-            return; \
-        } \
-        Mocks::reject(#FUNCTIONNAME " should not be called"); \
+    void FUNCTIONNAME(ARGUMENTS) override { \
+  qDebug() << "calling function"; \
+        if(FUNCTIONNAME##Callback) FUNCTIONNAME##Callback(ARGUMENTNAMES) ; \
+        else Mocks::reject(#FUNCTIONNAME " should not be called"); \
         super::FUNCTIONNAME(ARGUMENTNAMES); \
     }
-
 
 namespace Mocks {
   void reject(const char *message);

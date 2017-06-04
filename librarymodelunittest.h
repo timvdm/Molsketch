@@ -17,7 +17,9 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
+#include <functional>
 #include "utilities.h"
+#include "mocks.h"
 #include <cxxtest/TestSuite.h>
 #include <QMimeData>
 #include <QModelIndex>
@@ -25,101 +27,149 @@
 #include <constants.h>
 #include <molecule.h>
 #include <QList>
+#include "modelindexsignalcounter.h"
+#include "noargsignalcounter.h"
 
 using namespace Molsketch;
 
 CLASS_FOR_TESTING(Molecule)
 
+CLASS_FOR_TESTING(LibraryModel)
+
 class LibraryModelUnitTest : public CxxTest::TestSuite {
-  LibraryModel* model;
+                                      LibraryModelForTesting* model;
 public:
-  void setUp() {
-    model = new LibraryModel;
-    MoleculeForTesting::instanceCounter = 0;
-  }
+void setUp() {
+  model = new LibraryModelForTesting;
+  MoleculeForTesting::instanceCounter = 0;
+}
 
-  void tearDown() {
-    delete model;
-    model = 0;
-    TSM_ASSERT_EQUALS("Molecules not cleaned up!", MoleculeForTesting::instanceCounter, 0);
-  }
+void tearDown() {
+  delete model;
+  model = 0;
+  TSM_ASSERT_EQUALS("Molecules not cleaned up!", MoleculeForTesting::instanceCounter, 0);
+}
 
-  void testRowCount() {
-    Molecule *m1 = new MoleculeForTesting;
-    Molecule *m2 = new MoleculeForTesting;
-    Molecule *m3 = new MoleculeForTesting;
-    model->setMolecules(QList<Molecule*>()<< m1 << m2 << m3);
-    TS_ASSERT_EQUALS(model->rowCount(), 3);
-  }
+void testRowCount() {
+  Molecule *m1 = new MoleculeForTesting;
+  Molecule *m2 = new MoleculeForTesting;
+  Molecule *m3 = new MoleculeForTesting;
+  model->setMolecules(QList<Molecule*>()<< m1 << m2 << m3);
+  TS_ASSERT_EQUALS(model->rowCount(), 3);
+}
 
-  void testRowCountSameMoleculeMultipleTimes() {
-    Molecule *m = new MoleculeForTesting;
-    model->setMolecules(QList<Molecule*>() << m << m << m);
-    TS_ASSERT_EQUALS(model->rowCount(), 3);
-    model->setMolecules(QList<Molecule*>() << new MoleculeForTesting);
-    TS_ASSERT_EQUALS(model->rowCount(), 1);
-  }
+void testRowCountSameMoleculeMultipleTimes() {
+  Molecule *m = new MoleculeForTesting;
+  model->setMolecules(QList<Molecule*>() << m << m << m);
+  TS_ASSERT_EQUALS(model->rowCount(), 3);
+  model->setMolecules(QList<Molecule*>() << new MoleculeForTesting);
+  TS_ASSERT_EQUALS(model->rowCount(), 1);
+}
 
-  void testRowCountByAddingIndividually() {
-    model->addMolecule(new MoleculeForTesting);
-    model->addMolecule(new MoleculeForTesting);
-    TS_ASSERT_EQUALS(model->rowCount(), 2);
-  }
+void testRowCountByAddingIndividually() {
+  model->addMolecule(new MoleculeForTesting);
+  model->addMolecule(new MoleculeForTesting);
+  TS_ASSERT_EQUALS(model->rowCount(), 2);
+}
 
-  void testMoleculesAreAddedTwice() {
-    Molecule *m = new MoleculeForTesting;
-    model->addMolecule(m);
-    model->addMolecule(m);
-    TS_ASSERT_EQUALS(model->rowCount(), 2);
-  }
+void testMoleculesAreAddedTwice() {
+  Molecule *m = new MoleculeForTesting;
+  model->addMolecule(m);
+  model->addMolecule(m);
+  TS_ASSERT_EQUALS(model->rowCount(), 2);
+}
 
-  void testDeletingOldMolecules() {
-    model->setMolecules(QList<Molecule*>() << new MoleculeForTesting);
-    model->setMolecules(QList<Molecule*>() << new MoleculeForTesting);
-    TS_ASSERT_EQUALS(MoleculeForTesting::instanceCounter, 1);
-  }
+void testSettingMoleculesTriggersModelReset() {
+  NoArgSignalCounter beginResetCounter, endResetCounter;
+  beginResetCounter.callback = [&] { TS_ASSERT_EQUALS(beginResetCounter.count, endResetCounter.count +1); };
+  endResetCounter.callback = [&] { TS_ASSERT_EQUALS(beginResetCounter.count, endResetCounter.count); };
+  QObject::connect(model, SIGNAL(modelAboutToBeReset()), &beginResetCounter, SLOT(record()));
+  QObject::connect(model, SIGNAL(modelReset()), &endResetCounter, SLOT(record()));
+  model->setMolecules(QList<Molecule*>());
+  TS_ASSERT_EQUALS(beginResetCounter.count, 1);
+  TS_ASSERT_EQUALS(endResetCounter.count, 1);
+}
 
-  void testMimeData() {
-    Molecule *m = new MoleculeForTesting;
-    QByteArray expectedXml;
-    QXmlStreamWriter xmlWriter(&expectedXml);
-    xmlWriter.writeStartDocument();
-    xmlWriter << *m;
-    xmlWriter.writeEndDocument();
-    model->addMolecule(m);
-    QByteArray obtainedData = model->mimeData(QModelIndexList() << model->index(0,0))->data(moleculeMimeType);
-    QS_ASSERT_EQUALS(obtainedData, expectedXml);
-  }
+void checkInsertionForRow(std::tuple<QModelIndex, int, int> input, int expectedRow) {
+  QModelIndex index;
+  int startRow, endRow;
+  std::tie(index, startRow, endRow) = input;
+  TS_ASSERT(!index.isValid());
+  TS_ASSERT_EQUALS(startRow, expectedRow);
+  TS_ASSERT_EQUALS(endRow, expectedRow);
+}
 
-  void testDataForDecorationRole() {
-    Molecule *m = new MoleculeForTesting;
-    Atom *a1 = new Atom(QPointF(), "C");
-    Atom *a2 = new Atom(QPointF(10, 10), "N");
-    m->addAtom(a1);
-    m->addAtom(a2);
-    m->addBond(new Bond(a1, a2));
-    QPixmap expectedIcon = renderMolecule(*m);
+void testAddingMoleculeTriggersSignals() {
+  ModelIndexSignalCounter beforeInsert, afterInsert;
+  beforeInsert.callback = [&] (QModelIndex index, int begin, int end) {TS_ASSERT_EQUALS(beforeInsert.count() - 1,
+                                                                                         afterInsert.count()) };
+  afterInsert.callback = [&] (QModelIndex index, int begin, int end) { TS_ASSERT_EQUALS(beforeInsert.count(),
+                                                                                        afterInsert.count())}; // TODO check ints
+  QObject::connect(model, SIGNAL(rowsAboutToBeInserted(QModelIndex,int,int)),
+                   &beforeInsert, SLOT(record(QModelIndex,int,int)));
+  QObject::connect(model, SIGNAL(rowsInserted(QModelIndex,int,int)),
+                   &afterInsert, SLOT(record(QModelIndex,int,int)));
 
-    model->addMolecule(m);
-    QPixmap actualIcon = model->data(model->index(0), Qt::DecorationRole).value<QPixmap>();
-    QS_ASSERT_EQUALS(actualIcon.toImage(), expectedIcon.toImage());
-  }
+  model->addMolecule(new Molecule());
+  TS_ASSERT_EQUALS(beforeInsert.count(), 1);
+  TS_ASSERT_EQUALS(afterInsert.count(), 1);
+  checkInsertionForRow(beforeInsert.getLatestPayload(), 0);
+  checkInsertionForRow(afterInsert.getLatestPayload(), 0);
 
-  void testDataForDisplayRole() {
-    Molecule *m = new MoleculeForTesting;
-    m->setName("testname");
-    model->addMolecule(m);
-    QS_ASSERT_EQUALS(model->data(model->index(0)).toString(), "testname");
-  }
+  model->addMolecule(new Molecule());
+  TS_ASSERT_EQUALS(beforeInsert.count(), 2);
+  TS_ASSERT_EQUALS(beforeInsert.count(), 2);
+  checkInsertionForRow(beforeInsert.getLatestPayload(), 1);
+  checkInsertionForRow(afterInsert.getLatestPayload(), 1);
+}
 
-  void testEmptyReturns() {
-    TS_ASSERT_EQUALS(model->rowCount(), 0);
-    TS_ASSERT(model->data(QModelIndex()).isNull());
-    QMimeData *mimeData = model->mimeData(QModelIndexList());
-    TS_ASSERT(mimeData->hasFormat(moleculeMimeType));
-    QS_ASSERT_EQUALS(mimeData->data(moleculeMimeType), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-    delete mimeData;
-  }
+void testDeletingOldMolecules() {
+  model->setMolecules(QList<Molecule*>() << new MoleculeForTesting);
+  model->setMolecules(QList<Molecule*>() << new MoleculeForTesting);
+  TS_ASSERT_EQUALS(MoleculeForTesting::instanceCounter, 1);
+}
 
-  // TODO: thread safety
+void testMimeData() {
+  Molecule *m = new MoleculeForTesting;
+  QByteArray expectedXml;
+  QXmlStreamWriter xmlWriter(&expectedXml);
+  xmlWriter.writeStartDocument();
+  xmlWriter << *m;
+  xmlWriter.writeEndDocument();
+  model->addMolecule(m);
+  QByteArray obtainedData = model->mimeData(QModelIndexList() << model->index(0,0))->data(moleculeMimeType);
+  QS_ASSERT_EQUALS(obtainedData, expectedXml);
+}
+
+void testDataForDecorationRole() {
+  Molecule *m = new MoleculeForTesting;
+  Atom *a1 = new Atom(QPointF(), "C");
+  Atom *a2 = new Atom(QPointF(10, 10), "N");
+  m->addAtom(a1);
+  m->addAtom(a2);
+  m->addBond(new Bond(a1, a2));
+  QPixmap expectedIcon = renderMolecule(*m);
+
+  model->addMolecule(m);
+  QPixmap actualIcon = model->data(model->index(0), Qt::DecorationRole).value<QPixmap>();
+  QS_ASSERT_EQUALS(actualIcon.toImage(), expectedIcon.toImage());
+}
+
+void testDataForDisplayRole() {
+  Molecule *m = new MoleculeForTesting;
+  m->setName("testname");
+  model->addMolecule(m);
+  QS_ASSERT_EQUALS(model->data(model->index(0)).toString(), "testname");
+}
+
+void testEmptyReturns() {
+  TS_ASSERT_EQUALS(model->rowCount(), 0);
+  TS_ASSERT(model->data(QModelIndex()).isNull());
+  QMimeData *mimeData = model->mimeData(QModelIndexList());
+  TS_ASSERT(mimeData->hasFormat(moleculeMimeType));
+  QS_ASSERT_EQUALS(mimeData->data(moleculeMimeType), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+  delete mimeData;
+}
+
+// TODO: thread safety
 };
