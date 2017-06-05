@@ -70,6 +70,7 @@
 #include "helpforemptytoolbox.h"
 #include "releasenotesdialog.h"
 #include "settings.h"
+#include "wikiquerywidget.h"
 
 
 #define PROGRAM_NAME "Molsketch"
@@ -114,6 +115,7 @@ MainWindow::MainWindow()
   // Creating the menus and actions
   createView();
   createToolBox();
+  createWikiDock();
   createActions();
   createMenus();
   createToolBars();
@@ -896,6 +898,12 @@ void MainWindow::createToolBox()
   toolBoxDock->hide();
 #endif
   buildLibraries();
+}
+
+void MainWindow::createWikiDock() {
+  wikidataDock = new WikiQueryWidget(this);
+  wikidataDock->setObjectName("wikidata-query-widget");
+  addDockWidget(Qt::LeftDockWidgetArea, wikidataDock);
 }
 
 void MainWindow::createToolBarContextMenuOptions()

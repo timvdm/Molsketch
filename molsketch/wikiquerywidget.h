@@ -1,5 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2017 Hendrik Vennekate                                  *
+ *   Copyright (C) 2017 by Hendrik Vennekate                               *
+ *   HVennekate@gmx.de                                                     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -16,34 +17,35 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef MOLSKETCH_LIBRARYMODEL_H
-#define MOLSKETCH_LIBRARYMODEL_H
+#ifndef WIKIQUERYWIDGET_H
+#define WIKIQUERYWIDGET_H
 
-#include <QAbstractTableModel>
+#include <QDockWidget>
 
-namespace Molsketch {
-class Molecule;
+class QNetworkAccessManager;
+class QNetworkReply;
 
-class LibraryModelPrivate;
+namespace Ui {
+class WikiQueryWidget;
+}
 
-class LibraryModel : public QAbstractListModel
+class WikiQueryWidget : public QDockWidget
 {
-  Q_DECLARE_PRIVATE(LibraryModel)
-  QScopedPointer<LibraryModelPrivate> d_ptr;
+    Q_OBJECT
+
 public:
-    explicit LibraryModel(QObject *parent = nullptr);
-    virtual ~LibraryModel() override;
-    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
-    QMimeData* mimeData(const QModelIndexList &indexes) const override;
-    /** Sets the molecules to be listed. Note that the model takes ownership. */
-    void setMolecules(QList<Molecule *> molecules);
-    /** Adds the molecule to the model's list. Assumes ownership. */
-    void addMolecule(Molecule*molecule);
-    QStringList mimeTypes() const override;
-    Qt::ItemFlags flags(const QModelIndex &index) const;
+    explicit WikiQueryWidget(QWidget *parent = 0);
+    ~WikiQueryWidget();
+
+private slots:
+  void on_searchButton_clicked();
+  void on_queryInput_textChanged(const QString &newText);
+  void processMoleculeQuery(QNetworkReply* reply);
+
+private:
+    Ui::WikiQueryWidget *ui;
+    QNetworkAccessManager *manager;
+    void startMoleculeQuery(const QString &queryString);
 };
 
-} // namespace Molsketch
-
-#endif // MOLSKETCH_LIBRARYMODEL_H
+#endif // WIKIQUERYWIDGET_H

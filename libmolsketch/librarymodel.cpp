@@ -21,6 +21,7 @@
 #include "molecule.h"
 #include "stringify.h"
 
+#include <QIcon>
 #include <QMimeData>
 #include <QSet>
 
@@ -41,8 +42,9 @@ namespace Molsketch {
     }
   };
 
-LibraryModel::LibraryModel()
-  : d_ptr(new LibraryModelPrivate)
+LibraryModel::LibraryModel(QObject *parent)
+  : QAbstractListModel(parent),
+    d_ptr(new LibraryModelPrivate)
 {}
 
 LibraryModel::~LibraryModel() {}
@@ -54,11 +56,11 @@ int LibraryModel::rowCount(const QModelIndex &parent) const {
 }
 
 QVariant LibraryModel::data(const QModelIndex &index, int role) const {
-  qDebug("Getting data of type %d for index %d", role, index.row());
+  qInfo("Getting data of type %d for index %d", role, index.row());
   Q_D(const LibraryModel);
   int row = index.row();
   if (row < 0 || row >= d->molecules.size()) return QVariant();
-  if (Qt::DecorationRole == role) return renderMolecule(*(d->molecules[row]));
+  if (Qt::DecorationRole == role) return QIcon(renderMolecule(*(d->molecules[row])));
   if (Qt::DisplayRole == role) return d->molecules[row]->getName();
   return QVariant();
 }
@@ -103,5 +105,8 @@ QStringList LibraryModel::mimeTypes() const {
   return  moleculeMimeTypes;
 }
 
+Qt::ItemFlags LibraryModel::flags(const QModelIndex &index) const {
+  return QAbstractListModel::flags(index) | Qt::ItemIsDragEnabled;
+}
 
 } // namespace Molsketch

@@ -27,5 +27,7 @@
         <file alias="scalable/list-remove.svg">oxygen-icons/list-remove.svg</file>
         <file alias="scalable/insert-text.svg">oxygen-icons/insert-text.svg</file>
         <file alias="scalable/view-refresh.svg">oxygen-icons/view-refresh.svg</file>
+        <file alias="scalable/system-search.svg">oxygen-icons/system-search.svg</file>
+        <file alias="scalable/process-stop.svg">oxygen-icons/process-stop.svg</file>
     </qresource>
 </RCC>

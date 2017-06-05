@@ -50,7 +50,7 @@ namespace Molsketch {
     switch (order)
     {
       case 1: return Single;
-      case 2: return DoubleSymmetric;
+      case 2: return DoubleLegacy;
       case 3: return Triple;
       default: return Invalid;
     }

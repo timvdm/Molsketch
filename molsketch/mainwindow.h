@@ -193,9 +193,10 @@ private:
 
   /** The dock widget for the toolbox. */
   QDockWidget* toolBoxDock;
-  /** The dock widget for the info box. */
   /** The toolbox with the libraries. */
   QToolBox* toolBox;
+  /** The dock widget for wikidata queries. */
+  QDockWidget* wikidataDock;
 
   // Menus
   /** The file menu. */
@@ -291,7 +292,7 @@ private:
   /** Show the Qt about dialog action. */
   QAction* aboutQtAct;
   void buildLibraries();
-
+  void createWikiDock();
 };
 
 QString readFileContent(const QString& absolutePath);

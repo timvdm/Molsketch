@@ -11,6 +11,7 @@ DESTDIR = ../bin
 
 target.path=$${MSK_INSTALL_BINS}
 INSTALLS += target
+QT += network
 
 INCLUDEPATH += \
         $$sourceDir/../libmolsketch \

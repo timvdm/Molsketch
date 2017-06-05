@@ -1,5 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2017 Hendrik Vennekate                                  *
+ *   Copyright (C) 2017 by Hendrik Vennekate                               *
+ *   HVennekate@gmx.de                                                     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -16,34 +17,25 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef MOLSKETCH_LIBRARYMODEL_H
-#define MOLSKETCH_LIBRARYMODEL_H
 
-#include <QAbstractTableModel>
+#ifndef MOLSKETCH_LIBRARYVIEW_H
+#define MOLSKETCH_LIBRARYVIEW_H
+
+#include <QListView>
+
+
 
 namespace Molsketch {
-class Molecule;
 
-class LibraryModelPrivate;
-
-class LibraryModel : public QAbstractListModel
+class LibraryView : public QListView
 {
-  Q_DECLARE_PRIVATE(LibraryModel)
-  QScopedPointer<LibraryModelPrivate> d_ptr;
+  Q_OBJECT
 public:
-    explicit LibraryModel(QObject *parent = nullptr);
-    virtual ~LibraryModel() override;
-    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
-    QMimeData* mimeData(const QModelIndexList &indexes) const override;
-    /** Sets the molecules to be listed. Note that the model takes ownership. */
-    void setMolecules(QList<Molecule *> molecules);
-    /** Adds the molecule to the model's list. Assumes ownership. */
-    void addMolecule(Molecule*molecule);
-    QStringList mimeTypes() const override;
-    Qt::ItemFlags flags(const QModelIndex &index) const;
+  explicit LibraryView(QWidget *parent = 0);
+private:
+  void paintEvent(QPaintEvent *e);
 };
 
 } // namespace Molsketch
 
-#endif // MOLSKETCH_LIBRARYMODEL_H
+#endif // MOLSKETCH_LIBRARYVIEW_H

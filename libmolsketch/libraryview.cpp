@@ -1,5 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2017 Hendrik Vennekate                                  *
+ *   Copyright (C) 2017 by Hendrik Vennekate                               *
+ *   HVennekate@gmx.de                                                     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -16,34 +17,23 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef MOLSKETCH_LIBRARYMODEL_H
-#define MOLSKETCH_LIBRARYMODEL_H
+#include "libraryview.h"
 
-#include <QAbstractTableModel>
+#include <QPainter>
 
 namespace Molsketch {
-class Molecule;
 
-class LibraryModelPrivate;
+LibraryView::LibraryView(QWidget *parent) : QListView(parent) {
+  setIconSize(QSize(64, 64)); // TODO configurable
+  setDragEnabled(true);
+}
 
-class LibraryModel : public QAbstractListModel
+void LibraryView::paintEvent(QPaintEvent *e)
 {
-  Q_DECLARE_PRIVATE(LibraryModel)
-  QScopedPointer<LibraryModelPrivate> d_ptr;
-public:
-    explicit LibraryModel(QObject *parent = nullptr);
-    virtual ~LibraryModel() override;
-    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
-    QMimeData* mimeData(const QModelIndexList &indexes) const override;
-    /** Sets the molecules to be listed. Note that the model takes ownership. */
-    void setMolecules(QList<Molecule *> molecules);
-    /** Adds the molecule to the model's list. Assumes ownership. */
-    void addMolecule(Molecule*molecule);
-    QStringList mimeTypes() const override;
-    Qt::ItemFlags flags(const QModelIndex &index) const;
-};
+  QListView::paintEvent(e);
+  if (model() && model()->rowCount() > 0) return;
+  QPainter p(viewport());
+  p.drawText(rect(), Qt::AlignCenter, tr("No molecules to show"));
+}
 
 } // namespace Molsketch
-
-#endif // MOLSKETCH_LIBRARYMODEL_H

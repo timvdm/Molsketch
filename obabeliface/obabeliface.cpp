@@ -154,7 +154,7 @@ namespace Molsketch
     return true;
   }
 
-  Molecule* fromOBMolecule(OpenBabel::OBMol& obmol) {
+  Molecule* fromOBMolecule(OpenBabel::OBMol& obmol) { // TODO convert title
     using namespace OpenBabel;
     // Create a new molecule
     Molecule* mol = new Molecule();
@@ -340,6 +340,8 @@ namespace Molsketch
 
     OpenBabel::OBMol obmol;
     conv.ReadString(&obmol, input.toStdString()); // TODO do we need error handling if false?
+    std::map<std::string, std::string> options{{"gen2D",""}};
+    obmol.DoTransformations(&options, &conv);
     return fromOBMolecule(obmol);
   }
 
