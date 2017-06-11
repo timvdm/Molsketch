@@ -50,6 +50,8 @@
 #include <openbabel/data.h>
 #include <openbabel/obconversion.h>
 #include <openbabel/babelconfig.h>
+#include <openbabel/op.h>
+#include <openbabel/stereo/stereo.h>
 
 OpenBabel::OBElementTable eTable ;
 
@@ -332,17 +334,55 @@ namespace Molsketch
     return getFormats(conversion.GetSupportedInputFormat());
   }
 
-  Molecule *fromSmiles(const QString &input)
-  {
+  void SetWedgeAndHash(OpenBabel::OBMol& mol) {
+      using namespace OpenBabel;
+    // Remove any existing wedge and hash bonds
+    FOR_BONDS_OF_MOL(b, &mol)  {
+      b->UnsetWedge();
+      b->UnsetHash();
+    }
+
+    std::map<OBBond*, enum OBStereo::BondDirection> updown;
+    std::map<OBBond*, OBStereo::Ref> from;
+    std::map<OBBond*, OBStereo::Ref>::const_iterator from_cit;
+    TetStereoToWedgeHash(mol, updown, from);
+
+    for(from_cit=from.begin();from_cit!=from.end();++from_cit) {
+      OBBond* pbond = from_cit->first;
+      if(updown[pbond]==OBStereo::UpBond)
+        pbond->SetHash();
+      else if(updown[pbond]==OBStereo::DownBond)
+        pbond->SetWedge();
+      else if(updown[pbond]==OBStereo::UnknownDir)
+        pbond->SetWedgeOrHash();
+    }
+  }
+
+  Molecule *fromString(const QString &input, const char* format) {
     OpenBabel::OBConversion conv ;
-    if (!conv.SetInFormat("can"))
+    if (!conv.SetInFormat(format)) {
+      qCritical("Could not find format: %s", format);
       return 0;
+    }
 
     OpenBabel::OBMol obmol;
     conv.ReadString(&obmol, input.toStdString()); // TODO do we need error handling if false?
-    std::map<std::string, std::string> options{{"gen2D",""}};
-    obmol.DoTransformations(&options, &conv);
+
+    OpenBabel::OBOp* gen2D = OpenBabel::OBOp::FindType("gen2D");
+    if (gen2D) gen2D->Do(&obmol); // TODO what if we didn't find gen2D?
+    else qCritical("Could not find gen2D for coordinate generation from string-based molecule format");
+
+    SetWedgeAndHash(obmol);
+
     return fromOBMolecule(obmol);
+  }
+
+  Molecule *fromSmiles(const QString &input) {
+    return fromString(input, "can");
+  }
+
+  Molecule *fromInChI(const QString &input) {
+    return fromString("InChI=" + input, "inchi");
   }
 
 } // namespace

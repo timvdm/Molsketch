@@ -58,6 +58,11 @@ extern "C"
     Molecule* fromSmiles(const QString&);
     typedef Molecule* (*fromSmilesFunctionPointer)(const QString&);
 /**
+ * Generate molecule from InChI string
+ */
+    Molecule* fromInChI(const QString&);
+    typedef Molecule* (*fromInChIFunctionPointer)(const QString&);
+/**
  * Load and save routines
  *
  * @author Harm van Eersel (modified by H. Vennekate)

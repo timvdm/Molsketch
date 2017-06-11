@@ -48,6 +48,8 @@ WikiQueryWidget::WikiQueryWidget(QWidget *parent) :
   ui->moleculeListView->setModel(new LibraryModel(this));
   connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(processMoleculeQuery(QNetworkReply*)));
   ui->progressWidget->hide();
+  ui->queryInput->setValidator(new QRegularExpressionValidator(QRegularExpression("[^\"]*"),
+                                                               ui->queryInput));
   // TODO validator for input: do not allow quotation marks. Check input constraints
 }
 
@@ -61,7 +63,7 @@ void WikiQueryWidget::on_searchButton_clicked() {
 }
 
 void WikiQueryWidget::on_queryInput_textChanged(const QString &newText) {
-  ui->searchButton->setDisabled(newText.isEmpty());
+  ui->searchButton->setDisabled(newText.length() < 5);
 }
 
 void WikiQueryWidget::processMoleculeQuery(QNetworkReply *reply) {
@@ -71,12 +73,12 @@ void WikiQueryWidget::processMoleculeQuery(QNetworkReply *reply) {
 
   QLibrary obabeliface("obabeliface" QTVERSIONSUFFIX OBABELOSSUFFIX);
   obabeliface.load() ;
-  fromSmilesFunctionPointer convertSmiles = 0 ;
+  fromInChIFunctionPointer convertInChI = 0 ;
   if (obabeliface.isLoaded())
-    convertSmiles = (fromSmilesFunctionPointer) (obabeliface.resolve("fromSmiles")) ;
-  if (!convertSmiles) {
-    qWarning("Could not load function to convert SMILES");
-    QMessageBox::critical(0, "Error", "Could not load OpenBabel function to convert SMILES.");
+    convertInChI = (fromInChIFunctionPointer) (obabeliface.resolve("fromInChI")) ;
+  if (!convertInChI) {
+    qWarning("Could not load function to convert InChI");
+    QMessageBox::critical(0, "Error", "Could not load OpenBabel function to convert InChI.");
     return;
   }
 
@@ -91,11 +93,13 @@ void WikiQueryWidget::processMoleculeQuery(QNetworkReply *reply) {
     QString inchi = result.toMap()["inchi"].toMap()["value"].toString();
     QString isomer = result.toMap()["isomer"].toMap()["value"].toString();
     qInfo() << "obtained molecule from wikidata:" << label << smiles << inchi << isomer;
-    Molecule* molecule = convertSmiles(smiles);
+    Molecule* molecule = convertInChI(inchi);
     if (!molecule) continue;
     molecule->setName(label);
     molecules << molecule;
   }
+  qSort(molecules.begin(), molecules.end(),
+        [](Molecule* a, Molecule* b) {return a->getName() < b->getName();});
   ((LibraryModel*) ui->moleculeListView->model())->setMolecules(molecules);
   reply->deleteLater();
 }
@@ -114,9 +118,10 @@ void WikiQueryWidget::startMoleculeQuery(const QString& queryString) {
                                 " . ?qnumber wdt:P234 ?inchi"
                                 " . ?qnumber wdt:P2017 ?isomer"
                                 " . SERVICE wikibase:label { bd:serviceParam wikibase:language \"en\". } "
-                                "FILTER(REGEX(?label, \"" + queryString + "\")) " //, \"i\")) "
+                                "FILTER(REGEX(?label, \"" + queryString + "\", \"i\")) "
                                 "} GROUP BY ?qnumber"
-                                " LIMIT 100"));
+//                                " LIMIT 100 ORDER BY DESC(?label)"
+                                ));
   QUrl url("https://query.wikidata.org/sparql");
   url.setQuery(query);
   QNetworkRequest request(url);
