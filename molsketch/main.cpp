@@ -44,6 +44,8 @@ void messageOutput(QtMsgType type, const QMessageLogContext &context, const QStr
     case QtFatalMsg:
         fprintf(stderr, "Fatal: (%s:%u, %s) %s\n", context.file, context.line, context.function, localMsg.constData());
         abort();
+      case QtInfoMsg:
+        fprintf(stderr, "Info: (%s:%u, %s) %s\n", context.file, context.line, context.function, localMsg.constData());
     }
 }
 

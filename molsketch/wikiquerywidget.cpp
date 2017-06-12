@@ -30,6 +30,7 @@
 #include <QNetworkRequest>
 #include <QUrlQuery>
 #include <librarymodel.h>
+#include <QDebug>
 
 #ifdef _WIN32
 #define OBABELOSSUFFIX ".dll"
