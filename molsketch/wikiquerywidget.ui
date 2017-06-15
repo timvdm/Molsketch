@@ -62,8 +62,8 @@
        <string/>
       </property>
       <property name="icon">
-       <iconset theme="system-search">
-        <normaloff>.</normaloff>.</iconset>
+       <iconset theme="system-search" resource="oxygenicons.qrc">
+        <normaloff>:/icons/system-search.svg</normaloff>:/icons/system-search.svg</iconset>
       </property>
      </widget>
     </item>
@@ -107,7 +107,8 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset theme="process-stop"/>
+          <iconset theme="process-stop" resource="oxygenicons.qrc">
+           <normaloff>:/icons/process-stop.svg</normaloff>:/icons/process-stop.svg</iconset>
          </property>
         </widget>
        </item>
@@ -124,7 +125,9 @@
    <header>libraryview.h</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="oxygenicons.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>queryInput</sender>

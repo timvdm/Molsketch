@@ -575,22 +575,22 @@ void MainWindow::updateEditMode(int mode)
 
 void MainWindow::createActions()
 {
-  newAct = new QAction(QIcon::fromTheme("document-new"), tr("&New"),this);
+  newAct = new QAction(QIcon::fromTheme("document-new", QIcon(":icons/document-new.svg")), tr("&New"),this);
   newAct->setShortcut(tr("Ctrl+N"));
   newAct->setStatusTip(tr("Create a new file"));
   connect(newAct, SIGNAL(triggered()), this, SLOT(newFile()));
 
-  openAct = new QAction(QIcon::fromTheme("document-open"),tr("&Open..."), this);
+  openAct = new QAction(QIcon::fromTheme("document-open", QIcon(":icons/document-open.svg")),tr("&Open..."), this);
   openAct->setShortcut(tr("Ctrl+O"));
   openAct->setStatusTip(tr("Open an existing file"));
   connect(openAct, SIGNAL(triggered()), this, SLOT(open()));
 
-  saveAct = new QAction(QIcon::fromTheme("document-save"), tr("&Save"), this);
+  saveAct = new QAction(QIcon::fromTheme("document-save", QIcon(":icons/document-save.svg")), tr("&Save"), this);
   saveAct->setShortcut(tr("Ctrl+S"));
   saveAct->setStatusTip(tr("Save the document to disk"));
   connect(saveAct, SIGNAL(triggered()), this, SLOT(save()));
 
-  saveAsAct = new QAction(QIcon::fromTheme("document-save-as"),tr("Save &As..."), this);
+  saveAsAct = new QAction(QIcon::fromTheme("document-save-as", QIcon(":icons/document-save-as.svg")),tr("Save &As..."), this);
   saveAsAct->setStatusTip(tr("Save the document under a new name"));
   connect(saveAsAct, SIGNAL(triggered()), this, SLOT(saveAs()));
 
@@ -601,50 +601,50 @@ void MainWindow::createActions()
   connect(m_autoSaveTimer, SIGNAL(timeout()), autoSaveAct, SIGNAL(triggered()));
 //   m_autoSaveTimer->start();
 
-  importAct = new QAction(QIcon::fromTheme("document-import"),tr("&Import..."), this);
+  importAct = new QAction(QIcon::fromTheme("document-import", QIcon(":icons/document-import.svg")),tr("&Import..."), this);
   importAct->setShortcut(tr("Ctrl+I"));
   importAct->setStatusTip(tr("Insert an existing molecule into the document"));
   connect(importAct, SIGNAL(triggered()), this, SLOT(importDoc()));
 
-  exportAct = new QAction(QIcon::fromTheme("document-export"),tr("&Export..."), this);
+  exportAct = new QAction(QIcon::fromTheme("document-export", QIcon(":icons/document-export.svg")),tr("&Export..."), this);
   exportAct->setShortcut(tr("Ctrl+E"));
   exportAct->setStatusTip(tr("Export the current document as a picture"));
   connect(exportAct, SIGNAL(triggered()), this, SLOT(exportDoc()));
 
-  printAct = new QAction(QIcon::fromTheme("document-print"),tr("&Print..."), this);
+  printAct = new QAction(QIcon::fromTheme("document-print", QIcon(":icons/document-print.svg")),tr("&Print..."), this);
   printAct->setShortcut(tr("Ctrl+P"));
   printAct->setStatusTip(tr("Print the current document"));
   connect(printAct, SIGNAL(triggered()), this, SLOT(print()));
 
-  exitAct = new QAction(QIcon::fromTheme("application-exit"),tr("E&xit"), this);
+  exitAct = new QAction(QIcon::fromTheme("application-exit", QIcon(":icons/application-exit.svg")),tr("E&xit"), this);
   exitAct->setShortcut(tr("Ctrl+Q"));
   exitAct->setStatusTip(tr("Exit the application"));
   connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
 
   // Edit actions
   undoAct = m_scene->stack()->createUndoAction(this);
-  undoAct->setIcon(QIcon::fromTheme("edit-undo"));
+  undoAct->setIcon(QIcon::fromTheme("edit-undo", QIcon(":icons/edit-undo.svg")));
   undoAct->setShortcut(tr("Ctrl+Z"));
   undoAct->setStatusTip(tr("Undo the last action"));
 
   redoAct = m_scene->stack()->createRedoAction(this);
-  redoAct->setIcon(QIcon::fromTheme("edit-redo"));
+  redoAct->setIcon(QIcon::fromTheme("edit-redo", QIcon(":icons/edit-redo.svg")));
   redoAct->setShortcut(tr("Ctrl+Shift+Z"));
   redoAct->setStatusTip(tr("Redo the last action"));
 
-  cutAct = new QAction(QIcon::fromTheme("edit-cut"), tr("Cu&t"), this);
+  cutAct = new QAction(QIcon::fromTheme("edit-cut", QIcon(":icons/edit-cut.svg")), tr("Cu&t"), this);
   cutAct->setShortcut(tr("Ctrl+X"));
   cutAct->setStatusTip(tr("Cut the current selection's contents to the "
                           "clipboard"));
   connect(cutAct, SIGNAL(triggered()), m_scene, SLOT(cut()));
 
-  copyAct = new QAction(QIcon::fromTheme("edit-copy"), tr("&Copy"), this);
+  copyAct = new QAction(QIcon::fromTheme("edit-copy", QIcon(":icons/edit-copy.svg")), tr("&Copy"), this);
   copyAct->setShortcut(tr("Ctrl+C"));
   copyAct->setStatusTip(tr("Copy the current selection's contents to the "
                            "clipboard"));
   connect(copyAct, SIGNAL(triggered()), m_scene, SLOT(copy()));
 
-  pasteAct = new QAction(QIcon::fromTheme("edit-paste"), tr("&Paste"), this);
+  pasteAct = new QAction(QIcon::fromTheme("edit-paste", QIcon(":icons/edit-paste.svg")), tr("&Paste"), this);
   pasteAct->setShortcut(tr("Ctrl+V"));
   pasteAct->setStatusTip(tr("Paste the clipboard's contents into the current "
                             "selection"));
@@ -655,7 +655,7 @@ void MainWindow::createActions()
   convertImageAct->setStatusTip(tr("Convert Image to Mol using OSRA"));
   connect(convertImageAct, SIGNAL(triggered()), m_scene, SLOT(convertImage()));
 
-  selectAllAct = new QAction(QIcon::fromTheme("edit-select-all"), tr("&Select all"),this);
+  selectAllAct = new QAction(QIcon::fromTheme("edit-select-all", QIcon(":icons/edit-select-all.svg")), tr("&Select all"),this);
   selectAllAct->setShortcut(tr("Ctrl+A"));
   selectAllAct->setStatusTip(tr("Selects all elements on the scene"));
   connect(selectAllAct, SIGNAL(triggered()), m_scene, SLOT(selectAll()));
@@ -665,34 +665,34 @@ void MainWindow::createActions()
   alignAct->setCheckable(true);
   connect(alignAct, SIGNAL(toggled(bool)), m_scene, SLOT(setGrid(bool)));
 
-  prefAct = new QAction(QIcon::fromTheme("preferences-system"),tr("Edit Pre&ferences..."),this);
+  prefAct = new QAction(QIcon::fromTheme("preferences-system", QIcon(":icons/preferences-system.svg")),tr("Edit Pre&ferences..."),this);
   prefAct->setShortcut(tr("Ctrl+F"));
   prefAct->setStatusTip(tr("Edit your preferences"));
   connect(prefAct, SIGNAL(triggered()), this, SLOT(editPreferences()));
 
   // Zoom actions
-  zoomInAct = new QAction(QIcon::fromTheme("zoom-in"),tr("Zoom &In"), this);
+  zoomInAct = new QAction(QIcon::fromTheme("zoom-in", QIcon(":icons/zoom-in.svg")),tr("Zoom &In"), this);
   zoomInAct->setShortcut(tr("Ctrl++"));
   zoomInAct->setStatusTip(tr("Zoom in on the canvas"));
   connect(zoomInAct, SIGNAL(triggered()), this, SLOT(zoomIn()));
 
-  zoomOutAct = new QAction(QIcon::fromTheme("zoom-out"),tr("Zoom &Out"), this);
+  zoomOutAct = new QAction(QIcon::fromTheme("zoom-out", QIcon(":icons/zoom-out.svg")),tr("Zoom &Out"), this);
   zoomOutAct->setShortcut(tr("Ctrl+-"));
   zoomOutAct->setStatusTip(tr("Zoom out on the canvas"));
   connect(zoomOutAct, SIGNAL(triggered()), this, SLOT(zoomOut()));
 
-  zoomResetAct = new QAction(QIcon::fromTheme("zoom-original"),tr("Zoom &Reset"), this);
+  zoomResetAct = new QAction(QIcon::fromTheme("zoom-original", QIcon(":icons/zoom-original.svg")),tr("Zoom &Reset"), this);
   zoomResetAct->setShortcut(tr("Ctrl+="));
   zoomResetAct->setStatusTip(tr("Reset the zoom level"));
   connect(zoomResetAct, SIGNAL(triggered()), this, SLOT(zoomReset()));
 
-  zoomFitAct = new QAction(QIcon::fromTheme("zoom-fit-best"),tr("Zoom &Fit"), this);
+  zoomFitAct = new QAction(QIcon::fromTheme("zoom-fit-best", QIcon(":icons/zoom-fit-best.svg")),tr("Zoom &Fit"), this);
   zoomFitAct->setShortcut(tr("Ctrl+*"));
   zoomFitAct->setStatusTip(tr("Fit to screen"));
   connect(zoomFitAct, SIGNAL(triggered()), this, SLOT(zoomFit()));
 
   // Help actions
-  helpContentsAct = new QAction(QIcon::fromTheme("help-contents"),tr("&Help Contents..."), this);
+  helpContentsAct = new QAction(QIcon::fromTheme("help-contents", QIcon(":icons/help-contents.svg")),tr("&Help Contents..."), this);
   helpContentsAct->setShortcut(tr("F1"));
   helpContentsAct->setStatusTip(tr("Show the application's help contents"));
   connect(helpContentsAct, SIGNAL(triggered()), this, SLOT(assistant()));
@@ -705,7 +705,7 @@ void MainWindow::createActions()
   youtubeChannelAction->setStatusTip(tr("Open the browser with the YouTube channel page"));
   connect(youtubeChannelAction, SIGNAL(triggered()), this, SLOT(goToYouTube()));
 
-  aboutAct = new QAction(QIcon::fromTheme("help-about"),tr("&About..."), this);
+  aboutAct = new QAction(QIcon::fromTheme("help-about", QIcon(":icons/help-about.svg")),tr("&About..."), this);
   aboutAct->setStatusTip(tr("Show the application's About box"));
   connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));
 
@@ -886,7 +886,7 @@ void MainWindow::createToolBox()
   toolBoxDockContent->setLayout(layout);
   toolBox = new QToolBox;
   layout->addWidget(new HelpForEmptyToolBox(tr("Define libraries using <b>Edit > Edit Preferences... > Libraries</b>."), toolBox, toolBoxDockContent));
-  layout->addWidget(refreshLibraries = new QPushButton(QIcon::fromTheme("view-refresh"),""));
+  layout->addWidget(refreshLibraries = new QPushButton(QIcon::fromTheme("view-refresh", QIcon(":icons/view-refresh.svg")),""));
   layout->addWidget(toolBox);
   layout->setMargin(0);
   toolBoxDock->setWidget(toolBoxDockContent);

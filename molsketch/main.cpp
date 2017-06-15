@@ -52,11 +52,6 @@ void messageOutput(QtMsgType type, const QMessageLogContext &context, const QStr
 int main(int argc, char *argv[])
 {
   qInstallMessageHandler(messageOutput);
-#if defined(QT_STATIC_BUILD) || defined(_WIN32)
-  Q_INIT_RESOURCE(molsketch);
-  Q_INIT_RESOURCE(oxygenicons);
-  QIcon::setThemeName("oxygen");
-#endif
   QApplication app(argc, argv);
 
   QCoreApplication::setOrganizationName("SourceForge");

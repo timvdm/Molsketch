@@ -15,9 +15,8 @@
    <string>molsKetch - Preferences</string>
   </property>
   <property name="windowIcon">
-   <iconset theme="preferences-system">
-    <normaloff/>
-   </iconset>
+   <iconset theme="preferences-system" resource="oxygenicons.qrc">
+    <normaloff>:/icons/preferences-system.svg</normaloff>:/icons/preferences-system.svg</iconset>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
@@ -64,9 +63,8 @@
            <string>General</string>
           </property>
           <property name="icon">
-           <iconset theme="preferences-system">
-            <normaloff/>
-           </iconset>
+           <iconset theme="preferences-system" resource="oxygenicons.qrc">
+            <normaloff>:/icons/preferences-system.svg</normaloff>:/icons/preferences-system.svg</iconset>
           </property>
          </item>
          <item>
@@ -74,9 +72,8 @@
            <string>Draw settings</string>
           </property>
           <property name="icon">
-           <iconset theme="draw-freehand">
-            <normaloff/>
-           </iconset>
+           <iconset theme="draw-freehand" resource="oxygenicons.qrc">
+            <normaloff>:/icons/draw-freehand.svg</normaloff>:/icons/draw-freehand.svg</iconset>
           </property>
          </item>
          <item>
@@ -84,9 +81,8 @@
            <string>Libraries</string>
           </property>
           <property name="icon">
-           <iconset theme="document-open">
-            <normaloff/>
-           </iconset>
+           <iconset theme="document-open" resource="oxygenicons.qrc">
+            <normaloff>:/icons/document-open.svg</normaloff>:/icons/document-open.svg</iconset>
           </property>
          </item>
         </widget>
@@ -94,7 +90,7 @@
        <item>
         <widget class="QStackedWidget" name="stackedWidget">
          <property name="currentIndex">
-          <number>0</number>
+          <number>2</number>
          </property>
          <widget class="QWidget" name="generalPage">
           <widget class="QGroupBox" name="groupBoxGeneral">
@@ -220,7 +216,7 @@
                  <item>
                   <widget class="QRadioButton" name="mouseWheelZoom">
                    <property name="text">
-                    <string>zoom</string>
+                    <string>&amp;zoom</string>
                    </property>
                   </widget>
                  </item>
@@ -258,7 +254,16 @@
                 <bool>false</bool>
                </property>
                <layout class="QGridLayout">
-                <property name="margin">
+                <property name="leftMargin">
+                 <number>9</number>
+                </property>
+                <property name="topMargin">
+                 <number>9</number>
+                </property>
+                <property name="rightMargin">
+                 <number>9</number>
+                </property>
+                <property name="bottomMargin">
                  <number>9</number>
                 </property>
                 <property name="spacing">
@@ -513,9 +518,8 @@
                   <string/>
                  </property>
                  <property name="icon">
-                  <iconset theme="list-add">
-                   <normaloff/>
-                  </iconset>
+                  <iconset theme="list-add" resource="oxygenicons.qrc">
+                   <normaloff>:/icons/list-add.svg</normaloff>:/icons/list-add.svg</iconset>
                  </property>
                 </widget>
                </item>
@@ -525,9 +529,8 @@
                   <string/>
                  </property>
                  <property name="icon">
-                  <iconset theme="list-remove">
-                   <normaloff/>
-                  </iconset>
+                  <iconset theme="list-remove" resource="oxygenicons.qrc">
+                   <normaloff>:/icons/list-remove.svg</normaloff>:/icons/list-remove.svg</iconset>
                  </property>
                 </widget>
                </item>
@@ -582,7 +585,9 @@
   <tabstop>addLibrary</tabstop>
   <tabstop>removeLibrary</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="oxygenicons.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>buttonBox</sender>

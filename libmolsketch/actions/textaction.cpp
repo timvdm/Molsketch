@@ -32,7 +32,7 @@ namespace Molsketch {
     : genericAction(scene),
       d(new PrivateData)
   {
-    setIcon(QIcon::fromTheme("insert-text"));
+    setIcon(QIcon::fromTheme("insert-text", QIcon(":icons/insert-text.svg")));
     setText(tr("Insert text"));
   }
 
