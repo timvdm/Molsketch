@@ -31,6 +31,7 @@
 #include <QUrlQuery>
 #include <librarymodel.h>
 #include <moleculemodelitem.h>
+#include <QDebug>
 
 #ifdef _WIN32
 #define OBABELOSSUFFIX ".dll"

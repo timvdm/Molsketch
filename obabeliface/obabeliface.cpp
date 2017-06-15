@@ -362,6 +362,7 @@ namespace Molsketch
     OpenBabel::OBConversion conv ;
     if (!conv.SetInFormat(format)) {
       qCritical("Could not find format: %s", format);
+      qInfo(("Available formats: " + outputFormats().join(", ")).toStdString().c_str());
       return 0;
     }
 
