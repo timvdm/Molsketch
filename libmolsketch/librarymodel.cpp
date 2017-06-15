@@ -20,22 +20,28 @@
 #include "constants.h"
 #include "molecule.h"
 #include "stringify.h"
+#include "moleculemodelitem.h"
 
+#include <QElapsedTimer>
 #include <QIcon>
 #include <QMimeData>
 #include <QSet>
+#include <QTimer>
 
 namespace Molsketch {
+  const int itemIncrement = 10;
 
   class LibraryModelPrivate {
     Q_DISABLE_COPY(LibraryModelPrivate)
   public:
-    LibraryModelPrivate(){}
-    QList<Molecule*> molecules;
+    LibraryModelPrivate() : fetchCount(0){}
+    QList<MoleculeModelItem*> items;
+    int fetchCount;
     void cleanMolecules() {
-      qInfo("Clearing list of molecules. Count: %d", molecules.size());
-      for (auto molecule : molecules.toSet()) delete molecule;
-      molecules.clear();
+      qInfo("Clearing list of molecules. Count: %d", items.size());
+      for (auto molecule : items.toSet()) delete molecule;
+      items.clear();
+      fetchCount = 0;
     }
     ~LibraryModelPrivate() {
       cleanMolecules();
@@ -52,16 +58,16 @@ LibraryModel::~LibraryModel() {}
 int LibraryModel::rowCount(const QModelIndex &parent) const {
   Q_UNUSED(parent)
   Q_D(const LibraryModel);
-  return d->molecules.size();
+  return d->fetchCount;
 }
 
 QVariant LibraryModel::data(const QModelIndex &index, int role) const {
   qInfo("Getting data of type %d for index %d", role, index.row());
   Q_D(const LibraryModel);
   int row = index.row();
-  if (row < 0 || row >= d->molecules.size()) return QVariant();
-  if (Qt::DecorationRole == role) return QIcon(renderMolecule(*(d->molecules[row])));
-  if (Qt::DisplayRole == role) return d->molecules[row]->getName();
+  if (row < 0 || row >= d->items.size()) return QVariant();
+  if (Qt::DecorationRole == role) return d->items[row]->icon();
+  if (Qt::DisplayRole == role) return d->items[row]->name();
   return QVariant();
 }
 
@@ -76,29 +82,27 @@ QMimeData *LibraryModel::mimeData(const QModelIndexList &indexes) const {
   out.writeStartDocument();
   for (QModelIndex index : indexes) {
     int row = index.row();
-    if (row >= 0 && row < d->molecules.size())
-      out << *(d->molecules.at(row));
+    if (row >= 0 && row < d->items.size())
+      d->items[row]->writeXml(out);
   }
   out.writeEndDocument();
   result->setData(moleculeMimeType, xml);
   return result;
 }
 
-void LibraryModel::setMolecules(QList<Molecule *> molecules) {
+void LibraryModel::setMolecules(QList<MoleculeModelItem *> molecules) {
   qDebug("Setting molecules");
   Q_D(LibraryModel);
   beginResetModel();
   d->cleanMolecules();
-  d->molecules = molecules;
+  d->items = molecules;
   endResetModel();
 }
 
-void LibraryModel::addMolecule(Molecule *molecule) {
+void LibraryModel::addMolecule(MoleculeModelItem *molecule) {
   qDebug("Adding molecule");
   Q_D(LibraryModel);
-  beginInsertRows(QModelIndex(), d->molecules.size(), d->molecules.size());
-  d->molecules << molecule;
-  endInsertRows();
+  d->items << molecule;
 }
 
 QStringList LibraryModel::mimeTypes() const {
@@ -107,6 +111,19 @@ QStringList LibraryModel::mimeTypes() const {
 
 Qt::ItemFlags LibraryModel::flags(const QModelIndex &index) const {
   return QAbstractListModel::flags(index) | Qt::ItemIsDragEnabled;
+}
+
+bool LibraryModel::canFetchMore(const QModelIndex &) const {
+  Q_D(const LibraryModel);
+  return d->fetchCount < d->items.size();
+}
+
+void LibraryModel::fetchMore(const QModelIndex &) {
+  Q_D(LibraryModel);
+  int newCount = qMin(d->fetchCount + itemIncrement, d->items.size());
+  beginInsertRows(QModelIndex(), d->fetchCount, newCount-1);
+  d->fetchCount = newCount;
+  endInsertRows();
 }
 
 } // namespace Molsketch

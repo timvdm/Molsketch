@@ -1,5 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2017 Hendrik Vennekate                                  *
+ *   Copyright (C) 2017 by Hendrik Vennekate                               *
+ *   HVennekate@gmx.de                                                     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -16,36 +17,43 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef MOLSKETCH_LIBRARYMODEL_H
-#define MOLSKETCH_LIBRARYMODEL_H
+#ifndef MOLSKETCH_MOLECULEMODELITEM_H
+#define MOLSKETCH_MOLECULEMODELITEM_H
 
-#include <QAbstractTableModel>
+#include <QScopedPointer>
+
+class QIcon;
+class QString;
+class QXmlStreamWriter;
 
 namespace Molsketch {
-class Molecule;
-class MoleculeModelItem;
-class LibraryModelPrivate;
+  class Molecule;
+  class MoleculeModelItemPrivate;
 
-class LibraryModel : public QAbstractListModel
-{
-  Q_DECLARE_PRIVATE(LibraryModel)
-  QScopedPointer<LibraryModelPrivate> d_ptr;
-public:
-    explicit LibraryModel(QObject *parent = nullptr);
-    virtual ~LibraryModel() override;
-    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
-    QMimeData* mimeData(const QModelIndexList &indexes) const override;
-    /** Sets the molecules to be listed. Note that the model takes ownership. */
-    void setMolecules(QList<MoleculeModelItem *> molecules);
-    /** Adds the molecule to the model's list. Assumes ownership. */
-    void addMolecule(MoleculeModelItem *molecule);
-    QStringList mimeTypes() const override;
-    Qt::ItemFlags flags(const QModelIndex &index) const;
-    bool canFetchMore(const QModelIndex &parent) const;
-    void fetchMore(const QModelIndex &parent);
-};
-
+  /**
+   * @brief The MoleculeModelItem class for use in the LibraryModel
+   *
+   * This class facilitates lazy generation of molecules and model information
+   * (icon, XML data) and caching thereof.
+   * Subclasses need only implement the produceMolecule() method which shall
+   * generate a molecule from which this class will then obtain all further
+   * information as the need arises.
+   */
+  class MoleculeModelItem
+  {
+    Q_DECLARE_PRIVATE(MoleculeModelItem)
+    QScopedPointer<MoleculeModelItemPrivate> d_ptr;
+  protected:
+    MoleculeModelItem();
+    virtual Molecule* produceMolecule() const = 0;
+  public:
+    virtual ~MoleculeModelItem();
+    QIcon icon();
+    QString name();
+    void writeXml(QXmlStreamWriter& writer);
+    static MoleculeModelItem* fromXml(QByteArray xml);
+    static MoleculeModelItem* fromInChI(QString name, QString inchi);
+  };
 } // namespace Molsketch
 
-#endif // MOLSKETCH_LIBRARYMODEL_H
+#endif // MOLSKETCH_MOLECULEMODELITEM_H

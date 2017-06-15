@@ -30,7 +30,7 @@
 #include <QNetworkRequest>
 #include <QUrlQuery>
 #include <librarymodel.h>
-#include <QDebug>
+#include <moleculemodelitem.h>
 
 #ifdef _WIN32
 #define OBABELOSSUFFIX ".dll"
@@ -87,21 +87,20 @@ void WikiQueryWidget::processMoleculeQuery(QNetworkReply *reply) {
 
   QVariantList results = response.toVariant().toMap()["results"].toMap()["bindings"].toList();
 
-  QList<Molecule*> molecules;
+  QList<QPair<QString, QString>> namesAndInchiStrings;
   foreach (QVariant result, results) {
     QString label = result.toMap()["label"].toMap()["value"].toString();
     QString smiles = result.toMap()["smiles"].toMap()["value"].toString();
     QString inchi = result.toMap()["inchi"].toMap()["value"].toString();
     QString isomer = result.toMap()["isomer"].toMap()["value"].toString();
     qInfo() << "obtained molecule from wikidata:" << label << smiles << inchi << isomer;
-    Molecule* molecule = convertInChI(inchi);
-    if (!molecule) continue;
-    molecule->setName(label);
-    molecules << molecule;
+    namesAndInchiStrings << qMakePair(label, inchi);
   }
-  qSort(molecules.begin(), molecules.end(),
-        [](Molecule* a, Molecule* b) {return a->getName() < b->getName();});
-  ((LibraryModel*) ui->moleculeListView->model())->setMolecules(molecules);
+  qSort(namesAndInchiStrings);
+  QList<MoleculeModelItem*> items;
+  for (auto item : namesAndInchiStrings)
+    items << MoleculeModelItem::fromInChI(item.first, item.second);
+  ((LibraryModel*) ui->moleculeListView->model())->setMolecules(items);
   reply->deleteLater();
 }
 
