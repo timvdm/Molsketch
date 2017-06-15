@@ -35,8 +35,7 @@ public:
 };
 
 #define CLASS_FOR_TESTING_WITH_FUNCTIONS(CLASSNAME, CONTENT) \
-  class CLASSNAME##ForTesting : public CLASSNAME, public ForTesting<CLASSNAME>{ CONTENT }; \
-  template<> int ForTesting<CLASSNAME>::instanceCounter = 0;
+  class CLASSNAME##ForTesting : public CLASSNAME, public ForTesting<CLASSNAME>{ CONTENT };
 
 #define CLASS_FOR_TESTING(CLASSNAME) CLASS_FOR_TESTING_WITH_FUNCTIONS(CLASSNAME,)
 

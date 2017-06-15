@@ -18,6 +18,7 @@
  ***************************************************************************/
 
 #include <functional>
+#include <moleculemodelitem.h>
 #include "utilities.h"
 #include "mocks.h"
 #include <cxxtest/TestSuite.h>
@@ -32,12 +33,17 @@
 
 using namespace Molsketch;
 
-CLASS_FOR_TESTING(Molecule)
-
-CLASS_FOR_TESTING(LibraryModel)
-
 class LibraryModelUnitTest : public CxxTest::TestSuite {
-                                      LibraryModelForTesting* model;
+  CLASS_FOR_TESTING(Molecule)
+  CLASS_FOR_TESTING(LibraryModel)
+  CLASS_FOR_TESTING_WITH_FUNCTIONS(MoleculeModelItem,
+      Molecule *molecule;
+    public:
+      explicit MoleculeModelItemForTesting(Molecule* molecule = nullptr) : molecule(molecule){}
+      Molecule* produceMolecule() const { return molecule; })
+
+  LibraryModelForTesting* model;
+
 public:
 void setUp() {
   model = new LibraryModelForTesting;
@@ -50,32 +56,46 @@ void tearDown() {
   TSM_ASSERT_EQUALS("Molecules not cleaned up!", MoleculeForTesting::instanceCounter, 0);
 }
 
+void testForEmptyCannotFetchMore() {
+  TS_ASSERT(!model->canFetchMore(QModelIndex()));
+}
+
 void testRowCount() {
-  Molecule *m1 = new MoleculeForTesting;
-  Molecule *m2 = new MoleculeForTesting;
-  Molecule *m3 = new MoleculeForTesting;
-  model->setMolecules(QList<Molecule*>()<< m1 << m2 << m3);
+  model->setMolecules(QList<MoleculeModelItem*>()
+                      << new MoleculeModelItemForTesting
+                      << new MoleculeModelItemForTesting
+                      << new MoleculeModelItemForTesting);
+  TS_ASSERT_EQUALS(model->rowCount(), 0);
+  TS_ASSERT(model->canFetchMore(QModelIndex()));
+  model->fetchMore(QModelIndex());
   TS_ASSERT_EQUALS(model->rowCount(), 3);
+  TS_ASSERT(!model->canFetchMore(QModelIndex()));
 }
 
 void testRowCountSameMoleculeMultipleTimes() {
-  Molecule *m = new MoleculeForTesting;
-  model->setMolecules(QList<Molecule*>() << m << m << m);
+  MoleculeModelItem *m = new MoleculeModelItemForTesting;
+  model->setMolecules(QList<MoleculeModelItem*>() << m << m << m);
+  TS_ASSERT_EQUALS(model->rowCount(), 0);
+  model->fetchMore(QModelIndex());
   TS_ASSERT_EQUALS(model->rowCount(), 3);
-  model->setMolecules(QList<Molecule*>() << new MoleculeForTesting);
+  model->setMolecules(QList<MoleculeModelItem*>() << new MoleculeModelItemForTesting);
+  TS_ASSERT_EQUALS(model->rowCount(), 0);
+  model->fetchMore(QModelIndex());
   TS_ASSERT_EQUALS(model->rowCount(), 1);
 }
 
 void testRowCountByAddingIndividually() {
-  model->addMolecule(new MoleculeForTesting);
-  model->addMolecule(new MoleculeForTesting);
+  model->addMolecule(new MoleculeModelItemForTesting);
+  model->addMolecule(new MoleculeModelItemForTesting);
+  model->fetchMore(QModelIndex());
   TS_ASSERT_EQUALS(model->rowCount(), 2);
 }
 
 void testMoleculesAreAddedTwice() {
-  Molecule *m = new MoleculeForTesting;
+  MoleculeModelItem *m = new MoleculeModelItemForTesting;
   model->addMolecule(m);
   model->addMolecule(m);
+  model->fetchMore(QModelIndex());
   TS_ASSERT_EQUALS(model->rowCount(), 2);
 }
 
@@ -85,7 +105,7 @@ void testSettingMoleculesTriggersModelReset() {
   endResetCounter.callback = [&] { TS_ASSERT_EQUALS(beginResetCounter.count, endResetCounter.count); };
   QObject::connect(model, SIGNAL(modelAboutToBeReset()), &beginResetCounter, SLOT(record()));
   QObject::connect(model, SIGNAL(modelReset()), &endResetCounter, SLOT(record()));
-  model->setMolecules(QList<Molecule*>());
+  model->setMolecules(QList<MoleculeModelItem*>());
   TS_ASSERT_EQUALS(beginResetCounter.count, 1);
   TS_ASSERT_EQUALS(endResetCounter.count, 1);
 }
@@ -110,13 +130,17 @@ void testAddingMoleculeTriggersSignals() {
   QObject::connect(model, SIGNAL(rowsInserted(QModelIndex,int,int)),
                    &afterInsert, SLOT(record(QModelIndex,int,int)));
 
-  model->addMolecule(new Molecule());
+  model->addMolecule(new MoleculeModelItemForTesting(new Molecule()));
+  TS_ASSERT_EQUALS(beforeInsert.count(), 0);
+  TS_ASSERT_EQUALS(afterInsert.count(), 0);
+  model->fetchMore(QModelIndex());
   TS_ASSERT_EQUALS(beforeInsert.count(), 1);
   TS_ASSERT_EQUALS(afterInsert.count(), 1);
   checkInsertionForRow(beforeInsert.getLatestPayload(), 0);
   checkInsertionForRow(afterInsert.getLatestPayload(), 0);
 
-  model->addMolecule(new Molecule());
+  model->addMolecule(new MoleculeModelItemForTesting(new Molecule()));
+  model->fetchMore(QModelIndex());
   TS_ASSERT_EQUALS(beforeInsert.count(), 2);
   TS_ASSERT_EQUALS(beforeInsert.count(), 2);
   checkInsertionForRow(beforeInsert.getLatestPayload(), 1);
@@ -124,9 +148,9 @@ void testAddingMoleculeTriggersSignals() {
 }
 
 void testDeletingOldMolecules() {
-  model->setMolecules(QList<Molecule*>() << new MoleculeForTesting);
-  model->setMolecules(QList<Molecule*>() << new MoleculeForTesting);
-  TS_ASSERT_EQUALS(MoleculeForTesting::instanceCounter, 1);
+  model->setMolecules(QList<MoleculeModelItem*>() << new MoleculeModelItemForTesting());
+  model->setMolecules(QList<MoleculeModelItem*>() << new MoleculeModelItemForTesting());
+  TS_ASSERT_EQUALS(MoleculeModelItemForTesting::instanceCounter, 1);
 }
 
 void testMimeData() {
@@ -136,7 +160,8 @@ void testMimeData() {
   xmlWriter.writeStartDocument();
   xmlWriter << *m;
   xmlWriter.writeEndDocument();
-  model->addMolecule(m);
+  model->addMolecule(new MoleculeModelItemForTesting(m));
+  model->fetchMore(QModelIndex());
   QByteArray obtainedData = model->mimeData(QModelIndexList() << model->index(0,0))->data(moleculeMimeType);
   QS_ASSERT_EQUALS(obtainedData, expectedXml);
 }
@@ -148,17 +173,19 @@ void testDataForDecorationRole() {
   m->addAtom(a1);
   m->addAtom(a2);
   m->addBond(new Bond(a1, a2));
-  QPixmap expectedIcon = renderMolecule(*m);
+  auto expectedIcon = QIcon(renderMolecule(*m));
 
-  model->addMolecule(m);
-  QPixmap actualIcon = model->data(model->index(0), Qt::DecorationRole).value<QPixmap>();
-  QS_ASSERT_EQUALS(actualIcon.toImage(), expectedIcon.toImage());
+  model->addMolecule(new MoleculeModelItemForTesting(m));
+  model->fetchMore(QModelIndex());
+  auto actualIcon = model->data(model->index(0), Qt::DecorationRole).value<QIcon>();
+  QS_ASSERT_EQUALS(actualIcon.pixmap(64).toImage(), expectedIcon.pixmap(64).toImage());
 }
 
 void testDataForDisplayRole() {
   Molecule *m = new MoleculeForTesting;
   m->setName("testname");
-  model->addMolecule(m);
+  model->addMolecule(new MoleculeModelItemForTesting(m));
+  model->fetchMore(QModelIndex());
   QS_ASSERT_EQUALS(model->data(model->index(0)).toString(), "testname");
 }
 

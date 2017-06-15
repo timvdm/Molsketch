@@ -29,7 +29,8 @@ INCLUDEPATH += $$CXXTEST_PATH \
     ../obabeliface
 
 SOURCES += ../molsketch/programversion.cpp \
-    programversionvaluetrait.cpp
+    programversionvaluetrait.cpp \
+    instancecounters.cpp
 
 QT += widgets printsupport svg testlib
 
