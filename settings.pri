@@ -22,7 +22,8 @@ defaultVars = \
         Headers,MSK_INSTALL_INCLUDES,/include/molsketch,/include;\
         Molecule_library,MSK_INSTALL_LIBRARY,/share/molsketch/library,/library;\
         Custom_molecule_library,MSK_INSTALL_CUSTOM,/share/molsketch/library/custom,/library/custom;\
-        Documentation,MSK_INSTALL_DOCS,/share/doc/molsketch,/doc;
+        Documentation,MSK_INSTALL_DOCS,/share/doc/molsketch,/doc;\
+        Build_OpenBabel_interface,MSK_OBABELIFACE,true,true;
 contains(QT_ARCH, ".*64.*") : defaultVars += Libraries,MSK_INSTALL_LIBS,/lib64,;
 else : defaultVars += Libraries,MSK_INSTALL_LIBS,/lib,;
 

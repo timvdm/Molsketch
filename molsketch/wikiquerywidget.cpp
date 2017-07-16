@@ -73,11 +73,26 @@ void WikiQueryWidget::processMoleculeQuery(QNetworkReply *reply) {
   if (!reply->isFinished()) reply->abort();
   if (!reply) return;
 
+  qDebug("Network error code: %d", reply->error());
+  if (reply->error() != QNetworkReply::NoError) {
+    QMessageBox::critical(0, "Network error",
+                          "Error occurred while trying to obtain data from Wikidata.\n"
+                                           "Error code: " + QString::number(reply->error())
+                          + " (check QNetworkReply)");
+    return;
+  }
+
   QLibrary obabeliface("obabeliface" QTVERSIONSUFFIX OBABELOSSUFFIX);
+  qDebug("Trying to load openbabel as %s", obabeliface.fileName().toStdString().data());
   obabeliface.load() ;
   fromInChIFunctionPointer convertInChI = 0 ;
   if (obabeliface.isLoaded())
     convertInChI = (fromInChIFunctionPointer) (obabeliface.resolve("fromInChI")) ;
+  else {
+    qWarning("Could not load openbabel");
+    QMessageBox::critical(0, "Error", "Could not load OpenBabel, which is required for conversion of molecules.");
+    return;
+  }
   if (!convertInChI) {
     qWarning("Could not load function to convert InChI");
     QMessageBox::critical(0, "Error", "Could not load OpenBabel function to convert InChI.");
