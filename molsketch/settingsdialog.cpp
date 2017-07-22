@@ -29,10 +29,13 @@
 #include <QFontDialog>
 #include <QSettings>
 #include <molscene.h>
+#include <scenesettings.h>
 
-#include "settings.h"
+#include "settingsdialog.h"
 
-SettingsDialog::SettingsDialog(QWidget * parent, Qt::WindowFlags f ) : QDialog(parent,f)
+SettingsDialog::SettingsDialog(ApplicationSettings *settings, QWidget * parent, Qt::WindowFlags f )
+  : QDialog(parent,f),
+    settings(settings)
 {
   // Setup the user interface
   ui.setupUi(this);
@@ -69,43 +72,35 @@ SettingsDialog::SettingsDialog(QWidget * parent, Qt::WindowFlags f ) : QDialog(p
   setInitialValues();
 }
 
-SettingsDialog::~ SettingsDialog( )
-{
-
-}
+SettingsDialog::~SettingsDialog( ){}
 
 void SettingsDialog::setInitialValues()
 {
-  QSettings settings;
-  ui.spinBoxAutoSave->setValue(settings.value("auto-save-time", 300000).toInt()/60000);
+  ui.spinBoxAutoSave->setValue(settings->autoSaveInterval()/60000);
 
 
-  if (settings.value("carbon-visible", false).toBool())
+  if (settings->isCarbonVisible())
     ui.checkBoxShowCarbon->setCheckState(Qt::Checked);
-  if (settings.value("charge-visible", true).toBool())
+  if (settings->isChargeVisible())
     ui.checkBoxShowValency->setCheckState(Qt::Checked);
-  if (settings.value("electronSystems-visible", true).toBool())
+  if (settings->isElectronSystemsVisible())
     ui.checkBoxShowES->setCheckState(Qt::Checked);
 
 
-  ui.doubleSpinBoxFontSize->setValue((settings.value("atom-symbol-font").value<QFont>()).pointSizeF());
-  ui.fontComboBox->setCurrentFont(settings.value("atom-symbol-font").value<QFont>());
+  QFont atomFont(settings->getAtomFont());
+  ui.doubleSpinBoxFontSize->setValue(atomFont.pointSizeF());
+  ui.fontComboBox->setCurrentFont(atomFont);
 
-  ui.lineEditBondLength->setText(QString::number(settings.value("bond-length", 40).toDouble()));
-  ui.doubleSpinBoxBondWidth->setValue(settings.value("bond-width", 1).toDouble());
-  ui.spinBoxBondAngle->setValue(settings.value("bond-angle", 30).toInt());
+  ui.lineEditBondLength->setText(QString::number(settings->getBondLength()));
+  ui.doubleSpinBoxBondWidth->setValue(settings->getBondWidth());
+  ui.spinBoxBondAngle->setValue(settings->getBondAngle());
 
   ui.libraries->clear();
-  ui.libraries->addItems(settings.value("libraries", QStringList()).toStringList());
+  ui.libraries->addItems(settings->libraries());
 
-  QVariant mouseWheelForTools = settings.value(Molsketch::MolScene::mouseWheelForCyclingTools);
-  if (mouseWheelForTools.isValid())
-  {
-    if (mouseWheelForTools.toBool())
-      ui.mouseWheelCycleTools->setChecked(true);
-    else
-      ui.mouseWheelZoom->setChecked(true);
-  }
+  Molsketch::SceneSettings::MouseWheelMode mouseWheelForTools = settings->getMouseWheelMode();
+  ui.mouseWheelCycleTools->setChecked(Molsketch::SceneSettings::CycleTools == mouseWheelForTools);
+  ui.mouseWheelCycleTools->setChecked(Molsketch::SceneSettings::Zoom == mouseWheelForTools);
 }
 
 void SettingsDialog::accept()
@@ -119,35 +114,33 @@ void SettingsDialog::accept()
 
 void SettingsDialog::applyChanges()
 {
-  QSettings settings;
-  // General settings
-  settings.setValue("auto-save-time", ui.spinBoxAutoSave->value()*60000);
+  settings->setAutoSaveInterval(ui.spinBoxAutoSave->value()*60000);
 
   // Atom settings
-  settings.setValue("carbon-visible", ui.checkBoxShowCarbon->isChecked());
-  settings.setValue("charge-visible", ui.checkBoxShowValency->isChecked());
-  settings.setValue("electronSystems-visible", ui.checkBoxShowES->isChecked());
+  settings->setCarbonVisible(ui.checkBoxShowCarbon->isChecked());
+  settings->setChargeVisible(ui.checkBoxShowValency->isChecked());
+  settings->setElectronSystemsVisible(ui.checkBoxShowES->isChecked());
   QFont font = ui.fontComboBox->currentFont();
   font.setPointSizeF(ui.doubleSpinBoxFontSize->value());
-  settings.setValue("atom-symbol-font", font);
+  settings->setAtomFont(font);
 
   // MsKBond settings
-  settings.setValue("bond-length", ui.lineEditBondLength->text().toDouble());
-  settings.setValue("bond-width", ui.doubleSpinBoxBondWidth->value());
-  settings.setValue("bond-angle", ui.spinBoxBondAngle->value());
+  settings->setBondLength(ui.lineEditBondLength->text().toDouble());
+  settings->setBondWidth(ui.doubleSpinBoxBondWidth->value());
+  settings->setBondAngle(ui.spinBoxBondAngle->value());
 
   // Library settings
   QStringList libraries;
   for (int i = 0 ; i < ui.libraries->count() ; ++i)
     libraries << ui.libraries->item(i)->text();
-  settings.setValue("libraries", libraries);
+  settings->setLibraries(libraries);
 
   if (ui.mouseWheelCycleTools->isChecked())
-    settings.setValue(Molsketch::MolScene::mouseWheelForCyclingTools, true);
+    settings->setMouseWheelMode(ApplicationSettings::MouseWheelMode::CycleTools);
   else if (ui.mouseWheelZoom->isChecked())
-    settings.setValue(Molsketch::MolScene::mouseWheelForCyclingTools, true);
+    settings->setMouseWheelMode(ApplicationSettings::MouseWheelMode::Zoom);
   else
-    settings.remove(Molsketch::MolScene::mouseWheelForCyclingTools);
+    settings->setMouseWheelMode(ApplicationSettings::MouseWheelMode::Unset);
 
   emit settingsChanged();
 }

@@ -51,9 +51,9 @@ class QAssistantClient;
 #else
 class QProcess ;
 #endif
-class QSettings;
 class QTimer;
 class QActionGroup;
+class ApplicationSettings;
 
 namespace Molsketch {
   class Molecule;
@@ -162,12 +162,6 @@ private:
 
   /** Set the current file name to @p fileName. */
   void setCurrentFile(const QString &fileName);
-
-  // Global settings
-  /** Path where the last document was saved */
-  QString m_lastAccessedPath;
-  /** The time between auto-saves in miliseconds */
-  int m_autoSaveTime;
 
   // Timers
   /** The timer for the auto-save action */
@@ -291,6 +285,8 @@ private:
   QAction* releaseNotesAct;
   /** Show the Qt about dialog action. */
   QAction* aboutQtAct;
+  ApplicationSettings *settings;
+
   void buildLibraries();
   void createWikiDock();
 };

@@ -28,6 +28,7 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
+#include "applicationsettings.h"
 #include "ui_settings.h"
 
 #include <QDialog>
@@ -48,7 +49,7 @@ class SettingsDialog : public QDialog
      *
      * @param scene the scene of which the settings should be edited
      */
-    SettingsDialog(QWidget * parent = 0, Qt::WindowFlags f = 0);
+    SettingsDialog(ApplicationSettings* settings, QWidget * parent = 0, Qt::WindowFlags f = 0);
     /** Destructor of the dialog. */
     ~SettingsDialog();
 
@@ -57,7 +58,7 @@ signals:
 
   private:
     /** Stores the scene of which the settings should be edited. */
-    QSettings* m_settings;
+    ApplicationSettings* settings;
     /** The user interface of the dialog. */
     Ui::SettingsDialog ui;
 

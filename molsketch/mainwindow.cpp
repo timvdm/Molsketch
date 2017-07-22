@@ -65,11 +65,13 @@
 #include "mollibitem.h"
 
 #include "obabeliface.h"
+#include "programversion.h"
 
 // widgets
+#include "applicationsettings.h"
 #include "helpforemptytoolbox.h"
 #include "releasenotesdialog.h"
-#include "settings.h"
+#include "settingsdialog.h"
 #include "wikiquerywidget.h"
 
 
@@ -111,6 +113,7 @@
 using namespace Molsketch;
 
 MainWindow::MainWindow()
+  : settings(new ApplicationSettings(this))
 {
   // Creating the menus and actions
   createView();
@@ -225,12 +228,12 @@ void MainWindow::open()
     readableFormats << MSK_DEFAULT_FORMAT;
     PREPARELOADFILE
     if (inputFormats) readableFormats << inputFormats();
-    QString fileName = QFileDialog::getOpenFileName(this,tr("Open - Molsketch"), m_lastAccessedPath,
+    QString fileName = QFileDialog::getOpenFileName(this,tr("Open - Molsketch"), settings->lastPath(),
       readableFormats.join(";;"));
     if (fileName.isEmpty()) return;
 
     // Save accessed path
-    m_lastAccessedPath = QFileInfo(fileName).path();
+    settings->setLastPath(QFileInfo(fileName).path());
 
     // Start a new document
     m_scene->clear();
@@ -344,12 +347,13 @@ bool MainWindow::saveAs()
   if (outputFormats) supportedFormats << outputFormats();
   QString fileName = QFileDialog::getSaveFileName(this,
                                                   tr("Save as - Molsketch"),
-                                                  m_lastAccessedPath, supportedFormats.join(";;"),
+                                                  settings->lastPath(),
+                                                  supportedFormats.join(";;"),
                                                   &filter);
   if (fileName.isEmpty()) return false;
 
   // Save accessed path
-  m_lastAccessedPath = QFileInfo(fileName).path();
+  settings->setLastPath(QFileInfo(fileName).path());
 
   // Finding the right extension
   if (QFileInfo(fileName).suffix().isEmpty())
@@ -400,11 +404,11 @@ bool MainWindow::saveAs()
       QMessageBox::critical(this, tr("Import error"), tr("Could not import: OpenBabel support missing.")) ;
       return false ;
     }
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Import - molsKetch"), m_lastAccessedPath, tr(OSRA_GRAPHIC_FILE_FORMATS));
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Import - molsKetch"), settings->lastPath(), tr(OSRA_GRAPHIC_FILE_FORMATS));
 
     if (!fileName.isEmpty()) {
       // Save accessed path
-      m_lastAccessedPath = QFileInfo(fileName).path();
+      settings->setLastPath(QFileInfo(fileName).path());
 
       m_scene->clear();
       QProgressBar *pb = new QProgressBar(this);
@@ -436,13 +440,13 @@ bool MainWindow::exportDoc()
 {
   // Getting the filename
   QString filter = GRAPHIC_DEFAULT_FORMAT;
-  QString fileName = QFileDialog::getSaveFileName(this,tr("Export - Molsketch"), m_lastAccessedPath,tr(GRAPHIC_FILE_FORMATS), &filter);
+  QString fileName = QFileDialog::getSaveFileName(this,tr("Export - Molsketch"), settings->lastPath(), tr(GRAPHIC_FILE_FORMATS), &filter);
 
   // Abort if filename is empty
   if (fileName.isEmpty()) return false;
 
   // Save accessed path
-  m_lastAccessedPath = QFileInfo(fileName).path();
+  settings->setLastPath(QFileInfo(fileName).path());
 
   // Finding the right extension
   if (QFileInfo(fileName).suffix().isEmpty())
@@ -455,7 +459,7 @@ bool MainWindow::exportDoc()
   }
   qDebug() << "Trying to export as " << fileName << "\n";
 
-  m_lastAccessedPath = QFileInfo(fileName).path();
+  settings->setLastPath(QFileInfo(fileName).path());
 
   // Try to export the file
   if (fileName.endsWith(".svg")) return Molsketch::saveToSVG(fileName, m_scene);
@@ -528,15 +532,9 @@ void MainWindow::assistant()
 #endif
 }
 
-QString readFileContent(const QString& absolutePath) {
-  QFile file(absolutePath);
-  file.open(QFile::ReadOnly);
-  return file.readAll();
-}
-
 void MainWindow::about()
 {
-  QString version(readFileContent(":/version")), versionNick(readFileContent(":/versionnick"));
+  QString version(settings->currentVersion().toString()), versionNick(settings->versionNick());
   QMessageBox::about(this, tr("About"),
                      tr("<H3>About Molsketch</H3>"
                         "<H4>Version: ") + version + " -- " + versionNick + tr("</H4>"
@@ -866,7 +864,7 @@ void MainWindow::buildLibraries()
   foreach(LibraryListWidget* library, toolBox->findChildren<LibraryListWidget*>())
     delete library;
 
-  foreach(const QString& folder, QSettings().value("libraries").toStringList())
+  foreach(const QString& folder, settings->libraries())
   {
     LibraryListWidget* library = new LibraryListWidget(folder, toolBox);
     toolBox->addItem(library, library->title());
@@ -914,7 +912,7 @@ void MainWindow::createToolBarContextMenuOptions()
   toolBarTextsAndIcons->addAction(tr("Texts under icons"))->setData(Qt::ToolButtonTextUnderIcon);
   toolBarTextsAndIcons->addAction(tr("Texts besides icons"))->setData(Qt::ToolButtonTextBesideIcon);
   toolBarTextsAndIcons->addAction(tr("System default"))->setData(Qt::ToolButtonFollowStyle);
-  QMainWindow::setToolButtonStyle((Qt::ToolButtonStyle) QSettings().value("toolBarIconStyle").toInt());
+  QMainWindow::setToolButtonStyle(settings->toolButtonStyle());
   for(QAction* action : toolBarTextsAndIcons->actions())
   {
     action->setCheckable(true);
@@ -969,34 +967,16 @@ void MainWindow::initializeAssistant()
 
 void MainWindow::readSettings()
 {
-  // Reading the settings
-  QSettings settings;
-
-  // Setting the window position
-  QPoint pos = settings.value("pos",QPoint(100,100)).toPoint();
-  QSize size = settings.value("size",QSize(800,600)).toSize();
-  resize(size);
-  move(pos);
-
-  QByteArray state = settings.value("window-state", QByteArray("@ByteArray(\0\0\0\xff\0\0\0\0\xfd\0\0\0\x1\0\0\0\0\0\0\x1\xe\0\0\x3N\xfc\x2\0\0\0\x2\xfb\0\0\0$\0t\0o\0o\0l\0\x62\0o\0x\0-\0\x64\0o\0\x63\0k\0w\0i\0\x64\0g\0\x65\0t\x1\0\0\0x\0\0\x2\x65\0\0\0\xe8\0\xff\xff\xff\xfb\0\0\0$\0i\0n\0\x66\0o\0\x62\0o\0x\0-\0\x64\0o\0\x63\0k\0w\0i\0\x64\0g\0\x65\0t\x1\0\0\x2\xe3\0\0\0\xe3\0\0\0l\0\xff\xff\xff\0\0\x6l\0\0\x3N\0\0\0\x1\0\0\0\x4\0\0\0\x1\0\0\0\b\xfc\0\0\0\x2\0\0\0\x2\0\0\0\x3\0\0\0\x18\0\x66\0i\0l\0\x65\0-\0t\0o\0o\0l\0\x62\0\x61\0r\x1\0\0\0\0\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\x18\0\x65\0\x64\0i\0t\0-\0t\0o\0o\0l\0\x62\0\x61\0r\x1\0\0\x1\x33\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\x18\0z\0o\0o\0m\0-\0t\0o\0o\0l\0\x62\0\x61\0r\x1\0\0\x2s\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\x2\0\0\0\x4\0\0\0\b\0\x44\0r\0\x61\0w\x1\0\0\0\0\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\n\0R\0i\0n\0g\0s\x1\0\0\x2G\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\n\0T\0o\0o\0l\0s\x1\0\0\x3t\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\x10\0R\0\x65\0\x61\0\x63\0t\0i\0o\0n\x1\0\0\x4\x80\xff\xff\xff\xff\0\0\0\0\0\0\0\0)")).toByteArray();
-
-
-  restoreState(state);
-
-  // Load preferences
+  resize(settings->windowSize());
+  move(settings->windowPosition());
+  restoreState(settings->windowState());
   readPreferences();
 }
 
 void MainWindow::readPreferences()
 {
-  QSettings settings;
-  // Loading auto-save time
-  m_autoSaveTime = settings.value("auto-save-time", 300000).toInt();
-  m_autoSaveTimer->setInterval(m_autoSaveTime);
+  m_autoSaveTimer->setInterval(settings->autoSaveInterval());
   m_autoSaveTimer->start();
-
-  // Loading paths
-  m_lastAccessedPath = settings.value("last-save-path", QDir::homePath()).toString();
 
   // TODO fix this (protected in Qt4)
 #if QT_VERSION >= 0x050000
@@ -1013,22 +993,10 @@ void MainWindow::readPreferences()
 
 void MainWindow::writeSettings()
 {
-  // Saving the settings
-  QSettings settings;
-
-  // Saving the window position
-  settings.setValue("pos",pos());
-  settings.setValue("size",size());
-  settings.setValue("toolBarIconStyle", toolButtonStyle());
-
-  // Saving the state of the toolbars and dockwidgets
-  settings.setValue("window-state", saveState());
-
-  // TODO add scene default properties
-
-  // Saving paths
-  settings.setValue("last-save-path", m_lastAccessedPath);
-
+  settings->setWindowPosition(pos());
+  settings->setWindowSize(size());
+  settings->setToolButtonStyle(toolButtonStyle());
+  settings->setWindowState(saveState());
 }
 
 
@@ -1067,7 +1035,7 @@ void MainWindow::setCurrentFile(const QString &fileName)
 void MainWindow::editPreferences( )
 {
   // Opens the settings dialog
-  SettingsDialog dialog;
+  SettingsDialog dialog(settings);
   connect(&dialog, SIGNAL(settingsChanged()), this, SLOT(readPreferences()));
   dialog.exec();
 }
