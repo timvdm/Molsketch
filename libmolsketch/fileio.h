@@ -19,7 +19,7 @@
  ***************************************************************************/
 
 /** @file
- * This file is part of Molsketch and contains routines for loading and 
+ * This file is part of Molsketch and contains routines for loading and
  * saving files.
  *
  * @author Harm van Eersel
@@ -41,13 +41,13 @@ class abstractXmlObject;
  *
  * @author Harm van Eersel
  */
-/** 
- * Prints the document on MolScene @p scene on QPrinter @p printer and 
+/**
+ * Prints the document on MolScene @p scene on QPrinter @p printer and
  * returns @c false if the print failed.
  */
   bool printFile(QPrinter &printer, MolScene * scene);
-/** 
- * Exports the current document on MolScene @p scene under @p fileName and 
+/**
+ * Exports the current document on MolScene @p scene under @p fileName and
  * returns @c false if the export failed.
  */
   bool saveToSVG(const QString &fileName, MolScene * scene);
@@ -63,9 +63,9 @@ class abstractXmlObject;
 /**
  * Write @p object to file @p fileName in native fomat *.msk.
  */
-  void writeMskFile(const QString &fileName, abstractXmlObject *scene);
-/** 
- * Exports the document on MolScene @p scene as a bitmap with @p fileName 
+  bool writeMskFile(const QString &fileName, abstractXmlObject *scene);
+/**
+ * Exports the document on MolScene @p scene as a bitmap with @p fileName
  * and returns @c false if the export failed.
  */
   bool exportFile(const QString &fileName, MolScene * scene);

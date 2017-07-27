@@ -20,6 +20,7 @@
 #include "ui_moleculepopup.h"
 
 #include <QFileDialog>
+#include <QMessageBox>
 #include <molecule.h>
 #include <molscene.h>
 #include "commands.h"
@@ -85,7 +86,8 @@ namespace Molsketch {
     QString filter = QString( "MolsKetch molecule (*.msm)");
     QString saveFileName = QFileDialog::getSaveFileName(this, tr("Save molecule"), QString(), "MolsKetch molecule (*.msm)", &filter);
     if (saveFileName.isEmpty()) return;
-    writeMskFile(saveFileName, d->molecule);
+    if (!writeMskFile(saveFileName, d->molecule))
+      QMessageBox::warning(0, tr("Could not save"), tr("Could not open file for writing: ") + saveFileName);
   }
 } // namespace
 

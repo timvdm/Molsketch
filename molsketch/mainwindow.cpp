@@ -205,83 +205,55 @@ void MainWindow::newFile()
 
 void MainWindow::open()
 {
-  if (maybeSave())
-  {
-    QStringList readableFormats;
-    readableFormats << MSK_DEFAULT_FORMAT;
-    PREPARELOADFILE
-    if (inputFormats) readableFormats << inputFormats();
-    QString fileName = QFileDialog::getOpenFileName(this,tr("Open - Molsketch"), settings->lastPath(),
-      readableFormats.join(";;"));
-    if (fileName.isEmpty()) return;
+  if (!maybeSave()) return;
 
-    // Save accessed path
-    settings->setLastPath(QFileInfo(fileName).path());
+  QStringList readableFormats;
+  readableFormats << MSK_DEFAULT_FORMAT << obabelLoader->inputFormats();
+  QString fileName = QFileDialog::getOpenFileName(this,tr("Open - Molsketch"), settings->lastPath(),
+                                                  readableFormats.join(";;"));
+  if (fileName.isEmpty()) return;
 
-    // Start a new document
-    m_scene->clear();
+  settings->setLastPath(QFileInfo(fileName).path());
+  m_scene->clear();
 
-    Molecule* mol = 0;
-    if (fileName.endsWith(".msk"))
-    {
-      readMskFile(fileName, m_scene);
-      return;
-    }
-    else if (loadFilePtr)
-    {
-      mol = loadFilePtr(fileName);
-    }
-    else
-    {
-      QMessageBox::critical(this, tr(PROGRAM_NAME), tr("Could not open file. OpenBabel support is missing")) ;
-    }
-
-    if (mol)
-    {
-      // Add molecule to scene
-      if (mol->canSplit())
-      {
-        QList<Molecule*> molList = mol->split();
-        foreach(Molecule* mol,molList)
-          m_scene->addItem(mol);
-      }
-      else
-      {
-        m_scene->addItem(mol);
-      }
-
-      // Updating view
-      setCurrentFile(fileName);
-//               setWindowModified(false);
-    }
-    else
-    {
-      // Display error message if load fails
-      QMessageBox::critical(this,tr(PROGRAM_NAME),tr("Error while loading file"),QMessageBox::Ok,QMessageBox::Ok);
-    }
+  if (fileName.endsWith(".msk")) {
+    readMskFile(fileName, m_scene);
+    setCurrentFile(fileName);
+    return;
   }
+
+  Molecule* mol = obabelLoader->loadFile(fileName);
+  if (!mol) {
+    qCritical("Could not read file using OpenBabel. Filename: " + filename);
+    QMessageBox::critical(this, tr(PROGRAM_NAME), tr("Could not open file using OpenBabel.")) ;
+    return;
+  }
+
+  // Add molecule to scene
+  QList<Molecule*> molList = mol->split();
+  foreach(Molecule* mol,molList)
+    m_scene->addItem(mol);
+
+  setCurrentFile(fileName);
 }
 
 bool MainWindow::save()
 {
   if (m_curFile.isEmpty())
       return saveAs();
-  if (m_curFile.endsWith(".msk"))
-  {
-      writeMskFile(m_curFile, m_scene);
+  if (m_curFile.endsWith(".msk")) {
+      if (!writeMskFile(m_curFile, m_scene)) {
+        QMessageBox::warning(tr("Saving file failed!"));
+        return false;
+      }
       m_scene->stack()->setClean() ;
       return true ;
   }
-  PREPARESAVEFILE
-  if (!saveFilePtr)
-  {
-    QMessageBox::critical(this, tr(PROGRAM_NAME),
-                          tr("Saving failed. OpenBabel support unavailable.")) ;
+  bool threeD = QMessageBox::question(this, tr("Save as 3D?"), tr("Save as three dimensional coordinates?")) == QMessageBox::Yes;
+  if (!obabelLoader->saveFile(m_curFile, m_scene, threeD)) {
+    QMessageBox::warning(0, tr("Could not save"), tr("Could not save file using OpenBabel: ") + m_curFile);
     return false ;
   }
-  bool threeD = QMessageBox::question(this, tr("Save as 3D?"), tr("Save as three dimensional coordinates?")) == QMessageBox::Yes;
-  if (!saveFilePtr(m_curFile, m_scene, threeD ? 3 : 2))
-    return false ;
   m_scene->stack()->setClean();
   return true ;
 }
@@ -299,10 +271,11 @@ bool MainWindow::autoSave()
   else
     fileName = QFileInfo(m_curFile).path() + QFileInfo(m_curFile).baseName() +  ".backup." + QFileInfo(m_curFile).completeSuffix();
   // And save the file
-  if (fileName.suffix() == "msk")
-    writeMskFile(fileName.absoluteFilePath(), m_scene) ;
-  else
-  {
+  if (fileName.suffix() == "msk") {
+    bool saved = writeMskFile(fileName.absoluteFilePath(), m_scene);
+    statusBar()->showMessage(saved ? tr("Document autosaved") : tr("Autosave failed!"));
+    return saved;
+  } else {
     PREPARESAVEFILE
     if (!saveFilePtr)
     {
@@ -351,7 +324,10 @@ bool MainWindow::saveAs()
 
   if (fileName.endsWith(".msk"))
   {
-    writeMskFile(fileName, m_scene);
+    if (!writeMskFile(fileName, m_scene)) {
+      QMessageBox::warning(tr("Saving file failed!"));
+      return false;
+    }
     setCurrentFile(fileName);
     m_scene->stack()->setClean();
     return true ;

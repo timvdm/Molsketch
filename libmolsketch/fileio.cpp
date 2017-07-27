@@ -43,17 +43,21 @@ namespace Molsketch
     return true;
   }
 
-  void writeMskFile(const QString &fileName, abstractXmlObject *xmlObject) // TODO compare output to old version
+  bool writeMskFile(const QString &fileName, abstractXmlObject *xmlObject) // TODO compare output to old version
   {
     QFile file(fileName);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-      return;
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+      qCritical("Could not open file to write: " + fileName);
+      return false;
+    }
 
     QXmlStreamWriter xml(&file);
     xml.setAutoFormatting(true);
     xml.writeStartDocument();
     xml << *xmlObject ;
     xml.writeEndDocument();
+    qDebug("File written: " + fileName);
+    return true;
   }
 
   void readMskFile(const QString &fileName, MolScene *scene)

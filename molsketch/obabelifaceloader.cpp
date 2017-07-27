@@ -51,9 +51,13 @@ public:
   void unloadFunctions() { // TODO check if this is really necessary
 
   }
-  void emitSignals() {
-    emit parent->obabelIfaceAvailable(openBabel.isLoaded());
-    emit parent->inchiAvailable(inChIAvailable && inChIAvailable());
+  void emitSignals () {
+    bool openBabelAvailable = openBabel.isLoaded ();
+    bool isInchiAvailable = inChIAvailable && inChIAvailable ();
+    qDebug ("OpenBabel available: " + QString::number (openBabelAvailable));
+    qDebug ("InChI availabel: " + QString::number (isInchiAvailable));
+    emit parent->obabelIfaceAvailable (openBabelAvailable);
+    emit parent->inchiAvailable (isInchiAvailable);
   }
 };
 
@@ -69,19 +73,29 @@ OBabelIfaceLoader::~OBabelIfaceLoader() {
 QStringList OBabelIfaceLoader::inputFormats() {
   Q_D(OBabelIfaceLoader);
   if (d->inputFormats) return d->inputFormats();
+  qWarning("No OpenBabel formats available for input");
   return QStringList();
 }
 
 QStringList OBabelIfaceLoader::outputFormats() {
   Q_D(OBabelIfaceLoader);
   if (d->outputFormats) return d->outputFormats;
-  return QStringList;
+  qWarning("No OpenBabel formats available for output");
+  return QStringList();
 }
 
 Molecule *OBabelIfaceLoader::loadFile(const QString &filename) {
   Q_D(OBabelIfaceLoader);
   if(!d->load) return d->load(filename);
+  qWarning("No OpenBabel support available for loading file");
   return nullptr;
+}
+
+bool OBabelIfaceLoader::saveFile(const QString &fileName, QGraphicsScene *scene, bool use3d) {
+  Q_D(OBabelIfaceLoader);
+  if(d->save) return d->save(fileName, scene, use3d ? 3 : 2 );
+  qWarning("No support for saving OpenBabel available");
+  return false;
 }
 
 void OBabelIfaceLoader::reloadObabelIface(const QString &path) {
