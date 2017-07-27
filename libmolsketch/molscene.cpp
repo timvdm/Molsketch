@@ -342,7 +342,7 @@ namespace Molsketch {
         m_stack->endMacro();
   }
 
-  void MolScene::convertImage()
+  void MolScene::convertImage() // TODO move to molsketch project
   {
         QClipboard* clipboard = qApp->clipboard();
         QImage img = clipboard->image();

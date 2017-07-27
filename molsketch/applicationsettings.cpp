@@ -77,37 +77,10 @@ QString ApplicationSettings::versionNick() const {
   return readFileContent(VERSION_NICK_FILE);
 }
 
-void ApplicationSettings::setLibraries(const QStringList &libraries) {
-  settings().setValue(LIBRARIES, libraries);
-}
-
-QStringList ApplicationSettings::libraries() const {
-  return settings().value(LIBRARIES).toStringList();
-}
-
-void ApplicationSettings::setToolButtonStyle(const Qt::ToolButtonStyle &style) {
-  settings().setValue(ICON_STYLE, style);
-}
-
-Qt::ToolButtonStyle ApplicationSettings::toolButtonStyle() const {
-  return (Qt::ToolButtonStyle) settings().value(ICON_STYLE).toInt();
-}
-
-void ApplicationSettings::setWindowPosition(const QPoint &pos) {
-  settings().setValue(WINDOW_POSITION, pos);
-}
-
-QPoint ApplicationSettings::windowPosition() const {
-  return settings().value(WINDOW_POSITION, DEFAULT_WINDOW_POSITION).toPoint();
-}
-
-void ApplicationSettings::setWindowSize(const QSize &size) {
-  settings().setValue(WINDOW_SIZE, size);
-}
-
-QSize ApplicationSettings::windowSize() const {
-  return settings().value(WINDOW_SIZE, DEFAULT_WINDOW_SIZE).toSize();
-}
+APP_PROPERTY(Libraries, QStringList, LIBRARIES)
+APP_PROPERTY(ToolButtonStyle, Qt::ToolButtonStyle, ICON_STYLE)
+APP_PROPERTY(WindowPosition, QPoint, WINDOW_POSITION)
+APP_PROPERTY(WindowSize, QSize, WINDOW_SIZE)
 
 void ApplicationSettings::setWindowState(const QByteArray &state) {
   settings().setValue(WINDOW_STATE, state);
@@ -135,14 +108,16 @@ int ApplicationSettings::autoSaveInterval() const {
 
 void ApplicationSettings::setObabelIfacePath(const QString &path) {
   settings().setValue(OBABEL_IFACE, path);
+  emit changedObabelIfacePath(path);
 }
 
-QString ApplicationSettings::obabelIfacePaht() const {
+QString ApplicationSettings::obabelIfacePath() const {
   return settings().value(OBABEL_IFACE, "obabeliface" QTVERSIONSUFFIX OBABELOSSUFFIX).toString();
 }
 
 void ApplicationSettings::setObabelFormatsPath(const QString &path) {
   settings().setValue(OBABEL_FORMATS, path);
+  emit changeObabelFormatsPath(path);
 }
 
 QString ApplicationSettings::obabelFormatsPath() const {

@@ -64,12 +64,13 @@
 #include "fileio.h"
 #include "mollibitem.h"
 
-#include "obabeliface.h"
 #include "programversion.h"
 
 // widgets
 #include "applicationsettings.h"
 #include "helpforemptytoolbox.h"
+#include "indicator.h"
+#include "obabelifaceloader.h"
 #include "releasenotesdialog.h"
 #include "settingsdialog.h"
 #include "wikiquerywidget.h"
@@ -88,26 +89,6 @@
 #define OBABELOSSUFFIX
 #endif
 
-#define PREPARELOADFILE \
-  QLibrary obabeliface("obabeliface" QTVERSIONSUFFIX OBABELOSSUFFIX); \
-  obabeliface.load() ; \
-  loadFileFunctionPointer loadFilePtr = 0 ; \
-  formatsFunctionPointer inputFormats = 0; \
-  if (obabeliface.isLoaded()) {\
-    loadFilePtr = (loadFileFunctionPointer) (obabeliface.resolve("loadFile")) ;\
-    inputFormats = (formatsFunctionPointer) (obabeliface.resolve("inputFormats")) ;\
-  }
-
-#define PREPARESAVEFILE \
-  QLibrary obabeliface("obabeliface" QTVERSIONSUFFIX OBABELOSSUFFIX); \
-  obabeliface.load() ; \
-  saveFileFunctionPointer saveFilePtr = 0 ; \
-  formatsFunctionPointer outputFormats = 0; \
-  if (obabeliface.isLoaded()) {\
-    saveFilePtr = (saveFileFunctionPointer) (obabeliface.resolve("saveFile")) ; \
-    outputFormats = (formatsFunctionPointer) (obabeliface.resolve("outputFormats")); \
-  }
-
 // Constructor
 
 using namespace Molsketch;
@@ -125,6 +106,8 @@ MainWindow::MainWindow()
   createStatusBar();
   createToolBarContextMenuOptions();
   initializeAssistant();
+
+
 
   setWindowIcon(QIcon(":/images/molsketch.svg"));
 
@@ -857,6 +840,17 @@ void MainWindow::createStatusBar()
   statusFont.setPixelSize(12);
   statusBar()->setFont(statusFont);
 #endif
+
+  Indicator *openBabelIndicator = new Indicator(tr("OpenBabel"), statusBar());
+  Indicator *inchiIndicator = new Indicator(tr("InChI"), statusBar());
+  connect(settings, SIGNAL(changedObabelIfacePath(QString)), obabelLoader, SLOT(reloadObabelIface(QString)));
+  connect(settings, SIGNAL(changeObabelFormatsPath(QString)), obabelLoader, SLOT(setObabelFormats(QString)));
+  connect(obabelLoader, SIGNAL(obabelIfaceAvailable(bool)), openBabelIndicator, SLOT(setMode(bool)));
+  connect(obabelLoader, SIGNAL(inchiAvailable(bool)), inchiIndicator, SLOT(setMode(bool)));
+  statusBar()->addPermanentWidget(openBabelIndicator);
+  statusBar()->addPermanentWidget(inchiIndicator);
+  obabelLoader->reloadObabelIface(settings->obabelIfacePath());
+  obabelLoader->setObabelFormats(settings->obabelFormatsPath());
 }
 
 void MainWindow::buildLibraries()
@@ -864,7 +858,7 @@ void MainWindow::buildLibraries()
   foreach(LibraryListWidget* library, toolBox->findChildren<LibraryListWidget*>())
     delete library;
 
-  foreach(const QString& folder, settings->libraries())
+  foreach(const QString& folder, settings->getLibraries())
   {
     LibraryListWidget* library = new LibraryListWidget(folder, toolBox);
     toolBox->addItem(library, library->title());
@@ -912,7 +906,7 @@ void MainWindow::createToolBarContextMenuOptions()
   toolBarTextsAndIcons->addAction(tr("Texts under icons"))->setData(Qt::ToolButtonTextUnderIcon);
   toolBarTextsAndIcons->addAction(tr("Texts besides icons"))->setData(Qt::ToolButtonTextBesideIcon);
   toolBarTextsAndIcons->addAction(tr("System default"))->setData(Qt::ToolButtonFollowStyle);
-  QMainWindow::setToolButtonStyle(settings->toolButtonStyle());
+  QMainWindow::setToolButtonStyle(settings->getToolButtonStyle());
   for(QAction* action : toolBarTextsAndIcons->actions())
   {
     action->setCheckable(true);
@@ -967,8 +961,8 @@ void MainWindow::initializeAssistant()
 
 void MainWindow::readSettings()
 {
-  resize(settings->windowSize());
-  move(settings->windowPosition());
+  resize(settings->getWindowSize());
+  move(settings->getWindowPosition());
   restoreState(settings->windowState());
   readPreferences();
 }

@@ -37,13 +37,13 @@ public:
   void updateReleaseNotesShownVersion();
   QString versionNick() const;
   void setLibraries(const QStringList&);
-  QStringList libraries() const;
+  QStringList getLibraries() const;
   void setToolButtonStyle(const Qt::ToolButtonStyle&);
-  Qt::ToolButtonStyle toolButtonStyle() const;
+  Qt::ToolButtonStyle getToolButtonStyle() const;
   void setWindowPosition(const QPoint&);
-  QPoint windowPosition() const;
+  QPoint getWindowPosition() const;
   void setWindowSize(const QSize&);
-  QSize windowSize() const;
+  QSize getWindowSize() const;
   void setWindowState(const QByteArray&);
   QByteArray windowState() const;
   void setLastPath(const QString&);
@@ -51,9 +51,17 @@ public:
   void setAutoSaveInterval(const int&);
   int autoSaveInterval() const;
   void setObabelIfacePath(const QString&);
-  QString obabelIfacePaht() const;
+  QString obabelIfacePath() const;
   void setObabelFormatsPath(const QString&);
   QString obabelFormatsPath() const;
+signals:
+  void changedObabelIfacePath(const QString&);
+  void changeObabelFormatsPath(const QString&);
 };
+
+#define APP_PROPERTY(NAME, TYPE, CONFIGSTRING) \
+  void ApplicationSettings::set##NAME(const TYPE& value) { settings().setValue(CONFIGSTRING, value); } \
+  TYPE ApplicationSettings::get##NAME() const { return settings().value(CONFIGSTRING).value<TYPE>(); }
+
 
 #endif // APPLICATIONSETTINGS_H

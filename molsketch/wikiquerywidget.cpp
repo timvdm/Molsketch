@@ -32,6 +32,7 @@
 #include <librarymodel.h>
 #include <moleculemodelitem.h>
 #include <QDebug>
+#include <QFileDialog>
 
 #ifdef _WIN32
 #define OBABELOSSUFFIX ".dll"
@@ -82,7 +83,9 @@ void WikiQueryWidget::processMoleculeQuery(QNetworkReply *reply) {
     return;
   }
 
-  QLibrary obabeliface("obabeliface" QTVERSIONSUFFIX OBABELOSSUFFIX);
+  qputenv("BABEL_LIBDIR", QFileDialog::getExistingDirectory(0, "OpenBabel formats").toUtf8()); // TODO make this a configuration entry // TODO Latin1?
+  QLibrary obabeliface(QFileDialog::getOpenFileName(0, "Obabeliface",QString(), "*.dll")); // TODO make this a configuration entry
+  // TODO should not work if format could not be loaded!
   qDebug("Trying to load openbabel as %s", obabeliface.fileName().toStdString().data());
   obabeliface.load() ;
   fromInChIFunctionPointer convertInChI = 0 ;

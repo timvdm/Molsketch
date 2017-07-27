@@ -96,7 +96,7 @@ void SettingsDialog::setInitialValues()
   ui.spinBoxBondAngle->setValue(settings->getBondAngle());
 
   ui.libraries->clear();
-  ui.libraries->addItems(settings->libraries());
+  ui.libraries->addItems(settings->getLibraries());
 
   Molsketch::SceneSettings::MouseWheelMode mouseWheelForTools = settings->getMouseWheelMode();
   ui.mouseWheelCycleTools->setChecked(Molsketch::SceneSettings::CycleTools == mouseWheelForTools);
@@ -142,6 +142,8 @@ void SettingsDialog::applyChanges()
   else
     settings->setMouseWheelMode(ApplicationSettings::MouseWheelMode::Unset);
 
+  settings->setObabelIfacePath(ui.libraryPath->text());
+  settings->setObabelFormatsPath(ui.obfPath->text());
   emit settingsChanged();
 }
 
@@ -189,4 +191,14 @@ void SettingsDialog::on_removeLibrary_clicked()
 {
   foreach (QListWidgetItem* item, ui.libraries->selectedItems())
     delete item;
+}
+
+void SettingsDialog::on_obfPathButton_clicked() {
+  QString folder = QFileDialog::getExistingDirectory(0, tr("OBF folder"), ui.obfPath->text());
+  if (!folder.isEmpty()) ui.obfPath->setText(folder);
+}
+
+void SettingsDialog::on_libraryPathButton_clicked() {
+  QString filename = QFileDialog::getOpenFileName(0, tr("Path to obabelIface"), ui.libraryPath->text(), "*.dll"); // TODO replace dll with appropriate extension
+  if (!filename.isEmpty()) ui.libraryPath->setText(filename);
 }

@@ -46,6 +46,7 @@ class QListWidgetItem;
 class QTableWidget;
 class QTableWidgetItem;
 class QPushButton;
+class ObabelIfaceLoader;
 #if QT_VERSION <= 0x040603
 class QAssistantClient;
 #else
@@ -286,6 +287,7 @@ private:
   /** Show the Qt about dialog action. */
   QAction* aboutQtAct;
   ApplicationSettings *settings;
+  ObabelIfaceLoader *obabelLoader;
 
   void buildLibraries();
   void createWikiDock();

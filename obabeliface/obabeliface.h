@@ -62,6 +62,12 @@ extern "C"
  */
     Molecule* fromInChI(const QString&);
     typedef Molecule* (*fromInChIFunctionPointer)(const QString&);
+
+ /**
+  * Check if InChI format is available
+  */
+    bool inChIAvailable();
+    typedef bool (*formatAvailablePointer)();
 /**
  * Load and save routines
  *

@@ -77,7 +77,7 @@ namespace Molsketch {
     return new XmlItem(xml);
   }
 
-  Molecule* convertInchi(QString inchi) {
+  Molecule* convertInchi(QString inchi) { // TODO use settings, move to molsketch project
     QLibrary obabeliface("obabeliface" QTVERSIONSUFFIX OBABELOSSUFFIX);
     obabeliface.load() ;
     fromInChIFunctionPointer convertInChI = nullptr ;

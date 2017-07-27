@@ -29,7 +29,7 @@
 #define SETTINGS_H
 
 #include "applicationsettings.h"
-#include "ui_settings.h"
+#include "ui_settingsdialog.h"
 
 #include <QDialog>
 
@@ -77,6 +77,8 @@ signals:
     void selectFont();
     void on_addLibrary_clicked();
     void on_removeLibrary_clicked();
+    void on_obfPathButton_clicked();
+    void on_libraryPathButton_clicked();
 };
 
 #endif

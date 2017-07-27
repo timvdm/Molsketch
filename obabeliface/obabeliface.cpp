@@ -57,6 +57,8 @@ OpenBabel::OBElementTable eTable ;
 
 namespace Molsketch
 {
+  static const char INCHI_FOMRAT[] = "inchi";
+
   QString number2symbol( int number )
   {
     return eTable.GetSymbol(number);
@@ -358,13 +360,16 @@ namespace Molsketch
     }
   }
 
+  bool isInputFormatAvailable(OpenBabel::OBConversion conv, const char* format) {
+    if (conv.SetInFormat(format)) return true;
+    qCritical("Could not find format: %s", format);
+    qInfo(("Available formats: " + outputFormats().join(", ")).toStdString().c_str());
+    return false;
+  }
+
   Molecule *fromString(const QString &input, const char* format) {
     OpenBabel::OBConversion conv ;
-    if (!conv.SetInFormat(format)) {
-      qCritical("Could not find format: %s", format);
-      qInfo(("Available formats: " + outputFormats().join(", ")).toStdString().c_str());
-      return 0;
-    }
+    if (!isInputFormatAvailable(conv, format)) return 0;
 
     OpenBabel::OBMol obmol;
     conv.ReadString(&obmol, input.toStdString()); // TODO do we need error handling if false?
@@ -383,7 +388,11 @@ namespace Molsketch
   }
 
   Molecule *fromInChI(const QString &input) {
-    return fromString("InChI=" + input, "inchi");
+    return fromString("InChI=" + input, INCHI_FOMRAT);
+  }
+
+  bool inChIAvailable() {
+    return isInputFormatAvailable(OpenBabel::OBConversion(), INCHI_FOMRAT);
   }
 
 } // namespace
