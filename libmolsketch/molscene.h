@@ -42,6 +42,7 @@ namespace Molsketch {
   class Bond;
   class TextInputItem;
   class genericAction;
+  class SceneSettings;
 
   /**
    * This class is a subclassed version of QGraphicsScene with addition of some extra methods and
@@ -82,11 +83,15 @@ namespace Molsketch {
       /**
        * Creates a new MolScene with @p parent.
        */
-      MolScene(QObject* parent = 0);
+      explicit MolScene(QObject* parent = 0);
+      /** Creates a new MolScene with @p settings. Will _not_ assume ownership of @p settings. */
+      MolScene(SceneSettings *settings, QObject* parent = 0);
       /**
        * Cleans up the UndoStack and deletes the molscene.
        */
       ~MolScene();
+
+      QFont getAtomFont() const;
 
       static QString mimeType();
       // Queries
@@ -273,6 +278,8 @@ namespace Molsketch {
       // Auxillary feedback items
       /** The highlight rectangle. */
       QGraphicsPathItem* m_hoverRect;
+      void initialize(SceneSettings *settings);
+
   private slots:
       void updateAll() ;
       void selectionSlot();

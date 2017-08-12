@@ -119,41 +119,26 @@ MainWindow::MainWindow()
   QRegExp rx("^[^\\-]");
   QStringList loadedFiles;
 
-  PREPARELOADFILE
-  bool openBabelNeeded = false ;
-  foreach(QString fileName, args.filter(rx))
-  {
-    if (fileName.endsWith(".msk"))
-    {
+  for(QString fileName : args.filter(rx)) {
+    if (fileName.endsWith(".msk")) {
       readMskFile(fileName, m_scene);
       loadedFiles << fileName;
-    }
-    else
-    {
-      openBabelNeeded = true ;
-      if (!loadFilePtr) continue ;
-      Molecule *mol = loadFilePtr(fileName);
-      if (mol)
-      {
+    } else {
+      Molecule *mol = obabelLoader->loadFile(fileName);
+      if (mol) {
         m_scene->addMolecule(mol);
         loadedFiles << fileName;
-      }
-      else
-      {
+      } else {
         // Display error message if load fails
-        QMessageBox::critical(this,tr(PROGRAM_NAME),tr("Error while loading file"),QMessageBox::Ok,QMessageBox::Ok);
+        QMessageBox::critical(this,tr(PROGRAM_NAME),tr("Error while loading file\n") + fileName + tr("\nOpenBabel not available or file corrupt"),QMessageBox::Ok,QMessageBox::Ok);
       }
     }
   }
-  if (openBabelNeeded)
-    QMessageBox::critical(this, tr(PROGRAM_NAME), tr("Some files could not be loaded because support for OpenBabel is missing.")) ;
 
   setCurrentFile("");
   if (loadedFiles.count() == 1) setCurrentFile(loadedFiles.first());
 
-  // Connecting signals and slots
   connect(m_scene->stack(),SIGNAL(cleanChanged(bool)), this, SLOT(documentWasModified( )));
-//   connect(m_scene,SIGNAL(newMolecule(QPointF,QString)),this, SLOT(newMolecule(QPointF,QString)));
   connect(m_scene,SIGNAL(editModeChange(int)),this,SLOT(updateEditMode(int)));
 
   m_molView->setAcceptDrops(true);
@@ -224,7 +209,7 @@ void MainWindow::open()
 
   Molecule* mol = obabelLoader->loadFile(fileName);
   if (!mol) {
-    qCritical("Could not read file using OpenBabel. Filename: " + filename);
+    qCritical() << "Could not read file using OpenBabel. Filename: " + fileName;
     QMessageBox::critical(this, tr(PROGRAM_NAME), tr("Could not open file using OpenBabel.")) ;
     return;
   }
@@ -243,7 +228,7 @@ bool MainWindow::save()
       return saveAs();
   if (m_curFile.endsWith(".msk")) {
       if (!writeMskFile(m_curFile, m_scene)) {
-        QMessageBox::warning(tr("Saving file failed!"));
+        QMessageBox::warning(this, tr("Saving file failed!"), tr("Could not save file ") + m_curFile);
         return false;
       }
       m_scene->stack()->setClean() ;
@@ -265,6 +250,7 @@ bool MainWindow::autoSave()
   // Do nothing if there is nothing to save
   if(m_scene->stack()->isClean()) return true;
 
+  // TODO extract file infos into separate class (i.e. last path, 3d choice, file name)
   // Else construct the filename
   if (!fileName.exists())
     fileName = QDir::homePath() + tr("/untitled.backup.msk");
@@ -276,17 +262,10 @@ bool MainWindow::autoSave()
     statusBar()->showMessage(saved ? tr("Document autosaved") : tr("Autosave failed!"));
     return saved;
   } else {
-    PREPARESAVEFILE
-    if (!saveFilePtr)
-    {
+    bool threeD = QMessageBox::question(this, tr("Save as 3D?"), tr("Save as three dimensional coordinates?")) == QMessageBox::Yes; // TODO not in autosave!
+    if (!obabelLoader->saveFile(fileName.absoluteFilePath(), m_scene, threeD)) {
       statusBar()->showMessage(tr("Autosave failed! OpenBabel unavailable."), 10000);
       return false ;
-    }
-    bool threeD = QMessageBox::question(this, tr("Save as 3D?"), tr("Save as three dimensional coordinates?")) == QMessageBox::Yes; // TODO not in autosave!
-    if (!saveFilePtr(fileName.absoluteFilePath(), m_scene, threeD ? 3 : 2))
-    {
-      statusBar()->showMessage(tr("Autosave failed!"), 10000);
-      return false;
     }
   }
   statusBar()->showMessage(tr("Document autosaved"), 10000);
@@ -297,10 +276,8 @@ bool MainWindow::saveAs()
 {
   // Get the filename to save under
   QString filter = MSK_DEFAULT_FORMAT;
-  PREPARESAVEFILE;
   QStringList supportedFormats;
-  supportedFormats << MSK_DEFAULT_FORMAT;
-  if (outputFormats) supportedFormats << outputFormats();
+  supportedFormats << MSK_DEFAULT_FORMAT << obabelLoader->outputFormats();
   QString fileName = QFileDialog::getSaveFileName(this,
                                                   tr("Save as - Molsketch"),
                                                   settings->lastPath(),
@@ -322,25 +299,17 @@ bool MainWindow::saveAs()
   }
   qDebug() << "Trying to save as " << fileName << "\n";
 
-  if (fileName.endsWith(".msk"))
-  {
+  if (fileName.endsWith(".msk")) {
     if (!writeMskFile(fileName, m_scene)) {
-      QMessageBox::warning(tr("Saving file failed!"));
+      QMessageBox::warning(0, tr("Saving file failed!"), tr("Could not save file ") + fileName);
       return false;
     }
     setCurrentFile(fileName);
     m_scene->stack()->setClean();
     return true ;
-  }
-  else
-  {
-    if (!saveFilePtr)
-    {
-      QMessageBox::critical(this, tr(PROGRAM_NAME), tr("OpenBabel support not available. Cannot save in this format.")) ;
-      return false ;
-    }
+  } else {
     bool threeD = QMessageBox::question(this, tr("Save as 3D?"), tr("Save as three dimensional coordinates?")) == QMessageBox::Yes;
-    if(saveFilePtr(fileName, m_scene, threeD ? 3: 2))
+    if(obabelLoader->saveFile(fileName, m_scene, threeD))
     {
       setCurrentFile(fileName);
       m_scene->stack()->setClean();
@@ -355,14 +324,6 @@ bool MainWindow::saveAs()
 
   bool MainWindow::importDoc()
   {
-    QLibrary obabeliface("obabeliface" QTVERSIONSUFFIX);
-    obabeliface.load() ;
-    callOsraFunctionPointer callOsraPtr = (callOsraFunctionPointer) obabeliface.resolve("call_osra") ;
-    if (!callOsraPtr)
-    {
-      QMessageBox::critical(this, tr("Import error"), tr("Could not import: OpenBabel support missing.")) ;
-      return false ;
-    }
     QString fileName = QFileDialog::getOpenFileName(this, tr("Import - molsKetch"), settings->lastPath(), tr(OSRA_GRAPHIC_FILE_FORMATS));
 
     if (!fileName.isEmpty()) {
@@ -373,7 +334,7 @@ bool MainWindow::saveAs()
       QProgressBar *pb = new QProgressBar(this);
       pb->setMinimum(0);
       pb->setMaximum(0);
-      Molecule* mol=callOsraPtr(fileName);
+      Molecule* mol = obabelLoader->callOsra(fileName);
       if (mol) {
         if (mol->canSplit()) {
           QList<Molecule*> molList = mol->split();
@@ -894,7 +855,7 @@ void MainWindow::createToolBarContextMenuOptions()
 
 void MainWindow::createView()
 {
-  m_scene = new MolScene(this);
+  m_scene = new MolScene(settings, this);
   m_molView = new MolView(m_scene);
   setCentralWidget(m_molView);
 }

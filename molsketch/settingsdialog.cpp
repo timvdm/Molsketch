@@ -27,7 +27,6 @@
 #include <QCheckBox>
 #include <QFileDialog>
 #include <QFontDialog>
-#include <QSettings>
 #include <molscene.h>
 #include <scenesettings.h>
 

@@ -23,7 +23,6 @@
 #include "atom.h"
 
 #include <QPainter>
-#include <QSettings>
 #include <QDebug>
 #include <QGraphicsSceneMouseEvent>
 
@@ -157,9 +156,9 @@ namespace Molsketch {
 
   QFont Atom::getSymbolFont() const
   {
-    QSettings settings;
-    QFont defaultFont = QFont();
-    QFont symbolFont = settings.value("atom-symbol-font", defaultFont).value<QFont>();
+    QFont symbolFont;
+    MolScene *sc = qobject_cast<MolScene*>(scene());
+    if (sc) symbolFont = sc->getAtomFont();
     if (symbolFont.pointSizeF() > 0)
       symbolFont.setPointSizeF(symbolFont.pointSizeF() * relativeWidth());
     return symbolFont;

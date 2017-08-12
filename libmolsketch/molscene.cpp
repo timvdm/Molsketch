@@ -49,7 +49,6 @@
 #include <QLabel>
 #include <QMainWindow>
 #include <QPair>
-#include <QSettings>
 #include <QVBoxLayout>
 
 #include "molscene.h"
@@ -71,6 +70,7 @@
 #include "actions/genericaction.h"
 
 #include "frame.h"
+#include "scenesettings.h"
 #include "textitem.h"
 
 #ifdef QT_STATIC_BUILD
@@ -108,6 +108,7 @@ namespace Molsketch {
     *electronSystemsVisibleAction,
     *chargeVisibleAction,
     *defaultColorAction;
+    SceneSettings *settings;
 
     graphicsItem* dragItem;
 
@@ -211,11 +212,8 @@ namespace Molsketch {
   //
   //////////////////////////////////////////////////////////////////////////////
 
-  MolScene::MolScene(QObject* parent)
-    : QGraphicsScene(parent),
-      d(new privateData(this))
+  void MolScene::initialize(SceneSettings* settings)
   {
-
     //Initializing properties
     m_editMode = MolScene::DrawMode;
     m_renderMode = RenderLabels;
@@ -230,7 +228,6 @@ namespace Molsketch {
     // Set initial size
     QRectF sizerect(-5000,-5000,10000,10000);
     setSceneRect(sizerect);
-
     // TODO - add text item
     // - subclass QGraphicsTextItem?
     // - make movable
@@ -242,11 +239,31 @@ namespace Molsketch {
 //    textItem->setHtml("some <b>text</b> example");
 //    textItem->setTextInteractionFlags(Qt::TextEditorInteraction);
 //    addItem(textItem);
+
+    d->settings = settings;
+  }
+
+  MolScene::MolScene(QObject* parent)
+    : QGraphicsScene(parent),
+      d(new privateData(this))
+  {
+    initialize(new SceneSettings(this));
+  }
+
+  MolScene::MolScene(SceneSettings* settings, QObject *parent)
+    : QGraphicsScene(parent),
+      d(new privateData(this))
+  {
+    initialize(settings);
   }
 
   MolScene::~MolScene()
   {
     clear();
+  }
+
+  QFont MolScene::getAtomFont() const {
+    return d->settings->getAtomFont();
   }
 
   QString MolScene::mimeType()
@@ -544,29 +561,21 @@ namespace Molsketch {
 
   bool MolScene::cyclingByMouseWheelEnaled() const
   {
-    QSettings settings;
-    QVariant mouseWheelForTools = settings.value(mouseWheelForCyclingTools);
-    if (mouseWheelForTools.isValid())
-        return mouseWheelForTools.toBool();
-    QMessageBox promptForMouseWheelUsage;
-    promptForMouseWheelUsage.setWindowTitle(tr("Mouse wheel configuration"));
-    promptForMouseWheelUsage.setText(tr("Mouse wheel use has not been configured."
-                                        "Should the wheel be used to zoom, "
-                                        "or to cycle tool settings?"));
-    QAbstractButton *zoomButton = promptForMouseWheelUsage.addButton(tr("Use to zoom"), QMessageBox::YesRole);
-    QAbstractButton *cycleButton = promptForMouseWheelUsage.addButton(tr("Use to cycle tool options"), QMessageBox::NoRole);
-    promptForMouseWheelUsage.exec();
-    if (promptForMouseWheelUsage.clickedButton() == zoomButton)
-    {
-      settings.setValue(mouseWheelForCyclingTools, false);
-      return false;
+    if (d->settings->getMouseWheelMode() == SceneSettings::Unset) {
+      QMessageBox promptForMouseWheelUsage;
+      promptForMouseWheelUsage.setWindowTitle(tr("Mouse wheel configuration"));
+      promptForMouseWheelUsage.setText(tr("Mouse wheel use has not been configured."
+                                          "Should the wheel be used to zoom, "
+                                          "or to cycle tool settings?"));
+      QAbstractButton *zoomButton = promptForMouseWheelUsage.addButton(tr("Use to zoom"), QMessageBox::YesRole);
+      QAbstractButton *cycleButton = promptForMouseWheelUsage.addButton(tr("Use to cycle tool options"), QMessageBox::NoRole);
+      promptForMouseWheelUsage.exec();
+      if (promptForMouseWheelUsage.clickedButton() == zoomButton)
+        d->settings->setMouseWheelMode(SceneSettings::Zoom);
+      if (promptForMouseWheelUsage.clickedButton() == cycleButton)
+        d->settings->setMouseWheelMode(SceneSettings::CycleTools);
     }
-    if (promptForMouseWheelUsage.clickedButton() == cycleButton)
-    {
-      settings.setValue(mouseWheelForCyclingTools, true);
-      return true;
-    }
-    return false;
+    return d->settings->getMouseWheelMode() == SceneSettings::CycleTools;
   }
 
   void MolScene::setGrid(bool on)

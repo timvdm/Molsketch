@@ -33,8 +33,6 @@
 
 #include <QDialog>
 
-class QSettings;
-
 /**
  * The settings dialog. Contains the logic of the ui file.
  *

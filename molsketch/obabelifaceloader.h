@@ -23,6 +23,11 @@
 
 class OBabelIfaceLoaderPrivate;
 class QString;
+class QGraphicsScene;
+
+namespace Molsketch {
+  class Molecule;
+}
 
 class OBabelIfaceLoader : public QObject
 {
@@ -32,11 +37,14 @@ public:
   ~OBabelIfaceLoader();
   QStringList inputFormats();
   QStringList outputFormats();
-  Molecule* loadFile(const QString& filename);
+  Molsketch::Molecule* loadFile(const QString& filename);
+  Molsketch::Molecule* callOsra(const QString filename);
+  bool saveFile(const QString& fileName, QGraphicsScene* scene, bool use3d);
 
 signals:
   void obabelIfaceAvailable(bool);
   void inchiAvailable(bool);
+  void obabelIfaceFileNameChanged(QString);
 
 public slots:
   void reloadObabelIface(const QString& path);

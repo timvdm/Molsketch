@@ -47,7 +47,7 @@ namespace Molsketch
   {
     QFile file(fileName);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-      qCritical("Could not open file to write: " + fileName);
+      qCritical() << "Could not open file to write: " + fileName;
       return false;
     }
 
@@ -56,7 +56,7 @@ namespace Molsketch
     xml.writeStartDocument();
     xml << *xmlObject ;
     xml.writeEndDocument();
-    qDebug("File written: " + fileName);
+    qDebug() << "File written: " + fileName;
     return true;
   }
 
