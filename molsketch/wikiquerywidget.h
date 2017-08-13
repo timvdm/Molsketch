@@ -24,6 +24,7 @@
 
 class QNetworkAccessManager;
 class QNetworkReply;
+class OBabelIfaceLoader;
 
 namespace Ui {
 class WikiQueryWidget;
@@ -34,7 +35,7 @@ class WikiQueryWidget : public QDockWidget
     Q_OBJECT
 
 public:
-    explicit WikiQueryWidget(QWidget *parent = 0);
+    explicit WikiQueryWidget(OBabelIfaceLoader *loader, QWidget *parent = 0);
     ~WikiQueryWidget();
 
 private slots:
@@ -45,6 +46,7 @@ private slots:
 private:
     Ui::WikiQueryWidget *ui;
     QNetworkAccessManager *manager;
+    OBabelIfaceLoader *obloader;
     void startMoleculeQuery(const QString &queryString);
 };
 

@@ -25,7 +25,6 @@
 #include "molscene.h"
 #include "mollibitem.h"
 #include "fileio.h"
-#include "obabeliface.h"
 
 namespace Molsketch {
 

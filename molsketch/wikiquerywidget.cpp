@@ -20,7 +20,7 @@
 #include "wikiquerywidget.h"
 #include "ui_wikiquerywidget.h"
 #include "molecule.h"
-#include "obabeliface.h"
+#include "obabelifaceloader.h"
 
 #include <QJsonDocument>
 #include <QLibrary>
@@ -42,14 +42,17 @@
 
 using namespace Molsketch;
 
-WikiQueryWidget::WikiQueryWidget(QWidget *parent) :
+WikiQueryWidget::WikiQueryWidget(OBabelIfaceLoader *loader, QWidget *parent) :
   QDockWidget(parent),
   ui(new Ui::WikiQueryWidget),
-  manager(new QNetworkAccessManager(this))
+  manager(new QNetworkAccessManager(this)),
+  obloader(loader)
 {
   ui->setupUi(this);
   ui->moleculeListView->setModel(new LibraryModel(this));
   connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(processMoleculeQuery(QNetworkReply*)));
+  connect(loader, SIGNAL(inchiAvailable(bool)), this, SLOT(setEnabled(bool)));
+  setEnabled(false);
   ui->progressWidget->hide();
   ui->queryInput->setValidator(new QRegularExpressionValidator(QRegularExpression("[^\"]*"),
                                                                ui->queryInput));
@@ -69,6 +72,19 @@ void WikiQueryWidget::on_queryInput_textChanged(const QString &newText) {
   ui->searchButton->setDisabled(newText.length() < 5);
 }
 
+class InChIItem : public MoleculeModelItem {
+  QString inchi;
+  QString name;
+  OBabelIfaceLoader *obloader;
+public:
+  InChIItem(QString name, QString inchi, OBabelIfaceLoader* obloader) : inchi(inchi), name(name), obloader(obloader) {}
+  Molecule* produceMolecule() const {
+    Molecule* m = obloader->convertInChI(inchi);
+    if (m) m->setName(name);
+    return m;
+  }
+};
+
 void WikiQueryWidget::processMoleculeQuery(QNetworkReply *reply) {
   ui->progressWidget->hide();
   if (!reply->isFinished()) reply->abort();
@@ -80,25 +96,6 @@ void WikiQueryWidget::processMoleculeQuery(QNetworkReply *reply) {
                           "Error occurred while trying to obtain data from Wikidata.\n"
                                            "Error code: " + QString::number(reply->error())
                           + " (check QNetworkReply)");
-    return;
-  }
-
-  qputenv("BABEL_LIBDIR", QFileDialog::getExistingDirectory(0, "OpenBabel formats").toUtf8()); // TODO make this a configuration entry // TODO Latin1?
-  QLibrary obabeliface(QFileDialog::getOpenFileName(0, "Obabeliface",QString(), "*.dll")); // TODO make this a configuration entry
-  // TODO should not work if format could not be loaded!
-  qDebug("Trying to load openbabel as %s", obabeliface.fileName().toStdString().data());
-  obabeliface.load() ;
-  fromInChIFunctionPointer convertInChI = 0 ;
-  if (obabeliface.isLoaded())
-    convertInChI = (fromInChIFunctionPointer) (obabeliface.resolve("fromInChI")) ;
-  else {
-    qWarning("Could not load openbabel");
-    QMessageBox::critical(0, "Error", "Could not load OpenBabel, which is required for conversion of molecules.");
-    return;
-  }
-  if (!convertInChI) {
-    qWarning("Could not load function to convert InChI");
-    QMessageBox::critical(0, "Error", "Could not load OpenBabel function to convert InChI.");
     return;
   }
 
@@ -118,7 +115,7 @@ void WikiQueryWidget::processMoleculeQuery(QNetworkReply *reply) {
   qSort(namesAndInchiStrings);
   QList<MoleculeModelItem*> items;
   for (auto item : namesAndInchiStrings)
-    items << MoleculeModelItem::fromInChI(item.first, item.second);
+    items << new InChIItem(item.first, item.second, obloader);
   ((LibraryModel*) ui->moleculeListView->model())->setMolecules(items);
   reply->deleteLater();
 }

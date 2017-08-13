@@ -1,6 +1,5 @@
 #include "moleculemodelitem.h"
 #include "molecule.h"
-#include "obabeliface.h"
 #include <QIcon>
 #include <QLibrary>
 #include <QDebug>
@@ -10,7 +9,6 @@
 #else
 #define OBABELOSSUFFIX
 #endif
-
 
 namespace Molsketch {
 
@@ -76,36 +74,4 @@ namespace Molsketch {
       };
     return new XmlItem(xml);
   }
-
-  Molecule* convertInchi(QString inchi) { // TODO use settings, move to molsketch project
-    QLibrary obabeliface("obabeliface" QTVERSIONSUFFIX OBABELOSSUFFIX);
-    obabeliface.load() ;
-    fromInChIFunctionPointer convertInChI = nullptr ;
-    if (!obabeliface.isLoaded()) {
-      qDebug("could not load obabeliface to convert InChI string");
-      return nullptr;
-    }
-    convertInChI = (fromInChIFunctionPointer) (obabeliface.resolve("fromInChI")) ;
-    if (!convertInChI) {
-      qWarning("Could not load function to convert InChI");
-      return nullptr;
-    }
-    return convertInChI(inchi);
-  }
-
-  MoleculeModelItem *MoleculeModelItem::fromInChI(QString name, QString inchi) {
-    class InChIItem : public MoleculeModelItem {
-      QString inchi;
-      QString name;
-    public:
-      InChIItem(QString inchi, QString name) : inchi(inchi), name(name) {}
-      Molecule* produceMolecule() const {
-        Molecule* m = convertInchi(inchi);
-        if (m) m->setName(name);
-        return m;
-      }
-    };
-    return new InChIItem(inchi, name);
-  }
-
 } // namespace Molsketch

@@ -29,7 +29,7 @@ class OBabelIfaceLoaderPrivate {
   public:
   OBabelIfaceLoaderPrivate (OBabelIfaceLoader* parent) : parent (parent) {}
   OBabelIfaceLoader* parent;
-  QLibrary openBabel;
+  QLibrary openBabelInterface;
   QString openBabelFormatsPath;
   Molsketch::loadFileFunctionPointer load;
   Molsketch::saveFileFunctionPointer save;
@@ -41,27 +41,39 @@ class OBabelIfaceLoaderPrivate {
   Molsketch::formatAvailablePointer inChIAvailable;
   Molsketch::callOsraFunctionPointer callOsra;
   void loadFunctions () {
-    load = (Molsketch::loadFileFunctionPointer)openBabel.resolve (
+    load = (Molsketch::loadFileFunctionPointer)openBabelInterface.resolve (
       "loadFile"); // TODO put into obabeliface.h -- question: what happens when lib is dynamically loaded (with its constants etc.)?
-    save = (Molsketch::saveFileFunctionPointer)openBabel.resolve ("saveFile");
-    toSmiles = (Molsketch::smilesFunctionPointer)openBabel.resolve ("smiles");
-    fromSmiles = (Molsketch::fromSmilesFunctionPointer)openBabel.resolve ("fromSmiles");
-    inputFormats = (Molsketch::formatsFunctionPointer)openBabel.resolve ("inputFormats");
-    outputFormats = (Molsketch::formatsFunctionPointer)openBabel.resolve ("outputFormats");
-    fromInChI = (Molsketch::fromInChIFunctionPointer)openBabel.resolve ("fromInChI");
-    inChIAvailable = (Molsketch::formatAvailablePointer)openBabel.resolve ("inChIAvailable");
-    callOsra = (Molsketch::callOsraFunctionPointer)openBabel.resolve("call_osra");
+    save = (Molsketch::saveFileFunctionPointer)openBabelInterface.resolve ("saveFile");
+    toSmiles = (Molsketch::smilesFunctionPointer)openBabelInterface.resolve ("smiles");
+    fromSmiles = (Molsketch::fromSmilesFunctionPointer)openBabelInterface.resolve ("fromSmiles");
+    inputFormats = (Molsketch::formatsFunctionPointer)openBabelInterface.resolve ("inputFormats");
+    outputFormats = (Molsketch::formatsFunctionPointer)openBabelInterface.resolve ("outputFormats");
+    fromInChI = (Molsketch::fromInChIFunctionPointer)openBabelInterface.resolve ("fromInChI");
+    inChIAvailable = (Molsketch::formatAvailablePointer)openBabelInterface.resolve ("inChIAvailable");
+    callOsra = (Molsketch::callOsraFunctionPointer)openBabelInterface.resolve("call_osra");
+
+    qDebug() << "Loaded OpenBabel functions. Available Functions:"
+             << "load:" << load
+             << "save:" << save
+             << "toSmiles:" << toSmiles
+             << "fromSmiles:" << fromSmiles
+             << "inputFormats:" << inputFormats
+             << "outputFormats:" << outputFormats
+             << "fromInChI:" << fromInChI
+             << "inChIAvailable:" << inChIAvailable
+             << "callOsra:" << callOsra;
   }
   void unloadFunctions () { // TODO check if this is really necessary
   }
   void emitSignals () {
-    bool openBabelAvailable = openBabel.isLoaded ();
+    bool openBabelAvailable = openBabelInterface.isLoaded ();
     bool isInchiAvailable = inChIAvailable && inChIAvailable ();
-    qDebug() << "OpenBabel available: " + QString::number (openBabelAvailable);
-    qDebug() << "InChI availabel: " + QString::number (isInchiAvailable);
+    qDebug() << "OpenBabel available: " << QString::number (openBabelAvailable)
+             << "Library location:" << openBabelInterface.fileName();
+    qDebug() << "InChI available: " << QString::number (isInchiAvailable);
     emit parent->obabelIfaceAvailable (openBabelAvailable);
     emit parent->inchiAvailable (isInchiAvailable);
-    emit parent->obabelIfaceFileNameChanged(openBabel.fileName());
+    emit parent->obabelIfaceFileNameChanged(openBabelInterface.fileName());
   }
 };
 
@@ -103,10 +115,17 @@ bool OBabelIfaceLoader::saveFile (const QString& fileName, QGraphicsScene* scene
   return false;
 }
 
+Molsketch::Molecule *OBabelIfaceLoader::convertInChI(const QString &InChI) {
+  Q_D(OBabelIfaceLoader);
+  if (d->fromInChI) return d->fromInChI(InChI);
+  qWarning("No support for converting InChI available");
+  return nullptr;
+}
+
 void OBabelIfaceLoader::reloadObabelIface (const QString& path) {
   Q_D (OBabelIfaceLoader);
-  d->openBabel.unload ();
-  d->openBabel.setFileName (path);
+  d->openBabelInterface.unload ();
+  d->openBabelInterface.setFileName (path);
   d->loadFunctions ();
   d->emitSignals ();
 }

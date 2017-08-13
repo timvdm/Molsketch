@@ -1,7 +1,6 @@
 include(../settings.pri)
 
 TEMPLATE = lib
-INCLUDEPATH += $$sourceDir/../obabeliface
 HEADERS += *.h $$files(actions/*.h)
 SOURCES += *.cpp $$files(actions/*.cpp)
 FORMS += *.ui

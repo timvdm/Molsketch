@@ -108,8 +108,6 @@ MainWindow::MainWindow()
   createToolBarContextMenuOptions();
   initializeAssistant();
 
-
-
   setWindowIcon(QIcon(":/images/molsketch.svg"));
 
   // Loading settings
@@ -831,7 +829,7 @@ void MainWindow::createToolBox()
 }
 
 void MainWindow::createWikiDock() {
-  wikidataDock = new WikiQueryWidget(this);
+  wikidataDock = new WikiQueryWidget(obabelLoader, this);
   wikidataDock->setObjectName("wikidata-query-widget");
   addDockWidget(Qt::LeftDockWidgetArea, wikidataDock);
 }

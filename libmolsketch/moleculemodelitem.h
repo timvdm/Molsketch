@@ -52,7 +52,6 @@ namespace Molsketch {
     QString name();
     void writeXml(QXmlStreamWriter& writer);
     static MoleculeModelItem* fromXml(QByteArray xml);
-    static MoleculeModelItem* fromInChI(QString name, QString inchi);
   };
 } // namespace Molsketch
 

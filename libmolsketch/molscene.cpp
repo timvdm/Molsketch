@@ -61,7 +61,6 @@
 #include "mimemolecule.h"
 #include "TextInputItem.h"
 #include "math2d.h"
-#include "obabeliface.h"
 #include "grid.h"
 #include "molview.h"
 
@@ -357,38 +356,6 @@ namespace Molsketch {
         m_stack->beginMacro(tr("pasting items"));
         foreach(Molecule* item, m_clipItems) m_stack->push(new AddItem(new Molecule(item),this));
         m_stack->endMacro();
-  }
-
-  void MolScene::convertImage() // TODO move to molsketch project
-  {
-        QClipboard* clipboard = qApp->clipboard();
-        QImage img = clipboard->image();
-        if (img.isNull()) return ;
-
-        QLibrary obabeliface("obabeliface" QTVERSIONSUFFIX);
-        obabeliface.load() ;
-        callOsraFunctionPointer callOsraPtr = (callOsraFunctionPointer) obabeliface.resolve("call_osra") ;
-        if (!callOsraPtr)
-        {
-          QMessageBox::critical(0, tr("Error importing image"), tr("OpenBabel support unavailable.")) ;
-          return ;
-        }
-#if QT_VERSION < 0x050000
-        QString tmpimg = QDesktopServices::storageLocation(QDesktopServices::TempLocation) + QDir::separator() + "osra.png";
-#else
-        QString tmpimg = QStandardPaths::writableLocation(QStandardPaths::TempLocation) + QDir::separator() + "osra.png";
-#endif
-        img.save(tmpimg, "PNG", 100);
-        Molecule* mol = callOsraPtr(tmpimg);
-        if (mol)
-        {
-          m_stack->beginMacro(tr("converting image using OSRA"));
-          m_stack->push(new AddItem(new Molecule(mol), this));
-          m_stack->endMacro();
-        }
-        else
-          QMessageBox::critical(0, tr("Error"), tr("OSRA conversion failed. Is OSRA installed?")) ;
-        QFile::remove(tmpimg);
   }
 
 #ifdef QT_DEBUG

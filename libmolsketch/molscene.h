@@ -200,8 +200,6 @@ namespace Molsketch {
       /** Slot to align the molecules of the scene to the grid. */
       void alignToGrid(); // TODO obsolete
 
-      /** Slot to convert image to mol using OSRA */
-      void convertImage();
       /** enable/disable grid */
       void setGrid(bool on = true);
 

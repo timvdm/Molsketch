@@ -164,6 +164,7 @@ namespace Molsketch
     Molecule* mol = new Molecule();
     mol->setPos(QPointF(0,0));
 
+    qDebug() << "Number of atoms" <<obmol.NumAtoms();
     QHash<OBAtom*, Atom*> atomHash ;
     // Add atoms one-by-ons
     FOR_ATOMS_OF_MOL(obatom, obmol)
@@ -375,8 +376,8 @@ namespace Molsketch
     conv.ReadString(&obmol, input.toStdString()); // TODO do we need error handling if false?
 
     OpenBabel::OBOp* gen2D = OpenBabel::OBOp::FindType("gen2D");
-    if (gen2D) gen2D->Do(&obmol); // TODO what if we didn't find gen2D?
-    else qCritical("Could not find gen2D for coordinate generation from string-based molecule format");
+    if (!gen2D || !gen2D->Do(&obmol))
+      qCritical("Could not find gen2D for coordinate generation from string-based molecule format");
 
     SetWedgeAndHash(obmol);
 

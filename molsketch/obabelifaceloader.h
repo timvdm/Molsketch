@@ -40,6 +40,7 @@ public:
   Molsketch::Molecule* loadFile(const QString& filename);
   Molsketch::Molecule* callOsra(const QString filename);
   bool saveFile(const QString& fileName, QGraphicsScene* scene, bool use3d);
+  Molsketch::Molecule* convertInChI(const QString& InChI);
 
 signals:
   void obabelIfaceAvailable(bool);
