@@ -94,7 +94,8 @@
 using namespace Molsketch;
 
 MainWindow::MainWindow()
-  : settings(new ApplicationSettings(this))
+  : settings(new ApplicationSettings(this)),
+    obabelLoader(new OBabelIfaceLoader(this))
 {
   // Creating the menus and actions
   createView();
