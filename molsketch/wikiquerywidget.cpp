@@ -80,6 +80,7 @@ public:
   InChIItem(QString name, QString inchi, OBabelIfaceLoader* obloader) : inchi(inchi), name(name), obloader(obloader) {}
   Molecule* produceMolecule() const {
     Molecule* m = obloader->convertInChI(inchi);
+    qDebug() << "Read molecule from InChI:" << m;
     if (m) m->setName(name);
     return m;
   }

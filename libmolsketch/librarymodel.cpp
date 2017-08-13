@@ -62,7 +62,6 @@ int LibraryModel::rowCount(const QModelIndex &parent) const {
 }
 
 QVariant LibraryModel::data(const QModelIndex &index, int role) const {
-  qInfo("Getting data of type %d for index %d", role, index.row());
   Q_D(const LibraryModel);
   int row = index.row();
   if (row < 0 || row >= d->items.size()) return QVariant();
