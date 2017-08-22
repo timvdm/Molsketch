@@ -4,9 +4,20 @@ include(../settings.pri)
 
 TESTS = *test.h
 
-originalSources = $$PWD/../libmolsketch/*.cpp $$PWD/../libmolsketch/actions/*.cpp $$PWD/../obabeliface/*.cpp
-originalHeaders = $$PWD/../libmolsketch/*.h $$PWD/../libmolsketch/actions/*.h $$PWD/../obabeliface/*.h
-originalForms = $$PWD/../libmolsketch/*.ui
+originalSources = \
+    $$PWD/../libmolsketch/*.cpp \
+    $$PWD/../libmolsketch/actions/*.cpp \
+    $$PWD/../obabeliface/*.cpp \
+    $$files($$PWD/../molsketch/*.cpp)
+originalSources -= $$PWD/../molsketch/main.cpp
+originalHeaders = \
+    $$PWD/../libmolsketch/*.h \
+    $$PWD/../libmolsketch/actions/*.h \
+    $$PWD/../obabeliface/*.h \
+    $$PWD/../molsketch/*.h
+originalForms = \
+    $$PWD/../libmolsketch/*.ui \
+    $$PWD/../molsketch/*.ui
 
 HEADERS += $$TESTS \
     $$originalHeaders \
@@ -28,11 +39,11 @@ INCLUDEPATH += $$CXXTEST_PATH \
     ../molsketch \
     ../obabeliface
 
-SOURCES += ../molsketch/programversion.cpp \
+SOURCES += \
     programversionvaluetrait.cpp \
     instancecounters.cpp
 
-QT += widgets printsupport svg testlib
+QT += widgets printsupport svg testlib network
 
 TEMPLATE = app
 
