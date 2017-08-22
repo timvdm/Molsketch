@@ -230,6 +230,7 @@ namespace Molsketch {
     d->dock->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed); // TODO minimize size
     d->dock->hide();
     setText(tr("Draw"));
+    setObjectName("draw-action");
   }
 
   drawAction::~drawAction()

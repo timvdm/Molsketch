@@ -9,7 +9,7 @@ namespace Molsketch {
     : abstractRecursiveItemAction(scene)
   {
     setMinimumItemCount(1);
-    setIcon(QIcon(":images/flip-stereo.png"));
+    setIcon(QIcon(":images/flip-stereo.svg"));
     setText(tr("Flip stereo bond(s)"));
     setCheckable(false);
   }

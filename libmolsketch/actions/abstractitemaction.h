@@ -47,10 +47,10 @@ namespace Molsketch {
     void clearItems() ;
     /** add one item */
     void addItem(graphicsItem*);
-    void setMinimumItemCount(const int& count);
   signals:
     void itemsChanged();
   protected:
+    void setMinimumItemCount(const int& count);
     /** obtain items currently associated with this action */
     QList<graphicsItem*> items() const ;
     /** will be executed, when action is triggered */

@@ -54,6 +54,7 @@
 #include <actions/rotateaction.h>
 #include <actions/flipstereobondsaction.h>
 #include <actions/textaction.h>
+#include <actions/itemtypeselectionaction.h>
 
 #include "mainwindow.h"
 
@@ -733,7 +734,7 @@ void MainWindow::createToolBars()
 
   drawToolBar = addToolBar(tr("Drawing"));
   drawToolBar->setObjectName("drawing-toolbar");
-  drawToolBar->addAction(new drawAction(m_scene));
+  drawToolBar->addAction(new drawAction(m_scene)); // TODO add these actions to the view widget?
   drawToolBar->addAction(new ringAction(m_scene));
   drawToolBar->addAction(new reactionArrowAction(m_scene));
   drawToolBar->addAction(new mechanismArrowAction(m_scene));
@@ -742,6 +743,7 @@ void MainWindow::createToolBars()
 
   modifyToolBar = addToolBar(tr("Modify"));
   modifyToolBar->setObjectName("modify-toolbar");
+  modifyToolBar->addAction(new ItemTypeSelectionAction(m_scene));
   modifyToolBar->addAction(new rotateAction(m_scene));
   modifyToolBar->addAction(new colorAction(m_scene));
   modifyToolBar->addAction(new lineWidthAction(m_scene));

@@ -144,6 +144,7 @@ namespace Molsketch {
       d(new privateData(this))
   {
     setText(tr("Ring"));
+    setObjectName("ring-action");
     QAction *newAction = 0 ;
     QString c;
     ADDRINGSUBACTION("Cyclopropyl", 3);
