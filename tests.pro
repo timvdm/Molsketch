@@ -42,6 +42,9 @@ INCLUDEPATH += $$CXXTEST_PATH \
 SOURCES += \
     programversionvaluetrait.cpp \
     instancecounters.cpp
+RESOURCES += \
+    $$PWD/../molsketch/*.qrc \
+    $$PWD/../libmolsketch/tools/toolicons.qrc
 
 QT += widgets printsupport svg testlib network
 

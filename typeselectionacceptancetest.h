@@ -18,10 +18,76 @@
  ***************************************************************************/
 
 #include <cxxtest/TestSuite.h>
+#include <QGraphicsView>
+#include <QToolBar>
+#include <QTimer>
+#include <molscene.h>
+#include <QPushButton>
 #include "mainwindow.h"
+#include "utilities.h"
 
 class TypeSelectionAcceptanceTest : public CxxTest::TestSuite {
   MainWindow *mainWindow;
+
+  void clickToolButton(QString toolbarName, QString actionName) {
+    QToolBar *toolbar = mainWindow->findChild<QToolBar*>(toolbarName);
+    assertNotNull(toolbar, "Need toolbar: " + toolbarName);
+    QAction *typeSelectionAction = mainWindow->findChild<QAction*>(actionName);
+    assertNotNull(typeSelectionAction, "Need action: " + actionName);
+    QWidget *actionButton = toolbar->widgetForAction(typeSelectionAction);
+    assertNotNull(actionButton, "No button available for action: " + actionName);
+    TSM_ASSERT("Action button not enabled!", actionButton->isEnabled());
+    QTest::mouseClick(actionButton, Qt::LeftButton);
+  }
+
+  void clickOnView() {
+    QGraphicsView *view = mainWindow->findChild<QGraphicsView*>();
+    QTest::mouseClick(view->viewport(), Qt::LeftButton);
+  }
+
+  void selectEverythingFromView() {
+    QTest::keyClick(mainWindow, Qt::Key_Escape);
+    QGraphicsView *view = mainWindow->findChild<QGraphicsView*>();
+    QTest::keyClicks(mainWindow, "A", Qt::ControlModifier);
+    mainWindow->findChild<Molsketch::MolScene*>()->selectAll();
+  }
+
+  class ActivateBondCheckBoxAndConfirmDialog {
+    QWidget* findDialog() {
+      QWidget* typeDialog = qApp->activeModalWidget();
+      assertNotNull(typeDialog, "No type dialog was opened!");
+      return typeDialog;
+    }
+
+    void clickBondCheckBox(QWidget* typeDialog) {
+      QWidget *bondCheckbox = typeDialog->findChild<QWidget*>("bonds");
+      assertNotNull(bondCheckbox, "No bond checkbox found!");
+      QTest::mouseClick(bondCheckbox, Qt::LeftButton, Qt::NoModifier, QPoint(1,0)); // offset for QCheckBox
+    }
+
+    QWidget* findOkButton(QWidget* typeDialog) {
+      for(QPushButton *child : findDialog()->findChildren<QPushButton*>())
+        if (child->text() == "&OK") return child;
+      TSM_ASSERT("Could not find OK button!", false);
+      throw nullptr;
+    }
+
+  public:
+    void operator()() {
+      clickBondCheckBox(findDialog());
+      QTest::mouseClick(findOkButton(findDialog()), Qt::LeftButton);
+    }
+  };
+
+  void assertOnlyBondsAreSelected() {
+    Molsketch::MolScene *scene = mainWindow->findChild<Molsketch::MolScene*>();
+    assertNotNull(scene, "No MolScene found!");
+    QList<QGraphicsItem*> selection = scene->selectedItems();
+    TSM_ASSERT_EQUALS("Selection should contain only three items for cyclopropane", selection.size(), 3);
+    for(QGraphicsItem* selectedItem : selection)
+      TSM_ASSERT_EQUALS("Item should be of 'bond' type!", selectedItem->type(), Molsketch::Bond::Type);
+  }
+
 public:
   void setUp() {
     mainWindow = new MainWindow;
@@ -32,8 +98,16 @@ public:
     delete mainWindow;
   }
 
-  void testtestName() {
-    QObject *zoomToolbar = mainWindow->findChild<QObject*>("zoom-toolbar");
-    TS_ASSERT_DIFFERS(zoomToolbar, nullptr);
+  void testSelection() {
+    clickToolButton("drawing-toolbar", "ring-action");
+    clickOnView();
+    selectEverythingFromView();
+
+    QTimer::singleShot(0, mainWindow, ActivateBondCheckBoxAndConfirmDialog());
+    clickToolButton("modify-toolbar", "item-type-selection-action");
+
+    assertOnlyBondsAreSelected();
   }
+
+  // TODO test for all actions: icon defined
 };

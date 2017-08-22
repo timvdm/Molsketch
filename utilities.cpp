@@ -46,3 +46,8 @@ void enterTextIntoInputWidget(QLineEdit *editor, const QString& text, int positi
     QTest::keyClick(editor, Qt::Key_Right);
   QTest::keyClicks(editor, text);
 }
+
+void assertNotNull(void *pointer, QString message) {
+  TSM_ASSERT_DIFFERS(message.toStdString().data(), pointer, nullptr);
+  if (!pointer) throw nullptr;
+}
