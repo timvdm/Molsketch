@@ -1,5 +1,6 @@
+include(variables.pri)
+MSK_SOURCE_BASE = $$PWD
 QT += widgets printsupport svg
-
 CONFIG += silent c++14
 lessThan(QT_MAJOR_VERSION,5): QMAKE_CXXFLAGS += -std=c++11
 
@@ -10,37 +11,16 @@ equals(QT_MAJOR_VERSION, 5) {
 DEFINES += QMAKEBUILD \
         "QTVERSIONSUFFIX=\"\\\"$$qtVersionSuffix\\\"\""
 
-sourceDir = $$_PRO_FILE_PWD_
-message("Sources in: $$sourceDir")
-
-########### Reading version and default paths
-message("Installation directories and corresponding qmake variables:")
-
-defaultVars = \
-        Global_prefix,MSK_INSTALL_PREFIX,/usr/local,C:/Program_Files/MolsKetch;\
-        Executable,MSK_INSTALL_BINS,/bin,;\
-        Headers,MSK_INSTALL_INCLUDES,/include/molsketch,/include;\
-        Molecule_library,MSK_INSTALL_LIBRARY,/share/molsketch/library,/library;\
-        Custom_molecule_library,MSK_INSTALL_CUSTOM,/share/molsketch/library/custom,/library/custom;\
-        Documentation,MSK_INSTALL_DOCS,/share/doc/molsketch,/doc;
-contains(QT_ARCH, ".*64.*") : defaultVars += Libraries,MSK_INSTALL_LIBS,/lib64,;
-else : defaultVars += Libraries,MSK_INSTALL_LIBS,/lib,;
-
-defaultVars += Version,MSK_VERSION,$$cat(version);\
-        Nickname,MSK_Version_NICK,$$cat(versionnick)
-
-for(DV, $$list($$split(defaultVars, ;))) {
-        variableDescription = $$section(DV, ",", 0, 0)
-        variableName = $$section(DV, ",", 1, 1)
-        variableDefaultValue = $$section(DV, ",", 2, 2)
-        contains(variableName, ".*INSTALL.*"){
-                variableDefaultValue = $${MSK_INSTALL_PREFIX}$$section(DV, ",", 2, 2)
-                win*: variableDefaultValue = $${MSK_INSTALL_PREFIX}$$section(DV, ",", 3, 3)
-        }
-        isEmpty($$variableName) : $$variableName = $$replace(variableDefaultValue, _, " ") # TODO not so elegant...
-        DEFINES += "$${variableName}=\"\\\"$$eval($$variableName)\\\"\""
-        message("$$split(variableDescription, _): $${variableName} = $$eval($$variableName)")
+buildVars = $$cat(buildvariables)
+for(line, $$list($$split(buildVars, $$escape_expand(\\n)))) {
+  name = $$getVarName(line)
+  !exists($$OUT_PWD/../buildvars/$$name) {
+    $$name = $$getVarDefault(line)
+    message("Could not find file with value of $$name, assuming default value: $$eval($$name)")
+  }
+  $$name = $$cat($$OUT_PWD/../buildvars/$$name)
+  !equals($$name, false) : DEFINES += "$${name}=\"\\\"$$eval($$name)\\\"\""
 }
 
-VERSION = $${MSK_VERSION}
+VERSION = $$cat(version)
 CONFIG(static) : DEFINES += QT_STATIC_BUILD
