@@ -56,7 +56,7 @@ class MolLibItem : public QListWidgetItem
   Molsketch::Molecule getMolecule();
   
   /** Returns the filename of the library item. */
-  QFileInfo getFileName() { return m_fileName; };
+  QFileInfo getFileName() { return m_fileName; }
 
 private:
   /** Stores the molecule of the library item. */

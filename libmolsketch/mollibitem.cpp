@@ -25,7 +25,6 @@
 #include "molscene.h"
 #include "mollibitem.h"
 #include "fileio.h"
-#include "obabeliface.h"
 
 namespace Molsketch {
 
@@ -44,29 +43,11 @@ namespace Molsketch {
     m_molecule->setCoordinates(coords.translated(-coords.boundingRect().center()));
 
 
-    // Creating pixmap
-    MolScene renderScene;
-    if (molecule->atoms().size() > 20)
-      renderScene.setRenderMode(MolScene::RenderColoredSquares);
-    renderScene.addItem(m_molecule);
-    renderScene.setChargeVisible(true);
-    renderScene.setSceneRect(m_molecule->boundingRect());
-    QPixmap pixmap(int(renderScene.width()), int(renderScene.height()));
-    pixmap.fill();
-
-    // Creating and setting the painter
-    QPainter painter(&pixmap);
-    painter.setRenderHint(QPainter::Antialiasing);
-    renderScene.render(&painter);
-
-    setIcon(QIcon(pixmap));
+//    // Creating pixmap
+    setIcon(QIcon(renderMolecule(*m_molecule)));
 
     QString name = molecule->getName();
     setText(name.isEmpty() ? fileName : name);
-
-    // Remove the molecule before destroying the scene
-    renderScene.removeItem(m_molecule);
-
   }
 
   MolLibItem::~MolLibItem( )

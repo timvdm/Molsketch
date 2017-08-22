@@ -46,14 +46,15 @@ class QListWidgetItem;
 class QTableWidget;
 class QTableWidgetItem;
 class QPushButton;
+class OBabelIfaceLoader;
 #if QT_VERSION <= 0x040603
 class QAssistantClient;
 #else
 class QProcess ;
 #endif
-class QSettings;
 class QTimer;
 class QActionGroup;
+class ApplicationSettings;
 
 namespace Molsketch {
   class Molecule;
@@ -163,12 +164,6 @@ private:
   /** Set the current file name to @p fileName. */
   void setCurrentFile(const QString &fileName);
 
-  // Global settings
-  /** Path where the last document was saved */
-  QString m_lastAccessedPath;
-  /** The time between auto-saves in miliseconds */
-  int m_autoSaveTime;
-
   // Timers
   /** The timer for the auto-save action */
   QTimer * m_autoSaveTimer;
@@ -193,9 +188,10 @@ private:
 
   /** The dock widget for the toolbox. */
   QDockWidget* toolBoxDock;
-  /** The dock widget for the info box. */
   /** The toolbox with the libraries. */
   QToolBox* toolBox;
+  /** The dock widget for wikidata queries. */
+  QDockWidget* wikidataDock;
 
   // Menus
   /** The file menu. */
@@ -290,8 +286,11 @@ private:
   QAction* releaseNotesAct;
   /** Show the Qt about dialog action. */
   QAction* aboutQtAct;
-  void buildLibraries();
+  ApplicationSettings *settings;
+  OBabelIfaceLoader *obabelLoader;
 
+  void buildLibraries();
+  void createWikiDock();
 };
 
 QString readFileContent(const QString& absolutePath);

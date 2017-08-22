@@ -22,8 +22,8 @@
 #include <QApplication>
 #include <QTranslator>
 #include <QLocale>
-#include <QSettings>
 
+#include "applicationsettings.h"
 #include "mainwindow.h"
 #include "programversion.h"
 #include "releasenotesdialog.h"
@@ -44,18 +44,14 @@ void messageOutput(QtMsgType type, const QMessageLogContext &context, const QStr
     case QtFatalMsg:
         fprintf(stderr, "Fatal: (%s:%u, %s) %s\n", context.file, context.line, context.function, localMsg.constData());
         abort();
+      case QtInfoMsg:
+        fprintf(stderr, "Info: (%s:%u, %s) %s\n", context.file, context.line, context.function, localMsg.constData());
     }
 }
 
 int main(int argc, char *argv[])
 {
   qInstallMessageHandler(messageOutput);
-#if defined(QT_STATIC_BUILD) || defined(_WIN32) || defined(INCLUDE_ICONS)
-#pragma message "Including own oxygen icon set"
-  Q_INIT_RESOURCE(molsketch);
-  Q_INIT_RESOURCE(oxygenicons);
-  QIcon::setThemeName("oxygen");
-#endif
   QApplication app(argc, argv);
 
   QCoreApplication::setOrganizationName("SourceForge");
@@ -71,13 +67,11 @@ int main(int argc, char *argv[])
   MainWindow window;
   window.show();
 
-  QSettings settings;
-  ProgramVersion latestReleaseNotesShown(settings.value("latestReleaseNotes").toString()),
-      currentVersion(readFileContent(":/version"));
-  if (latestReleaseNotesShown < currentVersion) {
-    ReleaseNotesDialog releaseNotes;
-    releaseNotes.exec();
-    settings.setValue("latestReleaseNotes", currentVersion.toString());
+  ApplicationSettings appSettings;
+
+  if (appSettings.latestReleaseNotesVersionShown() < appSettings.currentVersion()) {
+    ReleaseNotesDialog().exec(); // TODO check that this still works
+    appSettings.updateReleaseNotesShownVersion();
   }
 
   return app.exec();

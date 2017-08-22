@@ -10,6 +10,7 @@ TARGET = molsketch$$qtVersionSuffix
 DESTDIR = ../bin
 target.path=$${MSK_INSTALL_BINS}
 INSTALLS += target
+QT += network
 
 INCLUDEPATH += \
         $$MSK_SOURCE_BASE/libmolsketch \

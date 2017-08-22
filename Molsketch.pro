@@ -21,10 +21,7 @@ CONFIG += ordered
 SUBDIRS += \
         libmolsketch \
         molsketch
-!android : SUBDIRS += obabeliface
-contains(CONFIG, static) { SUBDIRS -= obabeliface }
-# TODO make obabeliface optional
-
+equals(MSK_OBABELIFACE, true) : SUBDIRS += obabeliface
 
 ################# making installs
 INSTALLS += documentation_en \

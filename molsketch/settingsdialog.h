@@ -28,11 +28,10 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-#include "ui_settings.h"
+#include "applicationsettings.h"
+#include "ui_settingsdialog.h"
 
 #include <QDialog>
-
-class QSettings;
 
 /**
  * The settings dialog. Contains the logic of the ui file.
@@ -48,7 +47,7 @@ class SettingsDialog : public QDialog
      *
      * @param scene the scene of which the settings should be edited
      */
-    SettingsDialog(QWidget * parent = 0, Qt::WindowFlags f = 0);
+    SettingsDialog(ApplicationSettings* settings, QWidget * parent = 0, Qt::WindowFlags f = 0);
     /** Destructor of the dialog. */
     ~SettingsDialog();
 
@@ -57,7 +56,7 @@ signals:
 
   private:
     /** Stores the scene of which the settings should be edited. */
-    QSettings* m_settings;
+    ApplicationSettings* settings;
     /** The user interface of the dialog. */
     Ui::SettingsDialog ui;
 
@@ -76,6 +75,8 @@ signals:
     void selectFont();
     void on_addLibrary_clicked();
     void on_removeLibrary_clicked();
+    void on_obfPathButton_clicked();
+    void on_libraryPathButton_clicked();
 };
 
 #endif

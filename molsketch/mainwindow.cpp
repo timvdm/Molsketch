@@ -64,12 +64,16 @@
 #include "fileio.h"
 #include "mollibitem.h"
 
-#include "obabeliface.h"
+#include "programversion.h"
 
 // widgets
+#include "applicationsettings.h"
 #include "helpforemptytoolbox.h"
+#include "indicator.h"
+#include "obabelifaceloader.h"
 #include "releasenotesdialog.h"
-#include "settings.h"
+#include "settingsdialog.h"
+#include "wikiquerywidget.h"
 
 
 #define PROGRAM_NAME "Molsketch"
@@ -85,37 +89,16 @@
 #define OBABELOSSUFFIX
 #endif
 
-#define PREPARELOADFILE \
-  QLibrary obabeliface("obabeliface" QTVERSIONSUFFIX OBABELOSSUFFIX); \
-  obabeliface.load() ; \
-  loadFileFunctionPointer loadFilePtr = 0 ; \
-  formatsFunctionPointer inputFormats = 0; \
-  if (obabeliface.isLoaded()) {\
-    loadFilePtr = (loadFileFunctionPointer) (obabeliface.resolve("loadFile")) ;\
-    inputFormats = (formatsFunctionPointer) (obabeliface.resolve("inputFormats")) ;\
-    qInfo() << "available input formats from openbabel" << inputFormats(); \
-  } else qWarning("Could not load obabeliface");
-
-#define PREPARESAVEFILE \
-  QLibrary obabeliface("obabeliface" QTVERSIONSUFFIX OBABELOSSUFFIX); \
-  obabeliface.load() ; \
-  saveFileFunctionPointer saveFilePtr = 0 ; \
-  formatsFunctionPointer outputFormats = 0; \
-  if (obabeliface.isLoaded()) {\
-    saveFilePtr = (saveFileFunctionPointer) (obabeliface.resolve("saveFile")) ; \
-    outputFormats = (formatsFunctionPointer) (obabeliface.resolve("outputFormats")); \
-    qInfo() << "available output formats from openbabel" << outputFormats(); \
-  } else qWarning("Could not load obabeliface");
-
-// Constructor
-
 using namespace Molsketch;
 
 MainWindow::MainWindow()
+  : settings(new ApplicationSettings(this)),
+    obabelLoader(new OBabelIfaceLoader(this))
 {
   // Creating the menus and actions
   createView();
   createToolBox();
+  createWikiDock();
   createActions();
   createMenus();
   createToolBars();
@@ -133,41 +116,26 @@ MainWindow::MainWindow()
   QRegExp rx("^[^\\-]");
   QStringList loadedFiles;
 
-  PREPARELOADFILE
-  bool openBabelNeeded = false ;
-  foreach(QString fileName, args.filter(rx))
-  {
-    if (fileName.endsWith(".msk"))
-    {
+  for(QString fileName : args.filter(rx)) {
+    if (fileName.endsWith(".msk")) {
       readMskFile(fileName, m_scene);
       loadedFiles << fileName;
-    }
-    else
-    {
-      openBabelNeeded = true ;
-      if (!loadFilePtr) continue ;
-      Molecule *mol = loadFilePtr(fileName);
-      if (mol)
-      {
+    } else {
+      Molecule *mol = obabelLoader->loadFile(fileName);
+      if (mol) {
         m_scene->addMolecule(mol);
         loadedFiles << fileName;
-      }
-      else
-      {
+      } else {
         // Display error message if load fails
-        QMessageBox::critical(this,tr(PROGRAM_NAME),tr("Error while loading file"),QMessageBox::Ok,QMessageBox::Ok);
+        QMessageBox::critical(this,tr(PROGRAM_NAME),tr("Error while loading file\n") + fileName + tr("\nOpenBabel not available or file corrupt"),QMessageBox::Ok,QMessageBox::Ok);
       }
     }
   }
-  if (openBabelNeeded)
-    QMessageBox::critical(this, tr(PROGRAM_NAME), tr("Some files could not be loaded because support for OpenBabel is missing.")) ;
 
   setCurrentFile("");
   if (loadedFiles.count() == 1) setCurrentFile(loadedFiles.first());
 
-  // Connecting signals and slots
   connect(m_scene->stack(),SIGNAL(cleanChanged(bool)), this, SLOT(documentWasModified( )));
-//   connect(m_scene,SIGNAL(newMolecule(QPointF,QString)),this, SLOT(newMolecule(QPointF,QString)));
   connect(m_scene,SIGNAL(editModeChange(int)),this,SLOT(updateEditMode(int)));
 
   m_molView->setAcceptDrops(true);
@@ -219,83 +187,55 @@ void MainWindow::newFile()
 
 void MainWindow::open()
 {
-  if (maybeSave())
-  {
-    QStringList readableFormats;
-    readableFormats << MSK_DEFAULT_FORMAT;
-    PREPARELOADFILE
-    if (inputFormats) readableFormats << inputFormats();
-    QString fileName = QFileDialog::getOpenFileName(this,tr("Open - Molsketch"), m_lastAccessedPath,
-      readableFormats.join(";;"));
-    if (fileName.isEmpty()) return;
+  if (!maybeSave()) return;
 
-    // Save accessed path
-    m_lastAccessedPath = QFileInfo(fileName).path();
+  QStringList readableFormats;
+  readableFormats << MSK_DEFAULT_FORMAT << obabelLoader->inputFormats();
+  QString fileName = QFileDialog::getOpenFileName(this,tr("Open - Molsketch"), settings->lastPath(),
+                                                  readableFormats.join(";;"));
+  if (fileName.isEmpty()) return;
 
-    // Start a new document
-    m_scene->clear();
+  settings->setLastPath(QFileInfo(fileName).path());
+  m_scene->clear();
 
-    Molecule* mol = 0;
-    if (fileName.endsWith(".msk"))
-    {
-      readMskFile(fileName, m_scene);
-      return;
-    }
-    else if (loadFilePtr)
-    {
-      mol = loadFilePtr(fileName);
-    }
-    else
-    {
-      QMessageBox::critical(this, tr(PROGRAM_NAME), tr("Could not open file. OpenBabel support is missing")) ;
-    }
-
-    if (mol)
-    {
-      // Add molecule to scene
-      if (mol->canSplit())
-      {
-        QList<Molecule*> molList = mol->split();
-        foreach(Molecule* mol,molList)
-          m_scene->addItem(mol);
-      }
-      else
-      {
-        m_scene->addItem(mol);
-      }
-
-      // Updating view
-      setCurrentFile(fileName);
-//               setWindowModified(false);
-    }
-    else
-    {
-      // Display error message if load fails
-      QMessageBox::critical(this,tr(PROGRAM_NAME),tr("Error while loading file"),QMessageBox::Ok,QMessageBox::Ok);
-    }
+  if (fileName.endsWith(".msk")) {
+    readMskFile(fileName, m_scene);
+    setCurrentFile(fileName);
+    return;
   }
+
+  Molecule* mol = obabelLoader->loadFile(fileName);
+  if (!mol) {
+    qCritical() << "Could not read file using OpenBabel. Filename: " + fileName;
+    QMessageBox::critical(this, tr(PROGRAM_NAME), tr("Could not open file using OpenBabel.")) ;
+    return;
+  }
+
+  // Add molecule to scene
+  QList<Molecule*> molList = mol->split();
+  foreach(Molecule* mol,molList)
+    m_scene->addItem(mol);
+
+  setCurrentFile(fileName);
 }
 
 bool MainWindow::save()
 {
   if (m_curFile.isEmpty())
       return saveAs();
-  if (m_curFile.endsWith(".msk"))
-  {
-      writeMskFile(m_curFile, m_scene);
+  if (m_curFile.endsWith(".msk")) {
+      if (!writeMskFile(m_curFile, m_scene)) {
+        QMessageBox::warning(this, tr("Saving file failed!"), tr("Could not save file ") + m_curFile);
+        return false;
+      }
       m_scene->stack()->setClean() ;
       return true ;
   }
-  PREPARESAVEFILE
-  if (!saveFilePtr)
-  {
-    QMessageBox::critical(this, tr(PROGRAM_NAME),
-                          tr("Saving failed. OpenBabel support unavailable.")) ;
+  bool threeD = QMessageBox::question(this, tr("Save as 3D?"), tr("Save as three dimensional coordinates?")) == QMessageBox::Yes;
+  if (!obabelLoader->saveFile(m_curFile, m_scene, threeD)) {
+    QMessageBox::warning(0, tr("Could not save"), tr("Could not save file using OpenBabel: ") + m_curFile);
     return false ;
   }
-  bool threeD = QMessageBox::question(this, tr("Save as 3D?"), tr("Save as three dimensional coordinates?")) == QMessageBox::Yes;
-  if (!saveFilePtr(m_curFile, m_scene, threeD ? 3 : 2))
-    return false ;
   m_scene->stack()->setClean();
   return true ;
 }
@@ -307,27 +247,22 @@ bool MainWindow::autoSave()
   // Do nothing if there is nothing to save
   if(m_scene->stack()->isClean()) return true;
 
+  // TODO extract file infos into separate class (i.e. last path, 3d choice, file name)
   // Else construct the filename
   if (!fileName.exists())
     fileName = QDir::homePath() + tr("/untitled.backup.msk");
   else
     fileName = QFileInfo(m_curFile).path() + QFileInfo(m_curFile).baseName() +  ".backup." + QFileInfo(m_curFile).completeSuffix();
   // And save the file
-  if (fileName.suffix() == "msk")
-    writeMskFile(fileName.absoluteFilePath(), m_scene) ;
-  else
-  {
-    PREPARESAVEFILE
-    if (!saveFilePtr)
-    {
+  if (fileName.suffix() == "msk") {
+    bool saved = writeMskFile(fileName.absoluteFilePath(), m_scene);
+    statusBar()->showMessage(saved ? tr("Document autosaved") : tr("Autosave failed!"));
+    return saved;
+  } else {
+    bool threeD = QMessageBox::question(this, tr("Save as 3D?"), tr("Save as three dimensional coordinates?")) == QMessageBox::Yes; // TODO not in autosave!
+    if (!obabelLoader->saveFile(fileName.absoluteFilePath(), m_scene, threeD)) {
       statusBar()->showMessage(tr("Autosave failed! OpenBabel unavailable."), 10000);
       return false ;
-    }
-    bool threeD = QMessageBox::question(this, tr("Save as 3D?"), tr("Save as three dimensional coordinates?")) == QMessageBox::Yes; // TODO not in autosave!
-    if (!saveFilePtr(fileName.absoluteFilePath(), m_scene, threeD ? 3 : 2))
-    {
-      statusBar()->showMessage(tr("Autosave failed!"), 10000);
-      return false;
     }
   }
   statusBar()->showMessage(tr("Document autosaved"), 10000);
@@ -338,18 +273,17 @@ bool MainWindow::saveAs()
 {
   // Get the filename to save under
   QString filter = MSK_DEFAULT_FORMAT;
-  PREPARESAVEFILE;
   QStringList supportedFormats;
-  supportedFormats << MSK_DEFAULT_FORMAT;
-  if (outputFormats) supportedFormats << outputFormats();
+  supportedFormats << MSK_DEFAULT_FORMAT << obabelLoader->outputFormats();
   QString fileName = QFileDialog::getSaveFileName(this,
                                                   tr("Save as - Molsketch"),
-                                                  m_lastAccessedPath, supportedFormats.join(";;"),
+                                                  settings->lastPath(),
+                                                  supportedFormats.join(";;"),
                                                   &filter);
   if (fileName.isEmpty()) return false;
 
   // Save accessed path
-  m_lastAccessedPath = QFileInfo(fileName).path();
+  settings->setLastPath(QFileInfo(fileName).path());
 
   // Finding the right extension
   if (QFileInfo(fileName).suffix().isEmpty())
@@ -362,22 +296,17 @@ bool MainWindow::saveAs()
   }
   qDebug() << "Trying to save as " << fileName << "\n";
 
-  if (fileName.endsWith(".msk"))
-  {
-    writeMskFile(fileName, m_scene);
+  if (fileName.endsWith(".msk")) {
+    if (!writeMskFile(fileName, m_scene)) {
+      QMessageBox::warning(0, tr("Saving file failed!"), tr("Could not save file ") + fileName);
+      return false;
+    }
     setCurrentFile(fileName);
     m_scene->stack()->setClean();
     return true ;
-  }
-  else
-  {
-    if (!saveFilePtr)
-    {
-      QMessageBox::critical(this, tr(PROGRAM_NAME), tr("OpenBabel support not available. Cannot save in this format.")) ;
-      return false ;
-    }
+  } else {
     bool threeD = QMessageBox::question(this, tr("Save as 3D?"), tr("Save as three dimensional coordinates?")) == QMessageBox::Yes;
-    if(saveFilePtr(fileName, m_scene, threeD ? 3: 2))
+    if(obabelLoader->saveFile(fileName, m_scene, threeD))
     {
       setCurrentFile(fileName);
       m_scene->stack()->setClean();
@@ -392,25 +321,17 @@ bool MainWindow::saveAs()
 
   bool MainWindow::importDoc()
   {
-    QLibrary obabeliface("obabeliface" QTVERSIONSUFFIX);
-    obabeliface.load() ;
-    callOsraFunctionPointer callOsraPtr = (callOsraFunctionPointer) obabeliface.resolve("call_osra") ;
-    if (!callOsraPtr)
-    {
-      QMessageBox::critical(this, tr("Import error"), tr("Could not import: OpenBabel support missing.")) ;
-      return false ;
-    }
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Import - molsKetch"), m_lastAccessedPath, tr(OSRA_GRAPHIC_FILE_FORMATS));
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Import - molsKetch"), settings->lastPath(), tr(OSRA_GRAPHIC_FILE_FORMATS));
 
     if (!fileName.isEmpty()) {
       // Save accessed path
-      m_lastAccessedPath = QFileInfo(fileName).path();
+      settings->setLastPath(QFileInfo(fileName).path());
 
       m_scene->clear();
       QProgressBar *pb = new QProgressBar(this);
       pb->setMinimum(0);
       pb->setMaximum(0);
-      Molecule* mol=callOsraPtr(fileName);
+      Molecule* mol = obabelLoader->callOsra(fileName);
       if (mol) {
         if (mol->canSplit()) {
           QList<Molecule*> molList = mol->split();
@@ -436,13 +357,13 @@ bool MainWindow::exportDoc()
 {
   // Getting the filename
   QString filter = GRAPHIC_DEFAULT_FORMAT;
-  QString fileName = QFileDialog::getSaveFileName(this,tr("Export - Molsketch"), m_lastAccessedPath,tr(GRAPHIC_FILE_FORMATS), &filter);
+  QString fileName = QFileDialog::getSaveFileName(this,tr("Export - Molsketch"), settings->lastPath(), tr(GRAPHIC_FILE_FORMATS), &filter);
 
   // Abort if filename is empty
   if (fileName.isEmpty()) return false;
 
   // Save accessed path
-  m_lastAccessedPath = QFileInfo(fileName).path();
+  settings->setLastPath(QFileInfo(fileName).path());
 
   // Finding the right extension
   if (QFileInfo(fileName).suffix().isEmpty())
@@ -455,7 +376,7 @@ bool MainWindow::exportDoc()
   }
   qDebug() << "Trying to export as " << fileName << "\n";
 
-  m_lastAccessedPath = QFileInfo(fileName).path();
+  settings->setLastPath(QFileInfo(fileName).path());
 
   // Try to export the file
   if (fileName.endsWith(".svg")) return Molsketch::saveToSVG(fileName, m_scene);
@@ -528,15 +449,9 @@ void MainWindow::assistant()
 #endif
 }
 
-QString readFileContent(const QString& absolutePath) {
-  QFile file(absolutePath);
-  file.open(QFile::ReadOnly);
-  return file.readAll();
-}
-
 void MainWindow::about()
 {
-  QString version(readFileContent(":/version")), versionNick(readFileContent(":/versionnick"));
+  QString version(settings->currentVersion().toString()), versionNick(settings->versionNick());
   QMessageBox::about(this, tr("About"),
                      tr("<H3>About Molsketch</H3>"
                         "<H4>Version: ") + version + " -- " + versionNick + tr("</H4>"
@@ -575,22 +490,22 @@ void MainWindow::updateEditMode(int mode)
 
 void MainWindow::createActions()
 {
-  newAct = new QAction(QIcon::fromTheme("document-new"), tr("&New"),this);
+  newAct = new QAction(QIcon::fromTheme("document-new", QIcon(":icons/document-new.svg")), tr("&New"),this);
   newAct->setShortcut(tr("Ctrl+N"));
   newAct->setStatusTip(tr("Create a new file"));
   connect(newAct, SIGNAL(triggered()), this, SLOT(newFile()));
 
-  openAct = new QAction(QIcon::fromTheme("document-open"),tr("&Open..."), this);
+  openAct = new QAction(QIcon::fromTheme("document-open", QIcon(":icons/document-open.svg")),tr("&Open..."), this);
   openAct->setShortcut(tr("Ctrl+O"));
   openAct->setStatusTip(tr("Open an existing file"));
   connect(openAct, SIGNAL(triggered()), this, SLOT(open()));
 
-  saveAct = new QAction(QIcon::fromTheme("document-save"), tr("&Save"), this);
+  saveAct = new QAction(QIcon::fromTheme("document-save", QIcon(":icons/document-save.svg")), tr("&Save"), this);
   saveAct->setShortcut(tr("Ctrl+S"));
   saveAct->setStatusTip(tr("Save the document to disk"));
   connect(saveAct, SIGNAL(triggered()), this, SLOT(save()));
 
-  saveAsAct = new QAction(QIcon::fromTheme("document-save-as"),tr("Save &As..."), this);
+  saveAsAct = new QAction(QIcon::fromTheme("document-save-as", QIcon(":icons/document-save-as.svg")),tr("Save &As..."), this);
   saveAsAct->setStatusTip(tr("Save the document under a new name"));
   connect(saveAsAct, SIGNAL(triggered()), this, SLOT(saveAs()));
 
@@ -601,50 +516,50 @@ void MainWindow::createActions()
   connect(m_autoSaveTimer, SIGNAL(timeout()), autoSaveAct, SIGNAL(triggered()));
 //   m_autoSaveTimer->start();
 
-  importAct = new QAction(QIcon::fromTheme("document-import"),tr("&Import..."), this);
+  importAct = new QAction(QIcon::fromTheme("document-import", QIcon(":icons/document-import.svg")),tr("&Import..."), this);
   importAct->setShortcut(tr("Ctrl+I"));
   importAct->setStatusTip(tr("Insert an existing molecule into the document"));
   connect(importAct, SIGNAL(triggered()), this, SLOT(importDoc()));
 
-  exportAct = new QAction(QIcon::fromTheme("document-export"),tr("&Export..."), this);
+  exportAct = new QAction(QIcon::fromTheme("document-export", QIcon(":icons/document-export.svg")),tr("&Export..."), this);
   exportAct->setShortcut(tr("Ctrl+E"));
   exportAct->setStatusTip(tr("Export the current document as a picture"));
   connect(exportAct, SIGNAL(triggered()), this, SLOT(exportDoc()));
 
-  printAct = new QAction(QIcon::fromTheme("document-print"),tr("&Print..."), this);
+  printAct = new QAction(QIcon::fromTheme("document-print", QIcon(":icons/document-print.svg")),tr("&Print..."), this);
   printAct->setShortcut(tr("Ctrl+P"));
   printAct->setStatusTip(tr("Print the current document"));
   connect(printAct, SIGNAL(triggered()), this, SLOT(print()));
 
-  exitAct = new QAction(QIcon::fromTheme("application-exit"),tr("E&xit"), this);
+  exitAct = new QAction(QIcon::fromTheme("application-exit", QIcon(":icons/application-exit.svg")),tr("E&xit"), this);
   exitAct->setShortcut(tr("Ctrl+Q"));
   exitAct->setStatusTip(tr("Exit the application"));
   connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
 
   // Edit actions
   undoAct = m_scene->stack()->createUndoAction(this);
-  undoAct->setIcon(QIcon::fromTheme("edit-undo"));
+  undoAct->setIcon(QIcon::fromTheme("edit-undo", QIcon(":icons/edit-undo.svg")));
   undoAct->setShortcut(tr("Ctrl+Z"));
   undoAct->setStatusTip(tr("Undo the last action"));
 
   redoAct = m_scene->stack()->createRedoAction(this);
-  redoAct->setIcon(QIcon::fromTheme("edit-redo"));
+  redoAct->setIcon(QIcon::fromTheme("edit-redo", QIcon(":icons/edit-redo.svg")));
   redoAct->setShortcut(tr("Ctrl+Shift+Z"));
   redoAct->setStatusTip(tr("Redo the last action"));
 
-  cutAct = new QAction(QIcon::fromTheme("edit-cut"), tr("Cu&t"), this);
+  cutAct = new QAction(QIcon::fromTheme("edit-cut", QIcon(":icons/edit-cut.svg")), tr("Cu&t"), this);
   cutAct->setShortcut(tr("Ctrl+X"));
   cutAct->setStatusTip(tr("Cut the current selection's contents to the "
                           "clipboard"));
   connect(cutAct, SIGNAL(triggered()), m_scene, SLOT(cut()));
 
-  copyAct = new QAction(QIcon::fromTheme("edit-copy"), tr("&Copy"), this);
+  copyAct = new QAction(QIcon::fromTheme("edit-copy", QIcon(":icons/edit-copy.svg")), tr("&Copy"), this);
   copyAct->setShortcut(tr("Ctrl+C"));
   copyAct->setStatusTip(tr("Copy the current selection's contents to the "
                            "clipboard"));
   connect(copyAct, SIGNAL(triggered()), m_scene, SLOT(copy()));
 
-  pasteAct = new QAction(QIcon::fromTheme("edit-paste"), tr("&Paste"), this);
+  pasteAct = new QAction(QIcon::fromTheme("edit-paste", QIcon(":icons/edit-paste.svg")), tr("&Paste"), this);
   pasteAct->setShortcut(tr("Ctrl+V"));
   pasteAct->setStatusTip(tr("Paste the clipboard's contents into the current "
                             "selection"));
@@ -655,7 +570,7 @@ void MainWindow::createActions()
   convertImageAct->setStatusTip(tr("Convert Image to Mol using OSRA"));
   connect(convertImageAct, SIGNAL(triggered()), m_scene, SLOT(convertImage()));
 
-  selectAllAct = new QAction(QIcon::fromTheme("edit-select-all"), tr("&Select all"),this);
+  selectAllAct = new QAction(QIcon::fromTheme("edit-select-all", QIcon(":icons/edit-select-all.svg")), tr("&Select all"),this);
   selectAllAct->setShortcut(tr("Ctrl+A"));
   selectAllAct->setStatusTip(tr("Selects all elements on the scene"));
   connect(selectAllAct, SIGNAL(triggered()), m_scene, SLOT(selectAll()));
@@ -665,34 +580,34 @@ void MainWindow::createActions()
   alignAct->setCheckable(true);
   connect(alignAct, SIGNAL(toggled(bool)), m_scene, SLOT(setGrid(bool)));
 
-  prefAct = new QAction(QIcon::fromTheme("preferences-system"),tr("Edit Pre&ferences..."),this);
+  prefAct = new QAction(QIcon::fromTheme("preferences-system", QIcon(":icons/preferences-system.svg")),tr("Edit Pre&ferences..."),this);
   prefAct->setShortcut(tr("Ctrl+F"));
   prefAct->setStatusTip(tr("Edit your preferences"));
   connect(prefAct, SIGNAL(triggered()), this, SLOT(editPreferences()));
 
   // Zoom actions
-  zoomInAct = new QAction(QIcon::fromTheme("zoom-in"),tr("Zoom &In"), this);
+  zoomInAct = new QAction(QIcon::fromTheme("zoom-in", QIcon(":icons/zoom-in.svg")),tr("Zoom &In"), this);
   zoomInAct->setShortcut(tr("Ctrl++"));
   zoomInAct->setStatusTip(tr("Zoom in on the canvas"));
   connect(zoomInAct, SIGNAL(triggered()), this, SLOT(zoomIn()));
 
-  zoomOutAct = new QAction(QIcon::fromTheme("zoom-out"),tr("Zoom &Out"), this);
+  zoomOutAct = new QAction(QIcon::fromTheme("zoom-out", QIcon(":icons/zoom-out.svg")),tr("Zoom &Out"), this);
   zoomOutAct->setShortcut(tr("Ctrl+-"));
   zoomOutAct->setStatusTip(tr("Zoom out on the canvas"));
   connect(zoomOutAct, SIGNAL(triggered()), this, SLOT(zoomOut()));
 
-  zoomResetAct = new QAction(QIcon::fromTheme("zoom-original"),tr("Zoom &Reset"), this);
+  zoomResetAct = new QAction(QIcon::fromTheme("zoom-original", QIcon(":icons/zoom-original.svg")),tr("Zoom &Reset"), this);
   zoomResetAct->setShortcut(tr("Ctrl+="));
   zoomResetAct->setStatusTip(tr("Reset the zoom level"));
   connect(zoomResetAct, SIGNAL(triggered()), this, SLOT(zoomReset()));
 
-  zoomFitAct = new QAction(QIcon::fromTheme("zoom-fit-best"),tr("Zoom &Fit"), this);
+  zoomFitAct = new QAction(QIcon::fromTheme("zoom-fit-best", QIcon(":icons/zoom-fit-best.svg")),tr("Zoom &Fit"), this);
   zoomFitAct->setShortcut(tr("Ctrl+*"));
   zoomFitAct->setStatusTip(tr("Fit to screen"));
   connect(zoomFitAct, SIGNAL(triggered()), this, SLOT(zoomFit()));
 
   // Help actions
-  helpContentsAct = new QAction(QIcon::fromTheme("help-contents"),tr("&Help Contents..."), this);
+  helpContentsAct = new QAction(QIcon::fromTheme("help-contents", QIcon(":icons/help-contents.svg")),tr("&Help Contents..."), this);
   helpContentsAct->setShortcut(tr("F1"));
   helpContentsAct->setStatusTip(tr("Show the application's help contents"));
   connect(helpContentsAct, SIGNAL(triggered()), this, SLOT(assistant()));
@@ -705,7 +620,7 @@ void MainWindow::createActions()
   youtubeChannelAction->setStatusTip(tr("Open the browser with the YouTube channel page"));
   connect(youtubeChannelAction, SIGNAL(triggered()), this, SLOT(goToYouTube()));
 
-  aboutAct = new QAction(QIcon::fromTheme("help-about"),tr("&About..."), this);
+  aboutAct = new QAction(QIcon::fromTheme("help-about", QIcon(":icons/help-about.svg")),tr("&About..."), this);
   aboutAct->setStatusTip(tr("Show the application's About box"));
   connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));
 
@@ -859,6 +774,17 @@ void MainWindow::createStatusBar()
   statusFont.setPixelSize(12);
   statusBar()->setFont(statusFont);
 #endif
+
+  Indicator *openBabelIndicator = new Indicator(tr("OpenBabel"), statusBar());
+  Indicator *inchiIndicator = new Indicator(tr("InChI"), statusBar());
+  connect(settings, SIGNAL(changedObabelIfacePath(QString)), obabelLoader, SLOT(reloadObabelIface(QString)));
+  connect(settings, SIGNAL(changeObabelFormatsPath(QString)), obabelLoader, SLOT(setObabelFormats(QString)));
+  connect(obabelLoader, SIGNAL(obabelIfaceAvailable(bool)), openBabelIndicator, SLOT(setMode(bool)));
+  connect(obabelLoader, SIGNAL(inchiAvailable(bool)), inchiIndicator, SLOT(setMode(bool)));
+  statusBar()->addPermanentWidget(openBabelIndicator);
+  statusBar()->addPermanentWidget(inchiIndicator);
+  obabelLoader->reloadObabelIface(settings->obabelIfacePath());
+  obabelLoader->setObabelFormats(settings->obabelFormatsPath());
 }
 
 void MainWindow::buildLibraries()
@@ -866,7 +792,7 @@ void MainWindow::buildLibraries()
   foreach(LibraryListWidget* library, toolBox->findChildren<LibraryListWidget*>())
     delete library;
 
-  foreach(const QString& folder, QSettings().value("libraries").toStringList())
+  foreach(const QString& folder, settings->getLibraries())
   {
     LibraryListWidget* library = new LibraryListWidget(folder, toolBox);
     toolBox->addItem(library, library->title());
@@ -886,7 +812,7 @@ void MainWindow::createToolBox()
   toolBoxDockContent->setLayout(layout);
   toolBox = new QToolBox;
   layout->addWidget(new HelpForEmptyToolBox(tr("Define libraries using <b>Edit > Edit Preferences... > Libraries</b>."), toolBox, toolBoxDockContent));
-  layout->addWidget(refreshLibraries = new QPushButton(QIcon::fromTheme("view-refresh"),""));
+  layout->addWidget(refreshLibraries = new QPushButton(QIcon::fromTheme("view-refresh", QIcon(":icons/view-refresh.svg")),""));
   layout->addWidget(toolBox);
   layout->setMargin(0);
   toolBoxDock->setWidget(toolBoxDockContent);
@@ -900,6 +826,12 @@ void MainWindow::createToolBox()
   buildLibraries();
 }
 
+void MainWindow::createWikiDock() {
+  wikidataDock = new WikiQueryWidget(obabelLoader, this);
+  wikidataDock->setObjectName("wikidata-query-widget");
+  addDockWidget(Qt::LeftDockWidgetArea, wikidataDock);
+}
+
 void MainWindow::createToolBarContextMenuOptions()
 {
   toolBarTextsAndIcons = new QActionGroup(this);
@@ -908,7 +840,7 @@ void MainWindow::createToolBarContextMenuOptions()
   toolBarTextsAndIcons->addAction(tr("Texts under icons"))->setData(Qt::ToolButtonTextUnderIcon);
   toolBarTextsAndIcons->addAction(tr("Texts besides icons"))->setData(Qt::ToolButtonTextBesideIcon);
   toolBarTextsAndIcons->addAction(tr("System default"))->setData(Qt::ToolButtonFollowStyle);
-  QMainWindow::setToolButtonStyle((Qt::ToolButtonStyle) QSettings().value("toolBarIconStyle").toInt());
+  QMainWindow::setToolButtonStyle(settings->getToolButtonStyle());
   for(QAction* action : toolBarTextsAndIcons->actions())
   {
     action->setCheckable(true);
@@ -920,7 +852,7 @@ void MainWindow::createToolBarContextMenuOptions()
 
 void MainWindow::createView()
 {
-  m_scene = new MolScene(this);
+  m_scene = new MolScene(settings, this);
   m_molView = new MolView(m_scene);
   setCentralWidget(m_molView);
 }
@@ -963,34 +895,16 @@ void MainWindow::initializeAssistant()
 
 void MainWindow::readSettings()
 {
-  // Reading the settings
-  QSettings settings;
-
-  // Setting the window position
-  QPoint pos = settings.value("pos",QPoint(100,100)).toPoint();
-  QSize size = settings.value("size",QSize(800,600)).toSize();
-  resize(size);
-  move(pos);
-
-  QByteArray state = settings.value("window-state", QByteArray("@ByteArray(\0\0\0\xff\0\0\0\0\xfd\0\0\0\x1\0\0\0\0\0\0\x1\xe\0\0\x3N\xfc\x2\0\0\0\x2\xfb\0\0\0$\0t\0o\0o\0l\0\x62\0o\0x\0-\0\x64\0o\0\x63\0k\0w\0i\0\x64\0g\0\x65\0t\x1\0\0\0x\0\0\x2\x65\0\0\0\xe8\0\xff\xff\xff\xfb\0\0\0$\0i\0n\0\x66\0o\0\x62\0o\0x\0-\0\x64\0o\0\x63\0k\0w\0i\0\x64\0g\0\x65\0t\x1\0\0\x2\xe3\0\0\0\xe3\0\0\0l\0\xff\xff\xff\0\0\x6l\0\0\x3N\0\0\0\x1\0\0\0\x4\0\0\0\x1\0\0\0\b\xfc\0\0\0\x2\0\0\0\x2\0\0\0\x3\0\0\0\x18\0\x66\0i\0l\0\x65\0-\0t\0o\0o\0l\0\x62\0\x61\0r\x1\0\0\0\0\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\x18\0\x65\0\x64\0i\0t\0-\0t\0o\0o\0l\0\x62\0\x61\0r\x1\0\0\x1\x33\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\x18\0z\0o\0o\0m\0-\0t\0o\0o\0l\0\x62\0\x61\0r\x1\0\0\x2s\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\x2\0\0\0\x4\0\0\0\b\0\x44\0r\0\x61\0w\x1\0\0\0\0\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\n\0R\0i\0n\0g\0s\x1\0\0\x2G\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\n\0T\0o\0o\0l\0s\x1\0\0\x3t\xff\xff\xff\xff\0\0\0\0\0\0\0\0\0\0\0\x10\0R\0\x65\0\x61\0\x63\0t\0i\0o\0n\x1\0\0\x4\x80\xff\xff\xff\xff\0\0\0\0\0\0\0\0)")).toByteArray();
-
-
-  restoreState(state);
-
-  // Load preferences
+  resize(settings->getWindowSize());
+  move(settings->getWindowPosition());
+  restoreState(settings->windowState());
   readPreferences();
 }
 
 void MainWindow::readPreferences()
 {
-  QSettings settings;
-  // Loading auto-save time
-  m_autoSaveTime = settings.value("auto-save-time", 300000).toInt();
-  m_autoSaveTimer->setInterval(m_autoSaveTime);
+  m_autoSaveTimer->setInterval(settings->autoSaveInterval());
   m_autoSaveTimer->start();
-
-  // Loading paths
-  m_lastAccessedPath = settings.value("last-save-path", QDir::homePath()).toString();
 
   // TODO fix this (protected in Qt4)
 #if QT_VERSION >= 0x050000
@@ -1007,22 +921,10 @@ void MainWindow::readPreferences()
 
 void MainWindow::writeSettings()
 {
-  // Saving the settings
-  QSettings settings;
-
-  // Saving the window position
-  settings.setValue("pos",pos());
-  settings.setValue("size",size());
-  settings.setValue("toolBarIconStyle", toolButtonStyle());
-
-  // Saving the state of the toolbars and dockwidgets
-  settings.setValue("window-state", saveState());
-
-  // TODO add scene default properties
-
-  // Saving paths
-  settings.setValue("last-save-path", m_lastAccessedPath);
-
+  settings->setWindowPosition(pos());
+  settings->setWindowSize(size());
+  settings->setToolButtonStyle(toolButtonStyle());
+  settings->setWindowState(saveState());
 }
 
 
@@ -1061,7 +963,7 @@ void MainWindow::setCurrentFile(const QString &fileName)
 void MainWindow::editPreferences( )
 {
   // Opens the settings dialog
-  SettingsDialog dialog;
+  SettingsDialog dialog(settings);
   connect(&dialog, SIGNAL(settingsChanged()), this, SLOT(readPreferences()));
   dialog.exec();
 }

@@ -4,4 +4,4 @@
 "Documentation destination dir";MSK_INSTALL_DOCS;/share/doc/molsketch;/doc
 "Libraries (64bit) destination dir";MSK_INSTALL_LIBS64;/lib64;/lib
 "Libraries (32bit) destination dir";MSK_INSTALL_LIBS;/lib;/lib
-"Include own icon set";INCLUDE_ICONS;false;false
+"Build OpenBabel interface";MSK_OBABELIFACE;true;true

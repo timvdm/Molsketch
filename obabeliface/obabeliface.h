@@ -1,6 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2014 by Hendrik Vennekate                               *
- *   HVennekate@gmx.de                                                  *
+ *   HVennekate@gmx.de                                                     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -17,7 +17,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-
 
 #ifndef OBABELIFACE_H
 #define OBABELIFACE_H
@@ -53,7 +52,23 @@ extern "C"
  */
     QString smiles(const Molecule*) ;
     typedef QString (*smilesFunctionPointer)(const Molecule*) ;
-    /**
+/**
+ * Generate molecule from SMILES string
+ */
+    Molecule* fromSmiles(const QString&);
+    typedef Molecule* (*fromSmilesFunctionPointer)(const QString&);
+/**
+ * Generate molecule from InChI string
+ */
+    Molecule* fromInChI(const QString&);
+    typedef Molecule* (*fromInChIFunctionPointer)(const QString&);
+
+ /**
+  * Check if InChI format is available
+  */
+    bool inChIAvailable();
+    typedef bool (*formatAvailablePointer)();
+/**
  * Load and save routines
  *
  * @author Harm van Eersel (modified by H. Vennekate)

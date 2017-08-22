@@ -1,6 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007 by Harm van Eersel                                 *
- *   devsciurus@xs4all.nl                                                  *
+ *   Copyright (C) 2017 by Hendrik Vennekate                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -17,46 +16,14 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#include "indicator.h"
 
-#ifndef STRINGIFY_H
-#define STRINGIFY_H
+Indicator::Indicator(const QString &text, QWidget *parent)
+  : QLabel("- " + text, parent)
+{
+}
 
-#include <QString>
-#include <QDataStream>
+void Indicator::setMode(bool on) {
+  setText((on ? "+ " : "- ") + text().mid(2));
+}
 
-#define READSTREAMABLE(STREAMABLE) \
-  QByteArray ba(QByteArray::fromBase64(data.toUtf8())); \
-  QDataStream in(&ba, QIODevice::ReadOnly); \
-  in >> STREAMABLE;
-
-namespace Molsketch {
-
-  template<class QDataStreamable>
-  QDataStreamable makeFromString(const QString& data)
-  {
-    QDataStreamable streamable;
-    READSTREAMABLE(streamable)
-    return streamable;
-  }
-
-  template<class QDataStreamable>
-  QString stringify(const QDataStreamable& streamable)
-  {
-    QByteArray ba;
-    QDataStream out(&ba, QIODevice::WriteOnly);
-    out << streamable;
-    out.setDevice(0);
-    return ba.toBase64();
-  }
-
-  template<class T>
-  QString stringify(const QList<T> list, QString (*transform)(const T&)) {
-    QStringList output;
-    for(T t : list) output << transform(t);
-    return "[" + output.join(", ") + "]";
-  }
-
-} // namespace
-
-
-#endif // STRINGIFY_H

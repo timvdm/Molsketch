@@ -1,6 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007 by Harm van Eersel                                 *
- *   devsciurus@xs4all.nl                                                  *
+ *   Copyright (C) 2017 Hendrik Vennekate                                  *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -17,46 +16,36 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#ifndef MOLSKETCH_LIBRARYMODEL_H
+#define MOLSKETCH_LIBRARYMODEL_H
 
-#ifndef STRINGIFY_H
-#define STRINGIFY_H
-
-#include <QString>
-#include <QDataStream>
-
-#define READSTREAMABLE(STREAMABLE) \
-  QByteArray ba(QByteArray::fromBase64(data.toUtf8())); \
-  QDataStream in(&ba, QIODevice::ReadOnly); \
-  in >> STREAMABLE;
+#include <QAbstractTableModel>
 
 namespace Molsketch {
+class Molecule;
+class MoleculeModelItem;
+class LibraryModelPrivate;
 
-  template<class QDataStreamable>
-  QDataStreamable makeFromString(const QString& data)
-  {
-    QDataStreamable streamable;
-    READSTREAMABLE(streamable)
-    return streamable;
-  }
+class LibraryModel : public QAbstractListModel
+{
+  Q_DECLARE_PRIVATE(LibraryModel)
+  QScopedPointer<LibraryModelPrivate> d_ptr;
+public:
+    explicit LibraryModel(QObject *parent = nullptr);
+    virtual ~LibraryModel() override;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+    QMimeData* mimeData(const QModelIndexList &indexes) const override;
+    /** Sets the molecules to be listed. Note that the model takes ownership. */
+    void setMolecules(QList<MoleculeModelItem *> molecules);
+    /** Adds the molecule to the model's list. Assumes ownership. */
+    void addMolecule(MoleculeModelItem *molecule);
+    QStringList mimeTypes() const override;
+    Qt::ItemFlags flags(const QModelIndex &index) const;
+    bool canFetchMore(const QModelIndex &parent) const;
+    void fetchMore(const QModelIndex &parent);
+};
 
-  template<class QDataStreamable>
-  QString stringify(const QDataStreamable& streamable)
-  {
-    QByteArray ba;
-    QDataStream out(&ba, QIODevice::WriteOnly);
-    out << streamable;
-    out.setDevice(0);
-    return ba.toBase64();
-  }
+} // namespace Molsketch
 
-  template<class T>
-  QString stringify(const QList<T> list, QString (*transform)(const T&)) {
-    QStringList output;
-    for(T t : list) output << transform(t);
-    return "[" + output.join(", ") + "]";
-  }
-
-} // namespace
-
-
-#endif // STRINGIFY_H
+#endif // MOLSKETCH_LIBRARYMODEL_H

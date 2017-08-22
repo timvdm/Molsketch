@@ -50,11 +50,15 @@
 #include <openbabel/data.h>
 #include <openbabel/obconversion.h>
 #include <openbabel/babelconfig.h>
+#include <openbabel/op.h>
+#include <openbabel/stereo/stereo.h>
 
 OpenBabel::OBElementTable eTable ;
 
 namespace Molsketch
 {
+  static const char INCHI_FOMRAT[] = "inchi";
+
   QString number2symbol( int number )
   {
     return eTable.GetSymbol(number);
@@ -154,24 +158,15 @@ namespace Molsketch
     return true;
   }
 
-  Molecule* loadFile(const QString &fileName)
-  {
-    // Creating and setting conversion classes
+  Molecule* fromOBMolecule(OpenBabel::OBMol& obmol) { // TODO convert title
     using namespace OpenBabel;
-    OBConversion conversion ;
-    conversion.SetInFormat(conversion.FormatFromExt(fileName.toStdString())) ;
-    OBMol obmol;
-
-    if (!conversion.ReadFile(&obmol, fileName.toStdString()))
-      return 0;
-
     // Create a new molecule
     Molecule* mol = new Molecule();
     mol->setPos(QPointF(0,0));
 
+    qDebug() << "Number of atoms" <<obmol.NumAtoms();
     QHash<OBAtom*, Atom*> atomHash ;
     // Add atoms one-by-ons
-    using OpenBabel::OBAtomIterator ;
     FOR_ATOMS_OF_MOL(obatom, obmol)
       atomHash[&(*obatom)] =
         mol->addAtom(Molsketch::number2symbol(obatom->GetAtomicNum()),
@@ -190,8 +185,21 @@ namespace Molsketch
       if (obbond->IsHash())
         bond->setType( Bond::Hash );
     }
-
     return mol;
+  }
+
+  Molecule* loadFile(const QString &fileName)
+  {
+    // Creating and setting conversion classes
+    using namespace OpenBabel;
+    OBConversion conversion ;
+    conversion.SetInFormat(conversion.FormatFromExt(fileName.toStdString())) ;
+    OBMol obmol;
+
+    if (!conversion.ReadFile(&obmol, fileName.toStdString()))
+      return 0;
+
+    return fromOBMolecule(obmol);
   }
 
   void getSymmetryClasses(const Molecule* molecule, std::vector<unsigned int>& symmetry_classes)
@@ -328,4 +336,70 @@ namespace Molsketch
     OpenBabel::OBConversion conversion; // TODO find out why this needs to be instantiated
     return getFormats(conversion.GetSupportedInputFormat());
   }
+
+  void SetWedgeAndHash(OpenBabel::OBMol& mol) {
+      using namespace OpenBabel;
+    // Remove any existing wedge and hash bonds
+    FOR_BONDS_OF_MOL(b, &mol)  {
+      b->UnsetWedge();
+      b->UnsetHash();
+    }
+
+    std::map<OBBond*, enum OBStereo::BondDirection> updown;
+    std::map<OBBond*, OBStereo::Ref> from;
+    std::map<OBBond*, OBStereo::Ref>::const_iterator from_cit;
+    TetStereoToWedgeHash(mol, updown, from);
+
+    for(from_cit=from.begin();from_cit!=from.end();++from_cit) {
+      OBBond* pbond = from_cit->first;
+      if(updown[pbond]==OBStereo::UpBond)
+        pbond->SetHash();
+      else if(updown[pbond]==OBStereo::DownBond)
+        pbond->SetWedge();
+      else if(updown[pbond]==OBStereo::UnknownDir)
+        pbond->SetWedgeOrHash();
+    }
+  }
+
+  bool isInputFormatAvailable(OpenBabel::OBConversion conv, const char* format) {
+    if (conv.SetInFormat(format)) return true;
+    qCritical("Could not find format: %s", format);
+    qInfo(("Available formats: " + outputFormats().join(", ")).toStdString().c_str());
+    return false;
+  }
+
+  Molecule *fromString(const QString &input, const char* format) {
+    OpenBabel::OBConversion conv ;
+    if (!conv.SetInFormat(format)) {
+      qCritical() << "Could not find format:" << format;
+      qInfo() << "Available formats:" << outputFormats().join(", ");
+      return 0;
+    }
+
+    OpenBabel::OBMol obmol;
+    if (!conv.ReadString(&obmol, input.toStdString()))
+      qCritical() << "Could not convert InChI:" << input; // TODO do we need error handling if false?
+    qDebug() << "Error messages:" << QString::fromStdString(OpenBabel::OBMessageHandler().GetMessageSummary());
+
+    OpenBabel::OBOp* gen2D = OpenBabel::OBOp::FindType("gen2D");
+    if (!gen2D || !gen2D->Do(&obmol))
+      qCritical("Could not find gen2D for coordinate generation from string-based molecule format");
+
+    SetWedgeAndHash(obmol);
+
+    return fromOBMolecule(obmol);
+  }
+
+  Molecule *fromSmiles(const QString &input) {
+    return fromString(input, "can");
+  }
+
+  Molecule *fromInChI(const QString &input) {
+    return fromString("InChI=" + input, INCHI_FOMRAT);
+  }
+
+  bool inChIAvailable() {
+    return isInputFormatAvailable(OpenBabel::OBConversion(), INCHI_FOMRAT);
+  }
+
 } // namespace

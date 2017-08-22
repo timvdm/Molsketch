@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2007 by Harm van Eersel                                 *
- *   devsciurus@xs4all.nl                                                  *
+ *   Copyright (C) 2017 by Hendrik Vennekate                               *
+ *   HVennekate@gmx.de                                                     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -17,46 +17,37 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#ifndef WIKIQUERYWIDGET_H
+#define WIKIQUERYWIDGET_H
 
-#ifndef STRINGIFY_H
-#define STRINGIFY_H
+#include <QDockWidget>
 
-#include <QString>
-#include <QDataStream>
+class QNetworkAccessManager;
+class QNetworkReply;
+class OBabelIfaceLoader;
 
-#define READSTREAMABLE(STREAMABLE) \
-  QByteArray ba(QByteArray::fromBase64(data.toUtf8())); \
-  QDataStream in(&ba, QIODevice::ReadOnly); \
-  in >> STREAMABLE;
+namespace Ui {
+class WikiQueryWidget;
+}
 
-namespace Molsketch {
+class WikiQueryWidget : public QDockWidget
+{
+    Q_OBJECT
 
-  template<class QDataStreamable>
-  QDataStreamable makeFromString(const QString& data)
-  {
-    QDataStreamable streamable;
-    READSTREAMABLE(streamable)
-    return streamable;
-  }
+public:
+    explicit WikiQueryWidget(OBabelIfaceLoader *loader, QWidget *parent = 0);
+    ~WikiQueryWidget();
 
-  template<class QDataStreamable>
-  QString stringify(const QDataStreamable& streamable)
-  {
-    QByteArray ba;
-    QDataStream out(&ba, QIODevice::WriteOnly);
-    out << streamable;
-    out.setDevice(0);
-    return ba.toBase64();
-  }
+private slots:
+  void on_searchButton_clicked();
+  void on_queryInput_textChanged(const QString &newText);
+  void processMoleculeQuery(QNetworkReply* reply);
 
-  template<class T>
-  QString stringify(const QList<T> list, QString (*transform)(const T&)) {
-    QStringList output;
-    for(T t : list) output << transform(t);
-    return "[" + output.join(", ") + "]";
-  }
+private:
+    Ui::WikiQueryWidget *ui;
+    QNetworkAccessManager *manager;
+    OBabelIfaceLoader *obloader;
+    void startMoleculeQuery(const QString &queryString);
+};
 
-} // namespace
-
-
-#endif // STRINGIFY_H
+#endif // WIKIQUERYWIDGET_H

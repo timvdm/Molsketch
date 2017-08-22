@@ -46,6 +46,8 @@ namespace Molsketch {
   class MolScene;
   class ElectronSystem; // under construction
 
+  QPixmap renderMolecule(const Molecule &molecule);
+
 /**
  * Represents a molecule on the scene. It can be created either as an empty molecule,
  * with a set of atoms and bonds or as a copy of another molecule.

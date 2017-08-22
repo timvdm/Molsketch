@@ -15,12 +15,11 @@
    <string>molsKetch - Preferences</string>
   </property>
   <property name="windowIcon">
-   <iconset theme="preferences-system">
-    <normaloff/>
-   </iconset>
+   <iconset theme="preferences-system" resource="oxygenicons.qrc">
+    <normaloff>:/icons/preferences-system.svg</normaloff>:/icons/preferences-system.svg</iconset>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout">
-   <item>
+  <layout class="QGridLayout" name="gridLayout_3">
+   <item row="0" column="0">
     <layout class="QVBoxLayout" name="settingsDialogLayout">
      <item>
       <layout class="QHBoxLayout" name="settingsInnerLayout">
@@ -64,9 +63,8 @@
            <string>General</string>
           </property>
           <property name="icon">
-           <iconset theme="preferences-system">
-            <normaloff/>
-           </iconset>
+           <iconset theme="preferences-system" resource="oxygenicons.qrc">
+            <normaloff>:/icons/preferences-system.svg</normaloff>:/icons/preferences-system.svg</iconset>
           </property>
          </item>
          <item>
@@ -74,9 +72,8 @@
            <string>Draw settings</string>
           </property>
           <property name="icon">
-           <iconset theme="draw-freehand">
-            <normaloff/>
-           </iconset>
+           <iconset theme="draw-freehand" resource="oxygenicons.qrc">
+            <normaloff>:/icons/draw-freehand.svg</normaloff>:/icons/draw-freehand.svg</iconset>
           </property>
          </item>
          <item>
@@ -84,9 +81,17 @@
            <string>Libraries</string>
           </property>
           <property name="icon">
-           <iconset theme="document-open">
-            <normaloff/>
-           </iconset>
+           <iconset theme="document-open" resource="oxygenicons.qrc">
+            <normaloff>:/icons/document-open.svg</normaloff>:/icons/document-open.svg</iconset>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>OpenBabel</string>
+          </property>
+          <property name="icon">
+           <iconset resource="molsketch.qrc">
+            <normaloff>:/images/openbabel.png</normaloff>:/images/openbabel.png</iconset>
           </property>
          </item>
         </widget>
@@ -94,7 +99,7 @@
        <item>
         <widget class="QStackedWidget" name="stackedWidget">
          <property name="currentIndex">
-          <number>0</number>
+          <number>3</number>
          </property>
          <widget class="QWidget" name="generalPage">
           <widget class="QGroupBox" name="groupBoxGeneral">
@@ -102,141 +107,135 @@
             <rect>
              <x>10</x>
              <y>10</y>
-             <width>411</width>
-             <height>391</height>
+             <width>461</width>
+             <height>361</height>
             </rect>
            </property>
            <property name="title">
             <string>General options</string>
            </property>
-           <widget class="QWidget" name="generalLayoutWidget">
-            <property name="geometry">
-             <rect>
-              <x>20</x>
-              <y>40</y>
-              <width>388</width>
-              <height>176</height>
-             </rect>
-            </property>
-            <layout class="QVBoxLayout" name="SaveLayout">
-             <item>
-              <layout class="QHBoxLayout" name="defaultFileTypeLayout">
-               <item>
-                <widget class="QLabel" name="labelDefaultFileType">
-                 <property name="text">
-                  <string>Default file type</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QComboBox" name="comboBoxFileType">
-                 <item>
+           <layout class="QGridLayout" name="gridLayout_2">
+            <item row="0" column="0">
+             <layout class="QVBoxLayout" name="SaveLayout">
+              <item>
+               <layout class="QHBoxLayout" name="defaultFileTypeLayout">
+                <item>
+                 <widget class="QLabel" name="labelDefaultFileType">
                   <property name="text">
-                   <string>MDL (*.mdl)</string>
+                   <string>Default file type</string>
                   </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Chemical Markup Language (*.cml)</string>
-                  </property>
-                 </item>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="defaultImageTypeLayout">
-               <item>
-                <widget class="QLabel" name="labelDefaultImageType">
-                 <property name="text">
-                  <string>Default image type</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QComboBox" name="comboBoxImageType">
-                 <item>
-                  <property name="text">
-                   <string>Scalable Vector Graphics (*.svg)</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Portable Network Graphics (*.png)</string>
-                  </property>
-                 </item>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="autoSaveIntervalLayout">
-               <item>
-                <widget class="QLabel" name="labelAutoSave">
-                 <property name="text">
-                  <string>Autosave each</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <spacer name="autoSaveIntervalSpacer">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>192</width>
-                   <height>25</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item>
-                <widget class="QSpinBox" name="spinBoxAutoSave">
-                 <property name="suffix">
-                  <string> min</string>
-                 </property>
-                 <property name="prefix">
-                  <string/>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_3">
-               <item>
-                <widget class="QLabel" name="label">
-                 <property name="text">
-                  <string>Use mouse wheel to...</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <layout class="QVBoxLayout" name="verticalLayout_2">
-                 <item>
-                  <widget class="QRadioButton" name="mouseWheelZoom">
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="comboBoxFileType">
+                  <item>
                    <property name="text">
-                    <string>zoom</string>
+                    <string>MDL (*.mdl)</string>
                    </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QRadioButton" name="mouseWheelCycleTools">
+                  </item>
+                  <item>
                    <property name="text">
-                    <string>cycle tools</string>
+                    <string>Chemical Markup Language (*.cml)</string>
                    </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-              </layout>
-             </item>
-            </layout>
-           </widget>
+                  </item>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="defaultImageTypeLayout">
+                <item>
+                 <widget class="QLabel" name="labelDefaultImageType">
+                  <property name="text">
+                   <string>Default image type</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="comboBoxImageType">
+                  <item>
+                   <property name="text">
+                    <string>Scalable Vector Graphics (*.svg)</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Portable Network Graphics (*.png)</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="autoSaveIntervalLayout">
+                <item>
+                 <widget class="QLabel" name="labelAutoSave">
+                  <property name="text">
+                   <string>Autosave each</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="autoSaveIntervalSpacer">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>192</width>
+                    <height>25</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="QSpinBox" name="spinBoxAutoSave">
+                  <property name="suffix">
+                   <string> min</string>
+                  </property>
+                  <property name="prefix">
+                   <string/>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_3">
+                <item>
+                 <widget class="QLabel" name="label">
+                  <property name="text">
+                   <string>Use mouse wheel to...</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <layout class="QVBoxLayout" name="verticalLayout_2">
+                  <item>
+                   <widget class="QRadioButton" name="mouseWheelZoom">
+                    <property name="text">
+                     <string>&amp;zoom</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QRadioButton" name="mouseWheelCycleTools">
+                    <property name="text">
+                     <string>c&amp;ycle tools</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </item>
+           </layout>
           </widget>
          </widget>
          <widget class="QWidget" name="drawingPage">
@@ -258,7 +257,16 @@
                 <bool>false</bool>
                </property>
                <layout class="QGridLayout">
-                <property name="margin">
+                <property name="leftMargin">
+                 <number>9</number>
+                </property>
+                <property name="topMargin">
+                 <number>9</number>
+                </property>
+                <property name="rightMargin">
+                 <number>9</number>
+                </property>
+                <property name="bottomMargin">
                  <number>9</number>
                 </property>
                 <property name="spacing">
@@ -488,8 +496,8 @@
             <rect>
              <x>10</x>
              <y>10</y>
-             <width>411</width>
-             <height>381</height>
+             <width>431</width>
+             <height>391</height>
             </rect>
            </property>
            <property name="title">
@@ -513,9 +521,8 @@
                   <string/>
                  </property>
                  <property name="icon">
-                  <iconset theme="list-add">
-                   <normaloff/>
-                  </iconset>
+                  <iconset theme="list-add" resource="oxygenicons.qrc">
+                   <normaloff>:/icons/list-add.svg</normaloff>:/icons/list-add.svg</iconset>
                  </property>
                 </widget>
                </item>
@@ -525,9 +532,8 @@
                   <string/>
                  </property>
                  <property name="icon">
-                  <iconset theme="list-remove">
-                   <normaloff/>
-                  </iconset>
+                  <iconset theme="list-remove" resource="oxygenicons.qrc">
+                   <normaloff>:/icons/list-remove.svg</normaloff>:/icons/list-remove.svg</iconset>
                  </property>
                 </widget>
                </item>
@@ -543,6 +549,120 @@
             </layout>
            </widget>
           </widget>
+         </widget>
+         <widget class="QWidget" name="openBabelPage">
+          <layout class="QGridLayout" name="gridLayout">
+           <item row="0" column="0">
+            <widget class="QGroupBox" name="libraryPathBox">
+             <property name="title">
+              <string>OpenBabel Library Path</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_4">
+              <item row="0" column="0">
+               <layout class="QVBoxLayout" name="verticalLayout_3">
+                <item>
+                 <widget class="QLabel" name="libraryExplanation">
+                  <property name="text">
+                   <string>If you have downloaded the auxiliary package from molsketch.sf.net,&lt;br&gt;please provide the path to the folder where you stored the libraries.</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout">
+                  <item>
+                   <widget class="QLineEdit" name="libraryPath">
+                    <property name="placeholderText">
+                     <string>Path to shared libraries</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QToolButton" name="libraryPathButton">
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="icon">
+                     <iconset theme="document-open" resource="oxygenicons.qrc">
+                      <normaloff>:/icons/document-open.svg</normaloff>:/icons/document-open.svg</iconset>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </item>
+              <item row="1" column="0">
+               <spacer name="verticalSpacer">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>40</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QGroupBox" name="obfPathBox">
+             <property name="title">
+              <string>OpenBabel Format File Path</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_5">
+              <item row="0" column="0">
+               <layout class="QVBoxLayout" name="verticalLayout_4">
+                <item>
+                 <widget class="QLabel" name="obfExplanation">
+                  <property name="text">
+                   <string>If you have downloaded the auxiliary package from molsketch.sf.net,&lt;br&gt;please provide the path to the folder where you stored the OBF files.</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_4">
+                  <item>
+                   <widget class="QLineEdit" name="obfPath">
+                    <property name="placeholderText">
+                     <string>Path to OBF files</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QToolButton" name="obfPathButton">
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="icon">
+                     <iconset theme="document-open" resource="oxygenicons.qrc">
+                      <normaloff>:/icons/document-open.svg</normaloff>:/icons/document-open.svg</iconset>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </item>
+              <item row="1" column="0">
+               <spacer name="verticalSpacer_2">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>40</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </widget>
        </item>
@@ -582,7 +702,10 @@
   <tabstop>addLibrary</tabstop>
   <tabstop>removeLibrary</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="molsketch.qrc"/>
+  <include location="oxygenicons.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>buttonBox</sender>

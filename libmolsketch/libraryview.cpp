@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2007 by Harm van Eersel                                 *
- *   devsciurus@xs4all.nl                                                  *
+ *   Copyright (C) 2017 by Hendrik Vennekate                               *
+ *   HVennekate@gmx.de                                                     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -17,46 +17,23 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#include "libraryview.h"
 
-#ifndef STRINGIFY_H
-#define STRINGIFY_H
-
-#include <QString>
-#include <QDataStream>
-
-#define READSTREAMABLE(STREAMABLE) \
-  QByteArray ba(QByteArray::fromBase64(data.toUtf8())); \
-  QDataStream in(&ba, QIODevice::ReadOnly); \
-  in >> STREAMABLE;
+#include <QPainter>
 
 namespace Molsketch {
 
-  template<class QDataStreamable>
-  QDataStreamable makeFromString(const QString& data)
-  {
-    QDataStreamable streamable;
-    READSTREAMABLE(streamable)
-    return streamable;
-  }
+LibraryView::LibraryView(QWidget *parent) : QListView(parent) {
+  setIconSize(QSize(64, 64)); // TODO configurable
+  setDragEnabled(true);
+}
 
-  template<class QDataStreamable>
-  QString stringify(const QDataStreamable& streamable)
-  {
-    QByteArray ba;
-    QDataStream out(&ba, QIODevice::WriteOnly);
-    out << streamable;
-    out.setDevice(0);
-    return ba.toBase64();
-  }
+void LibraryView::paintEvent(QPaintEvent *e)
+{
+  QListView::paintEvent(e);
+  if (model() && model()->rowCount() > 0) return;
+  QPainter p(viewport());
+  p.drawText(rect(), Qt::AlignCenter, tr("No molecules to show"));
+}
 
-  template<class T>
-  QString stringify(const QList<T> list, QString (*transform)(const T&)) {
-    QStringList output;
-    for(T t : list) output << transform(t);
-    return "[" + output.join(", ") + "]";
-  }
-
-} // namespace
-
-
-#endif // STRINGIFY_H
+} // namespace Molsketch
