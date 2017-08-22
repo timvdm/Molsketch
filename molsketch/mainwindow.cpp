@@ -112,7 +112,7 @@ MainWindow::MainWindow()
   readSettings();
 
   QStringList args = qApp->arguments();
-  args.removeFirst();
+  if (!args.empty()) args.removeFirst();
   QRegExp rx("^[^\\-]");
   QStringList loadedFiles;
 

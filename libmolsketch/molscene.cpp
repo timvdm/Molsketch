@@ -388,9 +388,11 @@ namespace Molsketch {
   {
     clearSelection();
     m_stack->clear();
-    delete d;
+    SceneSettings *settings = d->settings;
+    delete d; // TODO this seems a little extreme and dangerous!
     QGraphicsScene::clear();
     d = new privateData(this);
+    d->settings = settings;
   }
 
   QImage MolScene::renderMolToImage (Molecule *mol)
