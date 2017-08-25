@@ -161,6 +161,7 @@ namespace Molsketch {
 
   ringAction::~ringAction()
   {
+    // FIXME this seems to crash during tests...
     if(d->hintMoleculeItems.scene()) d->hintMoleculeItems.scene()->removeItem(&(d->hintMoleculeItems));
     delete d;
   }

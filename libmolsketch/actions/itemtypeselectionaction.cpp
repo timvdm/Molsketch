@@ -32,7 +32,8 @@ namespace Molsketch {
 
 ItemTypeSelectionAction::ItemTypeSelectionAction(MolScene *parent)
   : AbstractItemAction(parent){
-  setMinimumItemCount(1);
+  setMinimumItemCount(0);
+  setCheckable(false);
   setIcon(QIcon(":images/select-by-type.svg"));
   setWhatsThis(tr("Select items by type within the current selection or the entire document if nowthing is selected"));
   setToolTip(tr("Select by type"));
@@ -69,7 +70,6 @@ QList<QGraphicsItem *> ItemTypeSelectionAction::itemsByType(const QList<QGraphic
   QList<QGraphicsItem*> result;
   for (QGraphicsItem *item : items) {
     if (!item) continue;
-    qDebug() << "item type:" << item->type() << types;
     if (types.contains(item->type())) result << item;
     else result << itemsByType(item->childItems(), types);
   }
