@@ -23,6 +23,7 @@
 #include <QTimer>
 #include <molscene.h>
 #include <QPushButton>
+#include <QCheckBox>
 #include "mainwindow.h"
 #include "utilities.h"
 
@@ -62,7 +63,7 @@ class TypeSelectionAcceptanceTest : public CxxTest::TestSuite {
     void clickBondCheckBox(QWidget* typeDialog) {
       QWidget *bondCheckbox = typeDialog->findChild<QWidget*>("bonds");
       assertNotNull(bondCheckbox, "No bond checkbox found!");
-      QTest::mouseClick(bondCheckbox, Qt::LeftButton, Qt::NoModifier, QPoint(1,0)); // offset for QCheckBox
+      QTest::mouseClick(bondCheckbox, Qt::LeftButton, Qt::NoModifier, QPoint(1,1)); // offset for QCheckBox
     }
 
     QWidget* findOkButton(QWidget* typeDialog) {
@@ -110,4 +111,5 @@ public:
   }
 
   // TODO test for all actions: icon defined
+  // TODO test only types available within the current selection are available
 };
