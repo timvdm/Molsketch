@@ -19,6 +19,14 @@
 #include "itemtypeselectionaction.h"
 #include "ui_typelistdialog.h"
 #include <QDebug>
+#include <QGraphicsItem>
+#include <QGraphicsScene>
+#include <arrow.h>
+#include <atom.h>
+#include <bond.h>
+#include <frame.h>
+#include <molecule.h>
+#include <molscene.h>
 
 namespace Molsketch {
 
@@ -37,7 +45,44 @@ void ItemTypeSelectionAction::execute() {
   QDialog dialog;
   Ui::TypeListDialog ui;
   ui.setupUi(&dialog);
-  dialog.exec();
+  if (QDialog::Accepted != dialog.exec()) return; // TODO test
+
+  // TODO test this:
+  //  - all types unique
+  //  - type name matches name on checkbox (substring)
+  QList<int> selectedTypes;
+  if (ui.arrows->isChecked()) selectedTypes << Arrow::Type;
+  if (ui.atoms->isChecked()) selectedTypes << Atom::Type;
+  if (ui.bonds->isChecked()) selectedTypes << Bond::Type;
+  if (ui.frames->isChecked()) selectedTypes << Frame::Type;
+  if (ui.molecules->isChecked()) selectedTypes << Molecule::Type;
+
+  if (!scene()) return;
+  QList<QGraphicsItem*> items = scene()->selectedItems();
+  qDebug() << "selected items:" << items;
+  if (items.isEmpty()) items = scene()->items();
+  qDebug() << "relevant items:" << items;
+  selectItems(scene(), itemsByType(items, selectedTypes));
+}
+
+QList<QGraphicsItem *> ItemTypeSelectionAction::itemsByType(const QList<QGraphicsItem *>& items, const QList<int>& types) {
+  QList<QGraphicsItem*> result;
+  for (QGraphicsItem *item : items) {
+    if (!item) continue;
+    qDebug() << "item type:" << item->type() << types;
+    if (types.contains(item->type())) result << item;
+    else result << itemsByType(item->childItems(), types);
+  }
+  return result;
+}
+
+void ItemTypeSelectionAction::selectItems(QGraphicsScene *scene, const QList<QGraphicsItem *> &items) {
+  qInfo() << "setting new selection" << scene << items;
+  scene->clearSelection();
+  for(QGraphicsItem* item : items) {
+    if (!item) continue;
+    item->setSelected(true);
+  }
 }
 
 } // namespace Molsketch

@@ -25,7 +25,7 @@
 
 namespace Molsketch {
 
-  class grid : public QGraphicsItem
+  class grid : public QGraphicsItem // TODO this should really be done in QGraphicsScene::drawBackground
   {
   public:
     grid();

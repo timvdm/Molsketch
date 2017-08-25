@@ -21,6 +21,8 @@
 
 #include "abstractitemaction.h"
 
+class QGraphicsScene;
+
 namespace Molsketch {
 
 class ItemTypeSelectionAction : public AbstractItemAction
@@ -28,8 +30,9 @@ class ItemTypeSelectionAction : public AbstractItemAction
 public:
     ItemTypeSelectionAction(MolScene *parent);
     void execute();
+    static QList<QGraphicsItem*> itemsByType(const QList<QGraphicsItem *>& items, const QList<int>& types);
+    static void selectItems(QGraphicsScene* scene, const QList<QGraphicsItem*>& items);
 };
-
 } // namespace Molsketch
 
 #endif // MOLSKETCH_ITEMTYPESELECTIONACTION_H

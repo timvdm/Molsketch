@@ -43,7 +43,7 @@ namespace Molsketch {
   protected:
     void focusOutEvent(QFocusEvent* e);
   private:
-    Ui::MoleculePopup *ui;
+    ::Ui::MoleculePopup *ui;
     class privateData;
     privateData *d;
     void showEvent(QShowEvent* e);
