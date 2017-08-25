@@ -24,21 +24,32 @@
 #include <molscene.h>
 #include <QPushButton>
 #include <QCheckBox>
+#include <QToolButton>
 #include "mainwindow.h"
 #include "utilities.h"
 
 class TypeSelectionAcceptanceTest : public CxxTest::TestSuite {
   MainWindow *mainWindow;
 
-  void clickToolButton(QString toolbarName, QString actionName) {
+  QToolButton* findToolButton(QString toolbarName, QString actionName) {
     QToolBar *toolbar = mainWindow->findChild<QToolBar*>(toolbarName);
     assertNotNull(toolbar, "Need toolbar: " + toolbarName);
     QAction *typeSelectionAction = mainWindow->findChild<QAction*>(actionName);
     assertNotNull(typeSelectionAction, "Need action: " + actionName);
-    QWidget *actionButton = toolbar->widgetForAction(typeSelectionAction);
-    assertNotNull(actionButton, "No button available for action: " + actionName);
+    QWidget *actionWidget = toolbar->widgetForAction(typeSelectionAction);
+    assertNotNull(actionWidget, "No widget available for action: " + actionName);
+    QToolButton *actionButton = qobject_cast<QToolButton*>(actionWidget);
+    assertNotNull(actionButton, "Widget for action '" + actionName + "' is not a button.");
     TSM_ASSERT("Action button not enabled!", actionButton->isEnabled());
-    QTest::mouseClick(actionButton, Qt::LeftButton);
+    return actionButton;
+  }
+
+  void clickToolButton(QString toolbarName, QString actionName) {
+    QTest::mouseClick(findToolButton(toolbarName, actionName), Qt::LeftButton);
+  }
+
+  void assertToolButtonNotSelected(QString toolbarName, QString actionName) {
+    TS_ASSERT(!findToolButton(toolbarName, actionName)->isChecked())
   }
 
   void clickOnView() {
@@ -108,6 +119,18 @@ public:
     clickToolButton("modify-toolbar", "item-type-selection-action");
 
     assertOnlyBondsAreSelected();
+    assertToolButtonNotSelected("modify-toolbar", "item-type-selection-action");
+  }
+
+  void testSelectionFromUnselected() {
+    clickToolButton("drawing-toolbar", "ring-action");
+    clickOnView();
+
+    QTimer::singleShot(0, mainWindow, ActivateBondCheckBoxAndConfirmDialog());
+    clickToolButton("modify-toolbar", "item-type-selection-action");
+
+    assertOnlyBondsAreSelected();
+    assertToolButtonNotSelected("modify-toolbar", "item-type-selection-action");
   }
 
   // TODO test for all actions: icon defined
