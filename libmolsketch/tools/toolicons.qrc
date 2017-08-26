@@ -59,5 +59,6 @@
         <file>images/triple-asymmetric.svg</file>
         <file>images/flip-stereo.svg</file>
         <file>images/flip-bond.svg</file>
+        <file>images/select-by-type.svg</file>
     </qresource>
 </RCC>
