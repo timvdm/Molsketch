@@ -23,6 +23,7 @@ namespace Molsketch {
   struct BoundingBoxLinkerPrivate {
     Anchor origin;
     Anchor target;
+    QPointF offset;
   };
 
   BoundingBoxLinker::BoundingBoxLinker(Anchor originAnchor, Anchor ownAnchor, const QPointF &offset)
@@ -30,6 +31,7 @@ namespace Molsketch {
     Q_D(BoundingBoxLinker);
     d->origin = originAnchor;
     d->target = ownAnchor;
+    d->offset = offset;
   }
 
   BoundingBoxLinker::~BoundingBoxLinker() {}
@@ -47,7 +49,7 @@ namespace Molsketch {
     QPointF topLeftShift(reference.topLeft() - target.topLeft());
     qreal xShift = getXMultiplier(d->origin) * reference.width() - getXMultiplier(d->target) * target.width();
     qreal yShift = getYMultiplier(d->origin) * reference.height() - getYMultiplier(d->target) * target.height();
-    return topLeftShift + QPointF(xShift, yShift);
+    return topLeftShift + QPointF(xShift, yShift) + d->offset;
   }
 
 } // namespace Molsketch
