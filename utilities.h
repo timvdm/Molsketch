@@ -11,6 +11,8 @@ class QLineEdit;
 
 #define QS_ASSERT_EQUALS(VAL1,VAL2) {QString __comparison; QDebug __out(&__comparison); __out << VAL1; __comparison += "!= "; __out << VAL2; TSM_ASSERT_EQUALS(__comparison.toStdString().data(), VAL1, VAL2)}
 
+#define QSM_ASSERT_EQUALS(MESSAGE, VAL1, VAL2) TSM_ASSERT_EQUALS(MESSAGE.toStdString().data(), VAL1, VAL2)
+
 #define QS_ASSERT_ON_POINTER(CAST_TYPE, POINTER, METHOD, VALUE) {\
   TSM_ASSERT(#POINTER " is null", POINTER);\
   if (POINTER) {\
