@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2016 Hendrik Vennekate                                  *
+ *   Copyright (C) 2017 by Hendrik Vennekate                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -16,28 +16,39 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef LIBRARYLISTWIDGET_H
-#define LIBRARYLISTWIDGET_H
+#ifndef MOLSKETCH_BOUNDINGBOXLINKER_H
+#define MOLSKETCH_BOUNDINGBOXLINKER_H
 
-#include <QDir>
-#include <QListWidget>
+#include <QPointF>
+#include <QRectF>
+#include <QScopedPointer>
+#include <QtGlobal>
 
-class LibraryListWidget : public QListWidget // TODO replace with ordinary model
-{
-  Q_OBJECT
-public:
-  explicit LibraryListWidget(QString directory, QWidget *parent = 0);
-  QString title() const;
-public slots:
-  void refreshItems();
-protected:
-  QStringList mimeTypes() const;
-  QMimeData* mimeData(const QList<QListWidgetItem *> items) const;
-  void startDrag(Qt::DropActions supportedActions);
-private:
-  void setGuiConfiguration(const QString &directory);
-  QString Title;
-  QDir folder;
-};
+namespace Molsketch {
+  enum Anchor {
+    TopLeft = 0,
+    Top = 1,
+    TopRight = 2,
+    Left = 4,
+    BottomLeft = 8,
+    Bottom = 9,
+    Center = 5,
+    Right = 6,
+    BottomRight = 10
+  };
 
-#endif // LIBRARYLISTWIDGET_H
+  class BoundingBoxLinkerPrivate;
+
+  class BoundingBoxLinker
+  {
+    Q_DECLARE_PRIVATE(BoundingBoxLinker)
+    QScopedPointer<BoundingBoxLinkerPrivate> d_ptr;
+  public:
+    explicit BoundingBoxLinker(Anchor originAnchor = Center, Anchor ownAnchor = Center, const QPointF& offset = QPointF());
+    virtual ~BoundingBoxLinker();
+    QPointF getShift(const QRectF& reference, const QRectF& target) const;
+  };
+
+} // namespace Molsketch
+
+#endif // MOLSKETCH_BOUNDINGBOXLINKER_H

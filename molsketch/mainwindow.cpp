@@ -205,7 +205,7 @@ void MainWindow::open()
     return;
   }
 
-  Molecule* mol = obabelLoader->loadFile(fileName);
+  Molecule* mol = obabelLoader->loadFile(fileName); // TODO add coordinates if format does not supply them (e.g. InChI)
   if (!mol) {
     qCritical() << "Could not read file using OpenBabel. Filename: " + fileName;
     QMessageBox::critical(this, tr(PROGRAM_NAME), tr("Could not open file using OpenBabel.")) ;

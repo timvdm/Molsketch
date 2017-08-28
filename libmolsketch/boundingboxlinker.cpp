@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2016 Hendrik Vennekate                                  *
+ *   Copyright (C) 2017 by Hendrik Vennekate                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -16,28 +16,38 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef LIBRARYLISTWIDGET_H
-#define LIBRARYLISTWIDGET_H
+#include "boundingboxlinker.h"
 
-#include <QDir>
-#include <QListWidget>
+namespace Molsketch {
 
-class LibraryListWidget : public QListWidget // TODO replace with ordinary model
-{
-  Q_OBJECT
-public:
-  explicit LibraryListWidget(QString directory, QWidget *parent = 0);
-  QString title() const;
-public slots:
-  void refreshItems();
-protected:
-  QStringList mimeTypes() const;
-  QMimeData* mimeData(const QList<QListWidgetItem *> items) const;
-  void startDrag(Qt::DropActions supportedActions);
-private:
-  void setGuiConfiguration(const QString &directory);
-  QString Title;
-  QDir folder;
-};
+  struct BoundingBoxLinkerPrivate {
+    Anchor origin;
+    Anchor target;
+  };
 
-#endif // LIBRARYLISTWIDGET_H
+  BoundingBoxLinker::BoundingBoxLinker(Anchor originAnchor, Anchor ownAnchor, const QPointF &offset)
+    : d_ptr(new BoundingBoxLinkerPrivate) {
+    Q_D(BoundingBoxLinker);
+    d->origin = originAnchor;
+    d->target = ownAnchor;
+  }
+
+  BoundingBoxLinker::~BoundingBoxLinker() {}
+
+  qreal getXMultiplier(const Anchor& anchor) {
+    return (anchor & (1|2)) * 0.5;
+  }
+
+  qreal getYMultiplier(const Anchor& anchor) {
+    return (anchor & (4|8)) * 0.125;
+  }
+
+  QPointF BoundingBoxLinker::getShift(const QRectF &reference, const QRectF &target) const {
+    Q_D(const BoundingBoxLinker);
+    QPointF topLeftShift(reference.topLeft() - target.topLeft());
+    qreal xShift = getXMultiplier(d->origin) * reference.width() - getXMultiplier(d->target) * target.width();
+    qreal yShift = getYMultiplier(d->origin) * reference.height() - getYMultiplier(d->target) * target.height();
+    return topLeftShift + QPointF(xShift, yShift);
+  }
+
+} // namespace Molsketch

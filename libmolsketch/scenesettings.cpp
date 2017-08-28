@@ -32,6 +32,9 @@ namespace Molsketch {
   static const char BOND_WIDTH[] = "bond-width";
   static const char BOND_ANGLE[] = "bond-angle";
   static const char MOUSE_CYCLE_MODE[] = "mouse-cycle-mode";
+  static const char LONE_PAIR_LINE_WIDTH[] = "lone-pair-line-width";
+  static const char LONE_PAIR_LENGTH[] = "lone-pair-length";
+  static const char RADICAL_DIAMETER[] = "radical-diameter";
 
   class SceneSettingsPrivate {
     Q_DISABLE_COPY(SceneSettingsPrivate)
@@ -64,6 +67,9 @@ namespace Molsketch {
   REAL_PROPERTY(BondLength, BOND_LENGTH, 40)
   REAL_PROPERTY(BondWidth, BOND_WIDTH, 1)
   REAL_PROPERTY(BondAngle, BOND_ANGLE, 30)
+  REAL_PROPERTY(LonePairLineWidth, LONE_PAIR_LINE_WIDTH, 1)
+  REAL_PROPERTY(LonePairLength, LONE_PAIR_LENGTH, 7)
+  REAL_PROPERTY(RadicalDiameter, RADICAL_DIAMETER, 3)
 
   PROPERTY(MouseWheelMode, SceneSettings::MouseWheelMode, MOUSE_CYCLE_MODE)
 

@@ -48,6 +48,12 @@ namespace Molsketch {
     qreal getBondWidth() const;
     void setBondAngle(const qreal&);
     qreal getBondAngle() const;
+    void setLonePairLineWidth(const qreal&);
+    qreal getLonePairLineWidth() const;
+    void setLonePairLength(const qreal&);
+    qreal getLonePairLength() const;
+    void setRadicalDiameter(const qreal&);
+    qreal getRadicalDiameter() const;
 
     enum MouseWheelMode {
       Unset,
