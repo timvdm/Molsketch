@@ -25,6 +25,9 @@
 
 using namespace Molsketch;
 
+const QString BBLINKER_XML("<BBLinker originAnchor=\"TopLeft\" targetAnchor=\"TopRight\" xOffset=\"4.5\" yOffset=\"7.25\"/>");
+const BoundingBoxLinker SAMPLE_LINKER(Anchor::TopLeft, Anchor::TopRight, QPointF(4.5, 7.25));
+
 QString toString(const QPointF& point) {
   return "(" + QString::number(point.x()) + ", " + QString::number(point.y()) +")";
 }
@@ -47,7 +50,7 @@ class BoundingBoxLinkerUnitTest : public CxxTest::TestSuite {
                    Anchor referenceAnchor, Anchor subjectAnchor,
                    const QPointF& expected) {
     QPointF actual = getShift(reference, subject, referenceAnchor, subjectAnchor);
-    QString message = "Mismatch for reference anchor " + QString::number(referenceAnchor) + " and subject anchor " + QString::number(subjectAnchor) + ". Expected: " + toString(expected) + " Actual: " + toString(actual);
+    QString message = "Mismatch for reference anchor " + QString::number(convertAnchor(referenceAnchor)) + " and subject anchor " + QString::number(convertAnchor(subjectAnchor)) + ". Expected: " + toString(expected) + " Actual: " + toString(actual);
     QSM_ASSERT_EQUALS(message, actual, expected);
   }
 
@@ -55,11 +58,20 @@ class BoundingBoxLinkerUnitTest : public CxxTest::TestSuite {
                              Anchor referenceAnchor, Anchor subjectAnchor,
                              const QPointF& offset, const QPointF& expected) {
     QPointF actual = getShiftWithOffset(reference, subject, referenceAnchor, subjectAnchor, offset);
-    QString message = "Mismatch for reference anchor " + QString::number(referenceAnchor) + " and subject anchor " + QString::number(subjectAnchor) + " with offset " + toString(offset) + ". Expected: " + toString(expected) + " Actual: " + toString(actual);
+    QString message = "Mismatch for reference anchor " + QString::number(static_cast<char>(referenceAnchor)) + " and subject anchor " + QString::number(static_cast<char>(subjectAnchor)) + " with offset " + toString(offset) + ". Expected: " + toString(expected) + " Actual: " + toString(actual);
     QSM_ASSERT_EQUALS(message, actual, expected);
   }
 
   QVector<std::tuple<Anchor, Anchor, QPointF>> testCases() {
+    Anchor Center = Anchor::Center;
+    Anchor Left = Anchor::Left;
+    Anchor Right = Anchor::Right;
+    Anchor Top = Anchor::Top;
+    Anchor Bottom = Anchor::Bottom;
+    Anchor TopLeft = Anchor::TopLeft;
+    Anchor TopRight = Anchor::TopRight;
+    Anchor BottomLeft = Anchor::BottomLeft;
+    Anchor BottomRight = Anchor::BottomRight;
     return QVector<std::tuple<Anchor, Anchor, QPointF>>()
         << std::make_tuple(Center, Center, QPointF(1.625, 20.875))
         << std::make_tuple(Center, Top, QPointF(1.625, 22.875))
@@ -152,6 +164,19 @@ class BoundingBoxLinkerUnitTest : public CxxTest::TestSuite {
         << std::make_tuple(BottomRight, BottomRight, QPointF(10.125, 25.375));
   }
 
+  QVector<Anchor> allEnumValues() {
+    return QVector<Anchor>()
+        << Anchor::Center
+        << Anchor::Left
+        << Anchor::Right
+        << Anchor::Top
+        << Anchor::Bottom
+        << Anchor::TopLeft
+        << Anchor::TopRight
+        << Anchor::BottomLeft
+        << Anchor::BottomRight;
+  }
+
 public:
   void setUp() {
   }
@@ -172,6 +197,31 @@ public:
     QPointF offset(51.375, -10.375);
     for (auto testCase : testCases())
       assertShiftWithOffset(referenceBoundingBox, ownBoundingBox, std::get<0>(testCase), std::get<1>(testCase), offset, offset + std::get<2>(testCase));
+  }
+
+  void testAnchorStringConversion() {
+    for (Anchor anchor : allEnumValues())
+      QSM_ASSERT_EQUALS("String round trip conversion failed for: " + QString::number(convertAnchor(anchor)), anchorFromString(toString(anchor)), anchor);
+  }
+
+  void testAnchorStringConversionBadlyFormatted() {
+    QS_ASSERT_EQUALS(anchorFromString("   top Left"), Anchor::TopLeft);
+  }
+
+  void testXmlOutputOfLinker() {
+    QByteArray output;
+    QXmlStreamWriter writer(&output);
+    BoundingBoxLinker linker(Anchor::TopLeft, Anchor::TopRight, QPointF(4.5, 7.25));
+    SAMPLE_LINKER.writeXml(writer);
+    QS_ASSERT_EQUALS(BBLINKER_XML, output);
+  }
+
+  void testXmlInputOfLinker() {
+    QXmlStreamReader reader(BBLINKER_XML);
+    BoundingBoxLinker input;
+    reader.readNextStartElement();
+    input.readXml(reader);
+    QS_ASSERT_EQUALS(input, SAMPLE_LINKER);
   }
     // TODO random test: top - bottom = height of box
 };
