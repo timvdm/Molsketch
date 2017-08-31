@@ -19,13 +19,15 @@
 #ifndef MOLSKETCH_BOUNDINGBOXLINKER_H
 #define MOLSKETCH_BOUNDINGBOXLINKER_H
 
+#include "abstractxmlobject.h"
+
 #include <QPointF>
 #include <QRectF>
 #include <QScopedPointer>
 #include <QtGlobal>
 
-namespace Molsketch {
-  enum Anchor {
+namespace Molsketch { // TODO turn on warnings for switch'es
+  enum class Anchor : int {
     TopLeft = 0,
     Top = 1,
     TopRight = 2,
@@ -37,17 +39,30 @@ namespace Molsketch {
     BottomRight = 10
   };
 
+  int convertAnchor(const Anchor& anchor);
+  Anchor convertAnchor(const int& integer);
+  Anchor anchorFromString(QString input);
+  QString toString(const Anchor& anchor);
+  QDebug operator<<(QDebug debug, const Anchor& anchor);
+
   class BoundingBoxLinkerPrivate;
 
-  class BoundingBoxLinker
-  {
+  class BoundingBoxLinker : public abstractXmlObject {
     Q_DECLARE_PRIVATE(BoundingBoxLinker)
     QScopedPointer<BoundingBoxLinkerPrivate> d_ptr;
   public:
-    explicit BoundingBoxLinker(Anchor originAnchor = Center, Anchor ownAnchor = Center, const QPointF& offset = QPointF());
+    explicit BoundingBoxLinker(Anchor originAnchor = Anchor::Center, Anchor ownAnchor = Anchor::Center, const QPointF& offset = QPointF());
+    BoundingBoxLinker(const BoundingBoxLinker& other);
     virtual ~BoundingBoxLinker();
     QPointF getShift(const QRectF& reference, const QRectF& target) const;
+    QString xmlName() const override;
+    QXmlStreamAttributes xmlAttributes() const override;
+    void readAttributes(const QXmlStreamAttributes& attributes) override;
+    bool operator==(const BoundingBoxLinker& other) const;
+    friend QDebug operator<<(QDebug debug, const BoundingBoxLinker& linker);
   };
+
+  QDebug operator<<(QDebug debug, const BoundingBoxLinker& linker);
 
 } // namespace Molsketch
 
