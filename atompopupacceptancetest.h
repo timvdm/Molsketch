@@ -27,6 +27,8 @@
 #include <molscene.h>
 #include <commands.h>
 #include <molview.h>
+#include <QCheckBox>
+#include <radicalelectron.h>
 #include <cxxtest/TestSuite.h>
 #include "utilities.h"
 
@@ -159,6 +161,29 @@ public:
     QVector<QPointF> expectedCoordinates = {QPointF(10,20)};
     QS_ASSERT_EQUALS(atom->coordinates(), expectedCoordinates);
     QS_ASSERT_EQUALS(coordinateTable->model()->getCoordinates(), expectedCoordinates);
+  }
+
+  void testRadicalSelection() {
+    popup->connectAtom(atom);
+    clickCheckBox(assertNotNull(popup->findChild<QCheckBox*>("topLeftRadical")));
+    TS_ASSERT_EQUALS(atom->childItems().size(), 1); // TODO make this a hard requirement (throw if fails)
+    assertNotNull(dynamic_cast<RadicalElectron*>(atom->childItems().first()));
+    QS_ASSERT_EQUALS(atom->childItems().first()->boundingRect().bottomRight(), atom->boundingRect().topLeft());
+    TS_ASSERT_EQUALS(scene->stack()->count(), 1);
+    QS_ASSERT_EQUALS(scene->stack()->undoText(), "Change radical electrons");
+    qDebug() << (atom->childItems().first()->boundingRect()& atom->boundingRect());
+  }
+
+  void testRadicalConfigurationTransferredToGui() {
+
+  }
+
+  void testChangingRadicalWorks() {
+
+  }
+
+  void testRemovingRadicalWorks() {
+
   }
 
 // TODO when opening edit mode, selection is lost

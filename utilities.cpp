@@ -47,12 +47,13 @@ void enterTextIntoInputWidget(QLineEdit *editor, const QString& text, int positi
   QTest::keyClicks(editor, text);
 }
 
-void assertNotNull(void *pointer, QString message) {
-  TSM_ASSERT_DIFFERS(message.toStdString().data(), pointer, nullptr);
-  if (!pointer) throw nullptr;
-}
+
 
 void assertTrue(bool input, QString message) {
   TSM_ASSERT(message.toStdString().data(), input);
   if (!input) throw nullptr;
+}
+
+void clickCheckBox(QCheckBox *checkBox) {
+  QTest::mouseClick((QWidget*) checkBox, Qt::LeftButton, Qt::NoModifier, QPoint(3,3)); // offset for QCheckBox
 }

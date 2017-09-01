@@ -32,14 +32,10 @@ class TypeSelectionAcceptanceTest : public CxxTest::TestSuite {
   MainWindow *mainWindow;
 
   QToolButton* findToolButton(QString toolbarName, QString actionName) {
-    QToolBar *toolbar = mainWindow->findChild<QToolBar*>(toolbarName);
-    assertNotNull(toolbar, "Need toolbar: " + toolbarName);
-    QAction *typeSelectionAction = mainWindow->findChild<QAction*>(actionName);
-    assertNotNull(typeSelectionAction, "Need action: " + actionName);
-    QWidget *actionWidget = toolbar->widgetForAction(typeSelectionAction);
-    assertNotNull(actionWidget, "No widget available for action: " + actionName);
-    QToolButton *actionButton = qobject_cast<QToolButton*>(actionWidget);
-    assertNotNull(actionButton, "Widget for action '" + actionName + "' is not a button.");
+    QToolBar *toolbar = assertNotNull(mainWindow->findChild<QToolBar*>(toolbarName), "Need toolbar: " + toolbarName);
+    QAction *typeSelectionAction = assertNotNull(mainWindow->findChild<QAction*>(actionName), "Need action: " + actionName); // TODO write assertion on widget
+    QWidget *actionWidget = assertNotNull(toolbar->widgetForAction(typeSelectionAction), "No widget available for action: " + actionName);
+    QToolButton *actionButton = assertNotNull(qobject_cast<QToolButton*>(actionWidget), "Widget for action '" + actionName + "' is not a button.");
     TSM_ASSERT("Action button not enabled!", actionButton->isEnabled());
     return actionButton;
   }
@@ -66,15 +62,11 @@ class TypeSelectionAcceptanceTest : public CxxTest::TestSuite {
 
   class ActivateBondCheckBoxAndConfirmDialog {
     QWidget* findDialog() {
-      QWidget* typeDialog = qApp->activeModalWidget();
-      assertNotNull(typeDialog, "No type dialog was opened!");
-      return typeDialog;
+      return assertNotNull(qApp->activeModalWidget(), "No type dialog was opened!");
     }
 
     void clickBondCheckBox(QWidget* typeDialog) {
-      QWidget *bondCheckbox = typeDialog->findChild<QWidget*>("bonds");
-      assertNotNull(bondCheckbox, "No bond checkbox found!");
-      QTest::mouseClick(bondCheckbox, Qt::LeftButton, Qt::NoModifier, QPoint(1,1)); // offset for QCheckBox
+      clickCheckBox(assertNotNull(typeDialog->findChild<QCheckBox*>("bonds"), "No bond checkbox found!"));
     }
 
     QWidget* findOkButton(QWidget* typeDialog) {
@@ -92,9 +84,7 @@ class TypeSelectionAcceptanceTest : public CxxTest::TestSuite {
   };
 
   void assertOnlyBondsAreSelected() {
-    Molsketch::MolScene *scene = mainWindow->findChild<Molsketch::MolScene*>();
-    assertNotNull(scene, "No MolScene found!");
-    QList<QGraphicsItem*> selection = scene->selectedItems();
+    QList<QGraphicsItem*> selection = assertNotNull(mainWindow->findChild<Molsketch::MolScene*>(), "No MolScene found!")->selectedItems();
     TSM_ASSERT_EQUALS("Selection should contain only three items for cyclopropane", selection.size(), 3);
     for(QGraphicsItem* selectedItem : selection)
       TSM_ASSERT_EQUALS("Item should be of 'bond' type!", selectedItem->type(), Molsketch::Bond::Type);
