@@ -94,7 +94,7 @@ AddBond::~AddBond()
     delete m_bond;
 }
 
-void AddBond::undo()
+void AddBond::undo() // TODO this seems wildly dangerous
 {
   m_mol->delBond(m_bond);
   Atom *begin = m_bond->beginAtom();
@@ -199,4 +199,28 @@ MoveItem *MoveItem::absolute(QGraphicsItem *item, const QPointF &newPos, const Q
 {
   if (!item) return nullptr;
   return new MoveItem(item, newPos, text);
+}
+
+ChildItemCommand::ChildItemCommand(QGraphicsItem *parent, QGraphicsItem *child, const QString &text)
+  : Command(parent, text),
+    child(child),
+    owning(child && child->parentItem() != parent)
+{}
+
+ChildItemCommand::~ChildItemCommand() {
+  if (owning) delete child;
+}
+
+void ChildItemCommand::undo() {
+  redo();
+}
+
+void ChildItemCommand::redo() {
+  qInfo() << "performing child item command. Owning: " << owning << "child:" << child << "parent:" << getItem();
+  if (!child || !getItem()) return;
+  if (!owning) {
+    child->setParentItem(nullptr);
+    if (child->scene()) child->scene()->removeItem(child);
+  } else child->setParentItem(getItem());
+  owning = !owning;
 }

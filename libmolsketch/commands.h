@@ -156,6 +156,18 @@ namespace Molsketch {
       Molecule* molecule;
     };
 
+    class ChildItemCommand : public Command<QGraphicsItem, ChildItemCommand> {
+    public:
+      ChildItemCommand(QGraphicsItem* parent, QGraphicsItem* child, const QString& text = "");
+      virtual ~ChildItemCommand();
+    protected:
+      void undo();
+      void redo();
+    private:
+      QGraphicsItem *child;
+      bool owning;
+    };
+
     class DelAtom : public QUndoCommand
     {
     public:
