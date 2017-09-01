@@ -36,6 +36,7 @@ public:
   ~ForTesting<T>() { -- instanceCounter; }
 };
 
+// Don't forget to add instanceCounter to instanceCounter.cpp
 #define CLASS_FOR_TESTING_WITH_FUNCTIONS(CLASSNAME, CONTENT) \
   class CLASSNAME##ForTesting : public CLASSNAME, public ForTesting<CLASSNAME>{ CONTENT };
 
