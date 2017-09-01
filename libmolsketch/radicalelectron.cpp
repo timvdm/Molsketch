@@ -55,4 +55,9 @@ void RadicalElectron::paint(QPainter *painter, const QStyleOptionGraphicsItem *o
   painter->drawEllipse(boundingRect());
 }
 
+BoundingBoxLinker RadicalElectron::linker() const {
+  Q_D(const RadicalElectron);
+  return d->linker;
+}
+
 } // namespace Molsketch

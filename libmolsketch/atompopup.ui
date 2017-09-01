@@ -17,7 +17,7 @@
    <item row="0" column="0">
     <widget class="QLabel" name="elementLabel">
      <property name="text">
-      <string>Symbol</string>
+      <string>S&amp;ymbol</string>
      </property>
      <property name="buddy">
       <cstring>element</cstring>
@@ -61,8 +61,85 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="0" colspan="2">
+   <item row="6" column="0" colspan="2">
     <widget class="Molsketch::CoordinateTableView" name="coordinates"/>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Radicals</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="1" column="0">
+      <widget class="QCheckBox" name="leftRadical">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QCheckBox" name="topLeftRadical">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="QCheckBox" name="topRightRadical">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QCheckBox" name="bottomLeftRadical">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="2">
+      <widget class="QCheckBox" name="bottomRightRadical">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QCheckBox" name="topRadical">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QCheckBox" name="bottomRadical">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QCheckBox" name="rightRadical">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLabel" name="radicalElementLabel">
+       <property name="text">
+        <string>E</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>
@@ -74,8 +151,73 @@
   </customwidget>
  </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>element</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>radicalElementLabel</receiver>
+   <slot>setText(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>170</x>
+     <y>24</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>145</x>
+     <y>157</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>topLeftRadical</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>AtomPopup</receiver>
+   <slot>updateRadicals()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>88</x>
+     <y>120</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>153</x>
+     <y>81</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>topRadical</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>AtomPopup</receiver>
+   <slot>updateRadicals()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>125</x>
+     <y>121</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>135</x>
+     <y>101</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>topRightRadical</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>AtomPopup</receiver>
+   <slot>updateRadicals()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>169</x>
+     <y>123</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>115</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
  <slots>
-  <slot>applyPropertiesToAtom()</slot>
+  <slot>updateRadicals()</slot>
  </slots>
 </ui>

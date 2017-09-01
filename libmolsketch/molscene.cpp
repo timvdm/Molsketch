@@ -265,6 +265,10 @@ namespace Molsketch {
     return d->settings->getAtomFont();
   }
 
+  qreal MolScene::getRadicalDiameter() const {
+    return d->settings->getRadicalDiameter();
+  }
+
   QString MolScene::mimeType()
   {
     return "molecule/molsketch";

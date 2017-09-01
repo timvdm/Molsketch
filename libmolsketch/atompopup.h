@@ -43,6 +43,7 @@ namespace Molsketch {
     void on_charge_valueChanged(int arg1);
     void on_hydrogens_valueChanged(int arg1);
     void onCoordinatesDatachanged();
+    void updateRadicals();
   private:
     Ui::AtomPopup *ui;
     class PrivateData;

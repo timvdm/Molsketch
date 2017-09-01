@@ -22,6 +22,7 @@
 #include "commands.h"
 #include "atom.h"
 #include "molscene.h"
+#include "radicalelectron.h"
 #include <QDebug>
 
 namespace Molsketch {
@@ -86,6 +87,12 @@ namespace Molsketch {
   {
     if (!d->atom) return;
     attemptToPushUndoCommand(Commands::MoveItem::absolute(d->atom, ui->coordinates->model()->getCoordinates().first()));
+  }
+
+  void AtomPopup::updateRadicals() {
+    if (!d->atom) return;
+    qreal diameter = scene() ? scene()->getRadicalDiameter() : 2; // TODO make default constant in settings class
+    attemptToPushUndoCommand(new Commands::ChildItemCommand(d->atom, new RadicalElectron(diameter, BoundingBoxLinker(Anchor::TopLeft, Anchor::BottomRight)), tr("Change radical electrons")));
   }
 
   void AtomPopup::propertiesChanged()
