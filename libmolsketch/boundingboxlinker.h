@@ -60,6 +60,7 @@ namespace Molsketch { // TODO turn on warnings for switch'es
     void readAttributes(const QXmlStreamAttributes& attributes) override;
     bool operator==(const BoundingBoxLinker& other) const;
     friend QDebug operator<<(QDebug debug, const BoundingBoxLinker& linker);
+    BoundingBoxLinker& operator=(const BoundingBoxLinker& other);
   };
 
   QDebug operator<<(QDebug debug, const BoundingBoxLinker& linker);

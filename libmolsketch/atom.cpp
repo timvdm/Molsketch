@@ -462,7 +462,7 @@ namespace Molsketch {
     if (this->isSelected()) {
       painter->save();
       painter->setPen(Qt::blue);
-      painter->drawRect(m_shape);
+      painter->drawRect(m_shape); // TODO draw rectangle around this and children rectangle to include electrons (possibly move this method to graphicsItem)
       painter->restore();
     }
 

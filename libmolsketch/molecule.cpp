@@ -555,7 +555,7 @@ namespace Molsketch {
         // draw a blue rectangle if this molecule is selected
         if(isSelected()) {
       painter->setPen(Qt::blue);
-      painter->drawRect(boundingRect());
+      painter->drawRect(boundingRect()); // TODO simply draw rectangle around own and children!
     } // TODO move this somewhere else, so that it can have a different Z value
 
     // draw the electron systems

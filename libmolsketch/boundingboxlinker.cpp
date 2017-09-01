@@ -93,6 +93,12 @@ namespace Molsketch {
     return *d == *otherD;
   }
 
+  BoundingBoxLinker &BoundingBoxLinker::operator=(const BoundingBoxLinker &other) {
+    Q_D(BoundingBoxLinker);
+    *d = *(other.d_ptr);
+    return *this;
+  }
+
   int convertAnchor(const Anchor &anchor) {
     return static_cast<char>(anchor);
   }
