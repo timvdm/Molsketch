@@ -42,5 +42,6 @@ public:
 #define CLASS_FOR_TESTING(CLASSNAME) CLASS_FOR_TESTING_WITH_FUNCTIONS(CLASSNAME,)
 
 void assertNotNull(void* pointer, QString message = "Should not be null");
+void assertTrue(bool input, QString message = "Assertion not fulfilled!");
 
 #endif // UTILITIES_H

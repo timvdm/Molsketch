@@ -51,3 +51,8 @@ void assertNotNull(void *pointer, QString message) {
   TSM_ASSERT_DIFFERS(message.toStdString().data(), pointer, nullptr);
   if (!pointer) throw nullptr;
 }
+
+void assertTrue(bool input, QString message) {
+  TSM_ASSERT(message.toStdString().data(), input);
+  if (!input) throw nullptr;
+}
