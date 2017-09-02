@@ -1,5 +1,6 @@
 #include "utilities.h"
 
+#include <QCheckBox>
 #include <QLineEdit>
 #include <QTableView>
 
@@ -55,5 +56,6 @@ void assertTrue(bool input, QString message) {
 }
 
 void clickCheckBox(QCheckBox *checkBox) {
-  QTest::mouseClick((QWidget*) checkBox, Qt::LeftButton, Qt::NoModifier, QPoint(3,3)); // offset for QCheckBox
+//  QTest::mouseClick((QWidget*) checkBox, Qt::LeftButton, Qt::NoModifier, QPoint(10,10)); // offset for QCheckBox
+  checkBox->toggle(); // TODO genuinely click on the checkbox
 }

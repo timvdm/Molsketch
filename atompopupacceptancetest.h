@@ -34,6 +34,8 @@
 
 using namespace Molsketch;
 
+const qreal RADICAL_DIAMETER = 2;
+
 class AtomPopupUnitTest : public CxxTest::TestSuite {
   Atom *atom;
   AtomPopup *popup;
@@ -42,13 +44,21 @@ class AtomPopupUnitTest : public CxxTest::TestSuite {
   QSpinBox *hydrogenBox;
   CoordinateTableView *coordinateTable;
   MolScene* scene;
-  static constexpr char* initialElement = "Ca";
+  static constexpr char const* initialElement = "Ca";
+  void resetAtom() {
+    scene->stack()->clear();
+    Molecule *molecule = (Molecule*) atom->parentItem();
+    molecule->delAtom(atom);
+    delete atom;
+    atom = new Atom;
+    molecule->addAtom(atom);
+  }
 public:
   void setUp() {
-    atom = new Atom;
     popup = new AtomPopup;
-    Molecule *molecule = new Molecule(QSet<Atom*>() << atom, QSet<Bond*>());
     scene = new MolScene();
+    atom = new Atom;
+    Molecule *molecule = new Molecule(QSet<Atom*>() << atom, QSet<Bond*>());
     scene->addItem(molecule);
 
     elementEditor = popup->findChild<QLineEdit*>("element");
@@ -163,27 +173,71 @@ public:
     QS_ASSERT_EQUALS(coordinateTable->model()->getCoordinates(), expectedCoordinates);
   }
 
-  void testRadicalSelection() {
+  void performRadicalAddition(QString checkBoxName) {
+    resetAtom();
     popup->connectAtom(atom);
-    clickCheckBox(assertNotNull(popup->findChild<QCheckBox*>("topLeftRadical")));
-    TS_ASSERT_EQUALS(atom->childItems().size(), 1); // TODO make this a hard requirement (throw if fails)
+    clickCheckBox(assertNotNull(popup->findChild<QCheckBox*>(checkBoxName)));
+    QSM_ASSERT_EQUALS("Check connections for " + checkBoxName, atom->childItems().size(), 1); // TODO make this a hard requirement (throw if fails)
     assertNotNull(dynamic_cast<RadicalElectron*>(atom->childItems().first()));
-    QS_ASSERT_EQUALS(atom->childItems().first()->boundingRect().bottomRight(), atom->boundingRect().topLeft());
-    TS_ASSERT_EQUALS(scene->stack()->count(), 1);
-    QS_ASSERT_EQUALS(scene->stack()->undoText(), "Change radical electrons");
-    qDebug() << (atom->childItems().first()->boundingRect()& atom->boundingRect());
+    QSM_ASSERT_EQUALS(checkBoxName, scene->stack()->count(), 1);
+    QSM_ASSERT_EQUALS(checkBoxName, scene->stack()->undoText(), "Change radical electrons");
+  }
+
+  void performRadicalAddition(QString checkBoxName, QPointF (QRectF::*atomCorner)() const, QPointF (QRectF::*radicalCorner)() const) {
+    performRadicalAddition(checkBoxName);
+    QSM_ASSERT_EQUALS(checkBoxName, (atom->childItems().first()->boundingRect().*radicalCorner)(), (atom->boundingRect().*atomCorner)());
+    clickCheckBox(assertNotNull(popup->findChild<QCheckBox*>(checkBoxName))); // TODO should not be necessary once atom properties are properly transfered.
+  }
+
+  void performRadicalAddition(QString checkBoxName, qreal (QRectF::*atomEdge)() const, qreal (QRectF::*radicalEdge)() const, qreal (QPointF::*centerCoordinate)() const) { // TODO QRectF asserts
+    performRadicalAddition(checkBoxName);
+    QSM_ASSERT_EQUALS(checkBoxName, (atom->childItems().first()->boundingRect().*radicalEdge)(), (atom->boundingRect().*atomEdge)());
+    QSM_ASSERT_EQUALS(checkBoxName, (atom->childItems().first()->boundingRect().center().*centerCoordinate)(), (atom->boundingRect().center().*centerCoordinate)());
+    clickCheckBox(assertNotNull(popup->findChild<QCheckBox*>(checkBoxName))); // TODO should not be necessary once atom properties are properly transfered.
+  }
+
+  void testRadicalSelection() {
+    performRadicalAddition("topLeftRadical", &QRectF::topLeft, &QRectF::bottomRight);
+    performRadicalAddition("topRightRadical", &QRectF::topRight, &QRectF::bottomLeft);
+    performRadicalAddition("bottomLeftRadical", &QRectF::bottomLeft, &QRectF::topRight);
+    performRadicalAddition("bottomRightRadical", &QRectF::bottomRight, &QRectF::topLeft);
+    performRadicalAddition("topRadical", &QRectF::top, &QRectF::bottom, &QPointF::x);
+    performRadicalAddition("bottomRadical", &QRectF::bottom, &QRectF::top, &QPointF::x);
+    performRadicalAddition("leftRadical", &QRectF::left, &QRectF::right, &QPointF::y);
+    performRadicalAddition("rightRadical", &QRectF::right, &QRectF::left, &QPointF::y);
+  } // TODO test multiple selection
+
+  void checkRadicalConfigurationTransferredToCheckBox(BoundingBoxLinker linker, const QString& checkBoxName) {
+    resetAtom();
+    (new RadicalElectron(RADICAL_DIAMETER, linker))->setParentItem(atom);
+    popup->connectAtom(atom);
+    for (QCheckBox* checkBox : popup->findChildren<QCheckBox*>())
+      TSM_ASSERT((checkBox->objectName() + " check state wrong for test of " + checkBoxName).toStdString().data(),
+                 checkBox->objectName() == checkBoxName ? checkBox->isChecked() : !checkBox->isChecked());
   }
 
   void testRadicalConfigurationTransferredToGui() {
-
+    checkRadicalConfigurationTransferredToCheckBox(BoundingBoxLinker::above, "topRadical");
+    checkRadicalConfigurationTransferredToCheckBox(BoundingBoxLinker::below, "bottomRadical");
+    checkRadicalConfigurationTransferredToCheckBox(BoundingBoxLinker::toLeft, "leftRadical");
+    checkRadicalConfigurationTransferredToCheckBox(BoundingBoxLinker::toRight, "rightRadical");
+    checkRadicalConfigurationTransferredToCheckBox(BoundingBoxLinker::upperLeft, "topLeftRadical");
+    checkRadicalConfigurationTransferredToCheckBox(BoundingBoxLinker::upperRight, "topRightRadical");
+    checkRadicalConfigurationTransferredToCheckBox(BoundingBoxLinker::lowerLeft, "bottomLeftRadical");
+    checkRadicalConfigurationTransferredToCheckBox(BoundingBoxLinker::lowerRight, "bottomRightRadical");
   }
 
   void testChangingRadicalWorks() {
+    resetAtom();;
+    (new RadicalElectron(RADICAL_DIAMETER, BoundingBoxLinker::above))->setParentItem(atom);
+    popup->connectAtom(atom);
 
-  }
-
-  void testRemovingRadicalWorks() {
-
+    clickCheckBox(assertNotNull(popup->findChild<QCheckBox*>("topRadical")));
+    TS_ASSERT(atom->childItems().isEmpty());
+    clickCheckBox(assertNotNull(popup->findChild<QCheckBox*>("topLeftRadical")));
+    TS_ASSERT_EQUALS(atom->childItems().size(), 1);
+    TS_ASSERT_DIFFERS(dynamic_cast<RadicalElectron*>(atom->childItems().first()), nullptr);
+    QS_ASSERT_EQUALS(dynamic_cast<RadicalElectron*>(atom->childItems().first())->boundingRect().bottomRight(), atom->boundingRect().topLeft());
   }
 
 // TODO when opening edit mode, selection is lost
