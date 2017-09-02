@@ -21,12 +21,15 @@
 
 #include "propertieswidget.h"
 
+class QCheckBox;
+
 namespace Ui {
   class AtomPopup;
 }
 
 namespace Molsketch {
   class Atom;
+  class BoundingBoxLinker;
 
   class AtomPopup : public PropertiesWidget
   {
@@ -49,6 +52,7 @@ namespace Molsketch {
     class PrivateData;
     PrivateData *d;
     void propertiesChanged();
+    void addRadical(const QCheckBox*, const BoundingBoxLinker& linker);
   };
 
 } // namespace

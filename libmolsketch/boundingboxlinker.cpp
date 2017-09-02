@@ -94,8 +94,7 @@ namespace Molsketch {
   }
 
   BoundingBoxLinker &BoundingBoxLinker::operator=(const BoundingBoxLinker &other) {
-    Q_D(BoundingBoxLinker);
-    *d = *(other.d_ptr);
+    if (&other != this) d_ptr.reset(new BoundingBoxLinkerPrivate(*(other.d_ptr)));
     return *this;
   }
 
@@ -162,5 +161,14 @@ namespace Molsketch {
                     << ")";
     return debug;
   }
+
+  const BoundingBoxLinker BoundingBoxLinker::above = BoundingBoxLinker(Anchor::Top, Anchor::Bottom);
+  const BoundingBoxLinker BoundingBoxLinker::below = BoundingBoxLinker(Anchor::Bottom, Anchor::Top);
+  const BoundingBoxLinker BoundingBoxLinker::toLeft = BoundingBoxLinker(Anchor::Left, Anchor::Right);
+  const BoundingBoxLinker BoundingBoxLinker::toRight = BoundingBoxLinker(Anchor::Right, Anchor::Left);
+  const BoundingBoxLinker BoundingBoxLinker::upperLeft = BoundingBoxLinker(Anchor::TopLeft, Anchor::BottomRight);
+  const BoundingBoxLinker BoundingBoxLinker::upperRight = BoundingBoxLinker(Anchor::TopRight, Anchor::BottomLeft);
+  const BoundingBoxLinker BoundingBoxLinker::lowerLeft = BoundingBoxLinker(Anchor::BottomLeft, Anchor::TopRight);
+  const BoundingBoxLinker BoundingBoxLinker::lowerRight = BoundingBoxLinker(Anchor::BottomRight, Anchor::TopLeft);
 
 } // namespace Molsketch

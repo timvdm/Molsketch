@@ -40,6 +40,8 @@ namespace Molsketch {
     MolScene *scene() const;
     QSet<graphicsItem*> items() const;
     bool blocked() const;
+    void attemptBeginMacro(const QString &text) const;
+    void attemptEndMacro() const;
   public:
     explicit PropertiesWidget(QWidget *parent = 0);
     virtual ~PropertiesWidget();

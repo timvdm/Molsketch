@@ -216,6 +216,86 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>bottomLeftRadical</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>AtomPopup</receiver>
+   <slot>updateRadicals()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>87</x>
+     <y>145</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>115</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>bottomRightRadical</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>AtomPopup</receiver>
+   <slot>updateRadicals()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>196</x>
+     <y>145</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>115</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>bottomRadical</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>AtomPopup</receiver>
+   <slot>updateRadicals()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>141</x>
+     <y>145</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>115</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>leftRadical</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>AtomPopup</receiver>
+   <slot>updateRadicals()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>87</x>
+     <y>124</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>115</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rightRadical</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>AtomPopup</receiver>
+   <slot>updateRadicals()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>196</x>
+     <y>124</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>115</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>updateRadicals()</slot>

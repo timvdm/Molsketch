@@ -32,12 +32,31 @@ namespace Molsketch {
     Atom* atom;
     Ui::AtomPopup* ui;
 
+    QVector<RadicalElectron*> radicalsFromAtom() {
+      QList<QGraphicsItem*> childItems = atom->childItems();
+      QVector<RadicalElectron*> radicals(childItems.size());
+      std::transform(childItems.begin(), childItems.end(), radicals.begin(), [](QGraphicsItem* item) { return dynamic_cast<RadicalElectron*>(item);});
+      radicals.removeAll(nullptr);
+      return radicals;
+    }
+
     void getFromAtom()
     {
       ui->element->setText(atom->element());
       ui->charge->setValue(atom->charge());
       ui->hydrogens->setValue(atom->numImplicitHydrogens());
       ui->coordinates->model()->setCoordinates(atom->coordinates());
+      QVector<RadicalElectron*> radicals = radicalsFromAtom();
+      QVector<BoundingBoxLinker> radicalPositions(radicals.size());
+      std::transform(radicals.begin(), radicals.end(), radicalPositions.begin(), [](const RadicalElectron* radical) {return radical->linker();});
+      ui->topLeftRadical->setChecked(radicalPositions.contains(BoundingBoxLinker::upperLeft)); // TODO link checkbox to linker
+      ui->topRightRadical->setChecked(radicalPositions.contains(BoundingBoxLinker::upperRight));
+      ui->bottomLeftRadical->setChecked(radicalPositions.contains(BoundingBoxLinker::lowerLeft));
+      ui->bottomRightRadical->setChecked(radicalPositions.contains(BoundingBoxLinker::lowerRight));
+      ui->topRadical->setChecked(radicalPositions.contains(BoundingBoxLinker::above));
+      ui->bottomRadical->setChecked(radicalPositions.contains(BoundingBoxLinker::below));
+      ui->leftRadical->setChecked(radicalPositions.contains(BoundingBoxLinker::toLeft));
+      ui->rightRadical->setChecked(radicalPositions.contains(BoundingBoxLinker::toRight));
     }
   };
 
@@ -91,13 +110,29 @@ namespace Molsketch {
 
   void AtomPopup::updateRadicals() {
     if (!d->atom) return;
-    qreal diameter = scene() ? scene()->getRadicalDiameter() : 2; // TODO make default constant in settings class
-    attemptToPushUndoCommand(new Commands::ChildItemCommand(d->atom, new RadicalElectron(diameter, BoundingBoxLinker(Anchor::TopLeft, Anchor::BottomRight)), tr("Change radical electrons")));
+    attemptBeginMacro(tr("Change radical electrons"));
+    for (RadicalElectron* child : d->radicalsFromAtom())
+      attemptToPushUndoCommand(new Commands::ChildItemCommand(d->atom, child));
+    addRadical(ui->topLeftRadical, BoundingBoxLinker::upperLeft);
+    addRadical(ui->topRightRadical, BoundingBoxLinker::upperRight);
+    addRadical(ui->bottomLeftRadical, BoundingBoxLinker::lowerLeft);
+    addRadical(ui->bottomRightRadical, BoundingBoxLinker::lowerRight);
+    addRadical(ui->topRadical, BoundingBoxLinker::above);
+    addRadical(ui->bottomRadical, BoundingBoxLinker::below);
+    addRadical(ui->leftRadical, BoundingBoxLinker::toLeft);
+    addRadical(ui->rightRadical, BoundingBoxLinker::toRight);
+    attemptEndMacro();
   }
 
   void AtomPopup::propertiesChanged()
   {
     if (!scene()) return; // TODO reset GUI
     d->getFromAtom();
+  }
+
+  void AtomPopup::addRadical(const QCheckBox* checkBox, const BoundingBoxLinker &linker) {
+    if (!checkBox->isChecked()) return;
+    qreal diameter = scene() ? scene()->getRadicalDiameter() : 2; // TODO make default constant in settings class
+    attemptToPushUndoCommand(new Commands::ChildItemCommand(d->atom, new RadicalElectron(diameter, linker)));
   }
 } // namespace
