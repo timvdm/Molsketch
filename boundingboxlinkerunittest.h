@@ -25,7 +25,7 @@
 
 using namespace Molsketch;
 
-const QString BBLINKER_XML("<BBLinker originAnchor=\"TopLeft\" targetAnchor=\"TopRight\" xOffset=\"4.5\" yOffset=\"7.25\"/>");
+const QString BBLINKER_XML("<bbLinker originAnchor=\"TopLeft\" targetAnchor=\"TopRight\" xOffset=\"4.5\" yOffset=\"7.25\"/>");
 const BoundingBoxLinker SAMPLE_LINKER(Anchor::TopLeft, Anchor::TopRight, QPointF(4.5, 7.25));
 
 QString toString(const QPointF& point) {
@@ -211,9 +211,8 @@ public:
   void testXmlOutputOfLinker() {
     QByteArray output;
     QXmlStreamWriter writer(&output);
-    BoundingBoxLinker linker(Anchor::TopLeft, Anchor::TopRight, QPointF(4.5, 7.25));
     SAMPLE_LINKER.writeXml(writer);
-    QS_ASSERT_EQUALS(BBLINKER_XML, output);
+    QS_ASSERT_EQUALS(output, BBLINKER_XML);
   }
 
   void testXmlInputOfLinker() {

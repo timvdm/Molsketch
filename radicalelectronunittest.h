@@ -24,7 +24,13 @@
 
 using namespace Molsketch;
 
+CLASS_FOR_TESTING_WITH_FUNCTIONS(RadicalElectron, \
+                                 public: \
+                                 explicit RadicalElectronForTesting(qreal diameter, BoundingBoxLinker linker = BoundingBoxLinker(Anchor::Top, Anchor::Bottom), const QColor& color = QColor()) \
+                                 : RadicalElectron(diameter, linker, color){})
 const int DIAMETER = 2;
+const QString RADICAL_ELECTRON_XML("<radicalElectron diameter=\"5\" colorR=\"255\" colorG=\"0\" colorB=\"0\"><bbLinker originAnchor=\"TopLeft\" targetAnchor=\"BottomRight\" xOffset=\"0\" yOffset=\"0\"/></radicalElectron>");
+const RadicalElectron SAMPLE_RADICAL_ELECTRON(5, BoundingBoxLinker::upperLeft, Qt::red);
 
 class RadicalElectronUnitTest : public CxxTest::TestSuite {
   MolScene *scene;
@@ -60,6 +66,7 @@ public:
 
   void tearDown() {
     delete scene;
+    TSM_ASSERT_EQUALS("Radical electrons should be deleted properly!", RadicalElectronForTesting::instanceCounter, 0);
   }
 
   void testNothingDrawnIfNoParentWasSet() {
@@ -90,9 +97,9 @@ public:
     QS_ASSERT_EQUALS(RadicalElectron(DIAMETER).boundingRect(), QRectF());
   }
 
-  void testAdaptationOfBoundingRectToParent() {
+  void testAdaptationOfBoundingRectToParentAndDeletionWithParent() {
     QPointF offset(2,3);
-    RadicalElectron *radical = new RadicalElectron(DIAMETER, BoundingBoxLinker(Anchor::TopRight, Anchor::BottomLeft, offset));
+    RadicalElectron *radical = new RadicalElectronForTesting(DIAMETER, BoundingBoxLinker(Anchor::TopRight, Anchor::BottomLeft, offset));
     radical->setParentItem(atom);
     QRectF boundingRect = radical->boundingRect();
     QS_ASSERT_EQUALS(boundingRect.bottomLeft(), atom->boundingRect().topRight() + offset);
@@ -100,5 +107,21 @@ public:
     QS_ASSERT_EQUALS(boundingRect.height(), DIAMETER);
   }
 
+  void testXmlOutput() {
+    QByteArray output; // TODO write standardized output test routine
+    QXmlStreamWriter writer(&output);
+    SAMPLE_RADICAL_ELECTRON.writeXml(writer);
+    QS_ASSERT_EQUALS(output, RADICAL_ELECTRON_XML);
+  }
+
+  void testXmlInput() {
+    QXmlStreamReader reader(RADICAL_ELECTRON_XML);
+    RadicalElectron radicalElectron(DIAMETER);
+    reader.readNextStartElement();
+    radicalElectron.readXml(reader);
+    QS_ASSERT_EQUALS(radicalElectron, SAMPLE_RADICAL_ELECTRON);
+  }
+
   // TODO check that radicals get deleted if atom gets deleted
+  // TODO test color!
 };
