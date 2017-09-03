@@ -131,6 +131,8 @@ namespace Molsketch {
 
     void readGraphicAttributes(const QXmlStreamAttributes &attributes) ;
     QXmlStreamAttributes graphicAttributes() const ;
+    QList<const XmlObjectInterface *> children() const override;
+    XmlObjectInterface* produceChild(const QString &name, const QString &type);
 
   private:
     void drawAtomLabel(QPainter *painter, const QString &lbl, int alignment);

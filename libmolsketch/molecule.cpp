@@ -887,7 +887,7 @@ namespace Molsketch {
   abstractXmlObject *Molecule::moleculeItemListClass<T>::produceChild(const QString &name, const QString &type)
   {
      Q_UNUSED(type)
-    if (name == "bond") return new Bond ;
+    if (name == "bond") return new Bond ; // TODO hum?
     return 0 ;
   }
 

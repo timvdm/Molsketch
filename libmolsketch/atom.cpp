@@ -29,6 +29,7 @@
 #include "atompopup.h"
 #include "bond.h"
 #include "molecule.h"
+#include "radicalelectron.h"
 
 #include "element.h"
 #include "molscene.h"
@@ -642,7 +643,7 @@ namespace Molsketch {
   QXmlStreamAttributes Atom::graphicAttributes() const
   {
     QXmlStreamAttributes attributes ;
-    attributes.append("id", molecule()->atomId(this)) ;
+    if (molecule()) attributes.append("id", molecule()->atomId(this)) ; // TODO is this really necessary?
     attributes.append("elementType", element()) ;
     attributes.append("hydrogenCount", QString::number(numImplicitHydrogens())) ;
     return attributes ;
@@ -910,4 +911,24 @@ namespace Molsketch {
     return nbrs;
   }
 
+  QList<const XmlObjectInterface *> Atom::children() const { // TODO write test
+    QList<QGraphicsItem*> allChildren = childItems();
+    QList<const XmlObjectInterface*> serializableChildren;
+    std::transform(allChildren.begin(), allChildren.end(), std::back_inserter(serializableChildren),
+                   [](QGraphicsItem* item) { return dynamic_cast<const XmlObjectInterface*>(item); });
+    serializableChildren.removeAll(nullptr);
+    return serializableChildren;
+  }
+
+  XmlObjectInterface *Atom::produceChild(const QString &name, const QString &type) {
+    Q_UNUSED(type)
+    if ("radicalElectron" == name) {
+      RadicalElectron *radicalElectron = new RadicalElectron; // TODO default diameter?
+      radicalElectron->setParentItem(this);
+      return radicalElectron;
+    }
+    return graphicsItem::produceChild(name, type);
+  }
 } // namespace
+
+
