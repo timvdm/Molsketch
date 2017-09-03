@@ -25,18 +25,27 @@
 
 namespace Molsketch {
 
-class RadicalElectronPrivate;
+  class RadicalElectronPrivate;
 
-class RadicalElectron : public QGraphicsItem {
-  Q_DECLARE_PRIVATE(RadicalElectron)
-  QScopedPointer<RadicalElectronPrivate> d_ptr;
-public:
-  explicit RadicalElectron(qreal diameter, BoundingBoxLinker linker = BoundingBoxLinker(Anchor::Top, Anchor::Bottom), const QColor& color = QColor());
-  ~RadicalElectron();
-  QRectF boundingRect() const override;
-  void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
-  BoundingBoxLinker linker() const;
-};
+  class RadicalElectron : public QGraphicsItem, public abstractXmlObject {
+    Q_DECLARE_PRIVATE(RadicalElectron)
+    QScopedPointer<RadicalElectronPrivate> d_ptr;
+  public:
+    explicit RadicalElectron(qreal diameter, BoundingBoxLinker linker = BoundingBoxLinker(Anchor::Top, Anchor::Bottom), const QColor& color = QColor());
+    RadicalElectron(const RadicalElectron& other);
+    ~RadicalElectron();
+    QRectF boundingRect() const override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    BoundingBoxLinker linker() const;
+    bool operator==(const RadicalElectron& other);
+    QString xmlName() const;
+    friend QDebug operator<<(QDebug debug, const RadicalElectron& radicalElectron);
+  protected:
+    void readAttributes(const QXmlStreamAttributes &attributes) override;
+    QXmlStreamAttributes xmlAttributes() const override;
+    QList<const XmlObjectInterface *> children() const override;
+    XmlObjectInterface *produceChild(const QString &name, const QString &type) override;
+  };
 
 } // namespace Molsketch
 

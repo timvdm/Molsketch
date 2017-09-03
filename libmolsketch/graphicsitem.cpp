@@ -222,9 +222,7 @@ namespace Molsketch {
   void graphicsItem::readAttributes(const QXmlStreamAttributes &attributes)
   {
     readGraphicAttributes(attributes) ;
-    setColor(QColor(attributes.value("colorR").toString().toInt(),
-                    attributes.value("colorG").toString().toInt(),
-                    attributes.value("colorB").toString().toInt())) ;
+    setColor(extractColor(attributes)) ;
     if (attributes.hasAttribute("scalingParameter"))
       lineWidthScaling = attributes.value("scalingParameter").toString().toFloat() ;
     else
@@ -271,9 +269,7 @@ namespace Molsketch {
   QXmlStreamAttributes graphicsItem::xmlAttributes() const
   {
     QXmlStreamAttributes attributes = graphicAttributes() ;
-    attributes.append("colorR", QString::number(getColor().red())) ;
-    attributes.append("colorG", QString::number(getColor().green())) ;
-    attributes.append("colorB", QString::number(getColor().blue())) ;
+    addColor(attributes, getColor());
     attributes.append("scalingParameter", QString::number(lineWidthScaling));
     QStringList coords;
     foreach(const QPointF& coordinate, coordinates())
@@ -443,6 +439,19 @@ namespace Molsketch {
   QWidget* graphicsItem::getPropertiesWidget()
   {
     return 0;
+  }
+
+  QXmlStreamAttributes &graphicsItem::addColor(QXmlStreamAttributes &attributes, const QColor &color) {
+    attributes.append("colorR", QString::number(color.red())) ; // TODO convert this into actual child
+    attributes.append("colorG", QString::number(color.green())) ;
+    attributes.append("colorB", QString::number(color.blue())) ;
+    return attributes;
+  }
+
+  QColor graphicsItem::extractColor(const QXmlStreamAttributes &attributes) {
+    return QColor(attributes.value("colorR").toString().toInt(),
+                        attributes.value("colorG").toString().toInt(),
+                        attributes.value("colorB").toString().toInt());
   }
 
   qreal graphicsItem::pointSelectionDistance() const

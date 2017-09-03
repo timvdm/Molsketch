@@ -66,7 +66,7 @@ namespace Molsketch {
   }
 
   QString BoundingBoxLinker::xmlName() const {
-    return "BBLinker";
+    return "bbLinker";
   }
 
   QXmlStreamAttributes BoundingBoxLinker::xmlAttributes() const {

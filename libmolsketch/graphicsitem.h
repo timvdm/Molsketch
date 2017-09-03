@@ -82,6 +82,9 @@ namespace Molsketch {
     virtual void prepareContextMenu(QMenu* contextMenu);
     virtual QWidget *getPropertiesWidget();
 
+    static QXmlStreamAttributes& addColor(QXmlStreamAttributes& attributes, const QColor& color);
+    static QColor extractColor(const QXmlStreamAttributes& attributes);
+
   protected:
     qreal pointSelectionDistance() const;
     void readAttributes(const QXmlStreamAttributes &attributes) ;

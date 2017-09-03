@@ -17,7 +17,9 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "radicalelectron.h"
+#include "graphicsitem.h"
 #include <QColor>
+#include <QDebug>
 #include <QPainter>
 namespace Molsketch {
 
@@ -25,6 +27,11 @@ struct RadicalElectronPrivate {
   qreal diameter;
   QColor color;
   BoundingBoxLinker linker;
+  bool operator==(const RadicalElectronPrivate& other) {
+    return diameter == other.diameter
+        && color == other.color
+        && linker == other.linker;
+  }
 };
 
 
@@ -33,9 +40,14 @@ RadicalElectron::RadicalElectron(qreal diameter, BoundingBoxLinker linker, const
 {
   Q_D(RadicalElectron);
   d->diameter = diameter;
+
   d->color = color;
   d->linker = linker;
 }
+
+RadicalElectron::RadicalElectron(const RadicalElectron &other)
+  : QGraphicsItem(nullptr),
+    d_ptr(new RadicalElectronPrivate(*(other.d_ptr))) {}
 
 RadicalElectron::~RadicalElectron() {}
 
@@ -60,4 +72,44 @@ BoundingBoxLinker RadicalElectron::linker() const {
   return d->linker;
 }
 
+bool RadicalElectron::operator==(const RadicalElectron &other) {
+  return *(other.d_ptr) == *(d_ptr);
+}
+
+QString RadicalElectron::xmlName() const {
+  return "radicalElectron";
+}
+
+void RadicalElectron::readAttributes(const QXmlStreamAttributes &attributes){
+  Q_D(RadicalElectron);
+  d->color = graphicsItem::extractColor(attributes);
+  d->diameter = attributes.value("diameter").toDouble();
+}
+
+QDebug operator<<(QDebug debug, const RadicalElectron &radicalElectron) {
+  debug.nospace() << "RadicalElectron(diameter: " << radicalElectron.d_func()->diameter
+                  << ", color: " << radicalElectron.d_func()->color
+                  << ", linker: " << radicalElectron.d_func()->linker
+                  << ")";
+  return debug;
+}
+
+QXmlStreamAttributes RadicalElectron::xmlAttributes() const {
+  Q_D(const RadicalElectron);
+  QXmlStreamAttributes attributes;
+  attributes.append("diameter", QString::number(d->diameter));
+  graphicsItem::addColor(attributes, d->color);
+  return attributes;
+}
+
+QList<const XmlObjectInterface *> RadicalElectron::children() const {
+  Q_D(const RadicalElectron);
+  return QList<const XmlObjectInterface*>() << &(d->linker);
+}
+
+XmlObjectInterface *RadicalElectron::produceChild(const QString &name, const QString &type) {
+  Q_D(RadicalElectron);
+  if (d->linker.xmlName() == name) return &(d->linker);
+  return abstractXmlObject::produceChild(name, type);
+}
 } // namespace Molsketch
