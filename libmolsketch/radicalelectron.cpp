@@ -21,6 +21,7 @@
 #include <QColor>
 #include <QDebug>
 #include <QPainter>
+
 namespace Molsketch {
 
   struct RadicalElectronPrivate {

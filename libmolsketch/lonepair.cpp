@@ -1,8 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2007-2008 by Harm van Eersel                            *
- *   Copyright (C) 2009 Tim Vandermeersch                                  *
- *   Copyright (C) 2009 by Nicola Zonta                                    *
- *   Copyright (C) 2015 Hendrik Vennekate                                  *
+ *   Copyright (C) 2017 by Hendrik Vennekate                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -19,30 +16,37 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-
-#ifndef ABSTRACTXMLOBJECT_H
-#define ABSTRACTXMLOBJECT_H
-
-#include "xmlobjectinterface.h"
+#include "lonepair.h"
+#include <QDebug>
 
 namespace Molsketch {
-  class abstractXmlObject : public XmlObjectInterface
-  {
-  protected:
-    // TODO should be factory function
-    virtual XmlObjectInterface* produceChild(const QString& name, const QString& type) { Q_UNUSED(name) Q_UNUSED(type) return 0 ; }
-    virtual void readAttributes(const QXmlStreamAttributes& attributes) { Q_UNUSED(attributes) }
-    virtual QList<const XmlObjectInterface*> children() const { return QList<const XmlObjectInterface*>() ; }
-    virtual QXmlStreamAttributes xmlAttributes() const { return QXmlStreamAttributes() ; }
-    virtual void afterReadFinalization() {}
-  public:
-    virtual QString xmlName() const = 0 ;
-    abstractXmlObject() {}
-    QXmlStreamReader& readXml(QXmlStreamReader& in) override final;
-    QXmlStreamWriter& writeXml(QXmlStreamWriter& out) const override final;
-    virtual ~abstractXmlObject() {}
-  };
 
-} // namespace
+struct LonePairPrivate {
+  bool operator ==(const LonePairPrivate& other) {}
+};
 
-#endif // ABSTRACTXMLOBJECT_H
+LonePair::LonePair (qreal angle, qreal lineWidth, qreal length, BoundingBoxLinker linker, const QColor& color) {}
+
+LonePair::LonePair (const LonePair& other) {}
+
+LonePair::~LonePair () {}
+
+BoundingBoxLinker LonePair::linker () const {}
+
+QDebug operator<< (QDebug debug, const LonePair& lonePair) {}
+
+QRectF LonePair::boundingRect () const {}
+
+void LonePair::paint (QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {}
+
+QString LonePair::xmlName () const {}
+
+XmlObjectInterface* LonePair::produceChild (const QString& name, const QString& type) {}
+
+void LonePair::readAttributes (const QXmlStreamAttributes& attributes) {}
+
+QList<const XmlObjectInterface*> LonePair::children () const {}
+
+QXmlStreamAttributes LonePair::xmlAttributes () const {}
+
+} // namespace Molsketch
