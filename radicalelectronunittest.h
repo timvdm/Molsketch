@@ -122,6 +122,5 @@ public:
     QS_ASSERT_EQUALS(radicalElectron, SAMPLE_RADICAL_ELECTRON);
   }
 
-  // TODO check that radicals get deleted if atom gets deleted
   // TODO test color!
 };
