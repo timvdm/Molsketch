@@ -9,6 +9,8 @@
 class QTableView;
 class QLineEdit;
 class QCheckBox;
+class QXmlStreamReader;
+class QXmlStreamAttributes;
 
 #define QS_ASSERT_EQUALS(VAL1,VAL2) {QString __comparison("\n    "); QDebug __out(&__comparison); __out << VAL1; __comparison += "\n != "; __out << VAL2; TSM_ASSERT_EQUALS(__comparison.toStdString().data(), VAL1, VAL2)}
 
@@ -52,5 +54,15 @@ T* assertNotNull(T* pointer, QString message = "Should not be null") {
   return pointer;
 }
 void assertTrue(bool input, QString message = "Assertion not fulfilled!");
+
+QString formatXml(const QString& xml);
+
+bool findNextElement(QXmlStreamReader& reader, const QString& element);
+
+int xmlElementCount(const QString& xml, const QString& element);
+
+QPolygonF getPointsFromXml(const QXmlStreamReader& reader, const QString& attribute);
+
+QXmlStreamAttributes getAttributesOfParentElement(QXmlStreamReader& reader, const QString &element);
 
 #endif // UTILITIES_H

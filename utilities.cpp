@@ -3,6 +3,7 @@
 #include <QCheckBox>
 #include <QLineEdit>
 #include <QTableView>
+#include <QXmlStreamReader>
 
 void mouseMoveEvent(QWidget *widget, Qt::MouseButton button, Qt::KeyboardModifiers stateKey, QPoint pos, int delay) {
     QTEST_ASSERT(widget);
@@ -58,4 +59,56 @@ void assertTrue(bool input, QString message) {
 void clickCheckBox(QCheckBox *checkBox) {
 //  QTest::mouseClick((QWidget*) checkBox, Qt::LeftButton, Qt::NoModifier, QPoint(10,10)); // offset for QCheckBox
   checkBox->toggle(); // TODO genuinely click on the checkbox
+}
+
+QString formatXml(const QString &xml) {
+  QXmlStreamReader reader(xml);
+  QString formattedXml;
+  QXmlStreamWriter writer(&formattedXml);
+  writer.setAutoFormatting(true);
+
+  while (!reader.atEnd()) {
+      reader.readNext();
+      if (!reader.isWhitespace()) {
+          writer.writeCurrentToken(reader);
+      }
+  }
+  return formattedXml;
+}
+
+int xmlElementCount(const QString& xml, const QString& element) {
+  int count = 0;
+  QXmlStreamReader reader(xml);
+  while (findNextElement(reader, element))
+    ++count;
+  return count;
+}
+
+bool findNextElement(QXmlStreamReader& reader, const QString& element) {
+  while (!reader.atEnd())
+    if (QXmlStreamReader::StartElement == reader.readNext() && reader.name() == element)
+      return true;
+  return false;
+}
+
+QPolygonF getPointsFromXml(const QXmlStreamReader &reader, const QString &attribute) {
+  QStringRef localValue = reader.attributes().value("points");
+  QVector<QStringRef> pointsText = localValue.split(" ", QString::SkipEmptyParts);
+  QPolygonF points;
+  for (QStringRef pointText : pointsText) {
+    QVector<QStringRef> coordsText = pointText.split(",");
+    QSM_ASSERT_EQUALS(pointText.toString(), coordsText.size(),2);
+    points << QPointF(coordsText[0].toDouble(), coordsText[1].toDouble());
+  }
+  return points;
+}
+
+QXmlStreamAttributes getAttributesOfParentElement(QXmlStreamReader& reader, const QString &element) {
+  QXmlStreamAttributes parentAttributes;
+  while (!reader.atEnd()) {
+    if (reader.name() == element) return parentAttributes;
+    parentAttributes = reader.attributes();
+    while (!reader.atEnd() && QXmlStreamReader::StartElement != reader.readNext());
+  }
+  return QXmlStreamAttributes();
 }

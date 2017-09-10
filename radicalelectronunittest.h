@@ -36,21 +36,6 @@ class RadicalElectronUnitTest : public CxxTest::TestSuite {
   MolScene *scene;
   Atom *atom;
 
-  int xmlElementCount(const QString& xml, const QString& element) {
-    int count = 0;
-    QXmlStreamReader reader(xml);
-    while (findNextElement(reader, element))
-      ++count;
-    return count;
-  }
-
-  bool findNextElement(QXmlStreamReader& reader, const QString& element) {
-    while (!reader.atEnd())
-      if (QXmlStreamReader::StartElement == reader.readNext() && reader.name() == element)
-        return true;
-    return false;
-  }
-
   QString svgWithAtomAndRadicalElectron() {
     RadicalElectron *radical = new RadicalElectron(DIAMETER);
     radical->setParentItem(atom);
