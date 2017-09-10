@@ -16,37 +16,96 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#include "graphicsitem.h"
 #include "lonepair.h"
 #include <QDebug>
+#include <QPen>
 
 namespace Molsketch {
 
 struct LonePairPrivate {
-  bool operator ==(const LonePairPrivate& other) {}
+  BoundingBoxLinker linker;
 };
 
-LonePair::LonePair (qreal angle, qreal lineWidth, qreal length, BoundingBoxLinker linker, const QColor& color) {}
+LonePair::LonePair (qreal angle, qreal lineWidth, qreal length, BoundingBoxLinker linker, const QColor& color)
+  : QGraphicsLineItem(QLineF::fromPolar(length, angle)),
+    d_ptr(new LonePairPrivate)
+{
+  Q_D(LonePair);
+  d->linker = linker;
+  setPen(QPen(color, lineWidth));
+}
 
-LonePair::LonePair (const LonePair& other) {}
+LonePair::LonePair (const LonePair& other)
+  : QGraphicsLineItem(other.line()),
+    d_ptr(new LonePairPrivate(*(other.d_ptr)))
+{
+  setPen(other.pen());
+}
 
 LonePair::~LonePair () {}
 
-BoundingBoxLinker LonePair::linker () const {}
+BoundingBoxLinker LonePair::linker () const {
+  Q_D(const LonePair);
+  return d->linker;
+}
 
-QDebug operator<< (QDebug debug, const LonePair& lonePair) {}
+bool LonePair::operator ==(const LonePair &other) {
+  return other.d_ptr->linker == d_ptr->linker
+      && other.line() == line()
+      && other.pen() == pen();
+}
 
-QRectF LonePair::boundingRect () const {}
+QDebug operator<< (QDebug debug, const LonePair& lonePair) {
+  return debug.nospace() << "LonePair("
+                         << "line: " << lonePair.line()
+                         << ", pen: " << lonePair.pen()
+                         << ", linker: " << lonePair.d_ptr->linker
+                         << ")";
+}
 
-void LonePair::paint (QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {}
+QRectF LonePair::boundingRect () const {
+  // TODO
+  return QRectF();
+}
 
-QString LonePair::xmlName () const {}
+void LonePair::paint (QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
+  if (!parentItem()) return;
+  // TODO round line caps
+  QGraphicsLineItem::paint(painter, option, widget);
+}
 
-XmlObjectInterface* LonePair::produceChild (const QString& name, const QString& type) {}
+QString LonePair::xmlName () const {
+  return "lonePair";
+}
 
-void LonePair::readAttributes (const QXmlStreamAttributes& attributes) {}
+XmlObjectInterface* LonePair::produceChild (const QString& name, const QString& type) {
+  Q_D(LonePair);
+  if (d->linker.xmlName() == name) return &(d->linker);
+  return abstractXmlObject::produceChild(name, type);
+}
 
-QList<const XmlObjectInterface*> LonePair::children () const {}
+void LonePair::readAttributes (const QXmlStreamAttributes& attributes) {
+  Q_D(LonePair);
+  setPen(QPen(graphicsItem::extractColor(attributes),
+              attributes.value("lineWidth").toDouble()));
+  setLine(QLineF::fromPolar(attributes.value("length").toDouble(),
+                            attributes.value("angle").toDouble()));
+}
 
-QXmlStreamAttributes LonePair::xmlAttributes () const {}
+QList<const XmlObjectInterface*> LonePair::children () const {
+  Q_D(const LonePair);
+  return QList<const XmlObjectInterface*>() << &(d->linker);
+}
+
+QXmlStreamAttributes LonePair::xmlAttributes () const {
+  Q_D(const LonePair);
+  QXmlStreamAttributes attributes;
+  attributes.append("angle", QString::number(line().angle()));
+  attributes.append("length", QString::number(line().length()));
+  attributes.append("lineWidth", QString::number(pen().widthF()));
+  graphicsItem::addColor(attributes, pen().color());
+  return attributes;
+}
 
 } // namespace Molsketch

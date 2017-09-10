@@ -92,11 +92,10 @@ namespace Molsketch {
   }
 
   QDebug operator<<(QDebug debug, const RadicalElectron &radicalElectron) {
-    debug.nospace() << "RadicalElectron(diameter: " << radicalElectron.d_func()->diameter
-                    << ", color: " << radicalElectron.d_func()->color
-                    << ", linker: " << radicalElectron.d_func()->linker
-                    << ")";
-    return debug;
+    return debug.nospace() << "RadicalElectron(diameter: " << radicalElectron.d_func()->diameter
+                           << ", color: " << radicalElectron.d_func()->color
+                           << ", linker: " << radicalElectron.d_func()->linker
+                           << ")";
   }
 
   QXmlStreamAttributes RadicalElectron::xmlAttributes() const {

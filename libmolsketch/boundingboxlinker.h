@@ -62,6 +62,7 @@ namespace Molsketch { // TODO turn on warnings for switch'es
     friend QDebug operator<<(QDebug debug, const BoundingBoxLinker& linker);
     BoundingBoxLinker& operator=(const BoundingBoxLinker& other);
     static const BoundingBoxLinker upperLeft, lowerLeft, upperRight, lowerRight, above, below, toRight, toLeft;
+    static const BoundingBoxLinker atTopLeft, atBottomLeft, atTopRight, atBottomRight, atTop, atBottom, atLeft, atRight;
   };
 
   QDebug operator<<(QDebug debug, const BoundingBoxLinker& linker);

@@ -27,7 +27,7 @@ namespace Molsketch {
 
 class LonePairPrivate;
 
-class LonePair : public QGraphicsItem, public abstractXmlObject {
+class LonePair : public QGraphicsLineItem, public abstractXmlObject {
   Q_DECLARE_PRIVATE (LonePair)
   QScopedPointer<LonePairPrivate> d_ptr;
 
@@ -37,6 +37,7 @@ public:
   LonePair (const LonePair& other);
   ~LonePair ();
   BoundingBoxLinker linker () const;
+  bool operator ==(const LonePair& other);
   friend QDebug operator<< (QDebug debug, const LonePair& lonePair);
   QRectF boundingRect () const override;
   void paint (QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;

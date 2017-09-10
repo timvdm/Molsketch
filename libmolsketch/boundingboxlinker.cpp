@@ -171,4 +171,13 @@ namespace Molsketch {
   const BoundingBoxLinker BoundingBoxLinker::lowerLeft = BoundingBoxLinker(Anchor::BottomLeft, Anchor::TopRight);
   const BoundingBoxLinker BoundingBoxLinker::lowerRight = BoundingBoxLinker(Anchor::BottomRight, Anchor::TopLeft);
 
+  // TODO consider converting constructor
+  const BoundingBoxLinker BoundingBoxLinker::atBottom = BoundingBoxLinker(Anchor::Bottom);
+  const BoundingBoxLinker BoundingBoxLinker::atTop = BoundingBoxLinker(Anchor::Top);
+  const BoundingBoxLinker BoundingBoxLinker::atLeft = BoundingBoxLinker(Anchor::Left);
+  const BoundingBoxLinker BoundingBoxLinker::atRight = BoundingBoxLinker(Anchor::Right);
+  const BoundingBoxLinker BoundingBoxLinker::atTopLeft = BoundingBoxLinker(Anchor::TopLeft);
+  const BoundingBoxLinker BoundingBoxLinker::atTopRight = BoundingBoxLinker(Anchor::TopRight);
+  const BoundingBoxLinker BoundingBoxLinker::atBottomLeft = BoundingBoxLinker(Anchor::BottomLeft);
+  const BoundingBoxLinker BoundingBoxLinker::atBottomRight = BoundingBoxLinker(Anchor::BottomRight);
 } // namespace Molsketch
