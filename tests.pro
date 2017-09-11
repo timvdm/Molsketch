@@ -28,8 +28,7 @@ HEADERS += $$TESTS \
     programversionvaluetrait.h \
     noargsignalcounter.h \
     signalcounter.h \
-    modelindexsignalcounter.h \
-    abstractxmlobjecttestutility.h
+    modelindexsignalcounter.h
 
 FORMS += $$originalForms
 
@@ -42,8 +41,7 @@ INCLUDEPATH += $$CXXTEST_PATH \
 
 SOURCES += \
     programversionvaluetrait.cpp \
-    instancecounters.cpp \
-    abstractxmlobjecttestutility.cpp
+    instancecounters.cpp
 RESOURCES += \
     $$PWD/../molsketch/*.qrc \
     $$PWD/../libmolsketch/tools/toolicons.qrc
