@@ -25,9 +25,11 @@
 
 using namespace Molsketch;
 
+const qreal DELTA = 1e-4;
 const qreal LENGTH = 10;
 const qreal ANGLE = 45;
 const qreal LINE_WIDTH = 1.5;
+const BoundingBoxLinker ANCHOR = BoundingBoxLinker::atTopLeft;
 const LonePair SAMPLE_LONE_PAIR(23.5, 1.5, 5.5, BoundingBoxLinker::atBottomLeft, Qt::blue);
 const QString LONE_PAIR_XML("<lonePair angle=\"23.5\" length=\"5.5\" lineWidth=\"1.5\" colorR=\"0\" colorG=\"0\" colorB=\"255\"><bbLinker originAnchor=\"BottomLeft\" targetAnchor=\"Center\" xOffset=\"0\" yOffset=\"0\"/></lonePair>");
 
@@ -36,7 +38,7 @@ class LonePairUnitTest : public CxxTest::TestSuite {
   Atom *atom;
 
   QLineF obtainLineFromSvg() {
-    LonePair *lp = new LonePair(ANGLE, LINE_WIDTH, LENGTH);
+    LonePair *lp = new LonePair(ANGLE, LINE_WIDTH, LENGTH, ANCHOR);
     lp->setParentItem(atom);
     QXmlStreamReader reader(scene->toSvg());
     TS_ASSERT(findNextElement(reader, "polyline"));
@@ -75,7 +77,7 @@ public:
   }
 
   void testLengthAttribute() {
-    TS_ASSERT_DELTA(obtainLineFromSvg().length(), LENGTH, 1e-5);
+    TS_ASSERT_DELTA(obtainLineFromSvg().length(), LENGTH, DELTA);
   }
 
   void testAngleAttribute() {
@@ -92,7 +94,13 @@ public:
   }
 
   void testPositioning() {
-
+    QLineF expected = QLineF::fromPolar(LENGTH, ANGLE);
+    expected.translate(-expected.p2()/2);
+    expected.translate(atom->boundingRect().topLeft());
+    TS_ASSERT_DELTA(obtainLineFromSvg().p1().x(), expected.p1().x(), DELTA);
+    TS_ASSERT_DELTA(obtainLineFromSvg().p1().y(), expected.p1().y(), DELTA);
+    TS_ASSERT_DELTA(obtainLineFromSvg().p2().x(), expected.p2().x(), DELTA);
+    TS_ASSERT_DELTA(obtainLineFromSvg().p2().y(), expected.p2().y(), DELTA);
   }
 
   void testBoundingRectWithoutParent() {
@@ -100,9 +108,9 @@ public:
   }
 
   void testBoundingRectWithParent() {
-    LonePair *lp = new LonePair(ANGLE, LINE_WIDTH, LENGTH);
+    LonePair *lp = new LonePair(ANGLE, LINE_WIDTH, LENGTH, BoundingBoxLinker::atTopLeft);
     lp->setParentItem(atom);
-    QS_ASSERT_EQUALS(lp->boundingRect(), QRectF()); // TODO
+    QS_ASSERT_EQUALS(lp->boundingRect().center(), atom->boundingRect().topLeft()); // TODO
   }
 
   void testXmlOutput() {
