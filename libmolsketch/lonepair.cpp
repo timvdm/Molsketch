@@ -28,12 +28,14 @@ struct LonePairPrivate {
 };
 
 LonePair::LonePair (qreal angle, qreal lineWidth, qreal length, BoundingBoxLinker linker, const QColor& color)
-  : QGraphicsLineItem(QLineF::fromPolar(length, angle)),
+  : QGraphicsLineItem(QLineF::fromPolar(length, angle)), // TODO scale line with font size (or introduce other object for that)
     d_ptr(new LonePairPrivate)
 {
   Q_D(LonePair);
   d->linker = linker;
-  setPen(QPen(color, lineWidth));
+  QPen pen(color, lineWidth);
+  pen.setCapStyle(Qt::RoundCap);
+  setPen(pen);
 }
 
 LonePair::LonePair (const LonePair& other)
@@ -65,13 +67,19 @@ QDebug operator<< (QDebug debug, const LonePair& lonePair) {
 }
 
 QRectF LonePair::boundingRect () const {
-  // TODO
-  return QRectF();
+  if (!parentItem()) return QRectF();
+  Q_D(const LonePair);
+  QRectF originalBounds = QGraphicsLineItem::boundingRect();
+  QPointF shift = d->linker.getShift(parentItem()->boundingRect(), originalBounds);
+  return originalBounds.translated(shift);
 }
 
 void LonePair::paint (QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
   if (!parentItem()) return;
-  // TODO round line caps
+  Q_D(LonePair);
+  QRectF originalBounds = QGraphicsLineItem::boundingRect(); // TODO join with code from boundingRect()
+  QPointF shift = d->linker.getShift(parentItem()->boundingRect(), originalBounds);
+  setLine(line().translated(shift));
   QGraphicsLineItem::paint(painter, option, widget);
 }
 
@@ -87,8 +95,10 @@ XmlObjectInterface* LonePair::produceChild (const QString& name, const QString& 
 
 void LonePair::readAttributes (const QXmlStreamAttributes& attributes) {
   Q_D(LonePair);
-  setPen(QPen(graphicsItem::extractColor(attributes),
-              attributes.value("lineWidth").toDouble()));
+  QPen newPen = pen();
+  newPen.setWidthF(attributes.value("lineWidth").toDouble());
+  newPen.setColor(graphicsItem::extractColor(attributes));
+  setPen(newPen);
   setLine(QLineF::fromPolar(attributes.value("length").toDouble(),
                             attributes.value("angle").toDouble()));
 }
