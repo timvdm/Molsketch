@@ -31,7 +31,9 @@ const qreal ANGLE = 45;
 const qreal LINE_WIDTH = 1.5;
 const BoundingBoxLinker ANCHOR = BoundingBoxLinker::atTopLeft;
 const LonePair SAMPLE_LONE_PAIR(23.5, 1.5, 5.5, BoundingBoxLinker::atBottomLeft, Qt::blue);
-const QString LONE_PAIR_XML("<lonePair angle=\"23.5\" length=\"5.5\" lineWidth=\"1.5\" colorR=\"0\" colorG=\"0\" colorB=\"255\"><bbLinker originAnchor=\"BottomLeft\" targetAnchor=\"Center\" xOffset=\"0\" yOffset=\"0\"/></lonePair>");
+const QString LONE_PAIR_XML("<lonePair angle=\"23.5\" length=\"5.5\" lineWidth=\"1.5\" colorR=\"0\" colorG=\"0\" colorB=\"255\">"
+                            "<bbLinker originAnchor=\"BottomLeft\" targetAnchor=\"Center\" xOffset=\"0\" yOffset=\"0\"/>"
+                            "</lonePair>");
 
 class LonePairUnitTest : public CxxTest::TestSuite {
   MolScene *scene;
