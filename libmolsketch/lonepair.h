@@ -33,7 +33,7 @@ class LonePair : public QGraphicsLineItem, public abstractXmlObject {
 
 public:
   // TODO use static methods/offer methods to change properties
-  explicit LonePair (qreal angle, qreal lineWidth, qreal length, BoundingBoxLinker linker = BoundingBoxLinker (Anchor::Top), const QColor& color = QColor ());
+  explicit LonePair (qreal angle = 0, qreal lineWidth = 1, qreal length = 5, BoundingBoxLinker linker = BoundingBoxLinker (Anchor::Top), const QColor& color = QColor ());
   LonePair (const LonePair& other);
   ~LonePair ();
   BoundingBoxLinker linker () const;

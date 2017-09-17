@@ -28,6 +28,7 @@
 
 #include "atompopup.h"
 #include "bond.h"
+#include "lonepair.h"
 #include "molecule.h"
 #include "radicalelectron.h"
 
@@ -926,6 +927,11 @@ namespace Molsketch {
       RadicalElectron *radicalElectron = new RadicalElectron; // TODO default diameter?
       radicalElectron->setParentItem(this);
       return radicalElectron;
+    }
+    if ("lonePair" == name) {
+      LonePair *lonePair = new LonePair;
+      lonePair->setParentItem(this);
+      return lonePair;
     }
     return graphicsItem::produceChild(name, type);
   }
