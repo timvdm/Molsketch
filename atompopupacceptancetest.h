@@ -29,12 +29,16 @@
 #include <molview.h>
 #include <QCheckBox>
 #include <radicalelectron.h>
+#include <lonepair.h>
 #include <cxxtest/TestSuite.h>
 #include "utilities.h"
 
 using namespace Molsketch;
 
 const qreal RADICAL_DIAMETER = 2;
+const qreal LONE_PAIR_ANGLE = 45;
+const qreal LONE_PAIR_LINE_WIDTH = 1.5;
+const qreal LONE_PAIR_LENGTH = 5;
 
 class AtomPopupUnitTest : public CxxTest::TestSuite {
   Atom *atom;
@@ -186,14 +190,12 @@ public:
   void performRadicalAddition(QString checkBoxName, QPointF (QRectF::*atomCorner)() const, QPointF (QRectF::*radicalCorner)() const) {
     performRadicalAddition(checkBoxName);
     QSM_ASSERT_EQUALS(checkBoxName, (atom->childItems().first()->boundingRect().*radicalCorner)(), (atom->boundingRect().*atomCorner)());
-    clickCheckBox(assertNotNull(popup->findChild<QCheckBox*>(checkBoxName))); // TODO should not be necessary once atom properties are properly transfered.
   }
 
   void performRadicalAddition(QString checkBoxName, qreal (QRectF::*atomEdge)() const, qreal (QRectF::*radicalEdge)() const, qreal (QPointF::*centerCoordinate)() const) { // TODO QRectF asserts
     performRadicalAddition(checkBoxName);
     QSM_ASSERT_EQUALS(checkBoxName, (atom->childItems().first()->boundingRect().*radicalEdge)(), (atom->boundingRect().*atomEdge)());
     QSM_ASSERT_EQUALS(checkBoxName, (atom->childItems().first()->boundingRect().center().*centerCoordinate)(), (atom->boundingRect().center().*centerCoordinate)());
-    clickCheckBox(assertNotNull(popup->findChild<QCheckBox*>(checkBoxName))); // TODO should not be necessary once atom properties are properly transfered.
   }
 
   void testRadicalSelection() {
@@ -238,6 +240,105 @@ public:
     TS_ASSERT_EQUALS(atom->childItems().size(), 1);
     TS_ASSERT_DIFFERS(dynamic_cast<RadicalElectron*>(atom->childItems().first()), nullptr);
     QS_ASSERT_EQUALS(dynamic_cast<RadicalElectron*>(atom->childItems().first())->boundingRect().bottomRight(), atom->boundingRect().topLeft());
+  }
+
+  void testRadicalDiameterIsShown() {
+
+  }
+
+  void testRadicalDiameterCanBeChanged() {
+
+  }
+
+  void performLonePairAddition(const QString& checkBoxName,
+                               QPointF (QRectF::*atomCorner)() const,
+                               qreal angle) {
+    resetAtom();
+    popup->connectAtom(atom);
+    clickCheckBox(assertNotNull(popup->findChild<QCheckBox*>(checkBoxName)));
+    QSM_ASSERT_EQUALS("Check connections for " + checkBoxName, atom->childItems().size(), 1); // TODO make this a hard requirement (throw if fails)
+    assertNotNull(dynamic_cast<LonePair*>(atom->childItems().first()));
+    QSM_ASSERT_EQUALS(checkBoxName, scene->stack()->count(), 1);
+    QSM_ASSERT_EQUALS(checkBoxName, scene->stack()->undoText(), "Change lone pairs");
+    QSM_ASSERT_EQUALS(checkBoxName, atom->childItems().first()->boundingRect().center(), (atom->boundingRect().*atomCorner)());
+    TSM_ASSERT_DELTA(checkBoxName, dynamic_cast<LonePair*>(atom->childItems().first())->angle(), angle, 1e-4); // TODO delta
+  }
+
+  void performLonePairAddition(const QString& checkBoxName,
+                               qreal (QRectF::*atomEdge)() const,
+                               qreal (QPointF::*edgeCoordinate)() const,
+                               qreal (QPointF::*atomCenterCoordinate)() const,
+                               qreal angle) {
+    resetAtom();
+    popup->connectAtom(atom);
+    clickCheckBox(assertNotNull(popup->findChild<QCheckBox*>(checkBoxName)));
+    QSM_ASSERT_EQUALS("Check connections for " + checkBoxName, atom->childItems().size(), 1); // TODO make this a hard requirement (throw if fails)
+    assertNotNull(dynamic_cast<LonePair*>(atom->childItems().first()));
+    QSM_ASSERT_EQUALS(checkBoxName, scene->stack()->count(), 1);
+    QSM_ASSERT_EQUALS(checkBoxName, scene->stack()->undoText(), "Change lone pairs");
+    QSM_ASSERT_EQUALS(checkBoxName, (atom->childItems().first()->boundingRect().center().*edgeCoordinate)(), (atom->boundingRect().*atomEdge)());
+    QSM_ASSERT_EQUALS(checkBoxName, (atom->childItems().first()->boundingRect().center().*atomCenterCoordinate)(), (atom->boundingRect().center().*atomCenterCoordinate)());
+    TSM_ASSERT_DELTA(checkBoxName, dynamic_cast<LonePair*>(atom->childItems().first())->angle(), angle, 1e-4); // TODO delta
+  }
+
+  void checkLonePairConfigurationTransferredToCheckBox(BoundingBoxLinker linker, const QString& checkBoxName) {
+    resetAtom();
+    (new LonePair(LONE_PAIR_ANGLE, LONE_PAIR_LINE_WIDTH, LONE_PAIR_LENGTH, linker))->setParentItem(atom);
+    popup->connectAtom(atom);
+    for (QCheckBox* checkBox : popup->findChildren<QCheckBox*>())
+      TSM_ASSERT((checkBox->objectName() + " check state wrong for test of " + checkBoxName).toStdString().data(),
+                 checkBox->objectName() == checkBoxName ? checkBox->isChecked() : !checkBox->isChecked());
+  }
+
+  void testLonePairSelection() {
+    performLonePairAddition("topLeftLonePair", &QRectF::topLeft, 45);
+    performLonePairAddition("topRightLonePair", &QRectF::topRight, 315);
+    performLonePairAddition("bottomLeftLonePair", &QRectF::bottomLeft, 135);
+    performLonePairAddition("bottomRightLonePair", &QRectF::bottomRight, 225);
+    performLonePairAddition("topLonePair", &QRectF::top, &QPointF::y, &QPointF::x, 0);
+    performLonePairAddition("bottomLonePair", &QRectF::bottom, &QPointF::y, &QPointF::x, 180);
+    performLonePairAddition("leftLonePair", &QRectF::left, &QPointF::x, &QPointF::y, 90);
+    performLonePairAddition("rightLonePair", &QRectF::right, &QPointF::x, &QPointF::y, 270);
+  }
+
+  void testLonePairConfigurationTransferredToGui() {
+    checkLonePairConfigurationTransferredToCheckBox(BoundingBoxLinker::atTop, "topLonePair");
+    checkLonePairConfigurationTransferredToCheckBox(BoundingBoxLinker::atBottom, "bottomLonePair");
+    checkLonePairConfigurationTransferredToCheckBox(BoundingBoxLinker::atLeft, "leftLonePair");
+    checkLonePairConfigurationTransferredToCheckBox(BoundingBoxLinker::atRight, "rightLonePair");
+    checkLonePairConfigurationTransferredToCheckBox(BoundingBoxLinker::atTopLeft, "topLeftLonePair");
+    checkLonePairConfigurationTransferredToCheckBox(BoundingBoxLinker::atTopRight, "topRightLonePair");
+    checkLonePairConfigurationTransferredToCheckBox(BoundingBoxLinker::atBottomLeft, "bottomLeftLonePair");
+    checkLonePairConfigurationTransferredToCheckBox(BoundingBoxLinker::atBottomRight, "bottomRightLonePair");
+  }
+
+  void testChangingLonePairsWorks() {
+    resetAtom();;
+    (new LonePair(LONE_PAIR_ANGLE, LONE_PAIR_LINE_WIDTH, LONE_PAIR_LENGTH, BoundingBoxLinker::atTop))->setParentItem(atom);
+    popup->connectAtom(atom);
+
+    clickCheckBox(assertNotNull(popup->findChild<QCheckBox*>("topLonePair")));
+    TS_ASSERT(atom->childItems().isEmpty());
+    clickCheckBox(assertNotNull(popup->findChild<QCheckBox*>("topLeftLonePair")));
+    TS_ASSERT_EQUALS(atom->childItems().size(), 1);
+    TS_ASSERT_DIFFERS(dynamic_cast<LonePair*>(atom->childItems().first()), nullptr);
+    QS_ASSERT_EQUALS(dynamic_cast<LonePair*>(atom->childItems().first())->boundingRect().center(), atom->boundingRect().topLeft());
+  }
+
+  void testLonePairLengthDisplayed() {
+
+  }
+
+  void testLonePairLengthChangeWorks() {
+
+  }
+
+  void testLonePairLineWidthChangeWorks() {
+
+  }
+
+  void testElementSymbolInLonePairAndRadicalWidget() {
+
   }
 
 // TODO when opening edit mode, selection is lost
