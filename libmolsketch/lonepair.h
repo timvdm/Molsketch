@@ -42,6 +42,7 @@ public:
   QRectF boundingRect () const override;
   void paint (QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
   QString xmlName () const override;
+  qreal angle() const;
 
 protected:
   XmlObjectInterface* produceChild (const QString& name, const QString& type) override;

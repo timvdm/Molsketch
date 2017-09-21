@@ -47,12 +47,14 @@ namespace Molsketch {
     void on_hydrogens_valueChanged(int arg1);
     void onCoordinatesDatachanged();
     void updateRadicals();
+    void updateLonePairs();
   private:
     Ui::AtomPopup *ui;
     class PrivateData;
     PrivateData *d;
     void propertiesChanged();
     void addRadical(const QCheckBox*, const BoundingBoxLinker& linker);
+    void addLonePair(const QCheckBox*, const BoundingBoxLinker& linker, const qreal angle);
   };
 
 } // namespace

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>231</width>
-    <height>300</height>
+    <height>376</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -61,11 +61,11 @@
      </property>
     </widget>
    </item>
-   <item row="6" column="0" colspan="2">
+   <item row="9" column="0" colspan="2">
     <widget class="Molsketch::CoordinateTableView" name="coordinates"/>
    </item>
    <item row="3" column="0">
-    <widget class="QLabel" name="label">
+    <widget class="QLabel" name="radicalsLabel">
      <property name="text">
       <string>Radicals</string>
      </property>
@@ -141,6 +141,113 @@
      </item>
     </layout>
    </item>
+   <item row="6" column="1">
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="1" column="0">
+      <widget class="QCheckBox" name="leftLonePair">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QCheckBox" name="topLeftLonePair">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="QCheckBox" name="topRightLonePair">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QCheckBox" name="bottomLeftLonePair">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="2">
+      <widget class="QCheckBox" name="bottomRightLonePair">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QCheckBox" name="topLonePair">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QCheckBox" name="bottomLonePair">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QCheckBox" name="rightLonePair">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLabel" name="lonePairLabel">
+       <property name="text">
+        <string>E</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="6" column="0">
+    <widget class="QLabel" name="lonePairsLabel">
+     <property name="text">
+      <string>Lone pairs</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0">
+    <widget class="QLabel" name="radicalsDiameterLabel">
+     <property name="text">
+      <string>Diameter</string>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="0">
+    <widget class="QLabel" name="lonePairsLineWidthLabel">
+     <property name="text">
+      <string>Line width</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="0">
+    <widget class="QLabel" name="lonePairsLengthLabel">
+     <property name="text">
+      <string>Length</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1">
+    <widget class="QDoubleSpinBox" name="radicalsDiameter"/>
+   </item>
+   <item row="7" column="1">
+    <widget class="QDoubleSpinBox" name="lonePairsLength"/>
+   </item>
+   <item row="8" column="1">
+    <widget class="QDoubleSpinBox" name="lonePairsLineWidth"/>
+   </item>
   </layout>
  </widget>
  <customwidgets>
@@ -164,7 +271,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>145</x>
-     <y>157</y>
+     <y>145</y>
     </hint>
    </hints>
   </connection>
@@ -223,8 +330,8 @@
    <slot>updateRadicals()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>87</x>
-     <y>145</y>
+     <x>104</x>
+     <y>164</y>
     </hint>
     <hint type="destinationlabel">
      <x>115</x>
@@ -239,8 +346,8 @@
    <slot>updateRadicals()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>196</x>
-     <y>145</y>
+     <x>186</x>
+     <y>164</y>
     </hint>
     <hint type="destinationlabel">
      <x>115</x>
@@ -255,8 +362,8 @@
    <slot>updateRadicals()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>141</x>
-     <y>145</y>
+     <x>145</x>
+     <y>164</y>
     </hint>
     <hint type="destinationlabel">
      <x>115</x>
@@ -271,8 +378,8 @@
    <slot>updateRadicals()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>87</x>
-     <y>124</y>
+     <x>104</x>
+     <y>145</y>
     </hint>
     <hint type="destinationlabel">
      <x>115</x>
@@ -287,8 +394,8 @@
    <slot>updateRadicals()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>196</x>
-     <y>124</y>
+     <x>186</x>
+     <y>145</y>
     </hint>
     <hint type="destinationlabel">
      <x>115</x>
@@ -296,8 +403,153 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>element</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>lonePairLabel</receiver>
+   <slot>setText(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>146</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>128</x>
+     <y>205</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>bottomLonePair</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>AtomPopup</receiver>
+   <slot>updateLonePairs()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>128</x>
+     <y>225</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>115</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>bottomRightLonePair</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>AtomPopup</receiver>
+   <slot>updateLonePairs()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>169</x>
+     <y>225</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>115</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>leftLonePair</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>AtomPopup</receiver>
+   <slot>updateLonePairs()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>87</x>
+     <y>205</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>115</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>topRightLonePair</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>AtomPopup</receiver>
+   <slot>updateLonePairs()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>169</x>
+     <y>185</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>115</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>topLonePair</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>AtomPopup</receiver>
+   <slot>updateLonePairs()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>128</x>
+     <y>185</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>115</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>topLeftLonePair</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>AtomPopup</receiver>
+   <slot>updateLonePairs()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>87</x>
+     <y>185</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>115</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rightLonePair</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>AtomPopup</receiver>
+   <slot>updateLonePairs()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>169</x>
+     <y>205</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>115</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>bottomLeftLonePair</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>AtomPopup</receiver>
+   <slot>updateLonePairs()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>81</x>
+     <y>225</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>28</x>
+     <y>208</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>updateRadicals()</slot>
+  <slot>updateLonePairs()</slot>
  </slots>
 </ui>

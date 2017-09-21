@@ -239,6 +239,8 @@ namespace Molsketch {
       template <class T>
       T *itemNear(const QPointF &pos, qreal tolerance);
       qreal getRadicalDiameter() const;
+      qreal getLonePairLength() const;
+      qreal getLonePairLineWidth() const;
   protected:
       XmlObjectInterface *produceChild(const QString &childName, const QString& type) ;
       QList<const XmlObjectInterface *> children() const ;

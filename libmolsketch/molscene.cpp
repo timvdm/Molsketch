@@ -269,6 +269,14 @@ namespace Molsketch {
     return d->settings->getRadicalDiameter();
   }
 
+  qreal MolScene::getLonePairLength() const {
+    return d->settings->getLonePairLength();
+  }
+
+  qreal MolScene::getLonePairLineWidth() const {
+    return d->settings->getLonePairLineWidth();
+  }
+
   QString MolScene::mimeType()
   {
     return "molecule/molsketch";

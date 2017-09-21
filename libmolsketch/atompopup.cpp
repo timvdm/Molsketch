@@ -23,6 +23,7 @@
 #include "atom.h"
 #include "molscene.h"
 #include "radicalelectron.h"
+#include "lonepair.h"
 #include <QDebug>
 
 namespace Molsketch {
@@ -32,21 +33,26 @@ namespace Molsketch {
     Atom* atom;
     Ui::AtomPopup* ui;
 
-    QVector<RadicalElectron*> radicalsFromAtom() {
+    template<class T>
+    QVector<T*> childrenOfAtom() {
       QList<QGraphicsItem*> childItems = atom->childItems();
-      QVector<RadicalElectron*> radicals(childItems.size());
-      std::transform(childItems.begin(), childItems.end(), radicals.begin(), [](QGraphicsItem* item) { return dynamic_cast<RadicalElectron*>(item);});
+      QVector<T*> radicals(childItems.size());
+      std::transform(childItems.begin(), childItems.end(), radicals.begin(), [](QGraphicsItem* item) { return dynamic_cast<T*>(item);});
       radicals.removeAll(nullptr);
       return radicals;
     }
 
-    void getFromAtom()
-    {
+    void getFromAtom() {
       ui->element->setText(atom->element());
       ui->charge->setValue(atom->charge());
       ui->hydrogens->setValue(atom->numImplicitHydrogens());
       ui->coordinates->model()->setCoordinates(atom->coordinates());
-      QVector<RadicalElectron*> radicals = radicalsFromAtom();
+      getRadicalsFromAtom();
+      getLonePairsFromAtom();
+    }
+
+    void getRadicalsFromAtom() {
+      auto radicals = childrenOfAtom<RadicalElectron>();
       QVector<BoundingBoxLinker> radicalPositions(radicals.size());
       std::transform(radicals.begin(), radicals.end(), radicalPositions.begin(), [](const RadicalElectron* radical) {return radical->linker();});
       ui->topLeftRadical->setChecked(radicalPositions.contains(BoundingBoxLinker::upperLeft)); // TODO link checkbox to linker
@@ -58,6 +64,21 @@ namespace Molsketch {
       ui->leftRadical->setChecked(radicalPositions.contains(BoundingBoxLinker::toLeft));
       ui->rightRadical->setChecked(radicalPositions.contains(BoundingBoxLinker::toRight));
     }
+
+    void getLonePairsFromAtom() {
+      auto lonePairs = childrenOfAtom<LonePair>();
+      QVector<BoundingBoxLinker> lonePairPositions(lonePairs.size());
+      std::transform(lonePairs.begin(), lonePairs.end(), lonePairPositions.begin(), [](const LonePair* lonePair) { return lonePair->linker();});
+      ui->topLeftLonePair->setChecked(lonePairPositions.contains(BoundingBoxLinker::atTopLeft));
+      ui->topLonePair->setChecked(lonePairPositions.contains(BoundingBoxLinker::atTop));
+      ui->topRightLonePair->setChecked(lonePairPositions.contains(BoundingBoxLinker::atTopRight));
+      ui->bottomLeftLonePair->setChecked(lonePairPositions.contains(BoundingBoxLinker::atBottomLeft));
+      ui->bottomLonePair->setChecked(lonePairPositions.contains(BoundingBoxLinker::atBottom));
+      ui->bottomRightLonePair->setChecked(lonePairPositions.contains(BoundingBoxLinker::atBottomRight));
+      ui->leftLonePair->setChecked(lonePairPositions.contains(BoundingBoxLinker::atLeft));
+      ui->rightLonePair->setChecked(lonePairPositions.contains(BoundingBoxLinker::atRight));
+    }
+
   };
 
   AtomPopup::AtomPopup(QWidget *parent) :
@@ -72,38 +93,32 @@ namespace Molsketch {
     setObjectName("atom properties");
   }
 
-  AtomPopup::~AtomPopup()
-  {
+  AtomPopup::~AtomPopup() {
     delete ui;
     delete d;
   }
 
-  void AtomPopup::connectAtom(Atom *a)
-  {
+  void AtomPopup::connectAtom(Atom *a) {
     d->atom = a;
     setScene(a ? dynamic_cast<MolScene*>(a->scene()) : 0);
   }
 
-  void AtomPopup::on_element_textChanged(const QString &arg1)
-  {
+  void AtomPopup::on_element_textChanged(const QString &arg1) {
     Q_UNUSED(arg1)
     attemptToPushUndoCommand(new Commands::ChangeElement(d->atom, ui->element->text()));
   }
 
-  void AtomPopup::on_charge_valueChanged(int arg1)
-  {
+  void AtomPopup::on_charge_valueChanged(int arg1) {
     Q_UNUSED(arg1)
     attemptToPushUndoCommand(new Commands::setAtomChargeCommand(d->atom, ui->charge->value()));
   }
 
-  void AtomPopup::on_hydrogens_valueChanged(int arg1)
-  {
+  void AtomPopup::on_hydrogens_valueChanged(int arg1) {
     Q_UNUSED(arg1)
     attemptToPushUndoCommand(new Commands::setImplicitHydrogensCommand(d->atom, ui->hydrogens->value()));
   }
 
-  void AtomPopup::onCoordinatesDatachanged()
-  {
+  void AtomPopup::onCoordinatesDatachanged() {
     if (!d->atom) return;
     attemptToPushUndoCommand(Commands::MoveItem::absolute(d->atom, ui->coordinates->model()->getCoordinates().first()));
   }
@@ -111,7 +126,7 @@ namespace Molsketch {
   void AtomPopup::updateRadicals() {
     if (!d->atom) return;
     attemptBeginMacro(tr("Change radical electrons"));
-    for (RadicalElectron* child : d->radicalsFromAtom())
+    for (RadicalElectron* child : d->childrenOfAtom<RadicalElectron>())
       attemptToPushUndoCommand(new Commands::ChildItemCommand(d->atom, child));
     addRadical(ui->topLeftRadical, BoundingBoxLinker::upperLeft);
     addRadical(ui->topRightRadical, BoundingBoxLinker::upperRight);
@@ -121,6 +136,23 @@ namespace Molsketch {
     addRadical(ui->bottomRadical, BoundingBoxLinker::below);
     addRadical(ui->leftRadical, BoundingBoxLinker::toLeft);
     addRadical(ui->rightRadical, BoundingBoxLinker::toRight);
+    attemptEndMacro();
+  }
+
+  void AtomPopup::updateLonePairs()
+  {
+    if (!d->atom) return;
+    attemptBeginMacro(tr("Change lone pairs"));
+    for (LonePair *child : d->childrenOfAtom<LonePair>())
+      attemptToPushUndoCommand(new Commands::ChildItemCommand(d->atom, child));
+    addLonePair(ui->topLeftLonePair, BoundingBoxLinker::atTopLeft, 45);
+    addLonePair(ui->topRightLonePair, BoundingBoxLinker::atTopRight, 315);
+    addLonePair(ui->bottomLeftLonePair, BoundingBoxLinker::atBottomLeft, 135);
+    addLonePair(ui->bottomRightLonePair, BoundingBoxLinker::atBottomRight, 225);
+    addLonePair(ui->topLonePair, BoundingBoxLinker::atTop, 0);
+    addLonePair(ui->bottomLonePair, BoundingBoxLinker::atBottom, 180);
+    addLonePair(ui->leftLonePair, BoundingBoxLinker::atLeft, 90);
+    addLonePair(ui->rightLonePair, BoundingBoxLinker::atRight, 270);
     attemptEndMacro();
   }
 
@@ -134,5 +166,12 @@ namespace Molsketch {
     if (!checkBox->isChecked()) return;
     qreal diameter = scene() ? scene()->getRadicalDiameter() : 2; // TODO make default constant in settings class
     attemptToPushUndoCommand(new Commands::ChildItemCommand(d->atom, new RadicalElectron(diameter, linker)));
+  }
+
+  void AtomPopup::addLonePair(const QCheckBox *checkBox, const BoundingBoxLinker &linker, const qreal angle) {
+    if (!checkBox->isChecked()) return;
+    qreal length = scene() ? scene()->getLonePairLength() : 5; // TODO make default constant
+    qreal lineWidth = scene() ? scene()->getLonePairLineWidth() : 1.5;
+    attemptToPushUndoCommand(new Commands::ChildItemCommand(d->atom, new LonePair(angle, lineWidth, length, linker)));
   }
 } // namespace

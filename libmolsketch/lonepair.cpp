@@ -87,6 +87,10 @@ QString LonePair::xmlName () const {
   return "lonePair";
 }
 
+qreal LonePair::angle() const {
+  return line().angle();
+}
+
 XmlObjectInterface* LonePair::produceChild (const QString& name, const QString& type) {
   Q_D(LonePair);
   if (d->linker.xmlName() == name) return &(d->linker);
