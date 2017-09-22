@@ -52,6 +52,11 @@ namespace Molsketch {
 
   RadicalElectron::~RadicalElectron() {}
 
+  qreal RadicalElectron::diameter() const {
+    Q_D(const RadicalElectron);
+    return d->diameter;
+  }
+
   QRectF RadicalElectron::boundingRect() const {
     if (!parentItem()) return QRectF();
     Q_D(const RadicalElectron);

@@ -53,6 +53,10 @@ namespace Molsketch {
 
     void getRadicalsFromAtom() {
       auto radicals = childrenOfAtom<RadicalElectron>();
+      qreal sumOfDiameters = 0;
+      std::for_each(radicals.begin(), radicals.end(), [&](const RadicalElectron* radical) { sumOfDiameters += radical->diameter();});
+      ui->radicalDiameter->setValue(radicals.isEmpty() ? 1.5 : (sumOfDiameters / radicals.size())); // TODO apply scene default!
+
       QVector<BoundingBoxLinker> radicalPositions(radicals.size());
       std::transform(radicals.begin(), radicals.end(), radicalPositions.begin(), [](const RadicalElectron* radical) {return radical->linker();});
       ui->topLeftRadical->setChecked(radicalPositions.contains(BoundingBoxLinker::upperLeft)); // TODO link checkbox to linker
@@ -67,6 +71,12 @@ namespace Molsketch {
 
     void getLonePairsFromAtom() {
       auto lonePairs = childrenOfAtom<LonePair>();
+      qreal sumOfLineWidths = 0, sumOfLengths = 0;
+      std::for_each(lonePairs.begin(), lonePairs.end(), [&] (const LonePair* lonePair) { sumOfLengths += lonePair->length();
+      sumOfLineWidths += lonePair->lineWidth(); });
+      ui->lonePairLength->setValue(lonePairs.empty() ? 5 : (sumOfLengths / lonePairs.size())); // TODO apply scene default!
+      ui->lonePairLineWidth->setValue(lonePairs.empty() ? 1 : (sumOfLineWidths / lonePairs.size())); // TODO apply scene default!
+
       QVector<BoundingBoxLinker> lonePairPositions(lonePairs.size());
       std::transform(lonePairs.begin(), lonePairs.end(), lonePairPositions.begin(), [](const LonePair* lonePair) { return lonePair->linker();});
       ui->topLeftLonePair->setChecked(lonePairPositions.contains(BoundingBoxLinker::atTopLeft));
@@ -164,14 +174,11 @@ namespace Molsketch {
 
   void AtomPopup::addRadical(const QCheckBox* checkBox, const BoundingBoxLinker &linker) {
     if (!checkBox->isChecked()) return;
-    qreal diameter = scene() ? scene()->getRadicalDiameter() : 2; // TODO make default constant in settings class
-    attemptToPushUndoCommand(new Commands::ChildItemCommand(d->atom, new RadicalElectron(diameter, linker)));
+    attemptToPushUndoCommand(new Commands::ChildItemCommand(d->atom, new RadicalElectron(ui->radicalDiameter->value(), linker)));
   }
 
   void AtomPopup::addLonePair(const QCheckBox *checkBox, const BoundingBoxLinker &linker, const qreal angle) {
     if (!checkBox->isChecked()) return;
-    qreal length = scene() ? scene()->getLonePairLength() : 5; // TODO make default constant
-    qreal lineWidth = scene() ? scene()->getLonePairLineWidth() : 1.5;
-    attemptToPushUndoCommand(new Commands::ChildItemCommand(d->atom, new LonePair(angle, lineWidth, length, linker)));
+    attemptToPushUndoCommand(new Commands::ChildItemCommand(d->atom, new LonePair(angle, ui->lonePairLineWidth->value(), ui->lonePairLength->value(), linker)));
   }
 } // namespace

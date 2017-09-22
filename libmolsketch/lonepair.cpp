@@ -91,6 +91,14 @@ qreal LonePair::angle() const {
   return line().angle();
 }
 
+qreal LonePair::length() const {
+  return line().length();
+}
+
+qreal LonePair::lineWidth() const {
+  return pen().widthF();
+}
+
 XmlObjectInterface* LonePair::produceChild (const QString& name, const QString& type) {
   Q_D(LonePair);
   if (d->linker.xmlName() == name) return &(d->linker);

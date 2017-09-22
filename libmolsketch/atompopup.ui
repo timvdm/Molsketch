@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>231</width>
-    <height>376</height>
+    <height>481</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -219,34 +219,34 @@
     </widget>
    </item>
    <item row="5" column="0">
-    <widget class="QLabel" name="radicalsDiameterLabel">
+    <widget class="QLabel" name="radicalDiameterLabel">
      <property name="text">
       <string>Diameter</string>
      </property>
     </widget>
    </item>
    <item row="8" column="0">
-    <widget class="QLabel" name="lonePairsLineWidthLabel">
+    <widget class="QLabel" name="lonePairLineWidthLabel">
      <property name="text">
       <string>Line width</string>
      </property>
     </widget>
    </item>
    <item row="7" column="0">
-    <widget class="QLabel" name="lonePairsLengthLabel">
+    <widget class="QLabel" name="lonePairLengthLabel">
      <property name="text">
       <string>Length</string>
      </property>
     </widget>
    </item>
    <item row="5" column="1">
-    <widget class="QDoubleSpinBox" name="radicalsDiameter"/>
+    <widget class="QDoubleSpinBox" name="radicalDiameter"/>
    </item>
    <item row="7" column="1">
-    <widget class="QDoubleSpinBox" name="lonePairsLength"/>
+    <widget class="QDoubleSpinBox" name="lonePairLength"/>
    </item>
    <item row="8" column="1">
-    <widget class="QDoubleSpinBox" name="lonePairsLineWidth"/>
+    <widget class="QDoubleSpinBox" name="lonePairLineWidth"/>
    </item>
   </layout>
  </widget>
@@ -331,7 +331,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>104</x>
-     <y>164</y>
+     <y>192</y>
     </hint>
     <hint type="destinationlabel">
      <x>115</x>
@@ -347,7 +347,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>186</x>
-     <y>164</y>
+     <y>192</y>
     </hint>
     <hint type="destinationlabel">
      <x>115</x>
@@ -363,7 +363,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>145</x>
-     <y>164</y>
+     <y>192</y>
     </hint>
     <hint type="destinationlabel">
      <x>115</x>
@@ -414,8 +414,8 @@
      <y>20</y>
     </hint>
     <hint type="destinationlabel">
-     <x>128</x>
-     <y>205</y>
+     <x>145</x>
+     <y>293</y>
     </hint>
    </hints>
   </connection>
@@ -426,8 +426,8 @@
    <slot>updateLonePairs()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>128</x>
-     <y>225</y>
+     <x>145</x>
+     <y>322</y>
     </hint>
     <hint type="destinationlabel">
      <x>115</x>
@@ -442,8 +442,8 @@
    <slot>updateLonePairs()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>169</x>
-     <y>225</y>
+     <x>186</x>
+     <y>322</y>
     </hint>
     <hint type="destinationlabel">
      <x>115</x>
@@ -458,8 +458,8 @@
    <slot>updateLonePairs()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>87</x>
-     <y>205</y>
+     <x>104</x>
+     <y>293</y>
     </hint>
     <hint type="destinationlabel">
      <x>115</x>
@@ -474,8 +474,8 @@
    <slot>updateLonePairs()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>169</x>
-     <y>185</y>
+     <x>186</x>
+     <y>264</y>
     </hint>
     <hint type="destinationlabel">
      <x>115</x>
@@ -490,8 +490,8 @@
    <slot>updateLonePairs()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>128</x>
-     <y>185</y>
+     <x>145</x>
+     <y>264</y>
     </hint>
     <hint type="destinationlabel">
      <x>115</x>
@@ -506,8 +506,8 @@
    <slot>updateLonePairs()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>87</x>
-     <y>185</y>
+     <x>104</x>
+     <y>264</y>
     </hint>
     <hint type="destinationlabel">
      <x>115</x>
@@ -522,8 +522,8 @@
    <slot>updateLonePairs()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>169</x>
-     <y>205</y>
+     <x>186</x>
+     <y>293</y>
     </hint>
     <hint type="destinationlabel">
      <x>115</x>
@@ -538,12 +538,60 @@
    <slot>updateLonePairs()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>81</x>
-     <y>225</y>
+     <x>104</x>
+     <y>322</y>
     </hint>
     <hint type="destinationlabel">
      <x>28</x>
      <y>208</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radicalDiameter</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>AtomPopup</receiver>
+   <slot>updateRadicals()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>101</x>
+     <y>220</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>115</x>
+     <y>240</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>lonePairLineWidth</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>AtomPopup</receiver>
+   <slot>updateLonePairs()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>101</x>
+     <y>379</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>115</x>
+     <y>240</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>lonePairLength</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>AtomPopup</receiver>
+   <slot>updateLonePairs()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>101</x>
+     <y>344</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>115</x>
+     <y>240</y>
     </hint>
    </hints>
   </connection>

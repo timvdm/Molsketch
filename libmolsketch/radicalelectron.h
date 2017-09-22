@@ -34,6 +34,7 @@ namespace Molsketch {
     explicit RadicalElectron(qreal diameter = 2, BoundingBoxLinker linker = BoundingBoxLinker(Anchor::Top, Anchor::Bottom), const QColor& color = QColor());
     RadicalElectron(const RadicalElectron& other);
     ~RadicalElectron();
+    qreal diameter() const;
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     BoundingBoxLinker linker() const;

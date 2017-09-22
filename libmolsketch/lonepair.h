@@ -43,7 +43,8 @@ public:
   void paint (QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
   QString xmlName () const override;
   qreal angle() const;
-
+  qreal length() const;
+  qreal lineWidth() const;
 protected:
   XmlObjectInterface* produceChild (const QString& name, const QString& type) override;
   void readAttributes (const QXmlStreamAttributes& attributes) override;
