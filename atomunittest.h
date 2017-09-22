@@ -19,6 +19,7 @@
 
 #include <cxxtest/TestSuite.h>
 
+#include <bond.h>
 #include <lonepair.h>
 
 #include <atom.h>
@@ -119,5 +120,20 @@ public:
     TS_ASSERT_EQUALS(atom->childItems().size(), 2);
     TS_ASSERT_DIFFERS(dynamic_cast<LonePair*>(atom->childItems()[0]), nullptr);
     TS_ASSERT_DIFFERS(dynamic_cast<RadicalElectron*>(atom->childItems()[1]), nullptr);
+  }
+
+  void testAtomIsShownIfItHasChildren() {
+    Atom otherAtom, thirdAtom;
+    Bond firstBond(atom, &otherAtom), secondBond(atom, &thirdAtom); // need at least two bonds
+    atom->setCharge(-3); // neutralize charge
+
+    atom->setElement("C");
+    TS_ASSERT(!atom->isDrawn());
+
+    lonePair->setParentItem(atom);
+    TS_ASSERT(atom->isDrawn());
+
+    firstBond.setAtoms(nullptr, nullptr);
+    secondBond.setAtoms(nullptr, nullptr);
   }
 };
