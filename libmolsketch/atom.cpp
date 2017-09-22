@@ -840,7 +840,11 @@ namespace Molsketch {
       chargeVisible = molScene->chargeVisible();
     }
 
-    if ((m_elementSymbol == "C") && !carbonVisible && (numBonds() > 1) && ((charge() == 0) || !chargeVisible))
+    if ((m_elementSymbol == "C")
+        && !carbonVisible
+        && (numBonds() > 1)
+        && ((charge() == 0) || !chargeVisible)
+        && childItems().empty())
       return false;
     return true;
   }
