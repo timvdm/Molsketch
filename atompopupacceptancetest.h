@@ -35,10 +35,13 @@
 
 using namespace Molsketch;
 
-const qreal RADICAL_DIAMETER = 2;
+const qreal RADICAL_DIAMETER = 2.5;
+const qreal OTHER_RADICAL_DIAMETER = 1.5;
 const qreal LONE_PAIR_ANGLE = 45;
 const qreal LONE_PAIR_LINE_WIDTH = 1.5;
-const qreal LONE_PAIR_LENGTH = 5;
+const qreal LONE_PAIR_LENGTH = 5.5;
+const qreal OTHER_LONE_PAIR_LENGTH = 6.5;
+const qreal OTHER_LONE_PAIR_LINE_WIDTH = 2.5;
 
 class AtomPopupUnitTest : public CxxTest::TestSuite {
   Atom *atom;
@@ -230,7 +233,6 @@ public:
   }
 
   void testChangingRadicalWorks() {
-    resetAtom();;
     (new RadicalElectron(RADICAL_DIAMETER, BoundingBoxLinker::above))->setParentItem(atom);
     popup->connectAtom(atom);
 
@@ -243,10 +245,20 @@ public:
   }
 
   void testRadicalDiameterIsShown() {
-
+    (new RadicalElectron(RADICAL_DIAMETER, BoundingBoxLinker::above))->setParentItem(atom);
+    popup->connectAtom(atom);
+    TS_ASSERT_EQUALS(assertNotNull(popup->findChild<QDoubleSpinBox*>("radicalDiameter"))->value(), RADICAL_DIAMETER);
   }
 
   void testRadicalDiameterCanBeChanged() {
+    (new RadicalElectron(RADICAL_DIAMETER, BoundingBoxLinker::above))->setParentItem(atom);
+    popup->connectAtom(atom);
+
+    assertNotNull(popup->findChild<QDoubleSpinBox*>("radicalDiameter"))->setValue(OTHER_RADICAL_DIAMETER);
+    TS_ASSERT_EQUALS(atom->childItems().size(), 1);
+    TS_ASSERT_EQUALS(assertNotNull(dynamic_cast<RadicalElectron*>(atom->childItems()[0]))->diameter(), OTHER_RADICAL_DIAMETER);
+    QS_ASSERT_EQUALS(scene->stack()->count(), 1);
+    QS_ASSERT_EQUALS(scene->stack()->undoText(), "Change radical electrons");
 
   }
 
@@ -313,7 +325,6 @@ public:
   }
 
   void testChangingLonePairsWorks() {
-    resetAtom();;
     (new LonePair(LONE_PAIR_ANGLE, LONE_PAIR_LINE_WIDTH, LONE_PAIR_LENGTH, BoundingBoxLinker::atTop))->setParentItem(atom);
     popup->connectAtom(atom);
 
@@ -325,16 +336,33 @@ public:
     QS_ASSERT_EQUALS(dynamic_cast<LonePair*>(atom->childItems().first())->boundingRect().center(), atom->boundingRect().topLeft());
   }
 
-  void testLonePairLengthDisplayed() {
-
+  void testLonePairLengthAndLineWidthDisplayed() {
+    (new LonePair(LONE_PAIR_ANGLE, LONE_PAIR_LINE_WIDTH, LONE_PAIR_LENGTH, BoundingBoxLinker::atTop))->setParentItem(atom);
+    popup->connectAtom(atom);
+    TS_ASSERT_EQUALS(assertNotNull(popup->findChild<QDoubleSpinBox*>("lonePairLength"))->value(), LONE_PAIR_LENGTH);
+    TS_ASSERT_EQUALS(assertNotNull(popup->findChild<QDoubleSpinBox*>("lonePairLineWidth"))->value(), LONE_PAIR_LINE_WIDTH);
   }
 
   void testLonePairLengthChangeWorks() {
+    (new LonePair(LONE_PAIR_ANGLE, LONE_PAIR_LINE_WIDTH, LONE_PAIR_LENGTH, BoundingBoxLinker::atTop))->setParentItem(atom);
+    popup->connectAtom(atom);
 
+    assertNotNull(popup->findChild<QDoubleSpinBox*>("lonePairLength"))->setValue(OTHER_LONE_PAIR_LENGTH);
+    TS_ASSERT_EQUALS(atom->childItems().size(), 1);
+    TS_ASSERT_EQUALS(assertNotNull(dynamic_cast<LonePair*>(atom->childItems()[0]))->length(), OTHER_LONE_PAIR_LENGTH);
+    QS_ASSERT_EQUALS(scene->stack()->count(), 1);
+    QS_ASSERT_EQUALS(scene->stack()->undoText(), "Change lone pairs");
   }
 
   void testLonePairLineWidthChangeWorks() {
+    (new LonePair(LONE_PAIR_ANGLE, LONE_PAIR_LINE_WIDTH, LONE_PAIR_LENGTH, BoundingBoxLinker::atTop))->setParentItem(atom);
+    popup->connectAtom(atom);
 
+    assertNotNull(popup->findChild<QDoubleSpinBox*>("lonePairLineWidth"))->setValue(OTHER_LONE_PAIR_LINE_WIDTH);
+    TS_ASSERT_EQUALS(atom->childItems().size(), 1);
+    TS_ASSERT_EQUALS(assertNotNull(dynamic_cast<LonePair*>(atom->childItems()[0]))->lineWidth(), OTHER_LONE_PAIR_LINE_WIDTH);
+    QS_ASSERT_EQUALS(scene->stack()->count(), 1);
+    QS_ASSERT_EQUALS(scene->stack()->undoText(), "Change lone pairs");
   }
 
   void testElementSymbolInLonePairAndRadicalWidget() {
