@@ -84,7 +84,7 @@ namespace Molsketch {
        * Creates a new MolScene with @p parent.
        */
       explicit MolScene(QObject* parent = 0);
-      /** Creates a new MolScene with @p settings. Will _not_ assume ownership of @p settings. */
+      /** Creates a new MolScene with @p settings. Will assume ownership of @p settings! */
       MolScene(SceneSettings *settings, QObject* parent = 0);
       /**
        * Cleans up the UndoStack and deletes the molscene.

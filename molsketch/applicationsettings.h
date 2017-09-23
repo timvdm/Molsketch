@@ -26,7 +26,7 @@
 class ProgramVersion;
 class QByteArray;
 
-class ApplicationSettings : public Molsketch::SceneSettings
+class ApplicationSettings : public Molsketch::SceneSettings // TODO this doesn't seem to be such a very good idea... better have these settings independent of the scene settings
 {
   Q_OBJECT
 public:

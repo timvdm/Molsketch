@@ -240,6 +240,7 @@ namespace Molsketch {
 //    addItem(textItem);
 
     d->settings = settings;
+    settings->setParent(this);
   }
 
   MolScene::MolScene(QObject* parent)
