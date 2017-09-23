@@ -20,7 +20,6 @@
 #include <cxxtest/TestSuite.h>
 #include <molscene.h>
 #include <lonepair.h>
-#include "abstractxmlobjecttestutility.h"
 #include "utilities.h"
 
 using namespace Molsketch;
