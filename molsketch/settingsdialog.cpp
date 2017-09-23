@@ -100,6 +100,9 @@ void SettingsDialog::setInitialValues()
   Molsketch::SceneSettings::MouseWheelMode mouseWheelForTools = settings->getMouseWheelMode();
   ui.mouseWheelCycleTools->setChecked(Molsketch::SceneSettings::CycleTools == mouseWheelForTools);
   ui.mouseWheelCycleTools->setChecked(Molsketch::SceneSettings::Zoom == mouseWheelForTools);
+
+  ui.libraryPath->setText(settings->obabelIfacePath());
+  ui.obfPath->setText(settings->obabelFormatsPath());
 }
 
 void SettingsDialog::accept()
