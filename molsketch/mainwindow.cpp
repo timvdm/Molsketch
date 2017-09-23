@@ -778,7 +778,11 @@ void MainWindow::createStatusBar()
 #endif
 
   Indicator *openBabelIndicator = new Indicator(tr("OpenBabel"), statusBar());
+  openBabelIndicator->setToolTip(tr("Indicates if OpenBabel was found and could be loaded.\n"
+                                    "If OpenBabel is not available, download the auxiliary library package from molsketch.sf.net"));
   Indicator *inchiIndicator = new Indicator(tr("InChI"), statusBar());
+  inchiIndicator->setToolTip(tr("Indicates if InChI format support is available.\n"
+                                "If InChI is unavailable, download the auxiliary OpenBabel formats package from molsketch.sf.net"));
   connect(settings, SIGNAL(changedObabelIfacePath(QString)), obabelLoader, SLOT(reloadObabelIface(QString)));
   connect(settings, SIGNAL(changeObabelFormatsPath(QString)), obabelLoader, SLOT(setObabelFormats(QString)));
   connect(obabelLoader, SIGNAL(obabelIfaceAvailable(bool)), openBabelIndicator, SLOT(setMode(bool)));
