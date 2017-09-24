@@ -60,6 +60,7 @@ if(NOT FORCEQt4)
                 Gui
                 PrintSupport
                 Svg
+                Network
         )
 
         foreach(package ${Qt5RequiredPackages})
