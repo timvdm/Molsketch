@@ -10,9 +10,9 @@
 <ul>
     <li>change log displayed on startup
     <li>lone pairs and radical electrons</li>
+    <li>selection by type (not yet really useful as properties are usually edited only for single items)</li>
     <li>querying Wikidata for chemical structures (requires OpenBabel and InChI support)</li>
     <li>new packaging of Windows libraries (mainly OpenBabel)</li>
-    <li>selection by type (not yet really useful as properties are usually edited only for single items)</li>
 </ul>
 
 <h2>0.4.1 Beryllium-7</h2>
