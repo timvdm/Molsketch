@@ -8,7 +8,7 @@
 
 <h1>0.5.0 Boron</h1>
 <ul>
-    <li>change log displayed on startup
+    <li>change log displayed on startup</li>
     <li>lone pairs and radical electrons</li>
     <li>selection by type (not yet really useful as properties are usually edited only for single items)</li>
     <li>querying Wikidata for chemical structures (requires OpenBabel and InChI support)</li>
