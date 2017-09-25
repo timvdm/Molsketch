@@ -268,11 +268,8 @@ namespace Molsketch {
 
   void Atom::drawAtomLabel(QPainter *painter, const QString &lbl, int alignment)
   {
-    MolScene* molScene = dynamic_cast<MolScene*>(scene());
-
     painter->save(); // TODO unite with computeBoundingRect
-    QFont symbolFont = molScene->atomFont();
-    symbolFont.setPointSizeF(symbolFont.pointSizeF()*relativeWidth());
+    QFont symbolFont = getSymbolFont();
     QFont subscriptFont = symbolFont;
     subscriptFont.setPointSize(0.75 * symbolFont.pointSize());
     QFontMetrics fmSymbol(symbolFont);
@@ -457,7 +454,6 @@ namespace Molsketch {
       lbl += QString::number(hCount);
 
     painter->setPen(getColor());
-
     drawAtomLabel(painter, lbl, alignment);
 
     // Drawing rectangle
@@ -469,12 +465,13 @@ namespace Molsketch {
     }
 
     // Draw charge
-    if (molScene->chargeVisible()) {
+    if (molScene->chargeVisible()) { // TODO unite with subscript drawing and align appropriately
       QString chargeId = chargeString();
-      QFont superscriptFont = molScene->atomFont();
-      superscriptFont.setPointSize(0.5 * superscriptFont.pointSize());
+      QFont superscriptFont = getSymbolFont();
+      superscriptFont.setPointSize(0.75 * superscriptFont.pointSize());
       QFontMetrics fmSymbol(superscriptFont);
       int offset = 0.5 * fmSymbol.width("+");
+      painter->setFont(superscriptFont);
       painter->drawText(m_shape.right() - offset, m_shape.top() + offset, chargeId);
     }
 
