@@ -364,7 +364,7 @@ namespace Molsketch
   bool isInputFormatAvailable(OpenBabel::OBConversion conv, const char* format) {
     if (conv.SetInFormat(format)) return true;
     qCritical("Could not find format: %s", format);
-    qInfo(("Available formats: " + outputFormats().join(", ")).toStdString().c_str());
+    qInfo() << ("Available formats: " + outputFormats().join(", "));
     return false;
   }
 
