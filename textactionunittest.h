@@ -118,7 +118,7 @@ public:
       QS_ASSERT_EQUALS(QPointF(10.3, -15.1), item->pos());
     }
     TS_ASSERT_EQUALS(1, scene->stack()->index());
-    TS_ASSERT(dynamic_cast<const Commands::AddItem*>(scene->stack()->command(0)));
+    TS_ASSERT(dynamic_cast<const Commands::ItemAction*>(scene->stack()->command(0)));
   }
 
   void testMouseReleasingRejectedForRightButton() {
