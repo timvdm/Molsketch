@@ -73,6 +73,8 @@ namespace Molsketch {
       ItemType* item;
     protected:
       virtual ItemType* getItem() const { return item; }
+      virtual MolScene* getScene() const { ItemType* actualItem = getItem();
+                                           return actualItem ? dynamic_cast<MolScene*>(actualItem->scene()) : nullptr; }
     public:
       explicit Command(const QString& text = "", QUndoCommand* parent = 0)
         : Command(0, text, parent) {}
@@ -86,14 +88,9 @@ namespace Molsketch {
         if (otherCommand->getItem()!= this->getItem()) return false;
         return true;
       }
-      void execute()
-      {
-        QGraphicsItem *item = getItem();
-        MolScene *scene = nullptr;
-        QUndoStack *stack = nullptr;
-        if (item) scene = dynamic_cast<MolScene*>(item->scene());
-        if (scene) stack = scene->stack();
-
+      void execute() {
+        MolScene *scene = getScene();
+        QUndoStack *stack = scene ? scene->stack() : nullptr;
         if (stack) stack->push(this);
         else {
           redo();
@@ -227,28 +224,32 @@ namespace Molsketch {
         : setItemPropertiesCommand(bond, qMakePair(bond->endAtom(), bond->beginAtom()), text, parent ) {}
     };
 
-    class AddItem : public QUndoCommand
-    {
+    class AddItem : public Command<QGraphicsItem, AddItem> {
     public:
       AddItem(QGraphicsItem* newItem, MolScene* addScene, const QString & text = "");
       ~AddItem();
       virtual void undo();
       virtual void redo();
+      static void addItemToScene(QGraphicsItem* item, MolScene* scene, const QString &text = "");
+      static void removeItemFromScene(QGraphicsItem* item, const QString &text = "");
     private:
-      QGraphicsItem* m_item;
       MolScene* m_scene;
+      bool owning;
+
+      // Command interface
+    protected:
+      MolScene *getScene() const override;
     };
 
-    class DelItem : public QUndoCommand
-    {
+    class DelItem : public Command<QGraphicsItem, DelItem> {
     public:
       DelItem(QGraphicsItem* delItem, const QString & text = "");
       ~DelItem();
       virtual void undo();
       virtual void redo();
     private:
-      QGraphicsItem* m_item;
       MolScene* m_scene;
+      bool owning;
     };
 
     class MoveItem : public setItemPropertiesCommand<QGraphicsItem, QPointF, &QGraphicsItem::setPos, &QGraphicsItem::pos, MoveItemId>
