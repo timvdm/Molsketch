@@ -223,7 +223,7 @@ namespace Molsketch {
           int index = newMolecule->atoms().size() + otherMolecule->atomIndex(atom);
           *newMolecule += *otherMolecule;
           atom = newMolecule->atom(index); // TODO dangerous as this relies on indexes
-          attemptUndoPush(new Commands::DelItem(otherMolecule));
+          Commands::ItemAction::removeItemFromScene(otherMolecule);
         }
       }
       else
@@ -274,7 +274,7 @@ namespace Molsketch {
     attemptBeginMacro(tr("Add ring"));
 
     Molecule *newMolecule = new Molecule();
-    attemptUndoPush(new Commands::AddItem(newMolecule, scene()));
+    Commands::ItemAction::addItemToScene(newMolecule, scene());
     QList<Atom*> ringAtoms = getRingAtoms(newMolecule);
     QList<Bond*> ringBonds = getRingBonds(ringAtoms, newMolecule);
     addAromaticity(ringBonds);

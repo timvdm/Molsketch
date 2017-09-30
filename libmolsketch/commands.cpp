@@ -138,54 +138,36 @@ void DelBond::redo()
   m_undone = false;
 }
 
-AddItem::AddItem(QGraphicsItem* newItem, MolScene* addScene, const QString & text)
+ItemAction::ItemAction(QGraphicsItem* newItem, MolScene* addScene, const QString & text)
   : Command(newItem, text), m_scene(addScene), owning(!newItem->scene())
 {}
 
-AddItem::~AddItem() {
+ItemAction::~ItemAction() {
   if (owning) delete getItem();
 }
 
-void AddItem::undo() {
+void ItemAction::redo() {
   if (!getItem() || !m_scene) return;
   if (owning) m_scene->addItem(getItem());
   else m_scene->removeItem(getItem());
   owning = !owning;
 }
-void AddItem::redo() {
-  undo();
+
+void ItemAction::undo() {
+  redo();
 }
 
-void AddItem::addItemToScene(QGraphicsItem *item, Molsketch::MolScene *scene, const QString& text) {
-  if (item->scene() == scene) return;
+void ItemAction::addItemToScene(QGraphicsItem *item, Molsketch::MolScene *scene, const QString& text) {
   if (item->scene()) item->scene()->removeItem(item);
-  (new AddItem(item, scene, text))->execute();
+  (new ItemAction(item, scene, text))->execute();
 }
 
-Molsketch::MolScene *Molsketch::Commands::AddItem::getScene() const {
+void ItemAction::removeItemFromScene(QGraphicsItem *item, const QString &text) {
+  (new ItemAction(item, dynamic_cast<MolScene*>(item->scene()), text))->execute();
+}
+
+Molsketch::MolScene *Molsketch::Commands::ItemAction::getScene() const {
   return m_scene;
-}
-
-DelItem::DelItem(QGraphicsItem* delItem, const QString & text)
-  : Command(delItem, text), m_scene(dynamic_cast<MolScene*>(delItem->scene())), owning(!delItem->scene())
-{}
-
-DelItem::~DelItem() {
-  if (owning) delete getItem();
-}
-
-void DelItem::undo() {
-  if (!getItem() || !m_scene) return;
-  if (owning) m_scene->addItem(getItem());
-  else m_scene->removeItem(getItem());
-  owning = !owning;
-}
-void DelItem::redo() {
-  undo();
-}
-
-void AddItem::removeItemFromScene(QGraphicsItem *item, const QString &text) {
-  (new AddItem(item, dynamic_cast<MolScene*>(item->scene()), text))->execute();
 }
 
 MoveItem::MoveItem(QGraphicsItem* item, const QPointF & pos, const QString & text, QUndoCommand* parent)

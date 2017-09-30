@@ -61,7 +61,7 @@ namespace Molsketch {
     event->accept();
     TextItem *item = new TextItem;
     item->setPos(event->scenePos());
-    attemptUndoPush(new Commands::AddItem(item, scene(), tr("Add text")));
+    Commands::ItemAction::addItemToScene(item, scene(), tr("Add text"));
     item->setFocus();
   }
 

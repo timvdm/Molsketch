@@ -142,7 +142,7 @@ namespace Molsketch {
   {
     if (!d->currentFrame) return ;
     if (!scene() || !scene()->stack()) return ; // TODO
-    scene()->stack()->push(new Commands::AddItem(d->currentFrame, scene(), tr("Decoration arrow"))) ;
+    Commands::ItemAction::addItemToScene(d->currentFrame, scene(), tr("Add frame or brackets"));
     d->currentFrame = 0 ;
     event->accept();
   }

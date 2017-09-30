@@ -119,11 +119,8 @@ namespace Molsketch {
       if (atom)
         parent->attemptUndoPush(new Commands::ChangeElement(atom, periodicTable->currentElement(), tr("change element")));
       else
-        parent->attemptUndoPush(new Commands::AddItem(
-                                  new Molecule(QSet<Atom*>() << new Atom(position,
-                                                                         periodicTable->currentElement()),
-                                               QSet<Bond*>()),
-                                  parent->scene(), tr("add atom")));
+        Commands::ItemAction::addItemToScene(new Molecule(QSet<Atom*>() << new Atom(position, periodicTable->currentElement()), QSet<Bond*>()),
+                                  parent->scene(), tr("add atom"));
     }
 
     void performDiatomicAction(const QPointF& posA, const QPointF& posB)
@@ -165,8 +162,7 @@ namespace Molsketch {
       Molecule* molB = atomB->molecule();
       if (!molA && !molB)
       {
-        parent->attemptUndoPush(new Commands::AddItem(new Molecule(QSet<Atom*>() << atomA << atomB, QSet<Bond*>()),
-                                                      parent->scene(), tr("add molecule")));
+        Commands::ItemAction::addItemToScene(new Molecule(QSet<Atom*>() << atomA << atomB, QSet<Bond*>()), parent->scene(), tr("add molecule"));
         return;
       }
       if (!molA)
@@ -189,9 +185,9 @@ namespace Molsketch {
       Molecule *newMolecule = Molecule::combineMolecules(QSet<Molecule*>() << molA << molB, &atomMapping, 0);
       atomA = atomMapping[atomA];
       atomB = atomMapping[atomB];
-      parent->attemptUndoPush(new Commands::DelItem(molA));
-      parent->attemptUndoPush(new Commands::DelItem(molB));
-      parent->attemptUndoPush(new Commands::AddItem(newMolecule, parent->scene()));
+      Commands::ItemAction::removeItemFromScene(molA);
+      Commands::ItemAction::removeItemFromScene(molB);
+      Commands::ItemAction::addItemToScene(newMolecule, parent->scene());
     }
 
     void addBond(Atom* atomA, Atom* atomB)

@@ -224,12 +224,13 @@ namespace Molsketch {
         : setItemPropertiesCommand(bond, qMakePair(bond->endAtom(), bond->beginAtom()), text, parent ) {}
     };
 
-    class AddItem : public Command<QGraphicsItem, AddItem> {
-    public:
-      AddItem(QGraphicsItem* newItem, MolScene* addScene, const QString & text = "");
-      ~AddItem();
+    class ItemAction : public Command<QGraphicsItem, ItemAction> {
+      ItemAction(QGraphicsItem* newItem, MolScene* addScene, const QString & text = "");
+    private:
+      ~ItemAction();
       virtual void undo();
       virtual void redo();
+    public:
       static void addItemToScene(QGraphicsItem* item, MolScene* scene, const QString &text = "");
       static void removeItemFromScene(QGraphicsItem* item, const QString &text = "");
     private:
@@ -239,17 +240,6 @@ namespace Molsketch {
       // Command interface
     protected:
       MolScene *getScene() const override;
-    };
-
-    class DelItem : public Command<QGraphicsItem, DelItem> {
-    public:
-      DelItem(QGraphicsItem* delItem, const QString & text = "");
-      ~DelItem();
-      virtual void undo();
-      virtual void redo();
-    private:
-      MolScene* m_scene;
-      bool owning;
     };
 
     class MoveItem : public setItemPropertiesCommand<QGraphicsItem, QPointF, &QGraphicsItem::setPos, &QGraphicsItem::pos, MoveItemId>

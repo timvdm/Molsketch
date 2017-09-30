@@ -132,7 +132,7 @@ namespace Molsketch {
         Frame *frame = new Frame();
         frame->setFrameString(data.toString());
         attemptBeginMacro(tr("add decoration"));
-        attemptUndoPush(new Commands::AddItem(frame, scene()));
+        Commands::ItemAction::addItemToScene(frame, scene());
         for(auto selectedItem : itemList)
           attemptUndoPush(new Commands::SetParentItem(selectedItem, frame));
         attemptEndMacro();
@@ -150,7 +150,7 @@ namespace Molsketch {
       {
         for (auto item : frame->childItems())
           attemptUndoPush(new Commands::SetParentItem(item, 0));
-        attemptUndoPush(new Commands::DelItem(frame));
+        Commands::ItemAction::removeItemFromScene(frame);
       }
       attemptEndMacro();
     }

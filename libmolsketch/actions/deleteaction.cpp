@@ -64,7 +64,7 @@ namespace Molsketch {
           attemptUndoPush(new Commands::DelBond(bond));
           break;
         default:
-          attemptUndoPush(new Commands::DelItem(item));
+          Commands::ItemAction::removeItemFromScene(item);
       }
       molecules.remove(0);
 
@@ -74,8 +74,8 @@ namespace Molsketch {
         if (!molecule->scene()) continue;
         if (!molecule->canSplit()) continue;
         foreach(Molecule* subMolecule, molecule->split())
-          attemptUndoPush(new Commands::AddItem(subMolecule, scene()));
-        attemptUndoPush(new Commands::DelItem(molecule));
+          Commands::ItemAction::addItemToScene(subMolecule, scene());
+        Commands::ItemAction::removeItemFromScene(molecule);
       }
 
     }

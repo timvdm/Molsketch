@@ -317,7 +317,7 @@ namespace Molsketch {
         // Finally delete the selected items
         m_stack->beginMacro(tr("cutting items"));
         foreach (QGraphicsItem* item, selectedItems())
-          if (item->type() == Molecule::Type) m_stack->push(new DelItem(item));
+          if (item->type() == Molecule::Type) ItemAction::removeItemFromScene(item);
         m_stack->endMacro();
   }
 
@@ -369,7 +369,7 @@ namespace Molsketch {
 
         // Paste all items on the internal clipboard
         m_stack->beginMacro(tr("pasting items"));
-        foreach(Molecule* item, m_clipItems) m_stack->push(new AddItem(new Molecule(item),this));
+        foreach(Molecule* item, m_clipItems) ItemAction::addItemToScene(new Molecule(item), this); // TODO use the real clipboard!
         m_stack->endMacro();
   }
 
@@ -464,16 +464,16 @@ namespace Molsketch {
         return image;
   }
 
-  void MolScene::addMolecule(Molecule* mol)
+  void MolScene::addMolecule(Molecule* mol) // TODO decommission this
   {
         Q_CHECK_PTR(mol);
         if (!mol) return;
         m_stack->beginMacro(tr("add molecule"));
-        m_stack->push(new AddItem(mol,this));
+        ItemAction::addItemToScene(mol, this);
         if (mol->canSplit()) {
           for(Molecule* molecule : mol->split())
-            m_stack->push(new AddItem(molecule, this));
-          m_stack->push(new DelItem(mol));
+            ItemAction::addItemToScene(molecule, this);
+          ItemAction::removeItemFromScene(mol);
         }
         m_stack->endMacro();
   }
@@ -831,7 +831,7 @@ namespace Molsketch {
   {
     if (!d->dragItem) return;
     event->accept();
-    stack()->push(new Commands::AddItem(d->dragItem, this, tr("insert molecule")));
+    ItemAction::addItemToScene(d->dragItem, this, tr("insert molecule"));
   }
 
   void MolScene::dragMoveEvent(QGraphicsSceneDragDropEvent *event)

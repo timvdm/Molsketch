@@ -95,7 +95,7 @@ namespace Molsketch {
   {
     if (!d->currentArrow) return ;
     if (!scene() || !scene()->stack()) return ; // TODO
-    scene()->stack()->push(new Commands::AddItem(d->currentArrow, scene(), tr("draw arrow"))) ;
+    Commands::ItemAction::addItemToScene(d->currentArrow, scene(), tr("draw arrow")) ; // TODO this might be problematic: the code assumes that an item will be added to the scene regardless -- right now we're just not doing anything in that case.
     d->currentArrow = 0 ;
     event->accept();
   }
