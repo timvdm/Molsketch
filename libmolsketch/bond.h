@@ -118,7 +118,8 @@ namespace Molsketch {
          */
     static QLineF shiftVector(const QLineF & vector, qreal shift);
 
-    QString xmlName() const { return "bond" ; }
+    QString xmlName() const;
+    static QString xmlClassName();
     /** set the coordinates of the two atoms */
     void setCoordinates(const QVector<QPointF> &c) ;
     /** get the coordinates of the two atoms */

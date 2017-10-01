@@ -41,7 +41,8 @@ public:
   friend QDebug operator<< (QDebug debug, const LonePair& lonePair);
   QRectF boundingRect () const override;
   void paint (QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
-  QString xmlName () const override;
+  QString xmlName() const override;
+  static QString xmlClassName();
   qreal angle() const;
   qreal length() const;
   qreal lineWidth() const;

@@ -231,7 +231,8 @@ namespace Molsketch {
       void wheelEvent(QGraphicsSceneWheelEvent *event);
   public:
 
-      QString xmlName() const { return "div" ; }
+      QString xmlName() const;
+      static QString xmlClassName();
       QPointF snapToGrid(const QPointF& point, bool force = false);
       bool snappingToGrid() const;
       bool cyclingByMouseWheelEnaled() const;

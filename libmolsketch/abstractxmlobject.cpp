@@ -23,6 +23,7 @@
 #include <QPair>
 #include <QStringList>
 #include "abstractxmlobject.h"
+#include <QDebug>
 
 namespace Molsketch {
   QXmlStreamReader &abstractXmlObject::readXml(QXmlStreamReader &in)
@@ -57,3 +58,10 @@ namespace Molsketch {
 
 } // namespace
 
+QDebug operator<<(QDebug debug, const QXmlStreamAttributes &attributes) {
+  debug << "Attribute count:" << attributes.size();
+  for (auto attribute : attributes) {
+    debug << attribute.name() << "=" << attribute.value();
+  }
+  return debug;
+}

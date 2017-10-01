@@ -363,8 +363,11 @@ namespace Molsketch {
     return d->framePathCode;
   }
 
-  QString Frame::xmlName() const
-  {
+  QString Frame::xmlName() const {
+    return xmlClassName();
+  }
+
+  QString Frame::xmlClassName() {
     return "frame";
   }
 

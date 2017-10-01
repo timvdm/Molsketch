@@ -66,6 +66,10 @@ namespace Molsketch {
   }
 
   QString BoundingBoxLinker::xmlName() const {
+    return xmlClassName();
+  }
+
+  QString BoundingBoxLinker::xmlClassName() {
     return "bbLinker";
   }
 

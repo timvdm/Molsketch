@@ -41,6 +41,7 @@ namespace Molsketch {
   public:
     QXmlStreamReader& readXml(QXmlStreamReader& in);
     QXmlStreamWriter& writeXml(QXmlStreamWriter& out) const;
+    static QString xmlClassName();
   private:
     class privateData;
     privateData *d;

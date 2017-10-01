@@ -852,10 +852,14 @@ namespace Molsketch {
     }
   }
 
+  QString MolScene::xmlName() const { return xmlClassName(); }
+
+  QString MolScene::xmlClassName() { return "div" ; }
+
 
   QUndoStack * MolScene::stack()
   {
-        return m_stack;
+    return m_stack;
   }
 
   QList<genericAction *> MolScene::sceneActions() const

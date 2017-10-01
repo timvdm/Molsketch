@@ -217,7 +217,8 @@ class Molecule : public graphicsItem
          */
         void invalidateElectronSystems();
 
-        QString xmlName() const { return "molecule" ; }
+        QString xmlName() const;
+        static QString xmlClassName();
 
   protected:
 

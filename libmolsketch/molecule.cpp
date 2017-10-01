@@ -719,6 +719,10 @@ namespace Molsketch {
     m_electronSystemsUpdate = true;
   }
 
+  QString Molecule::xmlName() const { return xmlClassName(); }
+
+  QString Molecule::xmlClassName() { return "molecule" ; }
+
   // TODO make default function that calls this one instead
   void Molecule::prepareContextMenu(QMenu *contextMenu)
   {

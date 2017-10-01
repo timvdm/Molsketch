@@ -71,6 +71,7 @@ namespace Molsketch {
     void swapPoint(const int& index, QPointF &p) ;
 
     QString xmlName() const;
+    static QString xmlClassName();
 
     Properties getProperties() const;
     QWidget* getPropertiesWidget();

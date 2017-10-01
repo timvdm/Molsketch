@@ -84,6 +84,10 @@ void LonePair::paint (QPainter* painter, const QStyleOptionGraphicsItem* option,
 }
 
 QString LonePair::xmlName () const {
+  return xmlClassName();
+}
+
+QString LonePair::xmlClassName() {
   return "lonePair";
 }
 

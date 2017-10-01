@@ -40,6 +40,7 @@ namespace Molsketch {
     BoundingBoxLinker linker() const;
     bool operator==(const RadicalElectron& other);
     QString xmlName() const;
+    static QString xmlClassName();
     friend QDebug operator<<(QDebug debug, const RadicalElectron& radicalElectron);
   protected:
     void readAttributes(const QXmlStreamAttributes &attributes) override;

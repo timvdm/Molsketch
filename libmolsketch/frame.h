@@ -52,6 +52,7 @@ namespace Molsketch {
     QString frameString() const;
 
     QString xmlName() const;
+    static QString xmlClassName();
     QPointF getPoint(const int &index) const;
   protected:
     void readGraphicAttributes(const QXmlStreamAttributes &attributes);

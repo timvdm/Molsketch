@@ -111,7 +111,8 @@ namespace Molsketch {
     void enableImplicitHydrogens(bool enabled);
 
     void hoverOut () {m_hidden = true;}
-    QString xmlName() const { return "atom" ; }
+    QString xmlName() const;
+    static QString xmlClassName();
     int labelAlignment() const;
     Bond *bondTo(Atom *other) const;
     QWidget* getPropertiesWidget();

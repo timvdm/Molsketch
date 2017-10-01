@@ -87,6 +87,10 @@ namespace Molsketch {
   }
 
   QString RadicalElectron::xmlName() const {
+    return xmlClassName();
+  }
+
+  QString RadicalElectron::xmlClassName() {
     return "radicalElectron";
   }
 

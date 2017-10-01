@@ -546,6 +546,10 @@ namespace Molsketch {
     return QLineF(rx1,ry1,rx2,ry2);
   }
 
+  QString Bond::xmlName() const { return xmlClassName(); }
+
+  QString Bond::xmlClassName() { return "bond" ; }
+
   void Bond::setCoordinates(const QVector<QPointF> &c)
   {
     if (c.size() != 2) return ;

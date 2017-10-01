@@ -56,6 +56,7 @@ namespace Molsketch { // TODO turn on warnings for switch'es
     virtual ~BoundingBoxLinker();
     QPointF getShift(const QRectF& reference, const QRectF& target) const;
     QString xmlName() const override;
+    static QString xmlClassName();
     QXmlStreamAttributes xmlAttributes() const override;
     void readAttributes(const QXmlStreamAttributes& attributes) override;
     bool operator==(const BoundingBoxLinker& other) const;

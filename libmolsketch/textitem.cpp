@@ -56,11 +56,15 @@ namespace Molsketch {
 
   QXmlStreamWriter &TextItem::writeXml(QXmlStreamWriter &out) const
   {
-    out.writeStartElement("textItem");
+    out.writeStartElement(xmlClassName());
     out.writeAttribute("coordinates", QString::number(pos().x()) +"," + QString::number(pos().y())); // TODO static utility function for this
     out.writeCDATA(toHtml());
     out.writeEndElement();
     return out;
+  }
+
+  QString TextItem::xmlClassName() {
+    return "textItem";
   }
 
   void TextItem::mousePressEvent(QGraphicsSceneMouseEvent *event) {

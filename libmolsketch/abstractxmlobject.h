@@ -45,4 +45,7 @@ namespace Molsketch {
 
 } // namespace
 
+class QDebug;
+QDebug operator<<(QDebug debug, const QXmlStreamAttributes& attributes);
+
 #endif // ABSTRACTXMLOBJECT_H

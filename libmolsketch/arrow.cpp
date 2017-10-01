@@ -249,8 +249,11 @@ namespace Molsketch {
       qSwap(d->points[index], p) ;
   }
 
-  QString Arrow::xmlName() const
-  {
+  QString Arrow::xmlName() const {
+    return xmlClassName();
+  }
+
+  QString Arrow::xmlClassName() {
     return "arrow";
   }
 

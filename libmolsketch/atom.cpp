@@ -43,7 +43,6 @@
 #endif
 
 namespace Molsketch {
-
   //                                        //
   //     /    \      \   /      H           //
   //   HN      NH      N        N           //
@@ -866,6 +865,10 @@ namespace Molsketch {
   {
     m_implicitHydrogens = enabled;
   }
+
+  QString Atom::xmlName() const { return Atom::xmlClassName() ; }
+
+  QString Atom::xmlClassName() { return "atom" ; }
 
   void Atom::addBond(Bond *bond)
   {
