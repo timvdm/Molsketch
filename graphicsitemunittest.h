@@ -18,8 +18,24 @@
  ***************************************************************************/
 
 #include <cxxtest/TestSuite.h>
+#include <atom.h>
+#include <bond.h>
+#include <graphicsitem.h>
+#include "utilities.h"
 
-//using namespace Molsketch;
+using namespace Molsketch;
+
+const QByteArray EMPTY_LIST_XML("<?xml version=\"1.0\" encoding=\"UTF-8\"?><molsketchItems/>\n");
+const QByteArray ONE_ATOM_XML("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                               "<atom elementType=\"A\" hydrogenCount=\"0\" colorR=\"0\" colorG=\"0\" colorB=\"0\" scalingParameter=\"1\" coordinates=\"3,3\"/>\n");
+const QByteArray TWO_ATOMS_XML("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                               "<molsketchItems>"
+                               "<atom elementType=\"A\" hydrogenCount=\"0\" colorR=\"0\" colorG=\"0\" colorB=\"0\" scalingParameter=\"1\" coordinates=\"3,3\"/>"
+                               "<atom elementType=\"B\" hydrogenCount=\"0\" colorR=\"0\" colorG=\"0\" colorB=\"0\" scalingParameter=\"1\" coordinates=\"4,5\"/>"
+                               "</molsketchItems>\n"
+                               );
+const Atom atomA(QPointF(3,3), "A");
+const Atom atomB(QPointF(4,5), "B");
 
 class GraphicsItemUnitTest : public CxxTest::TestSuite {
 public:
@@ -29,7 +45,38 @@ public:
   void tearDown() {
   }
 
-  void testtestName() {
+  void testSerializingEmptyListOfGraphicsItems() {
+    QS_ASSERT_EQUALS(graphicsItem::serialize(QList<const graphicsItem*>()), EMPTY_LIST_XML);
+  }
 
+  void testSerializingListOfGraphicsItems() {
+    QList<const graphicsItem*> items;
+    items << &atomA << &atomB;
+    QS_ASSERT_EQUALS(graphicsItem::serialize(items), TWO_ATOMS_XML);
+  }
+
+  void testDeserializingEmptyByteArray() {
+    QS_ASSERT_EQUALS(graphicsItem::deserialize(QByteArray()), QList<graphicsItem*>());
+  }
+
+  void testDeserializingEmptyXml() {
+    QS_ASSERT_EQUALS(graphicsItem::deserialize(EMPTY_LIST_XML), QList<graphicsItem*>());
+  }
+
+  void testDeserializingTwoAtoms() {
+    auto deserialized = graphicsItem::deserialize(TWO_ATOMS_XML);
+    TS_ASSERT_EQUALS(deserialized.size(), 2);
+    QS_ASSERT_ON_POINTER(Atom, deserialized[0], element(), "A");
+    QS_ASSERT_ON_POINTER(Atom, deserialized[1], element(), "B");
+  }
+
+  void testSerializingSingleAtom() {
+    QS_ASSERT_EQUALS(graphicsItem::serialize(QList<const graphicsItem*>() << &atomA), ONE_ATOM_XML);
+  }
+
+  void testDeserializingSingleAtom() {
+    auto deserialized = graphicsItem::deserialize(ONE_ATOM_XML);
+    TS_ASSERT_EQUALS(deserialized.size(), 1);
+    QS_ASSERT_ON_POINTER(Atom, deserialized[0], element(), "A");
   }
 };
