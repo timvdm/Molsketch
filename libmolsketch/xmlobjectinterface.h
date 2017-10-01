@@ -29,6 +29,7 @@ namespace Molsketch {
     virtual QXmlStreamWriter& writeXml(QXmlStreamWriter& out) const = 0;
     virtual ~XmlObjectInterface() {}
   };
+  XmlObjectInterface *produceXmlObject(const QString &type);
 }
 
 QXmlStreamReader& operator>>(QXmlStreamReader& in, Molsketch::XmlObjectInterface& object);

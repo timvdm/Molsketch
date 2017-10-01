@@ -20,7 +20,38 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
+#include "arrow.h"
+#include "bond.h"
+#include "boundingboxlinker.h"
+#include "frame.h"
+#include "lonepair.h"
+#include "molecule.h"
+#include "molscene.h"
+#include "radicalelectron.h"
+#include "textitem.h"
 #include "xmlobjectinterface.h"
+#include <QMap>
+#include <functional>
+#include <atom.h>
+
+class TypeMap : public QMap<QString,std::function<Molsketch::XmlObjectInterface*()> > {
+  public:
+  TypeMap() {
+    using namespace Molsketch;
+#define REGISTER_XML_CLASS(CLASS_NAME) { insert(CLASS_NAME::xmlClassName(), []() -> CLASS_NAME* { return new CLASS_NAME;}); }
+    REGISTER_XML_CLASS(Atom);
+    REGISTER_XML_CLASS(Bond);
+    REGISTER_XML_CLASS(Molecule);
+    REGISTER_XML_CLASS(TextItem);
+    REGISTER_XML_CLASS(BoundingBoxLinker);
+    REGISTER_XML_CLASS(LonePair);
+    REGISTER_XML_CLASS(MolScene);
+    REGISTER_XML_CLASS(RadicalElectron);
+    REGISTER_XML_CLASS(Arrow);
+    REGISTER_XML_CLASS(Frame);
+  }
+};
+const TypeMap registeredTypes;
 
 QXmlStreamReader &operator>>(QXmlStreamReader &in, Molsketch::XmlObjectInterface &object)
 {
@@ -30,4 +61,9 @@ QXmlStreamReader &operator>>(QXmlStreamReader &in, Molsketch::XmlObjectInterface
 QXmlStreamWriter &operator<<(QXmlStreamWriter &out, const Molsketch::XmlObjectInterface &object)
 {
   return object.writeXml(out) ;
+}
+
+Molsketch::XmlObjectInterface *Molsketch::produceXmlObject(const QString &type) {
+  if (!registeredTypes.contains(type)) return nullptr;
+  return registeredTypes[type]();
 }
