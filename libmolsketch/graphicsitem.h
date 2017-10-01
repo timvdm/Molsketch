@@ -84,6 +84,8 @@ namespace Molsketch {
 
     static QXmlStreamAttributes& addColor(QXmlStreamAttributes& attributes, const QColor& color);
     static QColor extractColor(const QXmlStreamAttributes& attributes);
+    static QByteArray serialize(const QList<const graphicsItem*> items);
+    static QList<graphicsItem*> deserialize(const QByteArray& input);
 
   protected:
     qreal pointSelectionDistance() const;

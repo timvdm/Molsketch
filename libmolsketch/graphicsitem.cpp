@@ -451,7 +451,30 @@ namespace Molsketch {
   QColor graphicsItem::extractColor(const QXmlStreamAttributes &attributes) {
     return QColor(attributes.value("colorR").toString().toInt(),
                         attributes.value("colorG").toString().toInt(),
-                        attributes.value("colorB").toString().toInt());
+                  attributes.value("colorB").toString().toInt());
+  }
+
+  QByteArray graphicsItem::serialize(const QList<const graphicsItem *> items) {
+    QByteArray xml;
+    QXmlStreamWriter out(&xml);
+    out.writeStartDocument();
+    if (items.size() != 1) out.writeStartElement("molsketchItems");
+    for (auto item : items) if(item) item->writeXml(out);
+    out.writeEndDocument();
+    return xml;
+  }
+
+  QList<graphicsItem *> graphicsItem::deserialize(const QByteArray &input) {
+    QXmlStreamReader in(input);
+    QList<graphicsItem*> result;
+    while (in.readNextStartElement()) {
+      XmlObjectInterface *item = produceXmlObject(in.name().toString()); // TODO change to stringref
+      if (!dynamic_cast<graphicsItem*>(item)) continue; // TODO test this
+      item->readXml(in);
+      result << dynamic_cast<graphicsItem*>(item);
+    }
+    result.removeAll(nullptr);
+    return result;
   }
 
   qreal graphicsItem::pointSelectionDistance() const
