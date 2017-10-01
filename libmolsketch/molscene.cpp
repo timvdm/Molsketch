@@ -71,6 +71,7 @@
 #include "frame.h"
 #include "scenesettings.h"
 #include "textitem.h"
+#include "constants.h"
 
 #ifdef QT_STATIC_BUILD
 inline void initToolBarIcons() { Q_INIT_RESOURCE(toolicons); }
@@ -282,7 +283,7 @@ namespace Molsketch {
 
   QString MolScene::mimeType()
   {
-    return "molecule/molsketch";
+    return moleculeMimeType;
   }
   // Commands
 
@@ -305,72 +306,42 @@ namespace Molsketch {
         emit editModeChange( mode );
   }
 
-  void MolScene::cut()
-  {
-        /* TODO Using the desktop clipboard*/
-        // Check if something is selected
+  void MolScene::cut() {
         if (selectedItems().isEmpty()) return;
-
-        // Then do a copy
         copy();
-
-        // Finally delete the selected items
         m_stack->beginMacro(tr("cutting items"));
         foreach (QGraphicsItem* item, selectedItems())
-          if (item->type() == Molecule::Type) ItemAction::removeItemFromScene(item);
+          ItemAction::removeItemFromScene(item);
         m_stack->endMacro();
   }
 
-  void MolScene::copy() // TODO this doesn't seem to work
-  {
-        // Check if something is selected
-        if (selectedItems().isEmpty()) return;
+  void MolScene::copy() {
+    if (selectedItems().isEmpty()) return;
+    QRectF selectionRect;
+    QList<const graphicsItem*> items;
+    for (auto item : selectedItems()) {
+      selectionRect |= item->boundingRect();
+      items << dynamic_cast<graphicsItem*>(item);
+    }
 
-        /* TODO Using the desktop clipboard */
-        // Access the clipboard
-        QClipboard* clipboard = qApp->clipboard();
+    // Clear selection
+    QList<QGraphicsItem*> selList(selectedItems());
+    clearSelection();
+    QMimeData *mimeData = new QMimeData;
+    mimeData->setImageData(renderImage(selectionRect));
+    mimeData->setData(moleculeMimeType, graphicsItem::serialize(items));
+    QApplication::clipboard()->setMimeData(mimeData);
 
-        // Calculate total boundingrect
-        QRectF totalRect;
-        foreach(QGraphicsItem* item, selectedItems())
-        {
-          QRectF itemRect = item->boundingRect();
-          itemRect.translate(item->scenePos());
-          totalRect |= itemRect;
-        }
-        // Add to internal clipboard
-        foreach(QGraphicsItem* item, m_clipItems) delete item;
-        m_clipItems.clear();
-        foreach(QGraphicsItem* item, selectedItems())
-          if (item->type() == Molecule::Type)
-                m_clipItems.append(new Molecule(dynamic_cast<Molecule*>(item)));
-
-        // Clear selection
-        QList<QGraphicsItem*> selList(selectedItems());
-        clearSelection();
-
-        // Choose the datatype
-        //   clipboard->setText("Test");
-        clipboard->setImage(renderImage(totalRect));
-        //   clipboard->mimeData( );
-
-        // Restore selection
-        foreach(QGraphicsItem* item, selList) item->setSelected(true);
-
-        // Emit paste available signal
-        emit pasteAvailable(!m_clipItems.isEmpty());
+    foreach(QGraphicsItem* item, selList) item->setSelected(true);
   }
 
-  void MolScene::paste()
-  {
-        // Access the clipboard
-        //   QClipboard* clipboard = qApp->clipboard();
-        /* TODO Using the system clipboard*/
-
-        // Paste all items on the internal clipboard
-        m_stack->beginMacro(tr("pasting items"));
-        foreach(Molecule* item, m_clipItems) ItemAction::addItemToScene(new Molecule(item), this); // TODO use the real clipboard!
-        m_stack->endMacro();
+  void MolScene::paste() {
+    const QMimeData *mimeData = QApplication::clipboard()->mimeData();
+    if (!mimeData->hasFormat(moleculeMimeType)) return;
+    m_stack->beginMacro(tr("Paste"));
+    for (auto newItem : graphicsItem::deserialize(mimeData->data(moleculeMimeType)))
+      ItemAction::addItemToScene(newItem, this);
+    m_stack->endMacro();
   }
 
 #ifdef QT_DEBUG
@@ -814,7 +785,7 @@ namespace Molsketch {
     QXmlStreamReader reader(event->mimeData()->data(mimeType()));
     reader >> *(d->dragItem);
     d->moveDragItem(event);
-    addItem(d->dragItem);
+    addItem(d->dragItem); // TODO loop until stream is exhausted
     updateAll();
   }
 

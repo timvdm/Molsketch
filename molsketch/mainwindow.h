@@ -102,6 +102,9 @@ private slots:
   /** Prints the current document. */
   bool print();
 
+  void checkPasteAvailable();
+  void checkCopyAvailable();
+
   void setToolButtonStyle(QAction* styleAction);
 
         //used for print preview

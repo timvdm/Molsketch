@@ -169,8 +169,6 @@ namespace Molsketch {
     signals:
       /** Signal emitted if copy becomes available. */
       void copyAvailable(bool);
-      /** Signal emitted if paste becomes available. */
-      void pasteAvailable(bool);
       /** Signal emitted if the edit mode changes. */
       void editModeChange(int);
       /** Signal emitted if the contents of the scene change. */
@@ -266,10 +264,6 @@ namespace Molsketch {
 
       class privateData;
       privateData *d;
-
-      // Internal clipboard
-      /** Internal clipboard for scene items.*/
-      QList<Molecule*> m_clipItems;
 
       // Undo stack
       /** The undo stack of the commands used to edit the scene. */

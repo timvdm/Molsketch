@@ -75,6 +75,7 @@
 #include "releasenotesdialog.h"
 #include "settingsdialog.h"
 #include "wikiquerywidget.h"
+#include "constants.h"
 
 
 #define PROGRAM_NAME "Molsketch"
@@ -406,6 +407,16 @@ bool MainWindow::print()
   return true;
 }
 
+void MainWindow::checkPasteAvailable() {
+  pasteAct->setEnabled(QApplication::clipboard()->mimeData()->hasFormat(moleculeMimeType));
+}
+
+void MainWindow::checkCopyAvailable() {
+  bool copyAvailable = !m_scene->selectedItems().empty();
+  copyAct->setEnabled(copyAvailable);
+  cutAct->setEnabled(copyAvailable);
+}
+
 void MainWindow::setToolButtonStyle(QAction *styleAction)
 {
   if (!styleAction) return;
@@ -637,9 +648,8 @@ void MainWindow::createActions()
   cutAct->setEnabled(false);
   copyAct->setEnabled(false);
   pasteAct->setEnabled(false);
-  connect(m_scene, SIGNAL(copyAvailable(bool)), cutAct, SLOT(setEnabled(bool)));
-  connect(m_scene, SIGNAL(copyAvailable(bool)), copyAct, SLOT(setEnabled(bool)));
-  connect(m_scene, SIGNAL(pasteAvailable(bool)), pasteAct, SLOT(setEnabled(bool)));
+  connect(m_scene, SIGNAL(selectionChanged()), this, SLOT(checkCopyAvailable()));
+  connect(QApplication::clipboard(), SIGNAL(dataChanged()), this, SLOT(checkPasteAvailable()));
 }
 
 
