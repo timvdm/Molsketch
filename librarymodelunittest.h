@@ -194,7 +194,7 @@ void testEmptyReturns() {
   TS_ASSERT(model->data(QModelIndex()).isNull());
   QMimeData *mimeData = model->mimeData(QModelIndexList());
   TS_ASSERT(mimeData->hasFormat(moleculeMimeType));
-  QS_ASSERT_EQUALS(mimeData->data(moleculeMimeType), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+  QS_ASSERT_EQUALS(mimeData->data(moleculeMimeType), "<?xml version=\"1.0\" encoding=\"UTF-8\"?><molsketchItems/>\n");
   delete mimeData;
 }
 

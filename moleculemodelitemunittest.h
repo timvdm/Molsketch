@@ -48,7 +48,7 @@ public:
     delete item;
   }
 
-  void testCorrectIconNameAndXmlAreProduced() {
+  void testCorrectIconNameAndMoleculeAreProduced() {
     moleculeToProduce->setName("Testname");
     // TODO icon test doesn't seem to work
     QS_ASSERT_EQUALS(QByteArray((char*) item->icon().pixmap(64).toImage().bits()),
@@ -57,19 +57,19 @@ public:
 
     QByteArray writtenXml;
     QXmlStreamWriter xmlWriter(&writtenXml);
-    item->writeXml(xmlWriter);
-    QS_ASSERT_EQUALS(writtenXml, "<molecule name=\"Testname\"><atomArray/><bondArray/></molecule>")
+    const Molecule* molecule = item->getMolecule();
+    QS_ASSERT_ON_POINTER(const Molecule, molecule, getName(), "Testname");
   }
 
-  void testMultipleCallsToIconNameOrXmlLeadToOnlyASingleProduceMoleculeCall() {
+  void testMultipleCallsToIconNameOrGetMoleculeLeadToOnlyASingleProduceMoleculeCall() {
     item->icon();
     item->icon();
     item->name();
     item->name();
     QByteArray xml;
     QXmlStreamWriter writer(&xml);
-    item->writeXml(writer);
-    item->writeXml(writer);
+    item->getMolecule();
+    item->getMolecule();
 
     TS_ASSERT_EQUALS(produceMoleculeInvocationCounter, 1);
   }
@@ -81,7 +81,7 @@ public:
     item->name();
     QByteArray xml;
     QXmlStreamWriter writer(&xml);
-    item->writeXml(writer);
+    item->getMolecule();
   }
 
   void testIconNameAndXmlAreReturnedFromXml() {
