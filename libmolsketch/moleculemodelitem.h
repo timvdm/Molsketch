@@ -50,7 +50,7 @@ namespace Molsketch {
     virtual ~MoleculeModelItem();
     QIcon icon();
     QString name();
-    void writeXml(QXmlStreamWriter& writer);
+    const Molecule* getMolecule();
     static MoleculeModelItem* fromXml(QByteArray xml);
   };
 } // namespace Molsketch

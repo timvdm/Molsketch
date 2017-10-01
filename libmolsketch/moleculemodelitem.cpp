@@ -51,11 +51,10 @@ namespace Molsketch {
     return d->molecule->getName();
   }
 
-  void MoleculeModelItem::writeXml(QXmlStreamWriter &writer) {
+  const Molecule *MoleculeModelItem::getMolecule() {
     Q_D(MoleculeModelItem);
     d->ensureMolecule(this);
-    if (!d->molecule) return;
-    writer << *(d->molecule);
+    return d->molecule;
   }
 
   MoleculeModelItem *MoleculeModelItem::fromXml(QByteArray xml) {

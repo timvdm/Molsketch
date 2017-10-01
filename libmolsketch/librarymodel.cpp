@@ -27,6 +27,7 @@
 #include <QMimeData>
 #include <QSet>
 #include <QTimer>
+#include <iterator>
 
 namespace Molsketch {
   const int itemIncrement = 10;
@@ -75,17 +76,12 @@ QMimeData *LibraryModel::mimeData(const QModelIndexList &indexes) const {
          stringify<QModelIndex>(indexes,
                                 [](const QModelIndex& i) {return QString::number(i.row());}).toUtf8().data());
   Q_D(const LibraryModel);
+  QList<const graphicsItem*> molecules;
+  std::transform(indexes.begin(), indexes.end(), std::back_inserter(molecules),
+                 [&](const QModelIndex& index) -> const Molecule* { int row = index.row(); if (row < 0 || row >= d->items.size()) return nullptr;
+                                                                    return d->items[row]->getMolecule(); });
   QMimeData *result = new QMimeData;
-  QByteArray xml;
-  QXmlStreamWriter out(&xml);
-  out.writeStartDocument();
-  for (QModelIndex index : indexes) {
-    int row = index.row();
-    if (row >= 0 && row < d->items.size())
-      d->items[row]->writeXml(out);
-  }
-  out.writeEndDocument();
-  result->setData(moleculeMimeType, xml);
+  result->setData(moleculeMimeType, graphicsItem::serialize(molecules));
   return result;
 }
 
