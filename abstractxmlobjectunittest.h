@@ -21,6 +21,16 @@
 #include "utilities.h"
 #include <QXmlStreamReader>
 #include <abstractxmlobject.h>
+#include <arrow.h>
+#include <atom.h>
+#include <bond.h>
+#include <boundingboxlinker.h>
+#include <frame.h>
+#include <lonepair.h>
+#include <molecule.h>
+#include <molscene.h>
+#include <radicalelectron.h>
+#include <textitem.h>
 #include "mocks.h"
 #include "utilities.h"
 
@@ -270,6 +280,27 @@ public:
     prepareWriter(&output);
     testObject->writeXml(*writer);
     QS_ASSERT_EQUALS(output, "<TestObject><innerTestElement/></TestObject>");
+  }
+
+  void testRegisteredItemTypes() {
+    TS_ASSERT(dynamic_cast<Atom*>(produceXmlObject(Atom::xmlClassName())));
+    TS_ASSERT(dynamic_cast<Bond*>(produceXmlObject(Bond::xmlClassName())));
+    TS_ASSERT(dynamic_cast<TextItem*>(produceXmlObject(TextItem::xmlClassName())));
+    TS_ASSERT(dynamic_cast<BoundingBoxLinker*>(produceXmlObject(BoundingBoxLinker::xmlClassName())));
+    TS_ASSERT(dynamic_cast<LonePair*>(produceXmlObject(LonePair::xmlClassName())));
+    TS_ASSERT(dynamic_cast<MolScene*>(produceXmlObject(MolScene::xmlClassName())));
+    TS_ASSERT(dynamic_cast<RadicalElectron*>(produceXmlObject(RadicalElectron::xmlClassName())));
+    TS_ASSERT(dynamic_cast<Arrow*>(produceXmlObject(Arrow::xmlClassName())));
+    TS_ASSERT(dynamic_cast<Frame*>(produceXmlObject(Frame::xmlClassName())));
+    TS_ASSERT(dynamic_cast<Molecule*>(produceXmlObject(Molecule::xmlClassName())));
+  }
+
+  void testDoNotReadBeyondCurrentElement() {
+    ReadingTestSetup setup(testObject);
+    prepareReader("<testElement />\n<A />\n");
+    testObject->readXml(*reader);
+    QS_ASSERT_EQUALS(reader->name(), "testElement");
+    QS_ASSERT_EQUALS(reader->tokenType(), QXmlStreamReader::EndElement);
   }
 
   // TODO write test for reading legacy bonds: check cis/trans double bond & dashed single bond new
