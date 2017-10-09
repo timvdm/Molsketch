@@ -266,9 +266,8 @@ namespace Molsketch {
       Q_ASSERT(m_bondList.contains(bond));
       m_bondList.removeAll(bond);
       bond->setParentItem(0);
-      bond->setParentItem(0);
       Atom *begin = bond->beginAtom();
-      Atom *end = bond->beginAtom();
+      Atom *end = bond->endAtom();
       if (begin)
         begin->removeBond(bond);
       if (end)
