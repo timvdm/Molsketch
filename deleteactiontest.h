@@ -1,0 +1,101 @@
+/***************************************************************************
+ *   Copyright (C) 2017 by Hendrik Vennekate                               *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+
+#include <cxxtest/TestSuite.h>
+
+#include <QSet>
+#include <molecule.h>
+#include <molscene.h>
+#include <QDebug>
+
+#include <actions/deleteaction.h>
+
+using namespace Molsketch;
+
+class DeleteActionTest : public CxxTest::TestSuite {
+  MolScene *scene;
+  Atom *atomA, *atomB, *atomC;
+  Bond *bondA, *bondB;
+  Molecule *molecule;
+  deleteAction *action;
+public:
+  void setUp() {
+    atomA = new Atom(QPointF(1,1));
+    atomB = new Atom(QPointF(2,2));
+    atomC = new Atom(QPointF(3,3));
+
+    bondA = new Bond(atomA, atomB);
+    bondB = new Bond(atomB, atomC);
+
+    molecule = new Molecule(QSet<Atom*>() << atomA << atomB << atomC, QSet<Bond*>() << bondA << bondB);
+
+    scene = new MolScene;
+    scene->addItem(molecule);
+
+    action = new deleteAction(scene);
+  }
+
+  void tearDown() {
+    delete scene;
+  }
+
+  void testNoItemsSelectedDoesNothing() {
+    action->trigger();
+    TS_ASSERT_EQUALS(scene->items().size(), 6);
+  }
+
+  void testDeletingAtom() {
+    atomA->setSelected(true);
+    action->trigger();
+    TS_ASSERT_EQUALS(scene->items().size(), 4);
+    TS_ASSERT(!scene->items().contains(atomA));
+    TS_ASSERT(!scene->items().contains(bondA));
+  }
+
+  void testDeletingBond() {
+    bondA->setSelected(true);
+    action->trigger();
+    TS_ASSERT_EQUALS(scene->items().size(), 6);
+    TS_ASSERT(!scene->items().contains(bondA));
+  }
+
+  void testDeletingBondAndAtom() {
+    atomA->setSelected(true);
+    bondA->setSelected(true);
+    action->trigger();
+    TS_ASSERT_EQUALS(scene->items().size(), 4);
+    TS_ASSERT(!scene->items().contains(atomA));
+    TS_ASSERT(!scene->items().contains(bondA));
+  }
+
+  void testDeletingTwoBondsAndTwoAtoms() {
+    atomA->setSelected(true);
+    bondA->setSelected(true);
+    bondB->setSelected(true);
+    atomC->setSelected(true);
+    action->trigger();
+    TS_ASSERT_EQUALS(scene->items().size(), 2);
+    if (scene->items().size() != 2)
+      qDebug() << scene->items();
+    TS_ASSERT(!scene->items().contains(atomA));
+    TS_ASSERT(!scene->items().contains(bondA));
+    TS_ASSERT(!scene->items().contains(bondB));
+    TS_ASSERT(!scene->items().contains(atomC));
+  }
+};
