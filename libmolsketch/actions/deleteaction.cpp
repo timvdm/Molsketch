@@ -49,6 +49,7 @@ namespace Molsketch {
     Bond *bond = 0;
     foreach(QGraphicsItem* item, selectedItems)
     {
+      if (!item->scene()) continue;
       switch(item->type())
       {
         case Atom::Type:
@@ -66,18 +67,16 @@ namespace Molsketch {
         default:
           Commands::ItemAction::removeItemFromScene(item);
       }
-      molecules.remove(0);
+    }
+    molecules.remove(0);
 
-      QList<Molecule*> splitMolecules, unsplitMolecules;
-      foreach(Molecule* molecule, molecules)
-      {
-        if (!molecule->scene()) continue;
-        if (!molecule->canSplit()) continue;
-        foreach(Molecule* subMolecule, molecule->split())
-          Commands::ItemAction::addItemToScene(subMolecule, scene());
-        Commands::ItemAction::removeItemFromScene(molecule);
-      }
-
+    foreach(Molecule* molecule, molecules)
+    {
+      if (!molecule->scene()) continue;
+      if (!molecule->canSplit()) continue;
+      foreach(Molecule* subMolecule, molecule->split())
+        Commands::ItemAction::addItemToScene(subMolecule, scene());
+      Commands::ItemAction::removeItemFromScene(molecule);
     }
     attemptEndMacro();
   }
