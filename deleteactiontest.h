@@ -18,11 +18,14 @@
  ***************************************************************************/
 
 #include <cxxtest/TestSuite.h>
+#include "utilities.h"
 
 #include <QSet>
 #include <molecule.h>
 #include <molscene.h>
 #include <QDebug>
+#include <arrow.h>
+#include <frame.h>
 
 #include <actions/deleteaction.h>
 
@@ -33,7 +36,10 @@ class DeleteActionTest : public CxxTest::TestSuite {
   Atom *atomA, *atomB, *atomC;
   Bond *bondA, *bondB;
   Molecule *molecule;
+  Arrow *arrow;
+  Frame *frame;
   deleteAction *action;
+  QList<QGraphicsItem*> originalItems;
 public:
   void setUp() {
     atomA = new Atom(QPointF(1,1));
@@ -45,25 +51,33 @@ public:
 
     molecule = new Molecule(QSet<Atom*>() << atomA << atomB << atomC, QSet<Bond*>() << bondA << bondB);
 
+    arrow = new Arrow();
+    frame = new Frame();
+
     scene = new MolScene;
     scene->addItem(molecule);
+    scene->addItem(arrow);
+    scene->addItem(frame);
 
     action = new deleteAction(scene);
+    originalItems = scene->items();
   }
 
   void tearDown() {
+    if (scene->stack()->canUndo()) scene->stack()->undo();
+    QS_ASSERT_EQUALS(scene->items().toSet(), originalItems.toSet());
     delete scene;
   }
 
   void testNoItemsSelectedDoesNothing() {
     action->trigger();
-    TS_ASSERT_EQUALS(scene->items().size(), 6);
+    TS_ASSERT_EQUALS(scene->items().size(), originalItems.size());
   }
 
   void testDeletingAtom() {
     atomA->setSelected(true);
     action->trigger();
-    TS_ASSERT_EQUALS(scene->items().size(), 4);
+    TS_ASSERT_EQUALS(scene->items().size(), originalItems.size() - 2);
     TS_ASSERT(!scene->items().contains(atomA));
     TS_ASSERT(!scene->items().contains(bondA));
   }
@@ -71,7 +85,7 @@ public:
   void testDeletingBond() {
     bondA->setSelected(true);
     action->trigger();
-    TS_ASSERT_EQUALS(scene->items().size(), 6);
+    TS_ASSERT_EQUALS(scene->items().size(), originalItems.size());
     TS_ASSERT(!scene->items().contains(bondA));
   }
 
@@ -79,7 +93,7 @@ public:
     atomA->setSelected(true);
     bondA->setSelected(true);
     action->trigger();
-    TS_ASSERT_EQUALS(scene->items().size(), 4);
+    TS_ASSERT_EQUALS(scene->items().size(), originalItems.size() - 2);
     TS_ASSERT(!scene->items().contains(atomA));
     TS_ASSERT(!scene->items().contains(bondA));
   }
@@ -90,12 +104,25 @@ public:
     bondB->setSelected(true);
     atomC->setSelected(true);
     action->trigger();
-    TS_ASSERT_EQUALS(scene->items().size(), 2);
-    if (scene->items().size() != 2)
-      qDebug() << scene->items();
+    TS_ASSERT_EQUALS(scene->items().size(), originalItems.size() - 4);
     TS_ASSERT(!scene->items().contains(atomA));
     TS_ASSERT(!scene->items().contains(bondA));
     TS_ASSERT(!scene->items().contains(bondB));
     TS_ASSERT(!scene->items().contains(atomC));
   }
+
+  void testDeletingArrow() {
+    arrow->setSelected(true);
+    action->trigger();
+    TS_ASSERT_EQUALS(scene->items().size(), originalItems.size() - 1);
+    TS_ASSERT(!scene->items().contains(arrow));
+  }
+
+  void testDeletingFrame() {
+    frame->setSelected(true);
+    action->trigger();
+    TS_ASSERT_EQUALS(scene->items().size(), originalItems.size() - 1);
+    TS_ASSERT(!scene->items().contains(frame));
+  }
+
 };
