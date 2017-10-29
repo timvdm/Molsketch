@@ -63,7 +63,6 @@
 #include "molscene.h"
 #include "element.h"
 #include "fileio.h"
-#include "mollibitem.h"
 
 #include "programversion.h"
 

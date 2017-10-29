@@ -52,6 +52,7 @@ namespace Molsketch {
     QString name();
     const Molecule* getMolecule();
     static MoleculeModelItem* fromXml(QByteArray xml);
+    static MoleculeModelItem* fromMolecule(Molecule*);
   };
 } // namespace Molsketch
 

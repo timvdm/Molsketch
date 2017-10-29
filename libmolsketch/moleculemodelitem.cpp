@@ -67,10 +67,24 @@ namespace Molsketch {
           QXmlStreamReader in(input);
           in >> *molecule;
         }
-        Molecule *produceMolecule() const {
+        Molecule *produceMolecule() const override {
           return molecule;
         }
       };
     return new XmlItem(xml);
+  }
+
+  MoleculeModelItem *MoleculeModelItem::fromMolecule(Molecule *molecule) {
+    class MoleculeItem : public MoleculeModelItem {
+      Molecule *molecule;
+    public:
+      MoleculeItem(Molecule* molecule)
+        : molecule(molecule)
+      {}
+      Molecule *produceMolecule() const override {
+        return molecule;
+      }
+    };
+    return new MoleculeItem(molecule);
   }
 } // namespace Molsketch

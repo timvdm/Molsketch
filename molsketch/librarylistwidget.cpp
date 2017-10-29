@@ -16,98 +16,43 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include <QDir>
-#include <QDrag>
-#include <QMimeData>
-#include <QXmlStreamWriter>
-#include <QDebug>
+#include <librarymodel.h>
+#include <moleculemodelitem.h>
+#include "fileio.h"
 
 #include "librarylistwidget.h"
-#include "mollibitem.h"
-#include "molecule.h"
-#include "molscene.h"
-#include "fileio.h"
 using namespace Molsketch;
-/* TODO refactor this and the librarylistwidgetitem:
- * a) they should go in _one_ project
- * b) the item should produce the MIME data itself (using a dedicated role)
- * c) the widget and item should be super classes to two tiers of implementations
- *    - the file-based implementation
- *    - the wikidata-based implementation
- * d) the wikidata implementation should use a separate thread for querying
-*/
 
-void LibraryListWidget::refreshItems()
-{
-  clear();
+// TODO acceptance test
+// TODO check out batch size
+
+void LibraryListWidget::refreshItems() {
+  LibraryModel *moleculeModel = dynamic_cast<LibraryModel*>(model());
+  if (!moleculeModel) return;
   folder.refresh();
+  QList<MoleculeModelItem*> newItems;
   foreach(const QString& entry, folder.entryList())
-  {
     foreach(Molecule* molecule, moleculesFromFile(folder.filePath(entry)))
-    {
-      if (molecule)
-        addItem(new MolLibItem(molecule, entry));
-    }
-  }
+      if (molecule) newItems << MoleculeModelItem::fromMolecule(molecule);
+  moleculeModel->setMolecules(newItems);
 }
 
-void LibraryListWidget::setGuiConfiguration(const QString& directory)
-{
-  Title = folder.dirName();
-  setSortingEnabled(true);
-  setDragEnabled(true);
-  setDefaultDropAction(Qt::CopyAction);
+void LibraryListWidget::setGuiConfiguration(const QString& directory) {
   setAlternatingRowColors(true);
-  setIconSize(QSize(64,64)); // TODO make configurable
   setToolTip(directory);
+  setDragDropMode(QAbstractItemView::DragOnly);
+  setIconSize(QSize(64, 64)); // TODO make configurable
+  setModel(new Molsketch::LibraryModel(parent()));
 }
 
 LibraryListWidget::LibraryListWidget(QString directory, QWidget *parent)
-  : QListWidget(parent),
+  : QListView(parent),
     folder(directory)
 {
   setGuiConfiguration(directory);
   refreshItems();
 }
 
-QString LibraryListWidget::title() const
-{
-  return Title;
-}
-
-QStringList LibraryListWidget::mimeTypes() const
-{
-  return QStringList() << MolScene::mimeType();
-}
-
-QMimeData *LibraryListWidget::mimeData(const QList<QListWidgetItem *> items) const
-{
-  QByteArray data;
-  QXmlStreamWriter xmlWriter(&data);
-  xmlWriter.writeStartDocument();
-  foreach(QListWidgetItem* item, items)
-  {
-    MolLibItem* mollibitem = dynamic_cast<MolLibItem*>(item);
-    if (!mollibitem) continue;
-    xmlWriter << mollibitem->getMolecule();
-  }
-  xmlWriter.writeEndDocument();
-  QMimeData *result = new QMimeData;
-  result->setData(MolScene::mimeType(), data);
-  return result;
-}
-
-void LibraryListWidget::startDrag(Qt::DropActions supportedActions)
-{
-  QModelIndexList indexes = selectedIndexes();
-  if (indexes.count() == 0) return;
-  QMimeData *data = model()->mimeData(indexes);
-  if (!data)
-    return;
-  QRect rect;
-  rect.adjust(horizontalOffset(), verticalOffset(), 0, 0);
-  QDrag *drag = new QDrag(this);
-  drag->setMimeData(data);
-//  drag->setHotSpot(d->pressedPosition - rect.topLeft());
-  drag->exec(supportedActions, Qt::CopyAction);
+QString LibraryListWidget::title() const {
+  return folder.dirName();
 }

@@ -20,9 +20,9 @@
 #define LIBRARYLISTWIDGET_H
 
 #include <QDir>
-#include <QListWidget>
+#include <QListView>
 
-class LibraryListWidget : public QListWidget // TODO replace with ordinary model
+class LibraryListWidget : public QListView
 {
   Q_OBJECT
 public:
@@ -30,13 +30,8 @@ public:
   QString title() const;
 public slots:
   void refreshItems();
-protected:
-  QStringList mimeTypes() const;
-  QMimeData* mimeData(const QList<QListWidgetItem *> items) const;
-  void startDrag(Qt::DropActions supportedActions);
 private:
   void setGuiConfiguration(const QString &directory);
-  QString Title;
   QDir folder;
 };
 
