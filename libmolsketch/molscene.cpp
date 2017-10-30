@@ -825,7 +825,7 @@ namespace Molsketch {
 
   QString MolScene::xmlName() const { return xmlClassName(); }
 
-  QString MolScene::xmlClassName() { return "div" ; }
+  QString MolScene::xmlClassName() { return "molscene" ; }
 
 
   QUndoStack * MolScene::stack()

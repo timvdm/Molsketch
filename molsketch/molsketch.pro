@@ -12,6 +12,22 @@ target.path=$${MSK_INSTALL_BINS}
 INSTALLS += target
 QT += network
 
+unix {
+  INSTALLS += icon mimeicon mimetype desktop
+
+  icon.files = images/molsketch.svg
+  icon.path = $$MSK_PREFIX/share/icons/hicolor/scalable/apps
+
+  mimeicon.files = images/application-x-molsketch.svg
+  mimeicon.path = $$MSK_PREFIX/share/icons/hicolor/scalable/mimetypes
+
+  mimetype.files = molsketch.xml
+  mimetype.path = $$MSK_PREFIX/share/mime/packages
+
+  desktop.files = molsketch.desktop
+  desktop.path = $$MSK_PREFIX/share/applications
+}
+
 INCLUDEPATH += \
         $$MSK_SOURCE_BASE/libmolsketch \
         $$MSK_SOURCE_BASE/obabeliface
