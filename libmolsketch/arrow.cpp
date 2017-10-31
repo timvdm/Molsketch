@@ -409,7 +409,7 @@ namespace Molsketch {
   {
     QXmlStreamAttributes attributes ;
     attributes.append("arrowType", QString::number(d->arrowType)) ;
-    attributes.append("splineDisabled", QString::number(d->spline));
+    attributes.append("splineDisabled", QString::number(!d->spline));
     return attributes ;
   }
 
