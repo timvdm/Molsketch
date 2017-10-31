@@ -13,10 +13,13 @@ INSTALLS += target
 QT += network
 
 unix {
-  INSTALLS += icon mimeicon mimetype desktop
+  INSTALLS += icon pixmap mimeicon mimetype desktop
 
   icon.files = images/molsketch.svg
   icon.path = $$MSK_PREFIX/share/icons/hicolor/scalable/apps
+
+  pixmap.files = images/molsketch.xpm
+  pixmap.path = $$MSK_PREFIX/share/pixmaps
 
   mimeicon.files = images/application-x-molsketch.svg
   mimeicon.path = $$MSK_PREFIX/share/icons/hicolor/scalable/mimetypes

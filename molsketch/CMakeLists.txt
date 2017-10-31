@@ -58,7 +58,9 @@ install(DIRECTORY ${PROJECT_SOURCE_DIR}/doc/ DESTINATION ${MSK_INSTALL_DOCS})
 
 # Install menu entries on Linux
 if(UNIX)
-  install(FILES ${PROJECT_SOURCE_DIR}/molsketch/src/molsketch.desktop DESTINATION share/applications)
-  install(FILES ${PROJECT_SOURCE_DIR}/molsketch/src/images/molsketch.xpm DESTINATION share/pixmaps)
-  install(FILES ${PROJECT_SOURCE_DIR}/molsketch/src/images/molsketch.svg DESTINATION share/icons/hicolor/scalable/apps)
+  install(FILES ${PROJECT_SOURCE_DIR}/molsketch/images/molsketch.svg DESTINATION share/icons/hicolor/scalable/apps)
+  install(FILES ${PROJECT_SOURCE_DIR}/molsketch/images/molsketch.xpm DESTINATION share/pixmaps)
+  install(FILES ${PROJECT_SOURCE_DIR}/molsketch/images/application-x-molsketch.svg DESTINATION share/icons/hicolor/scalable/mimetypes)
+  install(FILES ${PROJECT_SOURCE_DIR}/molsketch/molsketch.xml DESTINATION share/mime/packages)
+  install(FILES ${PROJECT_SOURCE_DIR}/molsketch/molsketch.desktop DESTINATION share/applications)
 endif(UNIX)

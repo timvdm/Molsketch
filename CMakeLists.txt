@@ -100,7 +100,7 @@ message(STATUS "======= Welcome to molsKetch build =======")
 message(STATUS "Sources in: ${CMAKE_CURRENT_SOURCE_DIR}")
 message(STATUS "Installation settings and corresponding cmake variables (use \"-D <variableName>=<value>\" to change):")
 
-list(APPEND mskprefix "Global install prefix" MSK_INSTALL_PREFIX /usr/local "C:/Program Files/MolsKetch")
+list(APPEND mskprefix "Global install prefix" MSK_INSTALL_PREFIX /usr "C:/Program Files/MolsKetch")
 list(APPEND mskbins Executable MSK_INSTALL_BINS /bin "")
 if( CMAKE_SIZEOF_VOID_P EQUAL 8 AND NOT APPLE )
         list(APPEND msklibs "Library install folder" MSK_INSTALL_LIBS /lib64 "")
