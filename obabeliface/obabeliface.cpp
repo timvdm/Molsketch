@@ -370,6 +370,7 @@ namespace Molsketch
 
   Molecule *fromString(const QString &input, const char* format) {
     OpenBabel::OBConversion conv ;
+    qDebug() << "setting input format" << format;
     if (!conv.SetInFormat(format)) {
       qCritical() << "Could not find format:" << format;
       qInfo() << "Available formats:" << outputFormats().join(", ");
@@ -377,6 +378,7 @@ namespace Molsketch
     }
 
     OpenBabel::OBMol obmol;
+    qDebug() << "reading molecule" << input;
     if (!conv.ReadString(&obmol, input.toStdString()))
       qCritical() << "Could not convert InChI:" << input; // TODO do we need error handling if false?
     qDebug() << "Error messages:" << QString::fromStdString(OpenBabel::OBMessageHandler().GetMessageSummary());
@@ -395,7 +397,7 @@ namespace Molsketch
   }
 
   Molecule *fromInChI(const QString &input) {
-    return fromString("InChI=" + input, INCHI_FOMRAT);
+    return fromString(input.startsWith("InChI=") ? input : "InChI=" + input, INCHI_FOMRAT);
   }
 
   bool inChIAvailable() {

@@ -79,8 +79,8 @@ class InChIItem : public MoleculeModelItem {
 public:
   InChIItem(QString name, QString inchi, OBabelIfaceLoader* obloader) : inchi(inchi), name(name), obloader(obloader) {}
   Molecule* produceMolecule() const {
+    qDebug() << "generating from InChI" << inchi;
     Molecule* m = obloader->convertInChI(inchi);
-    qDebug() << "Read molecule from InChI:" << m;
     if (m) m->setName(name);
     return m;
   }

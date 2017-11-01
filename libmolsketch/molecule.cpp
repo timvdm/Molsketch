@@ -951,6 +951,7 @@ namespace Molsketch {
   QPixmap renderMolecule(const Molecule &input) {
     Molecule *molecule = new Molecule(input);
     MolScene renderScene;
+    qDebug() << "rendering molecule" << &input;
     if (molecule->atoms().size() > 20)
       renderScene.setRenderMode(MolScene::RenderColoredSquares);
     renderScene.addItem(molecule);
@@ -964,6 +965,7 @@ namespace Molsketch {
     QPainter painter(&pixmap);
     painter.setRenderHint(QPainter::Antialiasing);
     renderScene.render(&painter);
+    qDebug() << "rendered molecule" << &input;
     return pixmap;
   }
 
