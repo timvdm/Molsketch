@@ -1,6 +1,5 @@
 [Desktop Entry]
 Version=1.0
-Encoding=UTF-8
 Type=Application
 Name=Molsketch
 Exec=molsketch-qt5
@@ -8,7 +7,7 @@ Icon=molsketch
 DocPath=molsketch/index.html
 MimeType=application/x-molsketch;
 Terminal=false
-Categories=Qt;Education;Science;
+Categories=Science;
 GenericName=2D molecular structures editor
 Comment=Editor for 2D molecular structures
 GenericName[nl]=Molecuulstructuur bewerker
