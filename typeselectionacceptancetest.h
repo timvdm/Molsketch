@@ -55,7 +55,6 @@ class TypeSelectionAcceptanceTest : public CxxTest::TestSuite {
 
   void selectEverythingFromView() {
     QTest::keyClick(mainWindow, Qt::Key_Escape);
-    QGraphicsView *view = mainWindow->findChild<QGraphicsView*>();
     QTest::keyClicks(mainWindow, "A", Qt::ControlModifier);
     mainWindow->findChild<Molsketch::MolScene*>()->selectAll();
   }
@@ -69,7 +68,7 @@ class TypeSelectionAcceptanceTest : public CxxTest::TestSuite {
       clickCheckBox(assertNotNull(typeDialog->findChild<QCheckBox*>("bonds"), "No bond checkbox found!"));
     }
 
-    QWidget* findOkButton(QWidget* typeDialog) {
+    QWidget* findOkButton() {
       for(QPushButton *child : findDialog()->findChildren<QPushButton*>())
         if (child->text() == "&OK") return child;
       TSM_ASSERT("Could not find OK button!", false);
@@ -79,7 +78,7 @@ class TypeSelectionAcceptanceTest : public CxxTest::TestSuite {
   public:
     void operator()() {
       clickBondCheckBox(findDialog());
-      QTest::mouseClick(findOkButton(findDialog()), Qt::LeftButton);
+      QTest::mouseClick(findOkButton(), Qt::LeftButton);
     }
   };
 
