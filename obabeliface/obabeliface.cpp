@@ -57,7 +57,7 @@ OpenBabel::OBElementTable eTable ;
 
 namespace Molsketch
 {
-  static const char INCHI_FOMRAT[] = "inchi";
+  static const char INCHI_FORMAT[] = "inchi";
 
   QString number2symbol( int number )
   {
@@ -397,11 +397,11 @@ namespace Molsketch
   }
 
   Molecule *fromInChI(const QString &input) {
-    return fromString(input.startsWith("InChI=") ? input : "InChI=" + input, INCHI_FOMRAT);
+    return fromString(input.startsWith("InChI=") ? input : "InChI=" + input, INCHI_FORMAT);
   }
 
   bool inChIAvailable() {
-    return isInputFormatAvailable(OpenBabel::OBConversion(), INCHI_FOMRAT);
+    return isInputFormatAvailable(OpenBabel::OBConversion(), INCHI_FORMAT);
   }
 
 } // namespace

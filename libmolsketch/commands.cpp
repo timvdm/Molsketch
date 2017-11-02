@@ -58,7 +58,7 @@ void AddAtom::redo()
 
 DelAtom::DelAtom(Atom* delAtom, const QString & text) : QUndoCommand(text), m_atom(delAtom), m_molecule(delAtom->molecule())
 {
-};
+}
 
 DelAtom::~DelAtom()
 {

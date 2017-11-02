@@ -18,7 +18,7 @@
    <iconset theme="preferences-system" resource="oxygenicons.qrc">
     <normaloff>:/icons/preferences-system.svg</normaloff>:/icons/preferences-system.svg</iconset>
   </property>
-  <layout class="QGridLayout" name="gridLayout_3">
+  <layout class="QGridLayout" name="mainLayout">
    <item row="0" column="0">
     <layout class="QVBoxLayout" name="settingsDialogLayout">
      <item>
@@ -99,7 +99,7 @@
        <item>
         <widget class="QStackedWidget" name="stackedWidget">
          <property name="currentIndex">
-          <number>3</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="generalPage">
           <widget class="QGroupBox" name="groupBoxGeneral">
@@ -114,7 +114,7 @@
            <property name="title">
             <string>General options</string>
            </property>
-           <layout class="QGridLayout" name="gridLayout_2">
+           <layout class="QGridLayout" name="generalGroupLayout">
             <item row="0" column="0">
              <layout class="QVBoxLayout" name="SaveLayout">
               <item>
@@ -514,7 +514,7 @@
             </property>
             <layout class="QVBoxLayout" name="verticalLayout">
              <item>
-              <layout class="QGridLayout" name="libraryPathLayout">
+              <layout class="QGridLayout" name="moleculeLibraryPathLayout">
                <item row="1" column="0">
                 <widget class="QPushButton" name="addLibrary">
                  <property name="text">
@@ -551,13 +551,13 @@
           </widget>
          </widget>
          <widget class="QWidget" name="openBabelPage">
-          <layout class="QGridLayout" name="gridLayout">
+          <layout class="QGridLayout" name="openBabelPageLayout">
            <item row="0" column="0">
             <widget class="QGroupBox" name="libraryPathBox">
              <property name="title">
               <string>OpenBabel Library Path</string>
              </property>
-             <layout class="QGridLayout" name="gridLayout_4">
+             <layout class="QGridLayout" name="dynamicLibraryPathLayout">
               <item row="0" column="0">
                <layout class="QVBoxLayout" name="verticalLayout_3">
                 <item>
@@ -612,7 +612,7 @@
              <property name="title">
               <string>OpenBabel Format File Path</string>
              </property>
-             <layout class="QGridLayout" name="gridLayout_5">
+             <layout class="QGridLayout" name="obfPathLayout">
               <item row="0" column="0">
                <layout class="QVBoxLayout" name="verticalLayout_4">
                 <item>

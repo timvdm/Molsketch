@@ -45,11 +45,11 @@ bool ProgramVersion::operator !=(const ProgramVersion &other) const {
 
 bool ProgramVersion::operator <(const ProgramVersion &other) const {
   return d->major < other.d->major
-      || d->major == other.d->major && (
+      || (d->major == other.d->major && (
         d->minor < other.d->minor
-        || d->minor == other.d->minor && (
+        || (d->minor == other.d->minor && (
           d->patch < other.d->patch
-          || d->patch == other.d->patch && d->build < other.d->build));
+          || (d->patch == other.d->patch && d->build < other.d->build)))));
 }
 
 bool ProgramVersion::operator >(const ProgramVersion &other) const {
