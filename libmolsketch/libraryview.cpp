@@ -26,6 +26,7 @@ namespace Molsketch {
 LibraryView::LibraryView(QWidget *parent) : QListView(parent) {
   setIconSize(QSize(64, 64)); // TODO configurable
   setDragEnabled(true);
+  setAlternatingRowColors(true);
 }
 
 void LibraryView::paintEvent(QPaintEvent *e)

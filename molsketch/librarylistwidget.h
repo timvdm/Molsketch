@@ -20,9 +20,9 @@
 #define LIBRARYLISTWIDGET_H
 
 #include <QDir>
-#include <QListView>
+#include "libraryview.h"
 
-class LibraryListWidget : public QListView
+class LibraryListWidget : public Molsketch::LibraryView
 {
   Q_OBJECT
 public:
@@ -31,7 +31,6 @@ public:
 public slots:
   void refreshItems();
 private:
-  void setGuiConfiguration(const QString &directory);
   QDir folder;
 };
 

@@ -37,19 +37,12 @@ void LibraryListWidget::refreshItems() {
   moleculeModel->setMolecules(newItems);
 }
 
-void LibraryListWidget::setGuiConfiguration(const QString& directory) {
-  setAlternatingRowColors(true);
-  setToolTip(directory);
-  setDragDropMode(QAbstractItemView::DragOnly);
-  setIconSize(QSize(64, 64)); // TODO make configurable
-  setModel(new Molsketch::LibraryModel(parent()));
-}
-
 LibraryListWidget::LibraryListWidget(QString directory, QWidget *parent)
-  : QListView(parent),
+  : Molsketch::LibraryView(parent),
     folder(directory)
 {
-  setGuiConfiguration(directory);
+  setToolTip(directory);
+  setModel(new Molsketch::LibraryModel(parent));
   refreshItems();
 }
 
