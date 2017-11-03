@@ -46,7 +46,7 @@ RESOURCES += \
     $$PWD/../molsketch/*.qrc \
     $$PWD/../libmolsketch/tools/toolicons.qrc
 
-QT += widgets printsupport svg testlib network
+QT += widgets printsupport svg testlib network xmlpatterns
 
 TEMPLATE = app
 
