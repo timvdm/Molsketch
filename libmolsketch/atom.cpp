@@ -50,34 +50,17 @@ namespace Molsketch {
   //                                        //
   //   Left   Right   Down     Up           //
   //                                        //
-  enum {
-    Left,
-    Right,
-    Up,
-    Down
-  };
-
-  int Atom::labelAlignment() const
+  Alignment Atom::labelAlignment() const
   {
     // compute the sum of the bond vectors, this gives
     QPointF direction(0.0, 0.0);
     foreach (Atom *nbr, this->neighbours())
       direction += this->pos() - nbr->pos();
 
-    int alignment = 0;
-    if ((this->numBonds() == 2) && (qAbs(direction.y()) > qAbs(direction.x()))) {
-      if (direction.y() <= 0.0)
-        alignment = Up;
-      else
-        alignment = Down;
-    } else {
-      if (direction.x() < -0.1) // hack to make almost vertical lines align Right
-        alignment = Left;
-      else
-        alignment = Right;
-    }
-
-    return alignment;
+    if ((this->numBonds() == 2) && (qAbs(direction.y()) > qAbs(direction.x())))
+      return direction.y() <= 0.0 ? Up : Down;
+    return direction.x() < -0.1 // hack to make almost vertical lines align Right
+        ? Left : Right;
   }
 
 
@@ -195,7 +178,7 @@ namespace Molsketch {
   {
     // TODO do proper prepareGeometryChange() call
     // TODO call whenever boundingRect() is called
-    int alignment = labelAlignment();
+    Alignment alignment = labelAlignment();
 
     QString lbl = composeLabel(Left == alignment);
 
@@ -400,7 +383,7 @@ namespace Molsketch {
 
     int element = Element::strings.indexOf(m_elementSymbol);
 
-    switch (molScene->renderMode()) {
+    switch (molScene->renderMode()) { // TODO this could be better handled by using an atom renderer from the scene
       case MolScene::RenderColoredSquares:
         if (element != Element::C) {
           QColor color = elementColor(element);
@@ -428,7 +411,7 @@ namespace Molsketch {
 
     if (!isDrawn()) return;
 
-    int alignment = labelAlignment();
+    Alignment alignment = labelAlignment();
     bool leftAligned = false;
     switch (alignment) {
       case Left:

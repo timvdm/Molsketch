@@ -30,6 +30,12 @@ namespace Molsketch {
   class Bond;
   class Molecule;
 
+  enum Alignment {
+    Left,
+    Right,
+    Up,
+    Down
+  };
 
   /// Atom class
   class Atom : public graphicsItem
@@ -113,7 +119,7 @@ namespace Molsketch {
     void hoverOut () {m_hidden = true;}
     QString xmlName() const;
     static QString xmlClassName();
-    int labelAlignment() const;
+    Molsketch::Alignment labelAlignment() const;
     Bond *bondTo(Atom *other) const;
     QWidget* getPropertiesWidget();
     void propertiesWidgetDestroyed();
