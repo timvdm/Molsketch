@@ -69,6 +69,9 @@ namespace Molsketch {
     void setMolecule(Molecule *molecule);
     QString element() const;
     void setElement(const QString & element);
+    void setNewmanDiameter(const qreal& diameter);
+    qreal getNewmanDiameter() const;
+    void disableNewman();
     /** Returns the charge of the atom.
       * FC = # valency electrons - 0.5 * # shared electrons - # unpaired electrons + user specified contribution
       */
@@ -154,6 +157,7 @@ namespace Molsketch {
     bool m_hidden;
     int m_userCharge;
     int m_userElectrons;
+    qreal m_newmanDiameter;
 
     QList<Bond*> m_bonds;
     int m_userImplicitHydrogens;

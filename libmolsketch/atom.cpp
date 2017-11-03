@@ -227,6 +227,7 @@ namespace Molsketch {
     m_userCharge = 0; // The initial additional charge is zero
     m_userElectrons = 0;
     m_userImplicitHydrogens =  0;
+    m_newmanDiameter = 0;
     enableImplicitHydrogens(implicitHydrogens);
     m_shape = computeBoundingRect();
   }
@@ -618,6 +619,8 @@ namespace Molsketch {
   void Atom::readGraphicAttributes(const QXmlStreamAttributes &attributes)
   {
     setElement(attributes.value("elementType").toString()) ;
+    if (!attributes.hasAttribute("newmanDiameter")) m_newmanDiameter = 0;
+    else m_newmanDiameter = attributes.value("newmanDiameter").toDouble();
   }
 
   QXmlStreamAttributes Atom::graphicAttributes() const
@@ -626,6 +629,7 @@ namespace Molsketch {
     if (molecule()) attributes.append("id", molecule()->atomId(this)) ; // TODO is this really necessary?
     attributes.append("elementType", element()) ;
     attributes.append("hydrogenCount", QString::number(numImplicitHydrogens())) ;
+    if (m_newmanDiameter > 0) attributes.append("newmanDiameter", QString::number(m_newmanDiameter));
     return attributes ;
   }
 
@@ -652,6 +656,18 @@ namespace Molsketch {
     prepareGeometryChange();
     m_shape = computeBoundingRect();
     if (Molecule *m = molecule()) m->invalidateElectronSystems();
+  }
+
+  void Atom::setNewmanDiameter(const qreal &diameter) {
+    m_newmanDiameter = diameter;
+  }
+
+  qreal Atom::getNewmanDiameter() const {
+    return m_newmanDiameter;
+  }
+
+  void Atom::disableNewman() {
+    m_newmanDiameter = 0;
   }
 
   void Atom::setNumImplicitHydrogens(const int& number)
