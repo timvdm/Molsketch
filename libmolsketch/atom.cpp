@@ -891,6 +891,32 @@ namespace Molsketch {
     return widget;
   }
 
+  QPointF Atom::bondDrawingStart(const Bond *bond) const
+  {
+    if (!boundingRect().isValid()) return bond->mapFromParent(pos());
+
+    QRectF bounds = mapRectToItem(bond, boundingRect());
+    QLineF connection(bond->mapFromParent(pos()), bond->mapFromParent(bond->otherAtom(this)->pos()));
+
+    QVector<QPointF> corners;
+    corners << bounds.bottomLeft()
+            << bounds.bottomRight()
+            << bounds.topRight()
+            << bounds.topLeft()
+            << bounds.bottomLeft();
+    for (int i = 0 ; i < 4 ; ++i)
+    {
+      QLineF edge(corners[i], corners[i+1]);
+      QPointF result;
+      if (connection.intersect(edge, &result) == QLineF::BoundedIntersection)
+      {
+        QPointF unitVector = connection.unitVector().translated(-connection.p1()).p2();
+        return result + unitVector * lineWidth();
+      }
+    }
+    return connection.p1();
+  }
+
   QList<Atom*> Atom::neighbours() const
   {
     QList<Atom*> nbrs;

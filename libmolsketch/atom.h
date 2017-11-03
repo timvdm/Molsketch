@@ -123,6 +123,7 @@ namespace Molsketch {
     Bond *bondTo(Atom *other) const;
     QWidget* getPropertiesWidget();
     void propertiesWidgetDestroyed();
+    QPointF bondDrawingStart(const Bond *bond) const;
   protected:
     // Event handlers
     /** Event handler to show hidden atoms when the mouse hovers over them. */

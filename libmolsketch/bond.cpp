@@ -200,32 +200,8 @@ namespace Molsketch {
     if (sumUpperAngles > sumLowerAngles) qSwap(m_beginAtom, m_endAtom);
   }
 
-  QPointF Bond::determineBondDrawingStart(Atom *start, Atom *end) const
-  {
-    if (!start->boundingRect().isValid()) return mapFromParent(start->pos());
-
-    QRectF bounds = start->mapRectToItem(this, start->boundingRect());
-    QPointF p1(mapFromParent(start->pos())), p2(mapFromParent(end->pos()));
-    QLineF connection(p1,p2);
-
-    QVector<QPointF> corners;
-    corners << bounds.bottomLeft()
-            << bounds.bottomRight()
-            << bounds.topRight()
-            << bounds.topLeft()
-            << bounds.bottomLeft();
-    for (int i = 0 ; i < 4 ; ++i)
-    {
-      QLineF edge(corners[i], corners[i+1]);
-      QPointF result;
-      if (connection.intersect(edge, &result) == QLineF::BoundedIntersection)
-      {
-        QLineF uv = connection.unitVector();
-        QPointF unitVector = uv.p2() - uv.p1();
-        return result + unitVector * lineWidth();
-      }
-    }
-    return p1;
+  QPointF Bond::determineBondDrawingStart(Atom *start, Atom *end) const {
+    return start->bondDrawingStart(this);
   }
 
   QPolygonF clipBond(const QPointF& atomPoint,
