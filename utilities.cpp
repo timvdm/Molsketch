@@ -61,21 +61,6 @@ void clickCheckBox(QCheckBox *checkBox) {
   checkBox->toggle(); // TODO genuinely click on the checkbox
 }
 
-QString formatXml(const QString &xml) {
-  QXmlStreamReader reader(xml);
-  QString formattedXml;
-  QXmlStreamWriter writer(&formattedXml);
-  writer.setAutoFormatting(true);
-
-  while (!reader.atEnd()) {
-      reader.readNext();
-      if (!reader.isWhitespace()) {
-          writer.writeCurrentToken(reader);
-      }
-  }
-  return formattedXml;
-}
-
 int xmlElementCount(const QString& xml, const QString& element) {
   int count = 0;
   QXmlStreamReader reader(xml);

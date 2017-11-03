@@ -28,20 +28,23 @@ HEADERS += $$TESTS \
     programversionvaluetrait.h \
     noargsignalcounter.h \
     signalcounter.h \
-    modelindexsignalcounter.h
+    modelindexsignalcounter.h \
+    xmlassertion.h
 
 FORMS += $$originalForms
 
 CONFIG += c++14
 
 INCLUDEPATH += $$CXXTEST_PATH \
+    /usr/include/boost/stacktrace \
     ../libmolsketch \
     ../molsketch \
     ../obabeliface
 
 SOURCES += \
     programversionvaluetrait.cpp \
-    instancecounters.cpp
+    instancecounters.cpp \
+    xmlassertion.cpp
 RESOURCES += \
     $$PWD/../molsketch/*.qrc \
     $$PWD/../libmolsketch/tools/toolicons.qrc
@@ -92,4 +95,4 @@ PRE_TARGETDEPS += legacy_files
 
 QMAKE_CXXFLAGS += -g -Wall -fprofile-arcs -ftest-coverage -O0
 QMAKE_LFLAGS += -g -Wall -fprofile-arcs -ftest-coverage  -O0
-LIBS += -lgcov
+LIBS += -lgcov -lboost_stacktrace_addr2line

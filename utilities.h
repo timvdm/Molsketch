@@ -55,8 +55,6 @@ T* assertNotNull(T* pointer, QString message = "Should not be null") {
 }
 void assertTrue(bool input, QString message = "Assertion not fulfilled!");
 
-QString formatXml(const QString& xml);
-
 bool findNextElement(QXmlStreamReader& reader, const QString& element);
 
 int xmlElementCount(const QString& xml, const QString& element);

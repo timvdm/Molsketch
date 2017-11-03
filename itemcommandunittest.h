@@ -26,7 +26,7 @@ using namespace Molsketch;
 
 CLASS_FOR_TESTING_WITH_FUNCTIONS(QGraphicsItem, \
                                  QRectF boundingRect() const override {return QRectF();} \
-                                 void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override { Q_UNUSED(painter) Q_UNUSED(option) Q_UNUSED(widget) });
+                                 void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override { Q_UNUSED(painter) Q_UNUSED(option) Q_UNUSED(widget) })
 
 class ItemCommandUnitTest : public CxxTest::TestSuite {
   MolScene *scene;

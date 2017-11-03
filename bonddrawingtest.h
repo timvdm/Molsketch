@@ -27,27 +27,34 @@
 #include <QDebug>
 #include <QXmlQuery>
 #include <QXmlResultItems>
+#include "xmlassertion.h"
 
 using namespace Molsketch;
 
-class bondDrawingTest : public CxxTest::TestSuite {
+const char QUERY_LINE_COORDS[] = "//*:polyline/@points/data(.)";
+
+class BondDrawingTest : public CxxTest::TestSuite {
   MolScene *scene;
   Atom *a1, *a2;
   Bond *b;
   Molecule *m;
 
   QString extractValueFromXml(const QString& xml, const QString& xQuery) {
-    QString xmlOut(xml);
-    QXmlResultItems xmlResults;
     QXmlQuery query;
-    query.setFocus(xmlOut);
+    query.setFocus(xml);
     query.setQuery(xQuery);
+
+    QXmlResultItems xmlResults;
     query.evaluateTo(&xmlResults);
 
     QString result = xmlResults.next().toAtomicValue().toString();
     TS_ASSERT(xmlResults.next().isNull());
     TS_ASSERT(!xmlResults.hasError());
     return result;
+  }
+
+  void assertLineCoords(const QString& value) {
+    XmlAssertion::assertThat(scene->toSvg())->contains(QUERY_LINE_COORDS)->exactlyOnceWithContent(value);
   }
 
 public:
@@ -66,41 +73,48 @@ public:
 
   void testDrawingDownFromAtom() {
     a2->setCoordinates(QPolygonF() << QPointF(0,50));
-    TS_ASSERT_EQUALS(extractValueFromXml(scene->toSvg(), "//*:polyline/@points/data(.)"), "0,7.5 0,42.5 ");
+    assertLineCoords("0,7.5 0,42.5 ");
   }
 
   void testDrawingRightFromAtom() {
     a2->setCoordinates(QPolygonF() << QPointF(50,0));
-    TS_ASSERT_EQUALS(extractValueFromXml(scene->toSvg(), "//*:polyline/@points/data(.)"), "5,0 45,0 ");
+    assertLineCoords("5,0 45,0 ");
   }
 
   void testDrawingUpFromAtom() {
     a2->setCoordinates(QPolygonF() << QPointF(0,-50));
-    TS_ASSERT_EQUALS(extractValueFromXml(scene->toSvg(), "//*:polyline/@points/data(.)"), "0,-7.5 0,-42.5 ");
+    assertLineCoords("0,-7.5 0,-42.5 ");
   }
 
   void testDrawingLeftFromAtom() {
     a2->setCoordinates(QPolygonF() << QPointF(-50,0));
-    TS_ASSERT_EQUALS(extractValueFromXml(scene->toSvg(), "//*:polyline/@points/data(.)"), "-5,0 -45,0 ");
+    assertLineCoords("-5,0 -45,0 ");
   }
 
   void testDrawingUpLeftFromAtom() {
     a2->setCoordinates(QPolygonF() << QPointF(-20,-30));
-    TS_ASSERT_EQUALS(extractValueFromXml(scene->toSvg(), "//*:polyline/@points/data(.)"), "-4.1094,-6.1641 -15.8906,-23.8359 ");
+    assertLineCoords("-4.1094,-6.1641 -15.8906,-23.8359 ");
   }
 
   void testDrawingUpRightFromAtom() {
     a2->setCoordinates(QPolygonF() << QPointF(20,-30));
-    TS_ASSERT_EQUALS(extractValueFromXml(scene->toSvg(), "//*:polyline/@points/data(.)"), "4.1094,-6.1641 15.8906,-23.8359 ");
+    assertLineCoords("4.1094,-6.1641 15.8906,-23.8359 ");
   }
 
   void testDrawingDownLeftFromAtom() {
     a2->setCoordinates(QPolygonF() << QPointF(-20,30));
-    TS_ASSERT_EQUALS(extractValueFromXml(scene->toSvg(), "//*:polyline/@points/data(.)"), "-4.1094,6.1641 -15.8906,23.8359 ");
+    assertLineCoords("-4.1094,6.1641 -15.8906,23.8359 ");
   }
 
   void testDrawingDownRightFromAtom() {
     a2->setCoordinates(QPolygonF() << QPointF(20,30));
-    TS_ASSERT_EQUALS(extractValueFromXml(scene->toSvg(), "//*:polyline/@points/data(.)"), "4.1094,6.1641 15.8906,23.8359 ");
+    assertLineCoords("4.1094,6.1641 15.8906,23.8359 ");
+  }
+
+  void testDrawingFromEmptyAtoms() {
+    a1->setElement("");
+    a2->setElement("");
+    a2->setCoordinates(QPolygonF() << QPointF(20,30));
+    assertLineCoords("0,0 20,30 ");
   }
 };

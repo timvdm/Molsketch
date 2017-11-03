@@ -25,8 +25,10 @@
 #include <atom.h>
 #include <radicalelectron.h>
 #include "utilities.h"
+#include "xmlassertion.h"
 
 using namespace Molsketch;
+using XmlAssert::assertThat;
 
 const QString ATOM_XML_WITH_RADICAL("<atom elementType=\"\" hydrogenCount=\"0\" colorR=\"0\" colorG=\"0\" colorB=\"0\" scalingParameter=\"1\" coordinates=\"0,0\">"
                                     "<radicalElectron diameter=\"3\" colorR=\"0\" colorG=\"0\" colorB=\"0\">"
@@ -47,6 +49,7 @@ const QString ATOM_XML_WITH_LONE_PAIR_AND_RADICAL(
     "<bbLinker originAnchor=\"Top\" targetAnchor=\"Bottom\" xOffset=\"0\" yOffset=\"0\"/>"
     "</radicalElectron>"
     "</atom>");
+const char NEWMAN_XQUERY[] = "//*:atom/@newmanDiameter/data(.)";
 const qreal RADICAL_DIAMETER = 3;
 const qreal LONE_PAIR_ANGLE = 45;
 const qreal LONE_PAIR_LINE_WIDTH = 1.5;
@@ -135,5 +138,44 @@ public:
 
     firstBond.setAtoms(nullptr, nullptr);
     secondBond.setAtoms(nullptr, nullptr);
+  }
+
+  void testNormalAtomHasNoNewmanDiameter() {
+    Atom atom(QPointF(), "C");
+    assertThat(atom)->contains(NEWMAN_XQUERY)->never();
+  }
+
+  void testNewmanAtomHasNewmanDiameter() {
+    Atom atom(QPointF(), "C");
+    atom.setNewmanDiameter(5.5);
+    TS_ASSERT_EQUALS(atom.getNewmanDiameter(), 5.5);
+    assertThat(atom)->contains(NEWMAN_XQUERY)->exactlyOnceWithContent("5.5");
+  }
+
+  void testDisabledNewmanAtomHasNoNewmanDiameter() {
+    Atom atom(QPointF(), "C");
+    atom.setNewmanDiameter(5.5);
+    TS_ASSERT_EQUALS(atom.getNewmanDiameter(), 5.5);
+    atom.disableNewman();
+    assertThat(atom)->contains(NEWMAN_XQUERY)->never();
+  }
+
+  void testAtomWithNewmanDiameterCanBeRead() {
+    Atom atom;
+    TS_ASSERT_EQUALS(atom.getNewmanDiameter(), 0);
+    QXmlStreamReader in("<atom elementType=\"C\" hydrogenCount=\"0\" colorR=\"0\" colorG=\"0\" colorB=\"0\" scalingParameter=\"1\" coordinates=\"0,0\" newmanDiameter=\"3.5\"/>");
+    in.readNextStartElement();
+    atom.readXml(in);
+    TS_ASSERT_EQUALS(atom.getNewmanDiameter(), 3.5);
+  }
+
+  void testAtomWithoutNewmanDiameterCanBeRead() {
+    Atom atom;
+    atom.setNewmanDiameter(5.5);
+    TS_ASSERT_EQUALS(atom.getNewmanDiameter(), 5.5);
+    QXmlStreamReader in("<atom elementType=\"C\" hydrogenCount=\"0\" colorR=\"0\" colorG=\"0\" colorB=\"0\" scalingParameter=\"1\" coordinates=\"0,0\"/>");
+    in.readNextStartElement();
+    atom.readXml(in);
+    TS_ASSERT_EQUALS(atom.getNewmanDiameter(), 0);
   }
 };
