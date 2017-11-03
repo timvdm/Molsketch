@@ -891,12 +891,12 @@ namespace Molsketch {
     return widget;
   }
 
-  QPointF Atom::bondDrawingStart(const Bond *bond) const
+  QPointF Atom::bondDrawingStart(const Atom *other) const
   {
-    if (!boundingRect().isValid()) return bond->mapFromParent(pos());
+    if (!boundingRect().isValid()) return pos();
 
-    QRectF bounds = mapRectToItem(bond, boundingRect());
-    QLineF connection(bond->mapFromParent(pos()), bond->mapFromParent(bond->otherAtom(this)->pos()));
+    QRectF bounds = mapRectToScene(boundingRect());
+    QLineF connection(pos(), other->pos());
 
     QVector<QPointF> corners;
     corners << bounds.bottomLeft()
