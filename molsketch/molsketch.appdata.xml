@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2017 Hendrik Vennekate <mail_AT_domain.tld> -->
+<component type="desktop-application">
+  <id>net.sourceforge.molsketch</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-2.0</project_license>
+  <name>Molsketch</name>
+  <summary>2D Molecular Structures Editor</summary>
+
+  <description>
+    <p>
+    Molsketch is a program for drawing two-dimensional schematic representations of molecules. The goal of the program is to make this quick and easy, without sacrificing the resulting quality. Of course your creations can be used afterwards as vector or bitmap image in any document, presentation or website. Some of the features of Molsketch are:
+    </p>
+    <ul>
+	    <li>Creating regular and consistent bonds easily with tools as a dynamic grid and magnetic atoms</li>
+	    <li>Open, save and import in all formats supported by the OpenBabel™ library</li>
+	    <li>Export to Scalable Vector Graphics (SVG) and a number of common used bitmap formats</li>
+	    <li>Print and export your document to PDF</li>
+	    <li>Intelligent addition/removal of hydrogen atoms</li>
+	    <li>Real-time information about the molecule, like charge and weight</li>
+	    <li>Built-in library for quick access to regularly used molecules and functional groups</li>
+    </ul>
+  </description>
+  
+  <categories>
+	  <category>Science</category>
+	  <category>Chemistry</category>
+  </categories>
+
+  <launchable type="desktop-id">molsketch.desktop</launchable>
+
+  <screenshots>
+    <screenshot type="default">
+      <caption>The Molsketch main window</caption>
+      <image>https://github.com/hvennekate/Molsketch/raw/master/screenshots/Screen1.png</image>
+    </screenshot>
+    <screenshot>
+      <image>https://github.com/hvennekate/Molsketch/raw/master/screenshots/Screen2.png</image>
+    </screenshot>
+    <screenshot>
+	    <caption>Molecule with electron system visible</caption>
+      <image>https://github.com/hvennekate/Molsketch/raw/master/screenshots/Screen3.png</image>
+    </screenshot>
+  </screenshots>
+
+  <url type="homepage">http://molsketch.sourceforge.net/</url>
+
+  <provides>
+    <binary>molsketch-qt5</binary>
+  </provides>
+  
+</component>
