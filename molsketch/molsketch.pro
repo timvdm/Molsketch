@@ -30,7 +30,7 @@ unix {
   desktop.files = molsketch.desktop
   desktop.path = $$MSK_PREFIX/share/applications
   
-  appdata.files = net.sourceforge.appdata.xml
+  appdata.files = net.sourceforge.molsketch.appdata.xml
   appdata.path = $$MSK_PREFIX/share/metainfo
 }
 
