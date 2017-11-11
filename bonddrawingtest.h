@@ -39,20 +39,6 @@ class BondDrawingTest : public CxxTest::TestSuite {
   Bond *b;
   Molecule *m;
 
-  QString extractValueFromXml(const QString& xml, const QString& xQuery) {
-    QXmlQuery query;
-    query.setFocus(xml);
-    query.setQuery(xQuery);
-
-    QXmlResultItems xmlResults;
-    query.evaluateTo(&xmlResults);
-
-    QString result = xmlResults.next().toAtomicValue().toString();
-    TS_ASSERT(xmlResults.next().isNull());
-    TS_ASSERT(!xmlResults.hasError());
-    return result;
-  }
-
   void assertLineCoords(const QString& value) {
     XmlAssertion::assertThat(scene->toSvg())->contains(QUERY_LINE_COORDS)->exactlyOnceWithContent(value);
   }
@@ -122,5 +108,16 @@ public:
     a1->setNewmanDiameter(6);
     a2->setCoordinates(QPolygonF() << QPointF(50,50));
     assertLineCoords("2.82843,2.82843 45.5858,45.5858 ");
+  }
+
+  void testDrawingSecondAtomInOriginBond() {
+    a1->setCoordinates(QPolygonF() << QPointF(20,30));
+    assertLineCoords("15.8906,23.8359 4.1094,6.1641 ");
+  }
+
+  void testDrawingNonOriginBasedBond() {
+    a1->setCoordinates(QPolygonF() << QPointF(20,30));
+    a2->setCoordinates(QPolygonF() << QPointF(-5,17));
+    assertLineCoords("15.2256,27.5173 -0.225566,19.4827 ");
   }
 };
