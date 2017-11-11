@@ -33,6 +33,7 @@ class XmlAssertion
 public:
   static XmlAssertion *assertThat(const QString& xml);
   static XmlAssertion *assertThat(const Molsketch::XmlObjectInterface &object);
+  static QString formatXml(const QString&xml);
   XmlAssertion* contains(const QString& xQuery);
   XmlAssertion* exactlyOnceWithContent(const QString& expected);
   XmlAssertion *never();

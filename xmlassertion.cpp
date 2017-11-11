@@ -34,7 +34,7 @@ public:
   QXmlQuery query;
   QString xml, queryString;
   void printStackTraceAndThrow(const QString &message);
-  QString formatXml(const QString &xml);
+  static QString formatXml(const QString &xml);
 };
 
 XmlAssertion *XmlAssertion::assertThat(const QString &xml) {
@@ -46,6 +46,10 @@ XmlAssertion *XmlAssertion::assertThat(const Molsketch::XmlObjectInterface &obje
   QXmlStreamWriter out(&xml);
   object.writeXml(out);
   return new XmlAssertion(xml);
+}
+
+QString XmlAssertion::formatXml(const QString &xml) {
+  return XmlAssertionPrivate::formatXml(xml);
 }
 
 QString XmlAssertionPrivate::formatXml(const QString &xml) {
@@ -68,7 +72,10 @@ void XmlAssertionPrivate::printStackTraceAndThrow(const QString& message) {
   out << message << endl;
   out << "Query:" << endl << queryString << endl
            << "XML:" << endl << formatXml(xml) << endl;
+  // TODO parent matches etc.
+#ifdef MSKTEST_STACKTRACE
   std::cout << boost::stacktrace::stacktrace();
+#endif
   throw message;
 }
 

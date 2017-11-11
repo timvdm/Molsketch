@@ -117,4 +117,10 @@ public:
     a2->setCoordinates(QPolygonF() << QPointF(20,30));
     assertLineCoords("0,0 20,30 ");
   }
+
+  void testDrawingFromNewmanAtom() {
+    a1->setNewmanDiameter(6);
+    a2->setCoordinates(QPolygonF() << QPointF(50,50));
+    assertLineCoords("2.82843,2.82843 45.5858,45.5858 ");
+  }
 };
