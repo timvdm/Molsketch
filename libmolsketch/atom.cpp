@@ -619,8 +619,7 @@ namespace Molsketch {
   void Atom::readGraphicAttributes(const QXmlStreamAttributes &attributes)
   {
     setElement(attributes.value("elementType").toString()) ;
-    if (!attributes.hasAttribute("newmanDiameter")) m_newmanDiameter = 0;
-    else m_newmanDiameter = attributes.value("newmanDiameter").toDouble();
+    m_newmanDiameter = qAbs(attributes.value("newmanDiameter").toDouble());
   }
 
   QXmlStreamAttributes Atom::graphicAttributes() const
