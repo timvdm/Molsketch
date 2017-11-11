@@ -21,10 +21,7 @@
 #include <atom.h>
 #include <molscene.h>
 #include <molecule.h>
-#include <QDebug>
-#include <QXmlQuery>
-#include <QXmlResultItems>
-#include <QXmlNodeModelIndex>
+#include <QSet>
 #include "xmlassertion.h"
 using namespace Molsketch;
 using XmlAssert::assertThat;
