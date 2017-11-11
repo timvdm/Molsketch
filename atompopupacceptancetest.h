@@ -388,4 +388,30 @@ public:
 
   // TODO Test deletion of atom from scene.
   // TODO extract parent class from this and arrowPopupAcceptanceTest
+
+  void testNewmanDiameterInitiallyZero() {
+    popup->connectAtom(atom);
+    QS_ASSERT_ON_POINTER(QDoubleSpinBox, popup->findChild<QDoubleSpinBox*>("newmanDiameter"), value(), 0);
+  }
+
+  void testInitialNewmanDiameterIsTransferredToGui() {
+    atom->setNewmanDiameter(5.5);
+    popup->connectAtom(atom);
+    QS_ASSERT_ON_POINTER(QDoubleSpinBox, popup->findChild<QDoubleSpinBox*>("newmanDiameter"), value(), 5.5);
+  }
+
+  void testSettingNewmanDiameterWorks() {
+    popup->connectAtom(atom);
+    assertNotNull(popup->findChild<QDoubleSpinBox*>("newmanDiameter"))->setValue(5.5);
+    TS_ASSERT_EQUALS(atom->getNewmanDiameter(), 5.5);
+    TS_ASSERT_EQUALS(scene->stack()->count(), 1);
+//    QS_ASSERT_EQUALS(scene->stack()->undoText(), "Change Newman diameter");
+  }
+
+  void testSettingNewmanDiameterCanBeUndone() {
+   popup->connectAtom(atom);
+   assertNotNull(popup->findChild<QDoubleSpinBox*>("newmanDiameter"))->setValue(5.5);
+   scene->stack()->undo();
+   TS_ASSERT_EQUALS(atom->getNewmanDiameter(), 0);
+  }
 };
