@@ -24,6 +24,7 @@
 #include <QXmlResultItems>
 #include <QTextStream>
 #include <QXmlStreamReader>
+#include <QDebug>
 
 const int MAX_STACK_TRACE_DEPTH = 15;
 
@@ -83,6 +84,37 @@ XmlAssertion *XmlAssertion::contains(const QString &xQuery) {
   Q_D(XmlAssertion);
   d->queryString = xQuery;
   d->query.setQuery(xQuery);
+  return this;
+}
+
+QString formatStringList(QStringList list) {
+  return "[" + list.replaceInStrings(QRegExp("^|$"), "\"").join(", ") + "]";
+}
+
+XmlAssertion *XmlAssertion::inAnyOrderWithValues(const QStringList &expectedValues) {
+  Q_D(XmlAssertion);
+  QXmlResultItems results;
+  d->query.evaluateTo(&results);
+  if (results.hasError())
+    d->printStackTraceAndThrow("Error in query!");
+  QXmlItem item = results.next();
+  QStringList actualValues;
+  while (!item.isNull()) {
+    if (!item.isAtomicValue())
+      d->printStackTraceAndThrow("Expected item from query to be an atomic value.");
+    actualValues << item.toAtomicValue().toString();
+    item = results.next();
+  }
+  for (const QString& actual : actualValues)
+    if (!expectedValues.contains(actual))
+      d->printStackTraceAndThrow("Unexpected value found: \"" + actual + "\""
+                                 + "\nExpected values: " + formatStringList(expectedValues)
+                                 + "\nActual values:   " + formatStringList(actualValues));
+  for (const QString& expected : expectedValues)
+    if (!actualValues.contains(expected))
+      d->printStackTraceAndThrow("Expected value not found: \"" + expected + "\""
+                                 + "\nExpected values: " + formatStringList(expectedValues)
+                                 + "\nActual values:   " + formatStringList(actualValues));
   return this;
 }
 

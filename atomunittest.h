@@ -178,4 +178,14 @@ public:
     atom.readXml(in);
     TS_ASSERT_EQUALS(atom.getNewmanDiameter(), 0);
   }
+
+  void testBoundingRectForCarbonNewmanAtom() {
+    Atom *a1 = new Atom(), *a2 = new Atom();
+    Bond *b1 = new Bond(a1, atom), *b2 = new Bond(atom, a2);
+    atom->setElement("C");
+    atom->setCharge(0);
+    atom->setNewmanDiameter(6);
+    TS_ASSERT(atom->isDrawn());
+    QS_ASSERT_EQUALS(atom->boundingRect(), QRectF(-3, -3, 6, 6));
+  }
 };

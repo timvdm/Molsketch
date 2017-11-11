@@ -110,6 +110,17 @@ public:
     assertLineCoords("2.82843,2.82843 45.5858,45.5858 ");
   }
 
+  void testDrawingFromNewmanAtomIfCarbon() {
+    a1->setNewmanDiameter(6);
+    a2->setCoordinates(QPolygonF() << QPointF(50,50));
+    Atom *a3 = new Atom(QPointF(-50,-70), "C");
+    a1->setElement("C");
+    m->addAtom(a3);
+    m->addBond(a1, a3);
+    XmlAssertion::assertThat(scene->toSvg())->contains(QUERY_LINE_COORDS)
+        ->inAnyOrderWithValues({"2.82843,2.82843 45.5858,45.5858 ", "-2.32495,-3.25493 -46.3375,-64.8725 "});
+  }
+
   void testDrawingSecondAtomInOriginBond() {
     a1->setCoordinates(QPolygonF() << QPointF(20,30));
     assertLineCoords("15.8906,23.8359 4.1094,6.1641 ");
