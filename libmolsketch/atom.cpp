@@ -944,9 +944,19 @@ namespace Molsketch {
   {
     if (!boundingRect().isValid()) return pos();
 
-    QRectF bounds = mapRectToScene(boundingRect());
+
     QLineF connection(pos(), other->pos());
 
+    if (m_newmanDiameter > 0) {
+      connection.setLength((m_newmanDiameter + lineWidth())/2. );
+      return connection.p2();
+    }
+
+    return getBondDrawingStartFromBoundingBox(connection);
+  }
+
+  QPointF Atom::getBondDrawingStartFromBoundingBox(const QLineF& connection) const {
+    QRectF bounds = mapRectToScene(boundingRect());
     QVector<QPointF> corners;
     corners << bounds.bottomLeft()
             << bounds.bottomRight()

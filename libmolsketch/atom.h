@@ -177,6 +177,7 @@ namespace Molsketch {
     void drawSelectionHighlight(QPainter* painter);
     QString getLabelWithHydrogens();
     void drawNewman(QPainter *painter);
+    QPointF getBondDrawingStartFromBoundingBox(const QLineF &connection) const;
   };
 
 } // namespace
