@@ -169,6 +169,14 @@ namespace Molsketch {
     QPair<QFont, QFont> getFonts() const;
     QString composeLabel(bool leftAligned) const;
     qreal computeXOffset(int alignment, const QFontMetrics &fmSymbol, const QString &lbl, const qreal &totalWidth);
+    void drawElectrons(QPainter* painter);
+    void drawCharge(QPainter* painter);
+    void renderColoredSquare(QPainter* painter);
+    void renderColoredCircle(QPainter* painter);
+    void renderColoredShape(QPainter *painter, void (QPainter::*drawMethod)(int, int, int, int));
+    void drawSelectionHighlight(QPainter* painter);
+    QString getLabelWithHydrogens();
+    void drawNewman(QPainter *painter);
   };
 
 } // namespace

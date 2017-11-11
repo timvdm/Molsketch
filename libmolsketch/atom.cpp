@@ -372,49 +372,162 @@ namespace Molsketch {
   }
 
 
-  void Atom::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
+  void Atom::drawElectrons(QPainter* painter)
   {
-    Q_UNUSED(option)
-    Q_UNUSED(widget)
+    int unboundElectrons = numNonBondingElectrons();
+    QList<QRectF> layoutList;
 
-    painter->setPen(getColor());
-    MolScene* molScene = dynamic_cast<MolScene*>(scene());
-    if (!molScene) return ;
-    Q_CHECK_PTR(molScene);
+    if (m_bonds.size() == 0) {
+      //  ..   ..   ..     ..
+      //  NH2  OH2  CH3    N .
+      //       ''          ''
+      layoutList << QRectF(-3,-10,2,2); // top1
+      layoutList << QRectF(3,-10,2,2); // top2
+      layoutList << QRectF(-3,10,2,2); // bottom1
+      layoutList << QRectF(3,10,2,2); // bottom2
+      layoutList << QRectF(-10,-3,2,2); // left1
+      layoutList << QRectF(-10,3,2,2); // left2
+      layoutList << QRectF(10,-3,2,2); // right1
+      layoutList << QRectF(10,3,2,2); // right2
+    } else if (m_bonds.size() == 1) {
+      //   ..   ..     ..    |
+      // --OH   HO--  :OH   :OH
+      //   ''   ''     |     ''
+      QPointF direction(0.0, 0.0);
+      foreach (Atom *nbr, neighbours())
+        direction += pos() - nbr->pos();
 
-    int element = Element::strings.indexOf(m_elementSymbol);
-
-    switch (molScene->renderMode()) { // TODO this could be better handled by using an atom renderer from the scene
-      case MolScene::RenderColoredSquares:
-        if (element != Element::C) {
-          QColor color = elementColor(element);
-          painter->setPen(color);
-          painter->setBrush(color);
-          qreal half = 10.0;
-          painter->drawRect(-half, -half, 2.0 * half, 2.0 * half);
+      if (qAbs(direction.y()) > qAbs(direction.x())) {
+        if (direction.y() <= 0.0) {
+          //   ..
+          //   NH2
+          //   |
+          layoutList << QRectF(-3,-10,2,2); // top1
+          layoutList << QRectF(3,-10,2,2); // top2
+          if (direction.x() < -0.1) {
+            layoutList << QRectF(10,-3,2,2); // right1
+            layoutList << QRectF(10,3,2,2); // right2
+            layoutList << QRectF(-10,-3,2,2); // left1
+            layoutList << QRectF(-10,3,2,2); // left2
+          } else {
+            layoutList << QRectF(-10,-3,2,2); // left1
+            layoutList << QRectF(-10,3,2,2); // left2
+            layoutList << QRectF(10,-3,2,2); // right1
+            layoutList << QRectF(10,3,2,2); // right2
+          }
+          layoutList << QRectF(-3,10,2,2); // bottom1
+          layoutList << QRectF(3,10,2,2); // bottom2
+        } else {
+          layoutList << QRectF(-3,10,2,2); // bottom1
+          layoutList << QRectF(3,10,2,2); // bottom2
+          if (direction.x() < -0.1) {
+            layoutList << QRectF(10,-3,2,2); // right1
+            layoutList << QRectF(10,3,2,2); // right2
+            layoutList << QRectF(-10,-3,2,2); // left1
+            layoutList << QRectF(-10,3,2,2); // left2
+          } else {
+            layoutList << QRectF(-10,-3,2,2); // left1
+            layoutList << QRectF(-10,3,2,2); // left2
+            layoutList << QRectF(10,-3,2,2); // right1
+            layoutList << QRectF(10,3,2,2); // right2
+          }
+          layoutList << QRectF(-3,-10,2,2); // top1
+          layoutList << QRectF(3,-10,2,2); // top2
         }
-        return;
-      case MolScene::RenderColoredCircles:
-        if (element != Element::C) {
-          QColor color = elementColor(element);
-          painter->setPen(color);
-          painter->setBrush(color);
-          qreal half = 10.0;
-          painter->drawEllipse(-half, -half, 2.0 * half, 2.0 * half);
+      } else {
+        if (direction.x() < 0.0) {
+          layoutList << QRectF(-3,-10,2,2); // top1
+          layoutList << QRectF(3,-10,2,2); // top2
+          layoutList << QRectF(-3,10,2,2); // bottom1
+          layoutList << QRectF(3,10,2,2); // bottom2
+          layoutList << QRectF(-10,-3,2,2); // left1
+          layoutList << QRectF(-10,3,2,2); // left2
+          layoutList << QRectF(10,-3,2,2); // right1
+          layoutList << QRectF(10,3,2,2); // right2
+
+        } else {
+          layoutList << QRectF(-3,-10,2,2); // top1
+          layoutList << QRectF(3,-10,2,2); // top2
+          layoutList << QRectF(-3,10,2,2); // bottom1
+          layoutList << QRectF(3,10,2,2); // bottom2
+          layoutList << QRectF(10,-3,2,2); // right1
+          layoutList << QRectF(10,3,2,2); // right2
+          layoutList << QRectF(-10,-3,2,2); // left1
+          layoutList << QRectF(-10,3,2,2); // left2
         }
-        return;
-      case MolScene::RenderColoredWireframe:
-        return;
-      default:
-      case MolScene::RenderLabels:
-        break;
+      }
+
     }
 
-    if (!isDrawn()) return;
+    if (layoutList.isEmpty()) {
+      // Loading different layouts
+      layoutList << QRectF(-3,-10,2,2); // bottom1
+      layoutList << QRectF(3,-10,2,2); // bottom2
+      layoutList << QRectF(-3,10,2,2); // top1
+      layoutList << QRectF(3,10,2,2); // top2
+      layoutList << QRectF(10,-3,2,2); // right1
+      layoutList << QRectF(10,3,2,2); // right2
+      layoutList << QRectF(-10,-3,2,2); // left1
+      layoutList << QRectF(-10,3,2,2); // left2
+    }
 
-    Alignment alignment = labelAlignment();
+
+    painter->save();
+
+    for (int i = 0; i < unboundElectrons; i++)
+      painter->drawEllipse(layoutList[i]);
+
+    painter->restore();
+  }
+
+  void Atom::drawCharge(QPainter* painter)
+  {
+    QString chargeId = chargeString();
+    QFont superscriptFont = getSymbolFont();
+    superscriptFont.setPointSize(0.75 * superscriptFont.pointSize());
+    QFontMetrics fmSymbol(superscriptFont);
+    int offset = 0.5 * fmSymbol.width("+");
+    painter->save();
+    painter->setFont(superscriptFont);
+    painter->drawText(m_shape.right() - offset, m_shape.top() + offset, chargeId);
+    painter->restore();
+  }
+
+  void Atom::renderColoredSquare(QPainter* painter) {
+    renderColoredShape(painter, &QPainter::drawRect);
+  }
+
+  void Atom::renderColoredCircle(QPainter* painter) {
+    renderColoredShape(painter, &QPainter::drawEllipse);
+  }
+
+  void Atom::renderColoredShape(QPainter* painter, void (QPainter::*drawMethod)(int,int,int,int)) {
+    int element = Element::strings.indexOf(m_elementSymbol);
+    if (element != Element::C) {
+      QColor color = elementColor(element);
+      painter->save();
+      painter->setPen(color);
+      painter->setBrush(color);
+      qreal half = 10.0;
+      (painter->*drawMethod)(-half, -half, 2.0 * half, 2.0 * half);
+      painter->restore();
+    }
+  }
+
+  void Atom::drawSelectionHighlight(QPainter* painter)
+  {
+    if (this->isSelected()) {
+      painter->save();
+      painter->setPen(Qt::blue);
+      painter->drawRect(m_shape); // TODO draw rectangle around this and children rectangle to include electrons (possibly move this method to graphicsItem)
+      painter->restore();
+    }
+  }
+
+  QString Atom::getLabelWithHydrogens()
+  {
     bool leftAligned = false;
-    switch (alignment) {
+    switch (labelAlignment()) {
       case Left:
         leftAligned = true;
       default:
@@ -436,135 +549,56 @@ namespace Molsketch {
     if ((hCount > 1) && !leftAligned)
       lbl += QString::number(hCount);
 
+    return lbl;
+  }
+
+  void Atom::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
+  {
+    Q_UNUSED(option)
+    Q_UNUSED(widget)
+
+    MolScene* molScene = dynamic_cast<MolScene*>(scene());
+    if (!molScene) return ;
+    Q_CHECK_PTR(molScene);
+
+    switch (molScene->renderMode()) { // TODO this could be better handled by using an atom renderer from the scene
+      case MolScene::RenderColoredSquares:
+        renderColoredSquare(painter);
+        return;
+      case MolScene::RenderColoredCircles:
+        renderColoredCircle(painter);
+        return;
+      case MolScene::RenderColoredWireframe:
+        return;
+      default:
+      case MolScene::RenderLabels:
+        break;
+    }
+
+    if (m_newmanDiameter > 0) {
+      drawNewman(painter);
+      return;
+    }
+    if (!isDrawn()) return;
+    painter->save();
     painter->setPen(getColor());
-    drawAtomLabel(painter, lbl, alignment);
 
-    // Drawing rectangle
-    if (this->isSelected()) {
-      painter->save();
-      painter->setPen(Qt::blue);
-      painter->drawRect(m_shape); // TODO draw rectangle around this and children rectangle to include electrons (possibly move this method to graphicsItem)
-      painter->restore();
-    }
+    drawAtomLabel(painter, getLabelWithHydrogens(), labelAlignment());
+    drawSelectionHighlight(painter);
+    if (molScene->chargeVisible()) drawCharge(painter); // TODO unite with subscript drawing and align appropriately
+    if (molScene->lonePairsVisible()) drawElectrons(painter);
+    painter->restore();
+  }
 
-    // Draw charge
-    if (molScene->chargeVisible()) { // TODO unite with subscript drawing and align appropriately
-      QString chargeId = chargeString();
-      QFont superscriptFont = getSymbolFont();
-      superscriptFont.setPointSize(0.75 * superscriptFont.pointSize());
-      QFontMetrics fmSymbol(superscriptFont);
-      int offset = 0.5 * fmSymbol.width("+");
-      painter->setFont(superscriptFont);
-      painter->drawText(m_shape.right() - offset, m_shape.top() + offset, chargeId);
-    }
-
-    if (molScene->lonePairsVisible()) {
-      // Draw unbound electrons
-      int unboundElectrons = numNonBondingElectrons();
-      QList<QRectF> layoutList;
-
-      if (m_bonds.size() == 0) {
-        //  ..   ..   ..     ..
-        //  NH2  OH2  CH3    N .
-        //       ''          ''
-        layoutList << QRectF(-3,-10,2,2); // top1
-        layoutList << QRectF(3,-10,2,2); // top2
-        layoutList << QRectF(-3,10,2,2); // bottom1
-        layoutList << QRectF(3,10,2,2); // bottom2
-        layoutList << QRectF(-10,-3,2,2); // left1
-        layoutList << QRectF(-10,3,2,2); // left2
-        layoutList << QRectF(10,-3,2,2); // right1
-        layoutList << QRectF(10,3,2,2); // right2
-      } else if (m_bonds.size() == 1) {
-        //   ..   ..     ..    |
-        // --OH   HO--  :OH   :OH
-        //   ''   ''     |     ''
-        QPointF direction(0.0, 0.0);
-        foreach (Atom *nbr, neighbours())
-          direction += pos() - nbr->pos();
-
-        if (qAbs(direction.y()) > qAbs(direction.x())) {
-          if (direction.y() <= 0.0) {
-            //   ..
-            //   NH2
-            //   |
-            layoutList << QRectF(-3,-10,2,2); // top1
-            layoutList << QRectF(3,-10,2,2); // top2
-            if (direction.x() < -0.1) {
-              layoutList << QRectF(10,-3,2,2); // right1
-              layoutList << QRectF(10,3,2,2); // right2
-              layoutList << QRectF(-10,-3,2,2); // left1
-              layoutList << QRectF(-10,3,2,2); // left2
-            } else {
-              layoutList << QRectF(-10,-3,2,2); // left1
-              layoutList << QRectF(-10,3,2,2); // left2
-              layoutList << QRectF(10,-3,2,2); // right1
-              layoutList << QRectF(10,3,2,2); // right2
-            }
-            layoutList << QRectF(-3,10,2,2); // bottom1
-            layoutList << QRectF(3,10,2,2); // bottom2
-          } else {
-            layoutList << QRectF(-3,10,2,2); // bottom1
-            layoutList << QRectF(3,10,2,2); // bottom2
-            if (direction.x() < -0.1) {
-              layoutList << QRectF(10,-3,2,2); // right1
-              layoutList << QRectF(10,3,2,2); // right2
-              layoutList << QRectF(-10,-3,2,2); // left1
-              layoutList << QRectF(-10,3,2,2); // left2
-            } else {
-              layoutList << QRectF(-10,-3,2,2); // left1
-              layoutList << QRectF(-10,3,2,2); // left2
-              layoutList << QRectF(10,-3,2,2); // right1
-              layoutList << QRectF(10,3,2,2); // right2
-            }
-            layoutList << QRectF(-3,-10,2,2); // top1
-            layoutList << QRectF(3,-10,2,2); // top2
-          }
-        } else {
-          if (direction.x() < 0.0) {
-            layoutList << QRectF(-3,-10,2,2); // top1
-            layoutList << QRectF(3,-10,2,2); // top2
-            layoutList << QRectF(-3,10,2,2); // bottom1
-            layoutList << QRectF(3,10,2,2); // bottom2
-            layoutList << QRectF(-10,-3,2,2); // left1
-            layoutList << QRectF(-10,3,2,2); // left2
-            layoutList << QRectF(10,-3,2,2); // right1
-            layoutList << QRectF(10,3,2,2); // right2
-
-          } else {
-            layoutList << QRectF(-3,-10,2,2); // top1
-            layoutList << QRectF(3,-10,2,2); // top2
-            layoutList << QRectF(-3,10,2,2); // bottom1
-            layoutList << QRectF(3,10,2,2); // bottom2
-            layoutList << QRectF(10,-3,2,2); // right1
-            layoutList << QRectF(10,3,2,2); // right2
-            layoutList << QRectF(-10,-3,2,2); // left1
-            layoutList << QRectF(-10,3,2,2); // left2
-          }
-        }
-
-      }
-
-      if (layoutList.isEmpty()) {
-        // Loading different layouts
-        layoutList << QRectF(-3,-10,2,2); // bottom1
-        layoutList << QRectF(3,-10,2,2); // bottom2
-        layoutList << QRectF(-3,10,2,2); // top1
-        layoutList << QRectF(3,10,2,2); // top2
-        layoutList << QRectF(10,-3,2,2); // right1
-        layoutList << QRectF(10,3,2,2); // right2
-        layoutList << QRectF(-10,-3,2,2); // left1
-        layoutList << QRectF(-10,3,2,2); // left2
-      }
-
-
-      painter->save();
-
-      for (int i = 0; i < unboundElectrons; i++)
-        painter->drawEllipse(layoutList[i]);
-
-      painter->restore();
-    }
+  void Atom::drawNewman(QPainter* painter) {
+    painter->save();
+    QPen pen = painter->pen();
+    pen.setColor(getColor());
+    pen.setWidthF(lineWidth());
+    painter->setPen(pen);
+    qreal half = m_newmanDiameter/2.;
+    painter->drawEllipse(-half, -half, 2.*half, 2.*half);
+    painter->restore();
   }
 
   qreal Atom::annotationDirection() const
