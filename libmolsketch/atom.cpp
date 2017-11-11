@@ -176,6 +176,7 @@ namespace Molsketch {
 
   QRectF Atom::computeBoundingRect()
   {
+    if (m_newmanDiameter > 0.) return QRectF(-m_newmanDiameter/2., -m_newmanDiameter/2., m_newmanDiameter, m_newmanDiameter);
     // TODO do proper prepareGeometryChange() call
     // TODO call whenever boundingRect() is called
     Alignment alignment = labelAlignment();
@@ -693,6 +694,7 @@ namespace Molsketch {
 
   void Atom::setNewmanDiameter(const qreal &diameter) {
     m_newmanDiameter = diameter;
+    m_shape = computeBoundingRect();
   }
 
   qreal Atom::getNewmanDiameter() const {
@@ -872,7 +874,8 @@ namespace Molsketch {
         && !carbonVisible
         && (numBonds() > 1)
         && ((charge() == 0) || !chargeVisible)
-        && childItems().empty())
+        && childItems().empty()
+        && 0 == m_newmanDiameter)
       return false;
     return true;
   }
