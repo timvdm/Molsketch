@@ -201,7 +201,7 @@ namespace Molsketch {
   }
 
   QPointF Bond::determineBondDrawingStart(Atom *start, Atom *end) const {
-    return start->bondDrawingStart(end);
+    return mapFromScene(start->bondDrawingStart(end));
   }
 
   QPolygonF clipBond(const QPointF& atomPoint,

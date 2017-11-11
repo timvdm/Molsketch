@@ -45,6 +45,7 @@ namespace Molsketch {
     void on_element_textChanged(const QString &arg1);
     void on_charge_valueChanged(int arg1);
     void on_hydrogens_valueChanged(int arg1);
+    void on_newmanDiameter_valueChanged(double diameter);
     void onCoordinatesDatachanged();
     void updateRadicals();
     void updateLonePairs();

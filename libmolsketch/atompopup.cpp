@@ -47,6 +47,7 @@ namespace Molsketch {
       ui->charge->setValue(atom->charge());
       ui->hydrogens->setValue(atom->numImplicitHydrogens());
       ui->coordinates->model()->setCoordinates(atom->coordinates());
+      ui->newmanDiameter->setValue(atom->getNewmanDiameter());
       getRadicalsFromAtom();
       getLonePairsFromAtom();
     }
@@ -88,7 +89,6 @@ namespace Molsketch {
       ui->leftLonePair->setChecked(lonePairPositions.contains(BoundingBoxLinker::atLeft));
       ui->rightLonePair->setChecked(lonePairPositions.contains(BoundingBoxLinker::atRight));
     }
-
   };
 
   AtomPopup::AtomPopup(QWidget *parent) :
@@ -114,7 +114,7 @@ namespace Molsketch {
   }
 
   void AtomPopup::on_element_textChanged(const QString &arg1) {
-    Q_UNUSED(arg1)
+    Q_UNUSED(arg1) // TODO why not just use the arg?
     attemptToPushUndoCommand(new Commands::ChangeElement(d->atom, ui->element->text()));
   }
 
@@ -125,7 +125,12 @@ namespace Molsketch {
 
   void AtomPopup::on_hydrogens_valueChanged(int arg1) {
     Q_UNUSED(arg1)
-    attemptToPushUndoCommand(new Commands::setImplicitHydrogensCommand(d->atom, ui->hydrogens->value()));
+    attemptToPushUndoCommand(new Commands::setImplicitHydrogensCommand(d->atom, ui->hydrogens->value(), tr("Change Newman diameter")));
+  }
+
+  void AtomPopup::on_newmanDiameter_valueChanged(double diameter) {
+    Q_UNUSED(diameter)
+    attemptToPushUndoCommand(new Commands::SetNewmanDiameter(d->atom, ui->newmanDiameter->value()));
   }
 
   void AtomPopup::onCoordinatesDatachanged() {

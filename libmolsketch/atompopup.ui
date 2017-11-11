@@ -61,7 +61,7 @@
      </property>
     </widget>
    </item>
-   <item row="9" column="0" colspan="2">
+   <item row="10" column="0" colspan="2">
     <widget class="Molsketch::CoordinateTableView" name="coordinates"/>
    </item>
    <item row="3" column="0">
@@ -247,6 +247,17 @@
    </item>
    <item row="8" column="1">
     <widget class="QDoubleSpinBox" name="lonePairLineWidth"/>
+   </item>
+   <item row="9" column="0">
+    <widget class="QLabel" name="newmanLabel">
+     <property name="text">
+      <string>Newman
+diameter</string>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="1">
+    <widget class="QDoubleSpinBox" name="newmanDiameter"/>
    </item>
   </layout>
  </widget>
