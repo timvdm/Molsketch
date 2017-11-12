@@ -180,12 +180,18 @@ public:
   }
 
   void testBoundingRectForCarbonNewmanAtom() {
-    Atom *a1 = new Atom(), *a2 = new Atom();
-    Bond *b1 = new Bond(a1, atom), *b2 = new Bond(atom, a2);
+    Atom a1, a2;
+    Bond b1(&a1, atom), b2(atom, &a2);
     atom->setElement("C");
     atom->setCharge(0);
     atom->setNewmanDiameter(6);
     TS_ASSERT(atom->isDrawn());
     QS_ASSERT_EQUALS(atom->boundingRect(), QRectF(-3, -3, 6, 6));
+  }
+
+  void testBondDrawingStart() {
+    atom->setElement("A");
+    Atom a1(QPointF(10,15)); // TODO more test cases
+    QS_ASSERT_EQUALS(atom->bondDrawingStart(&a1), QPointF(2.5,3.75));
   }
 };
