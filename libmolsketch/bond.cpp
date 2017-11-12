@@ -200,32 +200,8 @@ namespace Molsketch {
     if (sumUpperAngles > sumLowerAngles) qSwap(m_beginAtom, m_endAtom);
   }
 
-  QPointF Bond::determineBondDrawingStart(Atom *start, Atom *end) const
-  {
-    if (!start->boundingRect().isValid()) return mapFromParent(start->pos());
-
-    QRectF bounds = start->mapRectToItem(this, start->boundingRect());
-    QPointF p1(mapFromParent(start->pos())), p2(mapFromParent(end->pos()));
-    QLineF connection(p1,p2);
-
-    QVector<QPointF> corners;
-    corners << bounds.bottomLeft()
-            << bounds.bottomRight()
-            << bounds.topRight()
-            << bounds.topLeft()
-            << bounds.bottomLeft();
-    for (int i = 0 ; i < 4 ; ++i)
-    {
-      QLineF edge(corners[i], corners[i+1]);
-      QPointF result;
-      if (connection.intersect(edge, &result) == QLineF::BoundedIntersection)
-      {
-        QLineF uv = connection.unitVector();
-        QPointF unitVector = uv.p2() - uv.p1();
-        return result + unitVector * lineWidth();
-      }
-    }
-    return p1;
+  QPointF Bond::determineBondDrawingStart(Atom *start, Atom *end) const {
+    return mapFromScene(start->bondDrawingStart(end, lineWidth()));
   }
 
   QPolygonF clipBond(const QPointF& atomPoint,
@@ -303,9 +279,10 @@ namespace Molsketch {
 
     if (m_bondType == DoubleLegacy) determineDoubleBondOrientation();
 
-    if (m_beginAtom->mapRectToItem(this, m_beginAtom->boundingRect())
-        .intersects(m_endAtom->mapRectToItem(this, m_endAtom->boundingRect())))
-      return;
+    QRectF startRect = m_beginAtom->mapRectToItem(this, m_beginAtom->boundingRect()),
+        endRect = m_endAtom->mapRectToItem(this, m_endAtom->boundingRect());
+    if (startRect.intersects(endRect)) return; // TODO should not be necessary anymore
+
 
     // Get beginning and end
     QPointF begin = mapFromParent(m_beginAtom->pos());
@@ -336,6 +313,12 @@ namespace Molsketch {
 
     begin = determineBondDrawingStart(m_beginAtom, m_endAtom);
     end = determineBondDrawingStart(m_endAtom, m_beginAtom);
+    // TODO this collision detection rests on the factor used in Atom for the determination of the starting point. Improve!
+    if (m_beginAtom->contains(mapToItem(m_beginAtom, end
+                                        + 0.75 * lineWidth() * QLineF(QPointF(), m_beginAtom->pos() - m_endAtom->pos()).unitVector().p2()))
+        || m_endAtom->contains(mapToItem(m_endAtom, begin
+                                         + 0.75* lineWidth() * QLineF(QPointF(), m_endAtom->pos() - m_beginAtom->pos()).unitVector().p2())))
+      return;
 
 
     // Set painter defaults

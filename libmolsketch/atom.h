@@ -30,6 +30,12 @@ namespace Molsketch {
   class Bond;
   class Molecule;
 
+  enum Alignment {
+    Left,
+    Right,
+    Up,
+    Down
+  };
 
   /// Atom class
   class Atom : public graphicsItem
@@ -63,6 +69,9 @@ namespace Molsketch {
     void setMolecule(Molecule *molecule);
     QString element() const;
     void setElement(const QString & element);
+    void setNewmanDiameter(const qreal& diameter);
+    qreal getNewmanDiameter() const;
+    void disableNewman();
     /** Returns the charge of the atom.
       * FC = # valency electrons - 0.5 * # shared electrons - # unpaired electrons + user specified contribution
       */
@@ -113,10 +122,12 @@ namespace Molsketch {
     void hoverOut () {m_hidden = true;}
     QString xmlName() const;
     static QString xmlClassName();
-    int labelAlignment() const;
+    Molsketch::Alignment labelAlignment() const;
     Bond *bondTo(Atom *other) const;
     QWidget* getPropertiesWidget();
     void propertiesWidgetDestroyed();
+    QPointF bondDrawingStart(const Atom *other, qreal bondLineWidth) const;
+    bool contains(const QPointF &point) const;
   protected:
     // Event handlers
     /** Event handler to show hidden atoms when the mouse hovers over them. */
@@ -147,6 +158,7 @@ namespace Molsketch {
     bool m_hidden;
     int m_userCharge;
     int m_userElectrons;
+    qreal m_newmanDiameter;
 
     QList<Bond*> m_bonds;
     int m_userImplicitHydrogens;
@@ -158,6 +170,15 @@ namespace Molsketch {
     QPair<QFont, QFont> getFonts() const;
     QString composeLabel(bool leftAligned) const;
     qreal computeXOffset(int alignment, const QFontMetrics &fmSymbol, const QString &lbl, const qreal &totalWidth);
+    void drawElectrons(QPainter* painter);
+    void drawCharge(QPainter* painter);
+    void renderColoredSquare(QPainter* painter);
+    void renderColoredCircle(QPainter* painter);
+    void renderColoredShape(QPainter *painter, void (QPainter::*drawMethod)(int, int, int, int));
+    void drawSelectionHighlight(QPainter* painter);
+    QString getLabelWithHydrogens();
+    void drawNewman(QPainter *painter);
+    QPointF getBondDrawingStartFromBoundingBox(const QLineF &connection, qreal bondLineWidth) const;
   };
 
 } // namespace

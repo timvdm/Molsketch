@@ -953,7 +953,7 @@ namespace Molsketch {
     MolScene renderScene;
     qDebug() << "rendering molecule" << &input;
     if (molecule->atoms().size() > 20)
-      renderScene.setRenderMode(MolScene::RenderColoredSquares);
+      renderScene.setRenderMode(MolScene::RenderColoredCircles);
     renderScene.addItem(molecule);
     renderScene.setChargeVisible(true);
     renderScene.setSceneRect(molecule->boundingRect());
@@ -968,7 +968,4 @@ namespace Molsketch {
     qDebug() << "rendered molecule" << &input;
     return pixmap;
   }
-
-
-
 } // namespace
