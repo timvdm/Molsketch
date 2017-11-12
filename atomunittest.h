@@ -192,6 +192,6 @@ public:
   void testBondDrawingStart() {
     atom->setElement("A");
     Atom a1(QPointF(10,15)); // TODO more test cases
-    QS_ASSERT_EQUALS(atom->bondDrawingStart(&a1), QPointF(2.5,3.75));
+    QS_ASSERT_EQUALS(atom->bondDrawingStart(&a1, 0), QPointF(2.5,3.75));
   }
 };

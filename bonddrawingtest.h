@@ -57,44 +57,44 @@ public:
     delete scene;
   }
 
-  void testDrawingDownFromAtom() {
+  void testDrawingDownFromAtom() { // TODO these tests could go into a data provider
     a2->setCoordinates(QPolygonF() << QPointF(0,50));
-    assertLineCoords("0,7.5 0,42.5 ");
+    assertLineCoords("0,6.83333 0,43.1667 ");
   }
 
   void testDrawingRightFromAtom() {
     a2->setCoordinates(QPolygonF() << QPointF(50,0));
-    assertLineCoords("5,0 45,0 ");
+    assertLineCoords("4.33333,0 45.6667,0 ");
   }
 
   void testDrawingUpFromAtom() {
     a2->setCoordinates(QPolygonF() << QPointF(0,-50));
-    assertLineCoords("0,-7.5 0,-42.5 ");
+    assertLineCoords("0,-6.83333 0,-43.1667 ");
   }
 
   void testDrawingLeftFromAtom() {
     a2->setCoordinates(QPolygonF() << QPointF(-50,0));
-    assertLineCoords("-5,0 -45,0 ");
+    assertLineCoords("-4.33333,0 -45.6667,0 ");
   }
 
   void testDrawingUpLeftFromAtom() {
     a2->setCoordinates(QPolygonF() << QPointF(-20,-30));
-    assertLineCoords("-4.1094,-6.1641 -15.8906,-23.8359 ");
+    assertLineCoords("-4.33333,-6.5 -15.6667,-23.5 ");
   }
 
   void testDrawingUpRightFromAtom() {
     a2->setCoordinates(QPolygonF() << QPointF(20,-30));
-    assertLineCoords("4.1094,-6.1641 15.8906,-23.8359 ");
+    assertLineCoords("4.33333,-6.5 15.6667,-23.5 ");
   }
 
   void testDrawingDownLeftFromAtom() {
     a2->setCoordinates(QPolygonF() << QPointF(-20,30));
-    assertLineCoords("-4.1094,6.1641 -15.8906,23.8359 ");
+    assertLineCoords("-4.33333,6.5 -15.6667,23.5 ");
   }
 
   void testDrawingDownRightFromAtom() {
     a2->setCoordinates(QPolygonF() << QPointF(20,30));
-    assertLineCoords("4.1094,6.1641 15.8906,23.8359 ");
+    assertLineCoords("4.33333,6.5 15.6667,23.5 ");
   }
 
   void testDrawingFromEmptyAtoms() {
@@ -107,7 +107,7 @@ public:
   void testDrawingFromNewmanAtom() {
     a1->setNewmanDiameter(6);
     a2->setCoordinates(QPolygonF() << QPointF(50,50));
-    assertLineCoords("2.82843,2.82843 45.5858,45.5858 ");
+    assertLineCoords("2.82843,2.82843 45.6667,45.6667 ");
   }
 
   void testDrawingFromNewmanAtomIfCarbon() {
@@ -118,18 +118,18 @@ public:
     m->addAtom(a3);
     m->addBond(a1, a3);
     XmlAssertion::assertThat(scene->toSvg())->contains(QUERY_LINE_COORDS)
-        ->inAnyOrderWithValues({"2.82843,2.82843 45.5858,45.5858 ", "-2.32495,-3.25493 -46.3375,-64.8725 "});
+        ->inAnyOrderWithValues({"2.82843,2.82843 45.6667,45.6667 ", "-2.32495,-3.25493 -46.1667,-64.6333 "});
   }
 
   void testDrawingSecondAtomInOriginBond() {
     a1->setCoordinates(QPolygonF() << QPointF(20,30));
-    assertLineCoords("15.8906,23.8359 4.1094,6.1641 ");
+    assertLineCoords("15.6667,23.5 4.33333,6.5 ");
   }
 
   void testDrawingNonOriginBasedBond() {
     a1->setCoordinates(QPolygonF() << QPointF(20,30));
     a2->setCoordinates(QPolygonF() << QPointF(-5,17));
-    assertLineCoords("15.2256,27.5173 -0.225566,19.4827 ");
+    assertLineCoords("15.6667,27.7467 -0.666667,19.2533 ");
   }
 
   void testBondNotDrawnIfOverlapsWithNewmanAtom() {
