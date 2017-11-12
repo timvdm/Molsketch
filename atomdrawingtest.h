@@ -74,7 +74,7 @@ public:
     scene->setRenderMode(MolScene::RenderColoredSquares);
     QString svg = scene->toSvg();
     assertThat(svg)->contains("/*:svg/*:g/*:g/*:text")->never();
-     assertThat(svg)->contains("/*:svg/*:g/*:g/*:circle")->never();
+    assertThat(svg)->contains("/*:svg/*:g/*:g/*:circle")->never();
     assertThat(svg)->contains("/*:svg/*:g/*:g/*:rect/@x/data(.)")->exactlyOnceWithContent("-10");
     assertThat(svg)->contains("/*:svg/*:g/*:g/*:rect/@y/data(.)")->exactlyOnceWithContent("-10");
     assertThat(svg)->contains("/*:svg/*:g/*:g/*:rect/@width/data(.)")->exactlyOnceWithContent("20");
@@ -89,6 +89,21 @@ public:
     assertThat(svg)->contains("/*:svg/*:g/*:g/*:circle")->never();
   }
 
+  void testCenteringOfNewmanAtom() {
+    atom->setNewmanDiameter(1);
+    assertCircleIsCentered();
+    atom->setNewmanDiameter(2);
+    assertCircleIsCentered();
+    atom->setNewmanDiameter(3);
+    assertCircleIsCentered();
+  }
+
+  void assertCircleIsCentered() {
+    assertThat(scene->toSvg())->contains("/*:svg/*:g/*:g/*:circle/@cx/data(.)")->exactlyOnceWithContent("0");
+    assertThat(scene->toSvg())->contains("/*:svg/*:g/*:g/*:circle/@cy/data(.)")->exactlyOnceWithContent("0");
+  }
+
   // TODO check unbound electrons and charge are drawn in the same color
   // TODO check rendering of Hydrogen atoms (including left or right of element)
+  // TODO check that rendering mode takes precedence over Newman
 };

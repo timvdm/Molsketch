@@ -131,4 +131,24 @@ public:
     a2->setCoordinates(QPolygonF() << QPointF(-5,17));
     assertLineCoords("15.2256,27.5173 -0.225566,19.4827 ");
   }
+
+  void testBondNotDrawnIfOverlapsWithNewmanAtom() {
+    a1->setNewmanDiameter(6);
+    Atom *a3 = new Atom(QPointF(-50,-70), "C");
+    a2->setElement("C");
+    m->addAtom(a3);
+    m->addBond(a2, a3, Bond::Invalid);
+    a2->setCoordinates(QPolygonF() << QPointF(1,1));
+    XmlAssertion::assertThat(scene->toSvg())->contains(QUERY_LINE_COORDS)->never();
+  }
+
+  void testBondNotDrawnIfOverlapsWithNewmanAtomReverse() {
+    a2->setNewmanDiameter(6);
+    Atom *a3 = new Atom(QPointF(-50,-70), "C");
+    a1->setElement("C");
+    m->addAtom(a3);
+    m->addBond(a1, a3, Bond::Invalid);
+    a1->setCoordinates(QPolygonF() << QPointF(1,1));
+    XmlAssertion::assertThat(scene->toSvg())->contains(QUERY_LINE_COORDS)->never();
+  }
 };
