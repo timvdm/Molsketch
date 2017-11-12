@@ -943,19 +943,18 @@ namespace Molsketch {
     return widget;
   }
 
-  QPointF Atom::bondDrawingStart(const Atom *other) const
+  QPointF Atom::bondDrawingStart(const Atom *other, qreal bondLineWidth) const
   {
     if (!boundingRect().isValid()) return pos();
-
 
     QLineF connection(pos(), other->pos());
 
     if (m_newmanDiameter > 0) {
-      connection.setLength((m_newmanDiameter + lineWidth())/2. );
+      connection.setLength((m_newmanDiameter + qMax(lineWidth(), bondLineWidth))/2. );
       return connection.p2();
     }
 
-    return getBondDrawingStartFromBoundingBox(connection);
+    return getBondDrawingStartFromBoundingBox(connection, bondLineWidth/1.5);
   }
 
   bool Atom::contains(const QPointF &point) const {
@@ -964,23 +963,20 @@ namespace Molsketch {
     return QGraphicsItem::contains(point);
   }
 
-  QPointF Atom::getBondDrawingStartFromBoundingBox(const QLineF& connection) const {
+  QPointF Atom::getBondDrawingStartFromBoundingBox(const QLineF& connection, qreal bondLineWidth) const {
     QRectF bounds = mapRectToScene(boundingRect());
     QVector<QPointF> corners;
-    corners << bounds.bottomLeft()
-            << bounds.bottomRight()
-            << bounds.topRight()
-            << bounds.topLeft()
-            << bounds.bottomLeft();
+    corners << bounds.bottomLeft() + QPointF(-bondLineWidth, bondLineWidth)
+            << bounds.bottomRight() + QPointF(bondLineWidth, bondLineWidth)
+            << bounds.topRight() + QPointF(bondLineWidth, -bondLineWidth)
+            << bounds.topLeft() + QPointF(-bondLineWidth, -bondLineWidth)
+            << bounds.bottomLeft() + QPointF(-bondLineWidth, bondLineWidth);
     for (int i = 0 ; i < 4 ; ++i)
     {
       QLineF edge(corners[i], corners[i+1]);
       QPointF result;
       if (connection.intersect(edge, &result) == QLineF::BoundedIntersection)
-      {
-        QPointF unitVector = connection.unitVector().translated(-connection.p1()).p2();
-        return result + unitVector * lineWidth();
-      }
+        return result;
     }
     return connection.p1();
   }

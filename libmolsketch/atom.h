@@ -126,7 +126,7 @@ namespace Molsketch {
     Bond *bondTo(Atom *other) const;
     QWidget* getPropertiesWidget();
     void propertiesWidgetDestroyed();
-    QPointF bondDrawingStart(const Atom *other) const;
+    QPointF bondDrawingStart(const Atom *other, qreal bondLineWidth) const;
     bool contains(const QPointF &point) const;
   protected:
     // Event handlers
@@ -178,7 +178,7 @@ namespace Molsketch {
     void drawSelectionHighlight(QPainter* painter);
     QString getLabelWithHydrogens();
     void drawNewman(QPainter *painter);
-    QPointF getBondDrawingStartFromBoundingBox(const QLineF &connection) const;
+    QPointF getBondDrawingStartFromBoundingBox(const QLineF &connection, qreal bondLineWidth) const;
   };
 
 } // namespace

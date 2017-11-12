@@ -201,7 +201,7 @@ namespace Molsketch {
   }
 
   QPointF Bond::determineBondDrawingStart(Atom *start, Atom *end) const {
-    return mapFromScene(start->bondDrawingStart(end));
+    return mapFromScene(start->bondDrawingStart(end, lineWidth()));
   }
 
   QPolygonF clipBond(const QPointF& atomPoint,
@@ -278,13 +278,10 @@ namespace Molsketch {
     CHECKFORATOMS return ;
 
     if (m_bondType == DoubleLegacy) determineDoubleBondOrientation();
+
     QRectF startRect = m_beginAtom->mapRectToItem(this, m_beginAtom->boundingRect()),
         endRect = m_endAtom->mapRectToItem(this, m_endAtom->boundingRect());
-
-    if (startRect.intersects(endRect)
-        || m_beginAtom->contains(m_beginAtom->mapFromScene(m_endAtom->pos()))
-        || m_endAtom->contains(m_endAtom->mapFromScene(m_beginAtom->pos())))
-      return;
+    if (startRect.intersects(endRect)) return; // TODO should not be necessary anymore
 
 
     // Get beginning and end
@@ -316,6 +313,12 @@ namespace Molsketch {
 
     begin = determineBondDrawingStart(m_beginAtom, m_endAtom);
     end = determineBondDrawingStart(m_endAtom, m_beginAtom);
+    // TODO this collision detection rests on the factor used in Atom for the determination of the starting point. Improve!
+    if (m_beginAtom->contains(mapToItem(m_beginAtom, end
+                                        + 0.75 * lineWidth() * QLineF(QPointF(), m_beginAtom->pos() - m_endAtom->pos()).unitVector().p2()))
+        || m_endAtom->contains(mapToItem(m_endAtom, begin
+                                         + 0.75* lineWidth() * QLineF(QPointF(), m_endAtom->pos() - m_beginAtom->pos()).unitVector().p2())))
+      return;
 
 
     // Set painter defaults
