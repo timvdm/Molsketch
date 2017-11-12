@@ -278,10 +278,14 @@ namespace Molsketch {
     CHECKFORATOMS return ;
 
     if (m_bondType == DoubleLegacy) determineDoubleBondOrientation();
+    QRectF startRect = m_beginAtom->mapRectToItem(this, m_beginAtom->boundingRect()),
+        endRect = m_endAtom->mapRectToItem(this, m_endAtom->boundingRect());
 
-    if (m_beginAtom->mapRectToItem(this, m_beginAtom->boundingRect())
-        .intersects(m_endAtom->mapRectToItem(this, m_endAtom->boundingRect())))
+    if (startRect.intersects(endRect)
+        || m_beginAtom->contains(m_beginAtom->mapFromScene(m_endAtom->pos()))
+        || m_endAtom->contains(m_endAtom->mapFromScene(m_beginAtom->pos())))
       return;
+
 
     // Get beginning and end
     QPointF begin = mapFromParent(m_beginAtom->pos());
