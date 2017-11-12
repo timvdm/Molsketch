@@ -598,7 +598,7 @@ namespace Molsketch {
     pen.setWidthF(lineWidth());
     painter->setPen(pen);
     qreal half = m_newmanDiameter/2.;
-    painter->drawEllipse(pos(), half, half);
+    painter->drawEllipse(mapFromScene(pos()), half, half);
     painter->restore();
   }
 
