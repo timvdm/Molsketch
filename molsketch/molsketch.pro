@@ -13,7 +13,7 @@ INSTALLS += target
 QT += network
 
 unix {
-  INSTALLS += icon pixmap mimeicon mimetype desktop
+  INSTALLS += icon pixmap mimeicon mimetype desktop appdata
 
   icon.files = images/molsketch.svg
   icon.path = $$MSK_PREFIX/share/icons/hicolor/scalable/apps
@@ -29,6 +29,9 @@ unix {
 
   desktop.files = molsketch.desktop
   desktop.path = $$MSK_PREFIX/share/applications
+  
+  appdata.files = net.sourceforge.molsketch.appdata.xml
+  appdata.path = $$MSK_PREFIX/share/metainfo
 }
 
 INCLUDEPATH += \
