@@ -128,6 +128,7 @@ namespace Molsketch {
     void propertiesWidgetDestroyed();
     QPointF bondDrawingStart(const Atom *other, qreal bondLineWidth) const;
     bool contains(const QPointF &point) const;
+    QPolygonF moveablePoints() const override;
   protected:
     // Event handlers
     /** Event handler to show hidden atoms when the mouse hovers over them. */

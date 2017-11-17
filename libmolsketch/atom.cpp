@@ -963,6 +963,10 @@ namespace Molsketch {
     return QGraphicsItem::contains(point);
   }
 
+  QPolygonF Atom::moveablePoints() const {
+    return QPolygonF();
+  }
+
   QPointF Atom::getBondDrawingStartFromBoundingBox(const QLineF& connection, qreal bondLineWidth) const {
     QRectF bounds = mapRectToScene(boundingRect());
     QVector<QPointF> corners;
