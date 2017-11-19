@@ -185,6 +185,7 @@ MoveItem *MoveItem::relative(QGraphicsItem *item, const QPointF &shift, const QS
 }
 
 MoveItem *MoveItem::absolute(QGraphicsItem *item, const QPointF &newPos, const QString &text)
+// TODO this doesn't seem to work right with Molecule
 {
   if (!item) return nullptr;
   return new MoveItem(item, newPos, text);

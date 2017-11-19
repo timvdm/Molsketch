@@ -65,6 +65,7 @@ namespace Molsketch {
       AtomImplicitHydrogensId,
       MoveItemId,
       MoleculeNameId,
+      CoordinateId,
     };
 
 
@@ -218,6 +219,7 @@ namespace Molsketch {
     typedef setItemPropertiesCommand<graphicsItem, qreal, &graphicsItem::setRelativeWidth, &graphicsItem::relativeWidth> changeRelativeWidth;
     typedef setItemPropertiesCommand<graphicsItem, QColor, &graphicsItem::setColor, &graphicsItem::getColor> changeColor;
     typedef setItemPropertiesCommand<Atom, qreal, &Atom::setNewmanDiameter, &Atom::getNewmanDiameter> SetNewmanDiameter;
+    typedef setItemPropertiesCommand<graphicsItem, QPolygonF, &graphicsItem::setCoordinates, &graphicsItem::coordinates, CoordinateId> SetCoordinateCommand;
 
     class SwapBondAtoms : public setItemPropertiesCommand<Bond, QPair<Atom*, Atom*>, &Bond::setAtoms, &Bond::atoms> {
     public:

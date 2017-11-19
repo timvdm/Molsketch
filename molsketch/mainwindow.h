@@ -219,6 +219,8 @@ private:
   QToolBar* drawToolBar;
   /** The modify toolbar */
   QToolBar* modifyToolBar;
+  /** The alignment toolbar */
+  QToolBar* alignmentToolBar;
 
   // File actions
   /** Open a new empty file action. */

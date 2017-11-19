@@ -170,7 +170,7 @@ namespace Molsketch
     FOR_ATOMS_OF_MOL(obatom, obmol)
       atomHash[&(*obatom)] =
         mol->addAtom(Molsketch::number2symbol(obatom->GetAtomicNum()),
-                     QPointF(obatom->x()*40,obatom->y()*40), false);
+                     QPointF(obatom->x()*40,obatom->y()*40), false); // TODO this had to be done by MSK setting!
 
     // Add bonds one-by-one
     /// Mind the numbering!

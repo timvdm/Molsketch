@@ -55,6 +55,7 @@
 #include <actions/flipstereobondsaction.h>
 #include <actions/textaction.h>
 #include <actions/itemtypeselectionaction.h>
+#include <actions/alignmentaction.h>
 
 #include "mainwindow.h"
 
@@ -762,6 +763,15 @@ void MainWindow::createToolBars()
   modifyToolBar->addAction(new deleteAction(m_scene));
   modifyToolBar->addAction(new flipBondAction(m_scene));
   modifyToolBar->addAction(new flipStereoBondsAction(m_scene));
+
+  alignmentToolBar = addToolBar(tr("Align"));
+  alignmentToolBar->setObjectName("alignment-toolbar");
+  alignmentToolBar->addAction(AlignmentAction::flushLeft(m_scene));
+  alignmentToolBar->addAction(AlignmentAction::atHorizontalCenter(m_scene));
+  alignmentToolBar->addAction(AlignmentAction::flushRight(m_scene));
+  alignmentToolBar->addAction(AlignmentAction::atTop(m_scene));
+  alignmentToolBar->addAction(AlignmentAction::atVerticalCenter(m_scene));
+  alignmentToolBar->addAction(AlignmentAction::atBottom(m_scene));
 
   new arrowTypeAction(m_scene);
   new bondTypeAction(m_scene);

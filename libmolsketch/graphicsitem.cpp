@@ -219,6 +219,10 @@ namespace Molsketch {
     event->accept();
   }
 
+  void graphicsItem::setCoordinates(const QPolygonF &c) {
+    setCoordinates((const QVector<QPointF>&) c);
+  }
+
   void graphicsItem::readAttributes(const QXmlStreamAttributes &attributes)
   {
     readGraphicAttributes(attributes) ;
