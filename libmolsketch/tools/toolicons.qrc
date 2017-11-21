@@ -60,5 +60,11 @@
         <file>images/flip-stereo.svg</file>
         <file>images/flip-bond.svg</file>
         <file>images/select-by-type.svg</file>
+        <file>images/align-bottom.svg</file>
+        <file>images/align-h-center.svg</file>
+        <file>images/align-left.svg</file>
+        <file>images/align-right.svg</file>
+        <file>images/align-top.svg</file>
+        <file>images/align-v-center.svg</file>
     </qresource>
 </RCC>
