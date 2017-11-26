@@ -16,36 +16,36 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef XMLASSERTION_H
-#define XMLASSERTION_H
+#ifndef UNDOSTACKASSERTION_H
+#define UNDOSTACKASSERTION_H
 
 #include <QScopedPointer>
-#include <QString>
-#include <xmlobjectinterface.h>
 
+class UndoStackAssertionPrivate;
+class QUndoStack;
 
-class XmlAssertionPrivate;
-
-class XmlAssertion
-{
-  Q_DECLARE_PRIVATE(XmlAssertion)
-  QScopedPointer<XmlAssertionPrivate> d_ptr;
-public:
-  // TODO don't use pointers here
-  static XmlAssertion *assertThat(const QString& xml);
-  static XmlAssertion *assertThat(const Molsketch::XmlObjectInterface &object);
-  static QString formatXml(const QString&xml);
-  XmlAssertion* contains(const QString& xQuery);
-  XmlAssertion* exactlyOnceWithContent(const QString& expected);
-  XmlAssertion *never();
-  XmlAssertion *inAnyOrderWithValues(const QStringList &expectedValues);
-private:
-  XmlAssertion(const QString& xml);
-};
-
-namespace XmlAssert {
-  XmlAssertion* assertThat(const QString& xml);
-  XmlAssertion* assertThat(const Molsketch::XmlObjectInterface& object);
+namespace Molsketch {
+  class MolScene;
 }
 
-#endif // XMLASSERTION_H
+class UndoStackAssertion {
+  Q_DECLARE_PRIVATE(UndoStackAssertion)
+  QScopedPointer<UndoStackAssertionPrivate> d_ptr;
+  UndoStackAssertion(QUndoStack*);
+public:
+  virtual ~UndoStackAssertion();
+  UndoStackAssertion(UndoStackAssertion&&);
+
+  UndoStackAssertion& hasElementCount(int);
+  UndoStackAssertion& isCurrentlyAtElementNo(int);
+
+  static UndoStackAssertion undoStackOf(Molsketch::MolScene* scene);
+  static UndoStackAssertion undoStack(QUndoStack* stack);
+};
+
+namespace UndoStackAssert {
+  UndoStackAssertion undoStackOf(Molsketch::MolScene*);
+  UndoStackAssertion undoStack(QUndoStack*);
+}
+
+#endif // UNDOSTACKASSERTION_H

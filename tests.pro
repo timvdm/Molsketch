@@ -29,7 +29,9 @@ HEADERS += $$TESTS \
     noargsignalcounter.h \
     signalcounter.h \
     modelindexsignalcounter.h \
-    xmlassertion.h
+    xmlassertion.h \
+    boundingrectassertion.h \
+    undostackassertion.h
 
 FORMS += $$originalForms
 
@@ -44,7 +46,9 @@ INCLUDEPATH += $$CXXTEST_PATH \
 SOURCES += \
     programversionvaluetrait.cpp \
     instancecounters.cpp \
-    xmlassertion.cpp
+    xmlassertion.cpp \
+    boundingrectassertion.cpp \
+    undostackassertion.cpp
 RESOURCES += \
     $$PWD/../molsketch/*.qrc \
     $$PWD/../libmolsketch/tools/toolicons.qrc

@@ -16,36 +16,49 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef XMLASSERTION_H
-#define XMLASSERTION_H
+#include "undostackassertion.h"
+#include <QUndoStack>
+#include <molscene.h>
+#include "cxxtest/TestSuite.h"
 
-#include <QScopedPointer>
-#include <QString>
-#include <xmlobjectinterface.h>
-
-
-class XmlAssertionPrivate;
-
-class XmlAssertion
-{
-  Q_DECLARE_PRIVATE(XmlAssertion)
-  QScopedPointer<XmlAssertionPrivate> d_ptr;
+class UndoStackAssertionPrivate {
 public:
-  // TODO don't use pointers here
-  static XmlAssertion *assertThat(const QString& xml);
-  static XmlAssertion *assertThat(const Molsketch::XmlObjectInterface &object);
-  static QString formatXml(const QString&xml);
-  XmlAssertion* contains(const QString& xQuery);
-  XmlAssertion* exactlyOnceWithContent(const QString& expected);
-  XmlAssertion *never();
-  XmlAssertion *inAnyOrderWithValues(const QStringList &expectedValues);
-private:
-  XmlAssertion(const QString& xml);
+  QUndoStack *stack;
 };
 
-namespace XmlAssert {
-  XmlAssertion* assertThat(const QString& xml);
-  XmlAssertion* assertThat(const Molsketch::XmlObjectInterface& object);
+UndoStackAssertion::~UndoStackAssertion() {}
+
+UndoStackAssertion &UndoStackAssertion::hasElementCount(int count) {
+  Q_D(UndoStackAssertion);
+  TSM_ASSERT_EQUALS("Undo stack count mismatch", d->stack->count(), count);
+  return *this;
 }
 
-#endif // XMLASSERTION_H
+UndoStackAssertion &UndoStackAssertion::isCurrentlyAtElementNo(int index) {
+  Q_D(UndoStackAssertion);
+  TSM_ASSERT_EQUALS("Undo stack index mismatch", d->stack->index(), index);
+  return *this;
+}
+
+UndoStackAssertion UndoStackAssertion::undoStackOf(Molsketch::MolScene *scene) {
+  return undoStack(scene->stack());
+}
+
+UndoStackAssertion UndoStackAssertion::undoStack(QUndoStack *stack) {
+  return UndoStackAssertion(stack);
+}
+
+UndoStackAssertion::UndoStackAssertion(QUndoStack *stack)
+  : d_ptr(new UndoStackAssertionPrivate)
+{
+  Q_D(UndoStackAssertion);
+  d->stack = stack;
+}
+
+UndoStackAssertion UndoStackAssert::undoStackOf(Molsketch::MolScene *scene) {
+  return UndoStackAssertion::undoStackOf(scene);
+}
+
+UndoStackAssertion UndoStackAssert::undoStack(QUndoStack *stack) {
+  return UndoStackAssertion::undoStack(stack);
+}

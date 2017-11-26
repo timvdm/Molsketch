@@ -18,7 +18,9 @@
  ***************************************************************************/
 #include "xmlassertion.h"
 #include <execinfo.h>
+#ifdef MSKTEST_STACKTRACE
 #include <stacktrace.hpp>
+#endif
 #include <iostream>
 #include <QXmlQuery>
 #include <QXmlResultItems>
@@ -26,6 +28,7 @@
 #include <QXmlStreamReader>
 #include <QDebug>
 
+// TODO make the stack trace facility an abstract parent
 const int MAX_STACK_TRACE_DEPTH = 15;
 
 class XmlAssertionPrivate {
