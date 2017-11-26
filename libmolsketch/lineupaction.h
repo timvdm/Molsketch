@@ -16,32 +16,31 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef ALIGNMENTACTION_H
-#define ALIGNMENTACTION_H
+#ifndef LINEUPACTION_H
+#define LINEUPACTION_H
 
-#include <functional>
-#include <molecule.h>
-#include "abstractitemaction.h"
+#include <QScopedPointer>
+#include <actions/abstractitemaction.h>
 
 namespace Molsketch {
 
-  class AlignmentAction : public FilteredItemAction<Molecule>	{
-	public:
-    static AlignmentAction* flushLeft(MolScene *scene = 0);
-    static AlignmentAction* flushRight(MolScene *scene = 0);
-    static AlignmentAction* atTop(MolScene *scene = 0);
-    static AlignmentAction* atBottom(MolScene *scene = 0);
-    static AlignmentAction* atVerticalCenter(MolScene *scene = 0);
-    static AlignmentAction* atHorizontalCenter(MolScene *scene = 0);
+  class Molecule;
+  class LineUpActionPrivate;
+
+  class LineUpAction : public FilteredItemAction<Molecule> {
+  public:
+    static LineUpAction* horizontal(MolScene *scene = 0);
+    static LineUpAction* vertical(MolScene *scene = 0);
   private:
-    AlignmentAction(const QString& description, MolScene *scene = 0);
     void execute() override;
-    typedef std::function<qreal (const qreal&, const graphicsItem*)> Accumulator;
-    virtual Accumulator getAccumulator(int count) const = 0;
-    virtual QPointF getShift(const graphicsItem* item, const qreal& targetValue) const = 0;
-    virtual qreal initialValue() const = 0;
+  protected:
+    LineUpAction(MolScene *scene);
+    void spaceItemsEqually(qreal distance, bool distanceBetweenCenters);
+    virtual qreal getOrderingValue(const graphicsItem*) const = 0;
+    virtual QPointF offsetForEdges(const graphicsItem* reference, const graphicsItem *item, qreal distance) const = 0;
+    virtual QPointF offsetForCenters(const graphicsItem* reference, const graphicsItem *item, qreal distance) const = 0;
   };
 
 } // namespace Molsketch
 
-#endif // ALIGNMENTACTION_H
+#endif // LINEUPACTION_H

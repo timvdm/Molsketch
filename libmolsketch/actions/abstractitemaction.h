@@ -22,6 +22,8 @@
 
 #include "genericaction.h"
 
+#include <QSet>
+
 class QGraphicsItem;
 
 namespace Molsketch {
@@ -62,6 +64,20 @@ namespace Molsketch {
   private slots:
     void gotTrigger() ;
     void updateItems();
+  };
+
+  template<class T>
+  class FilteredItemAction : public AbstractItemAction {
+    QSet<graphicsItem*> filterItems(const QList<QGraphicsItem *> &inputItems) const {
+      QSet<graphicsItem*> result;
+      for (auto item : inputItems)
+        result << dynamic_cast<T*>(item);
+      result.remove(nullptr);
+      return result;
+    }
+  public:
+    explicit FilteredItemAction(MolScene *scene = 0)
+      : AbstractItemAction(scene) {}
   };
 
 } // namespace Molsketch

@@ -31,6 +31,7 @@
 #include <QDockWidget>
 #include <QToolBox>
 #include <QInputDialog>
+#include <lineupaction.h>
 #if QT_VERSION <= 0x040603
 #include <QAssistantClient>
 #else
@@ -772,6 +773,8 @@ void MainWindow::createToolBars()
   alignmentToolBar->addAction(AlignmentAction::atTop(m_scene));
   alignmentToolBar->addAction(AlignmentAction::atVerticalCenter(m_scene));
   alignmentToolBar->addAction(AlignmentAction::atBottom(m_scene));
+  alignmentToolBar->addAction(LineUpAction::horizontal(m_scene));
+  alignmentToolBar->addAction(LineUpAction::vertical(m_scene));
 
   new arrowTypeAction(m_scene);
   new bondTypeAction(m_scene);
