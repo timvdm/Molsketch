@@ -34,7 +34,7 @@ namespace Molsketch {
     static AlignmentAction* atVerticalCenter(MolScene *scene = 0);
     static AlignmentAction* atHorizontalCenter(MolScene *scene = 0);
   private:
-    AlignmentAction(const QString& description, MolScene *scene = 0);
+    explicit AlignmentAction(const QString& description, MolScene *scene = 0);
     void execute() override;
     typedef std::function<qreal (const qreal&, const graphicsItem*)> Accumulator;
     virtual Accumulator getAccumulator(int count) const = 0;

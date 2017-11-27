@@ -63,6 +63,7 @@ namespace Molsketch {
   LineUpAction::LineUpAction(MolScene *scene)
     : FilteredItemAction<Molecule>(scene) {
     setCheckable(false);
+    setMinimumItemCount(2);
   }
 
   qreal calculateMinimumInterval(QList<graphicsItem*> items) {

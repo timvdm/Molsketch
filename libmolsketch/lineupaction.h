@@ -19,13 +19,11 @@
 #ifndef LINEUPACTION_H
 #define LINEUPACTION_H
 
-#include <QScopedPointer>
 #include <actions/abstractitemaction.h>
 
 namespace Molsketch {
 
   class Molecule;
-  class LineUpActionPrivate;
 
   class LineUpAction : public FilteredItemAction<Molecule> {
   public:
@@ -34,7 +32,7 @@ namespace Molsketch {
   private:
     void execute() override;
   protected:
-    LineUpAction(MolScene *scene);
+    explicit LineUpAction(MolScene *scene);
     void spaceItemsEqually(qreal distance, bool distanceBetweenCenters);
     virtual qreal getOrderingValue(const graphicsItem*) const = 0;
     virtual QPointF offsetForEdges(const graphicsItem* reference, const graphicsItem *item, qreal distance) const = 0;
