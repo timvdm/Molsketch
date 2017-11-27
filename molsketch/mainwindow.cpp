@@ -807,12 +807,19 @@ void MainWindow::createStatusBar()
   Indicator *inchiIndicator = new Indicator(tr("InChI"), statusBar());
   inchiIndicator->setToolTip(tr("Indicates if InChI format support is available.\n"
                                 "If InChI is unavailable, download the auxiliary OpenBabel formats package from molsketch.sf.net"));
+
+  Indicator *gen2dIndicator = new Indicator(tr("gen2d"), statusBar());
+  gen2dIndicator->setToolTip(tr("Indicates if 'gen2d' of OpenBabel is available.\n"
+                                "Required for structure optimization."));
+
   connect(settings, SIGNAL(changedObabelIfacePath(QString)), obabelLoader, SLOT(reloadObabelIface(QString)));
   connect(settings, SIGNAL(changeObabelFormatsPath(QString)), obabelLoader, SLOT(setObabelFormats(QString)));
   connect(obabelLoader, SIGNAL(obabelIfaceAvailable(bool)), openBabelIndicator, SLOT(setMode(bool)));
   connect(obabelLoader, SIGNAL(inchiAvailable(bool)), inchiIndicator, SLOT(setMode(bool)));
+  connect(obabelLoader, SIGNAL(optimizeAvailable(bool)), gen2dIndicator, SLOT(setMode(bool)));
   statusBar()->addPermanentWidget(openBabelIndicator);
   statusBar()->addPermanentWidget(inchiIndicator);
+  statusBar()->addPermanentWidget(gen2dIndicator);
   obabelLoader->reloadObabelIface(settings->obabelIfacePath());
   obabelLoader->setObabelFormats(settings->obabelFormatsPath());
 }
