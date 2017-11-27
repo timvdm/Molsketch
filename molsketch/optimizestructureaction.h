@@ -16,45 +16,21 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef OBABELIFACELOADER_H
-#define OBABELIFACELOADER_H
+#ifndef OPTIMIZESTRUCTUREACTION_H
+#define OPTIMIZESTRUCTUREACTION_H
 
-#include <QObject>
+#include <actions/abstractitemaction.h>
+#include <molecule.h>
 
-class OBabelIfaceLoaderPrivate;
-class QString;
-class QGraphicsScene;
+class OBabelIfaceLoader;
 
-namespace Molsketch {
-  class Molecule;
-}
-
-class OBabelIfaceLoader : public QObject
+class OptimizeStructureAction : public Molsketch::FilteredItemAction<Molsketch::Molecule>
 {
-  Q_OBJECT
 public:
-  explicit OBabelIfaceLoader(QObject *parent = 0);
-  ~OBabelIfaceLoader();
-  QStringList inputFormats();
-  QStringList outputFormats();
-  Molsketch::Molecule* loadFile(const QString& filename);
-  Molsketch::Molecule* callOsra(const QString filename);
-  bool saveFile(const QString& fileName, QGraphicsScene* scene, bool use3d);
-  Molsketch::Molecule* convertInChI(const QString& InChI);
-  QVector<QPointF> optimizeCoordinates(const Molsketch::Molecule* molecule);
-
-signals:
-  void obabelIfaceAvailable(bool);
-  void inchiAvailable(bool);
-  void optimizeAvailable(bool);
-  void obabelIfaceFileNameChanged(QString);
-
-public slots:
-  void reloadObabelIface(const QString& path);
-  void setObabelFormats(const QString& folder);
+  explicit OptimizeStructureAction(OBabelIfaceLoader *obabelLoader, Molsketch::MolScene *scene = 0);
 private:
-  Q_DECLARE_PRIVATE(OBabelIfaceLoader)
-  OBabelIfaceLoaderPrivate* d_ptr;
+  void execute();
+  OBabelIfaceLoader *obabelLoader;
 };
 
-#endif // OBABELIFACELOADER_H
+#endif // OPTIMIZESTRUCTUREACTION_H

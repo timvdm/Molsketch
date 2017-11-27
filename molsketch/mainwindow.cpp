@@ -77,6 +77,7 @@
 #include "settingsdialog.h"
 #include "wikiquerywidget.h"
 #include "constants.h"
+#include "optimizestructureaction.h"
 
 
 #define PROGRAM_NAME "Molsketch"
@@ -775,6 +776,7 @@ void MainWindow::createToolBars()
   alignmentToolBar->addAction(AlignmentAction::atBottom(m_scene));
   alignmentToolBar->addAction(LineUpAction::horizontal(m_scene));
   alignmentToolBar->addAction(LineUpAction::vertical(m_scene));
+  alignmentToolBar->addAction(new OptimizeStructureAction(obabelLoader, m_scene));
 
   new arrowTypeAction(m_scene);
   new bondTypeAction(m_scene);

@@ -368,6 +368,13 @@ namespace Molsketch
     return false;
   }
 
+  void generate2dCoords(OpenBabel::OBMol& obmol)
+  {
+    OpenBabel::OBOp* gen2D = OpenBabel::OBOp::FindType("gen2D");
+    if (!gen2D || !gen2D->Do(&obmol))
+      qCritical("Could not find gen2D for coordinate generation.");
+  }
+
   Molecule *fromString(const QString &input, const char* format) {
     OpenBabel::OBConversion conv ;
     qDebug() << "setting input format" << format;
@@ -383,12 +390,8 @@ namespace Molsketch
       qCritical() << "Could not convert InChI:" << input; // TODO do we need error handling if false?
     qDebug() << "Error messages:" << QString::fromStdString(OpenBabel::OBMessageHandler().GetMessageSummary());
 
-    OpenBabel::OBOp* gen2D = OpenBabel::OBOp::FindType("gen2D");
-    if (!gen2D || !gen2D->Do(&obmol))
-      qCritical("Could not find gen2D for coordinate generation from string-based molecule format");
-
+    generate2dCoords(obmol);
     SetWedgeAndHash(obmol);
-
     return fromOBMolecule(obmol);
   }
 
@@ -402,6 +405,20 @@ namespace Molsketch
 
   bool inChIAvailable() {
     return isInputFormatAvailable(OpenBabel::OBConversion(), INCHI_FORMAT);
+  }
+
+  bool gen2dAvailable() {
+    return OpenBabel::OBOp::FindType("gen2D");
+  }
+
+  QVector<QPointF> optimizeCoordinates(const Molecule *molecule) {
+    OpenBabel::OBMol obmol(toOBMolecule(molecule));
+    generate2dCoords(obmol);
+    QPolygonF optimizedCoordinates = fromOBMolecule(obmol)->coordinates();
+    optimizedCoordinates.translate(
+          molecule->coordinates().boundingRect().center() -
+          optimizedCoordinates.boundingRect().center());
+    return optimizedCoordinates;
   }
 
 } // namespace

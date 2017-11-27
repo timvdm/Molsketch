@@ -16,45 +16,32 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef OBABELIFACELOADER_H
-#define OBABELIFACELOADER_H
+#include "obabelifaceloader.h"
+#include "optimizestructureaction.h"
+#include <commands.h>
+#include <QDebug>
 
-#include <QObject>
-
-class OBabelIfaceLoaderPrivate;
-class QString;
-class QGraphicsScene;
-
-namespace Molsketch {
-  class Molecule;
+OptimizeStructureAction::OptimizeStructureAction(OBabelIfaceLoader *obabelLoader, Molsketch::MolScene *scene)
+  : FilteredItemAction<Molsketch::Molecule>(scene),
+    obabelLoader(obabelLoader)
+{
+  setCheckable(false);
+  setMinimumItemCount(1);
+  connect(obabelLoader, SIGNAL(optimizeAvailable(bool)), this, SLOT(setVisible(bool)));
 }
 
-class OBabelIfaceLoader : public QObject
-{
-  Q_OBJECT
-public:
-  explicit OBabelIfaceLoader(QObject *parent = 0);
-  ~OBabelIfaceLoader();
-  QStringList inputFormats();
-  QStringList outputFormats();
-  Molsketch::Molecule* loadFile(const QString& filename);
-  Molsketch::Molecule* callOsra(const QString filename);
-  bool saveFile(const QString& fileName, QGraphicsScene* scene, bool use3d);
-  Molsketch::Molecule* convertInChI(const QString& InChI);
-  QVector<QPointF> optimizeCoordinates(const Molsketch::Molecule* molecule);
-
-signals:
-  void obabelIfaceAvailable(bool);
-  void inchiAvailable(bool);
-  void optimizeAvailable(bool);
-  void obabelIfaceFileNameChanged(QString);
-
-public slots:
-  void reloadObabelIface(const QString& path);
-  void setObabelFormats(const QString& folder);
-private:
-  Q_DECLARE_PRIVATE(OBabelIfaceLoader)
-  OBabelIfaceLoaderPrivate* d_ptr;
-};
-
-#endif // OBABELIFACELOADER_H
+void OptimizeStructureAction::execute() {
+  using Molsketch::Molecule;
+  if (items().isEmpty()) return;
+  if (!obabelLoader) return;
+  attemptBeginMacro(tr("Optimize structures"));
+  for (auto item : items()) // TODO make items() for filtered covariant
+    if (Molecule *molecule = dynamic_cast<Molecule*>(item))
+    {
+      QPolygonF newCoords = obabelLoader->optimizeCoordinates(molecule);
+      qDebug() << "old molecule coords:" << molecule->coordinates()
+               << "new molecule coords:" << newCoords;
+      attemptUndoPush(new Molsketch::Commands::SetCoordinateCommand(item, newCoords));
+    }
+  attemptEndMacro();
+}

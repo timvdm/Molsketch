@@ -22,6 +22,7 @@
 #define OBABELIFACE_H
 
 #include <QString>
+#include <QPointF>
 #include <vector>
 
 class QGraphicsScene ;
@@ -62,12 +63,18 @@ extern "C"
  */
     Molecule* fromInChI(const QString&);
     typedef Molecule* (*fromInChIFunctionPointer)(const QString&);
-
- /**
-  * Check if InChI format is available
-  */
+/**
+ * Check if InChI format is available
+ */
     bool inChIAvailable();
+    bool gen2dAvailable();
     typedef bool (*formatAvailablePointer)();
+/**
+ * Optimize coordinates
+ */
+    QVector<QPointF> optimizeCoordinates(const Molecule* molecule);
+    typedef QVector<QPointF> (*optimizeCoordsPointer)(const Molecule*);
+
 /**
  * Load and save routines
  *
