@@ -121,4 +121,13 @@ namespace Molsketch {
     setItems(scene()->selectedItems());
   }
 
+  QSet<graphicsItem *> TopLevelItemAction::filterItems(const QList<QGraphicsItem *> &inputItems) const {
+    QSet<graphicsItem*> result;
+    for (auto item : inputItems)
+      if (!item->parentItem())
+        result << dynamic_cast<graphicsItem*>(item);
+    result.remove(nullptr);
+    return result;
+  }
+
 } // namespace Molsketch

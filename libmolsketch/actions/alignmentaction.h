@@ -25,7 +25,7 @@
 
 namespace Molsketch {
 
-  class AlignmentAction : public FilteredItemAction<Molecule>	{
+  class AlignmentAction : public TopLevelItemAction {
 	public:
     static AlignmentAction* flushLeft(MolScene *scene = 0);
     static AlignmentAction* flushRight(MolScene *scene = 0);

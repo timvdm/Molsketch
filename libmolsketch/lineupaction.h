@@ -25,7 +25,7 @@ namespace Molsketch {
 
   class Molecule;
 
-  class LineUpAction : public FilteredItemAction<Molecule> {
+  class LineUpAction : public TopLevelItemAction {
   public:
     static LineUpAction* horizontal(MolScene *scene = 0);
     static LineUpAction* vertical(MolScene *scene = 0);

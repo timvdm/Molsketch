@@ -61,7 +61,7 @@ namespace Molsketch {
   }
 
   LineUpAction::LineUpAction(MolScene *scene)
-    : FilteredItemAction<Molecule>(scene) {
+    : TopLevelItemAction(scene) {
     setCheckable(false);
     setMinimumItemCount(2);
   }

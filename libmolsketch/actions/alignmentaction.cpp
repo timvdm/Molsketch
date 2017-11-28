@@ -25,7 +25,7 @@
 namespace Molsketch {
 
   AlignmentAction::AlignmentAction(const QString &description, MolScene *scene)
-    : FilteredItemAction<Molecule>(scene) {
+    : TopLevelItemAction(scene) {
     setCheckable(false);
     setMinimumItemCount(2);
     setText(description);

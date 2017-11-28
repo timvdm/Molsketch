@@ -66,6 +66,13 @@ namespace Molsketch {
     void updateItems();
   };
 
+  class TopLevelItemAction : public AbstractItemAction {
+    QSet<graphicsItem*> filterItems(const QList<QGraphicsItem *> &inputItems) const;
+  public:
+    explicit TopLevelItemAction(MolScene *scene = 0)
+      : AbstractItemAction(scene) {}
+  };
+
   template<class T>
   class FilteredItemAction : public AbstractItemAction {
     QSet<graphicsItem*> filterItems(const QList<QGraphicsItem *> &inputItems) const {
