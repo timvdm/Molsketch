@@ -66,5 +66,8 @@
         <file>images/align-right.svg</file>
         <file>images/align-top.svg</file>
         <file>images/align-v-center.svg</file>
+        <file>images/space-vertical.svg</file>
+        <file>images/space-horizontal.svg</file>
+        <file>images/clean-structure.svg</file>
     </qresource>
 </RCC>
