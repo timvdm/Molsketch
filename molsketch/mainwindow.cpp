@@ -31,6 +31,7 @@
 #include <QDockWidget>
 #include <QToolBox>
 #include <QInputDialog>
+#include <lineupaction.h>
 #if QT_VERSION <= 0x040603
 #include <QAssistantClient>
 #else
@@ -76,6 +77,7 @@
 #include "settingsdialog.h"
 #include "wikiquerywidget.h"
 #include "constants.h"
+#include "optimizestructureaction.h"
 
 
 #define PROGRAM_NAME "Molsketch"
@@ -772,6 +774,9 @@ void MainWindow::createToolBars()
   alignmentToolBar->addAction(AlignmentAction::atTop(m_scene));
   alignmentToolBar->addAction(AlignmentAction::atVerticalCenter(m_scene));
   alignmentToolBar->addAction(AlignmentAction::atBottom(m_scene));
+  alignmentToolBar->addAction(LineUpAction::horizontal(m_scene));
+  alignmentToolBar->addAction(LineUpAction::vertical(m_scene));
+  alignmentToolBar->addAction(new OptimizeStructureAction(obabelLoader, m_scene));
 
   new arrowTypeAction(m_scene);
   new bondTypeAction(m_scene);
@@ -802,12 +807,19 @@ void MainWindow::createStatusBar()
   Indicator *inchiIndicator = new Indicator(tr("InChI"), statusBar());
   inchiIndicator->setToolTip(tr("Indicates if InChI format support is available.\n"
                                 "If InChI is unavailable, download the auxiliary OpenBabel formats package from molsketch.sf.net"));
+
+  Indicator *gen2dIndicator = new Indicator(tr("gen2d"), statusBar());
+  gen2dIndicator->setToolTip(tr("Indicates if 'gen2d' of OpenBabel is available.\n"
+                                "Required for structure optimization."));
+
   connect(settings, SIGNAL(changedObabelIfacePath(QString)), obabelLoader, SLOT(reloadObabelIface(QString)));
   connect(settings, SIGNAL(changeObabelFormatsPath(QString)), obabelLoader, SLOT(setObabelFormats(QString)));
   connect(obabelLoader, SIGNAL(obabelIfaceAvailable(bool)), openBabelIndicator, SLOT(setMode(bool)));
   connect(obabelLoader, SIGNAL(inchiAvailable(bool)), inchiIndicator, SLOT(setMode(bool)));
+  connect(obabelLoader, SIGNAL(optimizeAvailable(bool)), gen2dIndicator, SLOT(setMode(bool)));
   statusBar()->addPermanentWidget(openBabelIndicator);
   statusBar()->addPermanentWidget(inchiIndicator);
+  statusBar()->addPermanentWidget(gen2dIndicator);
   obabelLoader->reloadObabelIface(settings->obabelIfacePath());
   obabelLoader->setObabelFormats(settings->obabelFormatsPath());
 }

@@ -21,6 +21,7 @@
 
 #include <QDebug>
 #include <QLibrary>
+#include <molecule.h>
 
 static const char BABEL_LIBDIR_VARIABLE[] = "BABEL_LIBDIR";
 
@@ -38,7 +39,9 @@ class OBabelIfaceLoaderPrivate {
   Molsketch::formatsFunctionPointer inputFormats;
   Molsketch::formatsFunctionPointer outputFormats;
   Molsketch::fromInChIFunctionPointer fromInChI;
+  Molsketch::optimizeCoordsPointer optimizeCoordinates;
   Molsketch::formatAvailablePointer inChIAvailable;
+  Molsketch::formatAvailablePointer gen2dAvailable;
   Molsketch::callOsraFunctionPointer callOsra;
   void loadFunctions () {
     load = (Molsketch::loadFileFunctionPointer)openBabelInterface.resolve (
@@ -49,7 +52,9 @@ class OBabelIfaceLoaderPrivate {
     inputFormats = (Molsketch::formatsFunctionPointer)openBabelInterface.resolve ("inputFormats");
     outputFormats = (Molsketch::formatsFunctionPointer)openBabelInterface.resolve ("outputFormats");
     fromInChI = (Molsketch::fromInChIFunctionPointer)openBabelInterface.resolve ("fromInChI");
+    optimizeCoordinates = (Molsketch::optimizeCoordsPointer)openBabelInterface.resolve("optimizeCoordinates");
     inChIAvailable = (Molsketch::formatAvailablePointer)openBabelInterface.resolve ("inChIAvailable");
+    gen2dAvailable = (Molsketch::formatAvailablePointer)openBabelInterface.resolve("gen2dAvailable");
     callOsra = (Molsketch::callOsraFunctionPointer)openBabelInterface.resolve("call_osra");
 
     qDebug() << "Loaded OpenBabel functions. Available Functions:"
@@ -60,6 +65,8 @@ class OBabelIfaceLoaderPrivate {
              << "inputFormats:" << inputFormats
              << "outputFormats:" << outputFormats
              << "fromInChI:" << fromInChI
+             << "gen2dAvailable:" << gen2dAvailable
+             << "optimizeCoordinates:" << optimizeCoordinates
              << "inChIAvailable:" << inChIAvailable
              << "callOsra:" << callOsra;
   }
@@ -68,11 +75,14 @@ class OBabelIfaceLoaderPrivate {
   void emitSignals () {
     bool openBabelAvailable = openBabelInterface.isLoaded ();
     bool isInchiAvailable = inChIAvailable && inChIAvailable ();
+    bool isGen2dAvailable = gen2dAvailable && gen2dAvailable ();
     qDebug() << "OpenBabel available: " << QString::number (openBabelAvailable)
              << "Library location:" << openBabelInterface.fileName();
-    qDebug() << "InChI available: " << QString::number (isInchiAvailable);
+    qDebug() << "InChI available: " << QString::number (isInchiAvailable)
+             << "gen2d available: " << QString::number (isGen2dAvailable);
     emit parent->obabelIfaceAvailable (openBabelAvailable);
-    emit parent->inchiAvailable (isInchiAvailable);
+    emit parent->inchiAvailable (isInchiAvailable && isGen2dAvailable);
+    emit parent->optimizeAvailable(isGen2dAvailable);
     emit parent->obabelIfaceFileNameChanged(openBabelInterface.fileName());
   }
 };
@@ -120,6 +130,13 @@ Molsketch::Molecule *OBabelIfaceLoader::convertInChI(const QString &InChI) {
   if (d->fromInChI) return d->fromInChI(InChI);
   qWarning("No support for converting InChI available");
   return nullptr;
+}
+
+QVector<QPointF> OBabelIfaceLoader::optimizeCoordinates(const Molsketch::Molecule *molecule) {
+  Q_D(OBabelIfaceLoader);
+  if (d->optimizeCoordinates) return d->optimizeCoordinates(molecule);
+  qWarning("No support for optimizing coordinates using OpenBabel available");
+  return molecule->coordinates();
 }
 
 void OBabelIfaceLoader::reloadObabelIface (const QString& path) {

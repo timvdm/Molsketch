@@ -41,10 +41,12 @@ public:
   Molsketch::Molecule* callOsra(const QString filename);
   bool saveFile(const QString& fileName, QGraphicsScene* scene, bool use3d);
   Molsketch::Molecule* convertInChI(const QString& InChI);
+  QVector<QPointF> optimizeCoordinates(const Molsketch::Molecule* molecule);
 
 signals:
   void obabelIfaceAvailable(bool);
   void inchiAvailable(bool);
+  void optimizeAvailable(bool);
   void obabelIfaceFileNameChanged(QString);
 
 public slots:

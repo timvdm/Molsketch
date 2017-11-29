@@ -16,32 +16,32 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef ALIGNMENTACTION_H
-#define ALIGNMENTACTION_H
+#include "obabelifaceloader.h"
+#include "optimizestructureaction.h"
+#include <commands.h>
+#include <QDebug>
 
-#include <functional>
-#include <molecule.h>
-#include "abstractitemaction.h"
+OptimizeStructureAction::OptimizeStructureAction(OBabelIfaceLoader *obabelLoader, Molsketch::MolScene *scene)
+  : FilteredItemAction<Molsketch::Molecule>(scene),
+    obabelLoader(obabelLoader)
+{
+  setCheckable(false);
+  setMinimumItemCount(1);
+  connect(obabelLoader, SIGNAL(optimizeAvailable(bool)), this, SLOT(setVisible(bool)));
+}
 
-namespace Molsketch {
-
-  class AlignmentAction : public FilteredItemAction<Molecule>	{
-	public:
-    static AlignmentAction* flushLeft(MolScene *scene = 0);
-    static AlignmentAction* flushRight(MolScene *scene = 0);
-    static AlignmentAction* atTop(MolScene *scene = 0);
-    static AlignmentAction* atBottom(MolScene *scene = 0);
-    static AlignmentAction* atVerticalCenter(MolScene *scene = 0);
-    static AlignmentAction* atHorizontalCenter(MolScene *scene = 0);
-  private:
-    explicit AlignmentAction(const QString& description, MolScene *scene = 0);
-    void execute() override;
-    typedef std::function<qreal (const qreal&, const graphicsItem*)> Accumulator;
-    virtual Accumulator getAccumulator(int count) const = 0;
-    virtual QPointF getShift(const graphicsItem* item, const qreal& targetValue) const = 0;
-    virtual qreal initialValue() const = 0;
-  };
-
-} // namespace Molsketch
-
-#endif // ALIGNMENTACTION_H
+void OptimizeStructureAction::execute() {
+  using Molsketch::Molecule;
+  if (items().isEmpty()) return;
+  if (!obabelLoader) return;
+  attemptBeginMacro(tr("Optimize structures"));
+  for (auto item : items()) // TODO make items() for filtered covariant
+    if (Molecule *molecule = dynamic_cast<Molecule*>(item))
+    {
+      QPolygonF newCoords = obabelLoader->optimizeCoordinates(molecule);
+      qDebug() << "old molecule coords:" << molecule->coordinates()
+               << "new molecule coords:" << newCoords;
+      attemptUndoPush(new Molsketch::Commands::SetCoordinateCommand(item, newCoords));
+    }
+  attemptEndMacro();
+}

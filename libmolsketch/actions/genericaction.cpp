@@ -27,7 +27,7 @@ namespace Molsketch{
   genericAction::genericAction(MolScene *scene)
     : QAction(scene)
   {
-    setProperty("exclusiveAction",1);
+    setProperty("exclusiveAction", 1);
     setCheckable(true) ;
     connect(this, SIGNAL(toggled(bool)), this, SLOT(activationSlot(bool))) ;
   }
@@ -83,7 +83,7 @@ namespace Molsketch{
   }
 
   void genericAction::attemptUndoPush(QUndoCommand *command) const
-  {// TODO merge with graphisitem
+  {// TODO merge with graphicsItem
     MolScene *molscene = dynamic_cast<MolScene*>(scene());
     if (!molscene || !molscene->stack())
     {
@@ -117,8 +117,7 @@ namespace Molsketch{
   void genericAction::activationSlot(const bool &b)
   {
     if (!scene()) return;
-    if (b)
-    {
+    if (b) {
       int exclusivity = property("exclusiveAction").toInt();
       if (exclusivity)
         foreach(QAction* other, scene()->findChildren<QAction*>())
@@ -129,7 +128,7 @@ namespace Molsketch{
             other->setChecked(false);
       scene()->installEventFilter(this);
     }
-    else   scene()->removeEventFilter(this);
+    else scene()->removeEventFilter(this);
   }
 
 
