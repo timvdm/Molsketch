@@ -27,6 +27,7 @@ OptimizeStructureAction::OptimizeStructureAction(OBabelIfaceLoader *obabelLoader
 {
   setCheckable(false);
   setMinimumItemCount(1);
+  setIcon(QIcon(":images/clean-structure.svg"));
   connect(obabelLoader, SIGNAL(optimizeAvailable(bool)), this, SLOT(setVisible(bool)));
 }
 

@@ -36,7 +36,9 @@ namespace Molsketch {
         return QPointF(reference->boundingRect().center().x() + distance - item->boundingRect().center().x(), 0);
       }
     public:
-      HorizontalLineUpAction(MolScene *scene) : LineUpAction(scene) {}
+      HorizontalLineUpAction(MolScene *scene) : LineUpAction(scene) {
+        setIcon(QIcon(":images/space-horizontal.svg"));
+      }
     };
 
     return new HorizontalLineUpAction(scene);
@@ -54,7 +56,9 @@ namespace Molsketch {
         return QPointF(0, reference->boundingRect().center().y() + distance - item->boundingRect().center().y());
       }
     public:
-      VerticalLineUpAction(MolScene *scene) : LineUpAction(scene) {}
+      VerticalLineUpAction(MolScene *scene) : LineUpAction(scene) {
+        setIcon(QIcon(":images/space-vertical.svg"));
+      }
     };
 
     return new VerticalLineUpAction(scene);
