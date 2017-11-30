@@ -12,6 +12,7 @@ QMAKE_LFLAGS -= -static
 CONFIG += DLLDESTDIR
 TARGET = obabeliface$$qtVersionSuffix
 DESTDIR = ../lib
+QT -= printsupport svg
 win* : VERSION =
 
 target.path=$${MSK_INSTALL_LIBS}

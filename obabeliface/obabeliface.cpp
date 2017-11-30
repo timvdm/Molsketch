@@ -136,7 +136,7 @@ namespace Molsketch
     obmol.SetDimension(dim);
 
     // Add all molecules on the scene
-    foreach(QGraphicsItem* item, scene->items())
+    foreach(QGraphicsItem* item, scene->items()) // TODO remove this dependency on molscene
       if (item->type() == Molecule::Type)
         obmol += toOBMolecule(static_cast<Molecule*>(item), dim) ;
     // Add hydrogens
