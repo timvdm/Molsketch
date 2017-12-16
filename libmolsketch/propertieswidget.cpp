@@ -47,9 +47,10 @@ namespace Molsketch {
     d->lock = false;
   }
 
-  void PropertiesWidget::attemptBeginMacro(const QString &text) const { // TODO write test, possibly this also needs a lock
+  void PropertiesWidget::attemptBeginMacro(const QString &text) const { // TODO write test
+    if (d->lock) return;
     MolScene *molscene = dynamic_cast<MolScene*>(scene());
-    if (!molscene || !molscene->stack() || d->lock) return;
+    if (!molscene || !molscene->stack()) return;
     molscene->stack()->beginMacro(text);
   }
 
