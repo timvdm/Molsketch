@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2015 Hendrik Vennekate                                  *
+ *   Copyright (C) 2017 by Hendrik Vennekate                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -16,36 +16,32 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef MOLSKETCH_GRID_H
-#define MOLSKETCH_GRID_H
+#include "colorbutton.h"
 
-#include <QGraphicsItem>
+#include <QColorDialog>
 
+ColorButton::ColorButton(QWidget *parent, const QColor &color)
+  : QPushButton(parent)
+{
+  setFlat(true);
+  setAutoFillBackground(true);
+  setColor(color);
+  connect(this, SIGNAL(clicked(bool)), this, SLOT(changeColor()));
+}
 
+QColor ColorButton::getColor() const {
+  return palette().color(QPalette::Button);
+}
 
-namespace Molsketch {
+void ColorButton::setColor(const QColor &color) {
+  QPalette p = palette();
+  p.setColor(QPalette::Button, color);
+  setPalette(QPalette(color));
+  emit colorChanged(color);
+}
 
-  class grid : public QGraphicsItem // TODO this should really be done in QGraphicsScene::drawBackground
-  {
-  public:
-    grid();
-    ~grid();
-    virtual QPointF alignPoint(const QPointF& point);
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    QRectF boundingRect() const;
-    void setHorizontalInterval(qreal h);
-    void setVerticalInterval(qreal v);
-    void setColor(const QColor& color);
-    void setLinewidth(const qreal& linewidth);
-    qreal horizontalInterval() const;
-    qreal verticalInterval() const;
-    QColor color() const;
-    qreal linewidth() const;
-  private:
-    class privateData;
-    privateData *d;
-  };
-
-} // namespace Molsketch
-
-#endif // MOLSKETCH_GRID_H
+void ColorButton::changeColor()
+{
+  QColor newColor = QColorDialog::getColor(getColor(), nullptr, tr("Choose color"));
+  if (newColor.isValid()) setColor(newColor);
+}

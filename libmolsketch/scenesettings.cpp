@@ -19,6 +19,7 @@
 #include <QFont>
 #include <QSettings>
 #include "scenesettings.h"
+#include "settingsfacade.h"
 
 Q_DECLARE_METATYPE(Molsketch::SceneSettings::MouseWheelMode)
 
@@ -35,34 +36,44 @@ namespace Molsketch {
   static const char LONE_PAIR_LINE_WIDTH[] = "lone-pair-line-width";
   static const char LONE_PAIR_LENGTH[] = "lone-pair-length";
   static const char RADICAL_DIAMETER[] = "radical-diameter";
+  static const char HORIZONTAL_GRID_SPACING[] = "horizontal-grid-spacing";
+  static const char VERTICAL_GRID_SPACING[] = "vertical-grid-spacing";
+  static const char GRID_COLOR[] = "grid-color";
+  static const char GRID_LINEWIDTH[] = "grid-linewidth";
 
   class SceneSettingsPrivate {
     Q_DISABLE_COPY(SceneSettingsPrivate)
   public:
-    SceneSettingsPrivate(){}
-    QSettings settings;
+    SceneSettingsPrivate(SettingsFacade *facade) : settingsFacade(facade){}
+    SettingsFacade *settingsFacade;
   };
 
-  SceneSettings::SceneSettings(QObject *parent)
+  SceneSettings::SceneSettings(SettingsFacade* facade, QObject *parent)
     : QObject(parent),
-      d_ptr(new SceneSettingsPrivate)
-  {}
+      d_ptr(new SceneSettingsPrivate(facade))
+  {
+    Q_D(SceneSettings);
+    d->settingsFacade->setParent(this);
+  }
 
   SceneSettings::~SceneSettings() {}
 
 #define BOOL_PROPERTY(NAME, CONFIGSTRING) \
-  void SceneSettings::set##NAME(const bool& value) { settings().setValue(CONFIGSTRING, value); } \
-  bool SceneSettings::is##NAME() const { return settings().value(CONFIGSTRING).toBool(); }
+  void SceneSettings::set##NAME(const bool& value) { settingsFacade().setValue(CONFIGSTRING, value); \
+  emit settingsChanged();  } \
+  bool SceneSettings::is##NAME() const { return settingsFacade().value(CONFIGSTRING).toBool(); }
 
 #define REAL_PROPERTY(NAME, CONFIGSTRING, DEFAULT) \
-  void SceneSettings::set##NAME(const qreal& value) { settings().setValue(CONFIGSTRING, value); } \
-  qreal SceneSettings::get##NAME() const { return settings().value(CONFIGSTRING, DEFAULT).toReal(); }
+  void SceneSettings::set##NAME(const qreal& value) { settingsFacade().setValue(CONFIGSTRING, value);  \
+  emit settingsChanged(); } \
+  qreal SceneSettings::get##NAME() const { return settingsFacade().value(CONFIGSTRING, DEFAULT).toReal(); }
 
   BOOL_PROPERTY(CarbonVisible, CARBON_VISIBLE)
   BOOL_PROPERTY(ChargeVisible, CHARGE_VISIBLE)
   BOOL_PROPERTY(ElectronSystemsVisible, ELECTRON_SYSTEMS_VISIBLE)
 
   PROPERTY(AtomFont, QFont, ATOM_FONT)
+  PROPERTY_DEF(GridLineColor, QColor, GRID_COLOR, QColor(Qt::gray))
 
   REAL_PROPERTY(BondLength, BOND_LENGTH, 40)
   REAL_PROPERTY(BondWidth, BOND_WIDTH, 1)
@@ -70,18 +81,21 @@ namespace Molsketch {
   REAL_PROPERTY(LonePairLineWidth, LONE_PAIR_LINE_WIDTH, 1)
   REAL_PROPERTY(LonePairLength, LONE_PAIR_LENGTH, 7)
   REAL_PROPERTY(RadicalDiameter, RADICAL_DIAMETER, 3)
+  REAL_PROPERTY(HorizontalGridSpacing, HORIZONTAL_GRID_SPACING, 10)
+  REAL_PROPERTY(VerticalGridSpacing, VERTICAL_GRID_SPACING, 10)
+  REAL_PROPERTY(GridLinewidth, GRID_LINEWIDTH, 0)
 
   PROPERTY(MouseWheelMode, SceneSettings::MouseWheelMode, MOUSE_CYCLE_MODE)
 
-  QSettings &SceneSettings::settings() {
+  SettingsFacade &SceneSettings::settingsFacade() {
     Q_D(SceneSettings);
-    return d->settings;
+    return *(d->settingsFacade);
   }
 
-  const QSettings &SceneSettings::settings() const
+  const SettingsFacade &SceneSettings::settingsFacade() const
   {
     Q_D(const SceneSettings);
-    return d->settings;
+    return *(d->settingsFacade);
   }
 
 } // namespace Molsketch

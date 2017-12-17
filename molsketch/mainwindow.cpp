@@ -38,6 +38,7 @@
 #include <QProcess>
 #endif
 #include <QGridLayout>
+#include <settingsfacade.h>
 
 #include <actions/arrowtypeaction.h>
 #include <actions/bondtypeaction.h>
@@ -96,7 +97,7 @@
 using namespace Molsketch;
 
 MainWindow::MainWindow()
-  : settings(new ApplicationSettings(this)),
+  : settings(new ApplicationSettings(SettingsFacade::persistedSettings(), this)),
     obabelLoader(new OBabelIfaceLoader(this))
 {
   // Creating the menus and actions
@@ -889,7 +890,8 @@ void MainWindow::createToolBarContextMenuOptions()
 
 void MainWindow::createView()
 {
-  m_scene = new MolScene(settings, this);
+  SettingsFacade *sceneSettingsFacade = const_cast<const ApplicationSettings*>(settings)->settingsFacade().cloneTransiently();
+  m_scene = new MolScene(new SceneSettings(sceneSettingsFacade), this);
   m_molView = new MolView(m_scene);
   setCentralWidget(m_molView);
 }

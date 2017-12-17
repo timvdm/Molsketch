@@ -276,6 +276,8 @@ namespace Molsketch {
       QGraphicsPathItem* m_hoverRect;
       void initialize(SceneSettings *settings);
 
+      void initiializeGrid();
+
   private slots:
       void updateAll() ;
       void selectionSlot();

@@ -22,6 +22,7 @@
 #include <QApplication>
 #include <QTranslator>
 #include <QLocale>
+#include <settingsfacade.h>
 
 #include "applicationsettings.h"
 #include "mainwindow.h"
@@ -67,7 +68,7 @@ int main(int argc, char *argv[])
   MainWindow window;
   window.show();
 
-  ApplicationSettings appSettings;
+  ApplicationSettings appSettings(Molsketch::SettingsFacade::persistedSettings());
 
   if (appSettings.latestReleaseNotesVersionShown() < appSettings.currentVersion()) {
     ReleaseNotesDialog().exec(); // TODO check that this still works

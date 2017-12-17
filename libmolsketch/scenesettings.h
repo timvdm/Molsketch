@@ -20,19 +20,22 @@
 #define MOLSKETCH_SCENESETTINGS_H
 
 #include <QObject>
+#include <QColor>
 
 class QSettings;
 
 namespace Molsketch {
 
+  class SettingsFacade;
   class SceneSettingsPrivate;
 
   class SceneSettings : public QObject
   {
+    Q_OBJECT
     Q_DECLARE_PRIVATE(SceneSettings)
     QScopedPointer<SceneSettingsPrivate> d_ptr;
   public:
-    explicit SceneSettings(QObject *parent = 0);
+    explicit SceneSettings(SettingsFacade *facade, QObject *parent = 0);
     virtual ~SceneSettings();
     void setCarbonVisible(const bool&);
     bool isCarbonVisible() const;
@@ -54,6 +57,14 @@ namespace Molsketch {
     qreal getLonePairLength() const;
     void setRadicalDiameter(const qreal&);
     qreal getRadicalDiameter() const;
+    void setHorizontalGridSpacing(const qreal&);
+    qreal getHorizontalGridSpacing() const;
+    void setVerticalGridSpacing(const qreal&);
+    qreal getVerticalGridSpacing() const;
+    void setGridLinewidth(const qreal&);
+    qreal getGridLinewidth() const;
+    void setGridLineColor(const QColor&);
+    QColor getGridLineColor() const;
 
     enum MouseWheelMode {
       Unset,
@@ -62,19 +73,29 @@ namespace Molsketch {
     };
     void setMouseWheelMode(const MouseWheelMode&);
     MouseWheelMode getMouseWheelMode() const;
+    const SettingsFacade &settingsFacade() const;
+  signals:
+    void settingsChanged();
   protected:
-    QSettings& settings();
-    const QSettings& settings() const;
+    SettingsFacade &settingsFacade();
   };
 
 } // namespace Molsketch
 
 #define PROPERTY(NAME, TYPE, CONFIGSTRING) \
-  void SceneSettings::set##NAME(const TYPE& value) { settings().setValue(CONFIGSTRING, value); } \
-  TYPE SceneSettings::get##NAME() const { return settings().value(CONFIGSTRING).value<TYPE>(); }
+  void SceneSettings::set##NAME(const TYPE& value) { settingsFacade().setValue(CONFIGSTRING, value); \
+  emit settingsChanged(); } \
+  TYPE SceneSettings::get##NAME() const { return settingsFacade().value(CONFIGSTRING).value<TYPE>(); }
+
+#define PROPERTY_DEF(NAME, TYPE, CONFIGSTRING, DEFAULT) \
+  void SceneSettings::set##NAME(const TYPE& value) { settingsFacade().setValue(CONFIGSTRING, value); \
+  emit settingsChanged();  } \
+  TYPE SceneSettings::get##NAME() const { return settingsFacade().value(CONFIGSTRING, DEFAULT).value<TYPE>(); }
+
 
 #define STRING_PROPERTY(NAME, CONFIGSTRING) \
-  void SceneSettings::set##NAME(const QString& value) { settings().setValue(CONFIGSTRING, value); } \
+  void SceneSettings::set##NAME(const QString& value) { settings().setValue(CONFIGSTRING, value); \
+  emit settingsChanged();  } \
   QString SceneSettings::get##NAME() const { return settings().value(CONFIGSTRING).toString(); }
 
 #endif // MOLSKETCH_SCENESETTINGS_H

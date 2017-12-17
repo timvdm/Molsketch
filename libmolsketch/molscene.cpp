@@ -72,6 +72,7 @@
 #include "scenesettings.h"
 #include "textitem.h"
 #include "constants.h"
+#include "settingsfacade.h"
 
 #ifdef QT_STATIC_BUILD
 inline void initToolBarIcons() { Q_INIT_RESOURCE(toolicons); }
@@ -205,12 +206,13 @@ namespace Molsketch {
 
   using namespace Commands;
 
-
-  //////////////////////////////////////////////////////////////////////////////
-  //
-  // Constructor & destructor
-  //
-  //////////////////////////////////////////////////////////////////////////////
+  void MolScene::initiializeGrid()
+  {
+    d->Grid->setHorizontalInterval(d->settings->getHorizontalGridSpacing());
+    d->Grid->setVerticalInterval(d->settings->getVerticalGridSpacing());
+    d->Grid->setLinewidth(d->settings->getGridLinewidth());
+    d->Grid->setColor(d->settings->getGridLineColor());
+  }
 
   void MolScene::initialize(SceneSettings* settings)
   {
@@ -241,14 +243,14 @@ namespace Molsketch {
 //    addItem(textItem);
 
     d->settings = settings;
-    settings->setParent(this);
+    initiializeGrid();
   }
 
   MolScene::MolScene(QObject* parent)
     : QGraphicsScene(parent),
       d(new privateData(this))
   {
-    initialize(new SceneSettings(this));
+    initialize(new SceneSettings(SettingsFacade::transientSettings(), this));
   }
 
   MolScene::MolScene(SceneSettings* settings, QObject *parent)
@@ -379,6 +381,7 @@ namespace Molsketch {
     QGraphicsScene::clear();
     d = new privateData(this);
     d->settings = settings;
+    initiializeGrid();
   }
 
   QImage MolScene::renderMolToImage (Molecule *mol)

@@ -25,6 +25,7 @@
 #include <QSettings>
 #include <QSize>
 #include <QDir>
+#include <settingsfacade.h>
 
 #ifdef _WIN32
 #define OBABELOSSUFFIX ".dll"
@@ -59,10 +60,11 @@ QString readFileContent(const QString& absolutePath) {
 
 using namespace Molsketch;
 
-ApplicationSettings::ApplicationSettings(QObject *parent) : SceneSettings(parent) {}
+ApplicationSettings::ApplicationSettings(SettingsFacade *facade, QObject *parent)
+  : SceneSettings(facade, parent) {}
 
 ProgramVersion ApplicationSettings::latestReleaseNotesVersionShown() const {
-  return ProgramVersion(settings().value(LATEST_RELEASE_NOTES_VERSION_SHOWN).toString());
+  return ProgramVersion(settingsFacade().value(LATEST_RELEASE_NOTES_VERSION_SHOWN).toString());
 }
 
 ProgramVersion ApplicationSettings::currentVersion() const {
@@ -70,7 +72,7 @@ ProgramVersion ApplicationSettings::currentVersion() const {
 }
 
 void ApplicationSettings::updateReleaseNotesShownVersion() {
-  settings().setValue(LATEST_RELEASE_NOTES_VERSION_SHOWN, currentVersion().toString());
+  settingsFacade().setValue(LATEST_RELEASE_NOTES_VERSION_SHOWN, currentVersion().toString());
 }
 
 QString ApplicationSettings::versionNick() const {
@@ -83,45 +85,45 @@ APP_PROPERTY(WindowPosition, QPoint, WINDOW_POSITION)
 APP_PROPERTY(WindowSize, QSize, WINDOW_SIZE)
 
 void ApplicationSettings::setWindowState(const QByteArray &state) {
-  settings().setValue(WINDOW_STATE, state);
+  settingsFacade().setValue(WINDOW_STATE, state);
 }
 
 QByteArray ApplicationSettings::windowState() const {
-  return settings().value(WINDOW_STATE, DEFAULT_WINDOW_STATE).toByteArray();
+  return settingsFacade().value(WINDOW_STATE, DEFAULT_WINDOW_STATE).toByteArray();
 }
 
 void ApplicationSettings::setLastPath(const QString &path) {
-  settings().setValue(LAST_SAVE_PATH, path);
+  settingsFacade().setValue(LAST_SAVE_PATH, path);
 }
 
 QString ApplicationSettings::lastPath() const {
-  return settings().value(LAST_SAVE_PATH, DEFAULT_LAST_SAVE_PATH).toString();
+  return settingsFacade().value(LAST_SAVE_PATH, DEFAULT_LAST_SAVE_PATH).toString();
 }
 
 void ApplicationSettings::setAutoSaveInterval(const int &interval) {
-  settings().setValue(AUTO_SAVE_INTERVAL, interval);
+  settingsFacade().setValue(AUTO_SAVE_INTERVAL, interval);
 }
 
 int ApplicationSettings::autoSaveInterval() const {
-  return settings().value(AUTO_SAVE_INTERVAL, DEFAULT_AUTO_SAVE_INTERVAL).toInt();
+  return settingsFacade().value(AUTO_SAVE_INTERVAL, DEFAULT_AUTO_SAVE_INTERVAL).toInt();
 }
 
 void ApplicationSettings::setObabelIfacePath(const QString &path) {
-  settings().setValue(OBABEL_IFACE, path);
+  settingsFacade().setValue(OBABEL_IFACE, path);
   emit changedObabelIfacePath(path);
 }
 
 QString ApplicationSettings::obabelIfacePath() const {
-  return settings().value(OBABEL_IFACE, "obabeliface" QTVERSIONSUFFIX OBABELOSSUFFIX).toString();
+  return settingsFacade().value(OBABEL_IFACE, "obabeliface" QTVERSIONSUFFIX OBABELOSSUFFIX).toString();
 }
 
 void ApplicationSettings::setObabelFormatsPath(const QString &path) {
-  settings().setValue(OBABEL_FORMATS, path);
+  settingsFacade().setValue(OBABEL_FORMATS, path);
   emit changeObabelFormatsPath(path);
 }
 
 QString ApplicationSettings::obabelFormatsPath() const {
-  return settings().value(OBABEL_FORMATS).toString();
+  return settingsFacade().value(OBABEL_FORMATS).toString();
 }
 
 

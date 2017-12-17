@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2015 Hendrik Vennekate                                  *
+ *   Copyright (C) 2017 by Hendrik Vennekate                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -16,36 +16,30 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef MOLSKETCH_GRID_H
-#define MOLSKETCH_GRID_H
+#ifndef SETTINGSFACADE_H
+#define SETTINGSFACADE_H
 
-#include <QGraphicsItem>
-
-
+#include <QObject>
+#include <QVariant>
 
 namespace Molsketch {
 
-  class grid : public QGraphicsItem // TODO this should really be done in QGraphicsScene::drawBackground
+  class SettingsFacade : public QObject
   {
+    Q_OBJECT
   public:
-    grid();
-    ~grid();
-    virtual QPointF alignPoint(const QPointF& point);
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    QRectF boundingRect() const;
-    void setHorizontalInterval(qreal h);
-    void setVerticalInterval(qreal v);
-    void setColor(const QColor& color);
-    void setLinewidth(const qreal& linewidth);
-    qreal horizontalInterval() const;
-    qreal verticalInterval() const;
-    QColor color() const;
-    qreal linewidth() const;
-  private:
-    class privateData;
-    privateData *d;
+    static SettingsFacade *transientSettings(QObject *parent = 0);
+    static SettingsFacade *persistedSettings(QObject *parent = 0);
+    SettingsFacade *cloneTransiently() const;
+    virtual void setValue(const QString& key, const QVariant& value) = 0;
+    virtual QVariant value(const QString& key, const QVariant &defaultValue = QVariant()) const = 0;
+    SettingsFacade& operator =(const SettingsFacade& other);
+    bool operator ==(const SettingsFacade& other);
+  protected:
+    explicit SettingsFacade(QObject *parent = nullptr);
+    virtual QStringList allKeys() const = 0;
   };
 
 } // namespace Molsketch
 
-#endif // MOLSKETCH_GRID_H
+#endif // SETTINGSFACADE_H

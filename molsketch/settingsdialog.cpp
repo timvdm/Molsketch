@@ -48,25 +48,6 @@ SettingsDialog::SettingsDialog(ApplicationSettings *settings, QWidget * parent, 
   connect(ui.buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(buttonClicked(QAbstractButton*)));
   connect(ui.buttonBox, SIGNAL(helpRequested()), this, SLOT(showHelp()));
 
-  // Setting translations
-  ui.groupBoxGeneral->setTitle(tr("Save options"));
-  ui.labelAutoSave->setText(tr("Autosave every"));
-  ui.labelDefaultFileType->setText(tr("Default file type"));
-  ui.labelDefaultImageType->setText(tr("Default image type"));
-
-  ui.groupBoxAtom->setTitle(tr("Atom settings"));
-  ui.checkBoxShowCarbon->setText(tr("Show neutral carbon atoms"));
-  ui.checkBoxShowValency->setText(tr("Show atom charge"));
-  ui.labelAtomSymbolFont->setText(tr("Atom symbol font"));
-
-  ui.groupBoxBond->setTitle(tr("Bond settings"));
-//   ui.labelMsKAtomSize->setText(tr("Atom size: "));
-  ui.labelBondLength->setText(tr("Bond length: "));
-  ui.labelBondWidth->setText(tr("Bond width: "));
-  ui.labelBondAngle->setText(tr("Bond angle: "));
-
-  ui.groupBoxLibraries->setTitle(tr("Libraries"));
-
   // Setting initial values
   setInitialValues();
 }
@@ -94,6 +75,11 @@ void SettingsDialog::setInitialValues()
   ui.doubleSpinBoxBondWidth->setValue(settings->getBondWidth());
   ui.spinBoxBondAngle->setValue(settings->getBondAngle());
 
+  ui.gridHorizontalSpacing->setValue(settings->getHorizontalGridSpacing());
+  ui.gridVerticalSpacing->setValue(settings->getVerticalGridSpacing());
+  ui.gridLineColor->setColor(settings->getGridLineColor());
+  ui.gridLinewidth->setValue(settings->getGridLinewidth());
+
   ui.libraries->clear();
   ui.libraries->addItems(settings->getLibraries());
 
@@ -107,10 +93,7 @@ void SettingsDialog::setInitialValues()
 
 void SettingsDialog::accept()
 {
-  // Applying changes
   applyChanges();
-
-  // Close dialog
   QDialog::accept();
 }
 
@@ -130,6 +113,11 @@ void SettingsDialog::applyChanges()
   settings->setBondLength(ui.lineEditBondLength->text().toDouble());
   settings->setBondWidth(ui.doubleSpinBoxBondWidth->value());
   settings->setBondAngle(ui.spinBoxBondAngle->value());
+
+  settings->setHorizontalGridSpacing(ui.gridHorizontalSpacing->value());
+  settings->setVerticalGridSpacing(ui.gridVerticalSpacing->value());
+  settings->setGridLineColor(ui.gridLineColor->getColor());
+  settings->setGridLinewidth(ui.gridLinewidth->value());
 
   // Library settings
   QStringList libraries;

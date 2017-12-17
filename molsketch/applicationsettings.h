@@ -30,7 +30,7 @@ class ApplicationSettings : public Molsketch::SceneSettings // TODO this doesn't
 {
   Q_OBJECT
 public:
-  explicit ApplicationSettings(QObject *parent = 0);
+  explicit ApplicationSettings(Molsketch::SettingsFacade *facade, QObject *parent = 0);
 
   ProgramVersion latestReleaseNotesVersionShown() const;
   ProgramVersion currentVersion() const;
@@ -60,8 +60,8 @@ signals:
 };
 
 #define APP_PROPERTY(NAME, TYPE, CONFIGSTRING) \
-  void ApplicationSettings::set##NAME(const TYPE& value) { settings().setValue(CONFIGSTRING, value); } \
-  TYPE ApplicationSettings::get##NAME() const { return settings().value(CONFIGSTRING).value<TYPE>(); }
+  void ApplicationSettings::set##NAME(const TYPE& value) { settingsFacade().setValue(CONFIGSTRING, value); } \
+  TYPE ApplicationSettings::get##NAME() const { return settingsFacade().value(CONFIGSTRING).value<TYPE>(); }
 
 
 #endif // APPLICATIONSETTINGS_H
