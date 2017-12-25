@@ -559,103 +559,104 @@ void Molecule::paint(QPainter * painter, const QStyleOptionGraphicsItem * option
 
   // draw the electron systems
 
-  if (scene()) {
-    if (!scene()->electronSystemsVisible())
-      return;
+  if (!scene()) return;
+  if (!scene()->electronSystemsVisible()) return;
 
-    updateElectronSystems();
-    QPen pen = painter->pen();
-    pen.setWidth(10);
-    pen.setCapStyle(Qt::RoundCap);
-    pen.setColor(QColor(255, 200, 0));
-    painter->setPen(pen);
-    //  painter->setOpacity(0.3);
+  updateElectronSystems();
+  paintElectronSystems(painter);
+}
 
-    QList<Atom*> doneList;
+void Molecule::paintElectronSystems(QPainter *painter) const {
+  QPen pen = painter->pen();
+  pen.setWidth(10);
+  pen.setCapStyle(Qt::RoundCap);
+  pen.setColor(QColor(255, 200, 0));
+  painter->setPen(pen);
+  //  painter->setOpacity(0.3);
 
-    foreach (ElectronSystem *es, m_electronSystems) {
-      QPointF midPoint(0.0, 0.0);
+  QList<Atom*> doneList;
 
-      if (es->atoms().size() == 1) {
-        QPointF dir(0.0, 0.0), orthogonal;
-        Atom *atom = es->atoms().at(0);
-        doneList.append(atom);
-        foreach (Atom *nbr, atom->neighbours())
-          dir += normalized(nbr->pos() - atom->pos());
-        dir /= atom->numBonds();
-        dir = normalized(dir);
-        if (!atom->numBonds()) {
-          dir = QPointF(0.0, 1.0);
-          orthogonal = QPointF(1.0, 0.0);
-        } else {
-          orthogonal = QPointF(dir.y(), -dir.x());
-        }
-        switch (doneList.count(atom)) {
-          case 1:
-            switch (atom->numBonds()) {
-              case 1:
-                painter->drawEllipse(atom->scenePos() - 15 * orthogonal, 5, 5);
-                break;
-              default:
-                painter->drawEllipse(atom->scenePos() - 15 * dir, 5, 5);
-                break;
-            }
-            break;
-          case 2:
-            switch (atom->numBonds()) {
-              case 1:
-                painter->drawEllipse(atom->scenePos() + 15 * orthogonal, 5, 5);
-                break;
-              default:
-                painter->drawEllipse(atom->scenePos() + 15 * dir, 5, 5);
-                break;
-            }
-            break;
-          case 3:
-            switch (atom->numBonds()) {
-              case 1:
-                painter->drawEllipse(atom->scenePos() - 15 * dir, 5, 5);
-                break;
-              default:
-                painter->drawEllipse(atom->scenePos() - 15 * orthogonal, 5, 5);
-                break;
-            }
-            break;
-          case 4:
-            painter->drawEllipse(atom->scenePos() - 15 * orthogonal, 5, 5);
-            break;
-          default:
-            painter->drawEllipse(atom->scenePos(), 5, 5);
-            break;
+  foreach (ElectronSystem *es, m_electronSystems) {
+    QPointF midPoint(0.0, 0.0);
 
-        }
-
+    if (es->atoms().size() == 1) {
+      QPointF dir(0.0, 0.0), orthogonal;
+      Atom *atom = es->atoms().at(0);
+      doneList.append(atom);
+      foreach (Atom *nbr, atom->neighbours())
+        dir += normalized(nbr->pos() - atom->pos());
+      dir /= atom->numBonds();
+      dir = normalized(dir);
+      if (!atom->numBonds()) {
+        dir = QPointF(0.0, 1.0);
+        orthogonal = QPointF(1.0, 0.0);
       } else {
-        foreach (Atom *a, es->atoms()) {
-          foreach (Atom *b, es->atoms()) {
-            if (bondBetween(a, b))
-              painter->drawLine(a->scenePos(), b->scenePos());
-            //          painter->drawEllipse(atom->scenePos(), 5, 5);
+        orthogonal = QPointF(dir.y(), -dir.x());
+      }
+      switch (doneList.count(atom)) {
+        case 1:
+          switch (atom->numBonds()) {
+            case 1:
+              painter->drawEllipse(atom->scenePos() - 15 * orthogonal, 5, 5);
+              break;
+            default:
+              painter->drawEllipse(atom->scenePos() - 15 * dir, 5, 5);
+              break;
           }
+          break;
+        case 2:
+          switch (atom->numBonds()) {
+            case 1:
+              painter->drawEllipse(atom->scenePos() + 15 * orthogonal, 5, 5);
+              break;
+            default:
+              painter->drawEllipse(atom->scenePos() + 15 * dir, 5, 5);
+              break;
+          }
+          break;
+        case 3:
+          switch (atom->numBonds()) {
+            case 1:
+              painter->drawEllipse(atom->scenePos() - 15 * dir, 5, 5);
+              break;
+            default:
+              painter->drawEllipse(atom->scenePos() - 15 * orthogonal, 5, 5);
+              break;
+          }
+          break;
+        case 4:
+          painter->drawEllipse(atom->scenePos() - 15 * orthogonal, 5, 5);
+          break;
+        default:
+          painter->drawEllipse(atom->scenePos(), 5, 5);
+          break;
 
-          midPoint += mapToParent(a->scenePos());
-        }
       }
 
-      if (es->numAtoms() < 2)
-        continue;
-      midPoint /= es->numAtoms();
+    } else {
+      foreach (Atom *a, es->atoms()) {
+        foreach (Atom *b, es->atoms()) {
+          if (bondBetween(a, b))
+            painter->drawLine(a->scenePos(), b->scenePos());
+          //          painter->drawEllipse(atom->scenePos(), 5, 5);
+        }
 
-      painter->save();
-      painter->setPen(Qt::black);
-      QPointF offset(20.0, 20.0);
-      painter->drawText(QRectF(midPoint - offset, midPoint + offset), Qt::AlignCenter, QString("%1pi").arg(es->numElectrons()));
-      painter->restore();
-
-
+        midPoint += mapToParent(a->scenePos());
+      }
     }
-  }
 
+    if (es->numAtoms() < 2)
+      continue;
+    midPoint /= es->numAtoms();
+
+    painter->save();
+    painter->setPen(Qt::black);
+    QPointF offset(20.0, 20.0);
+    painter->drawText(QRectF(midPoint - offset, midPoint + offset), Qt::AlignCenter, QString("%1pi").arg(es->numElectrons()));
+    painter->restore();
+
+
+  }
 }
 
 QPolygonF Molecule::coordinates() const
@@ -785,7 +786,6 @@ void Molecule::updateElectronSystems()
       piEle->setAtoms(atoms);
       piEle->setNumElectrons(2);
       m_electronSystems.append(piEle);
-      //        qDebug() << "adding lone pair";
     }
 
     if (unboundElectrons % 2 == 1) {
@@ -793,7 +793,6 @@ void Molecule::updateElectronSystems()
       piEle->setAtoms(atoms);
       piEle->setNumElectrons(1);
       m_electronSystems.append(piEle);
-      qDebug() << "adding radical";
     }
   }
 

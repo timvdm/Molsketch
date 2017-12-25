@@ -231,16 +231,6 @@ namespace Molsketch {
     /** Event handler for changes of the molecule. Needed for rotation handling.*/
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
-    /**
-        * Update the internal ElectronSystem representation based on the current
-        * bond orders.
-        *
-        * 1. create a SigmaElectrons instance for each bond
-        * 2. create a PiElectrons instance for each
-        */
-    void updateElectronSystems();
-
-
     QList<const XmlObjectInterface *> children() const ;
     XmlObjectInterface *produceChild(const QString &name, const QString &type) ;
     void afterReadFinalization();
@@ -269,11 +259,15 @@ namespace Molsketch {
     /** A list of pointers to the bonds of the molecule. Used as internal representation. */
     moleculeItemListClass<Bond> m_bondList;
 
-    bool m_electronSystemsUpdate;
-    QList<ElectronSystem*> m_electronSystems;
 
     QString name;
+
+    void paintElectronSystems(QPainter *painter) const;
   public:
+    bool m_electronSystemsUpdate; // TODO remove
+    QList<ElectronSystem*> m_electronSystems;
+    void updateElectronSystems();
+
     Molecule& operator+=(const Molecule& other);
     Molecule operator+(const Molecule& other) const;
 
