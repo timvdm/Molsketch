@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
   MainWindow window;
   window.show();
 
-  ApplicationSettings appSettings(Molsketch::SettingsFacade::persistedSettings());
+  ApplicationSettings appSettings(Molsketch::SettingsFacade::persistedSettings(new QSettings));
 
   if (appSettings.latestReleaseNotesVersionShown() < appSettings.currentVersion()) {
     ReleaseNotesDialog().exec(); // TODO check that this still works

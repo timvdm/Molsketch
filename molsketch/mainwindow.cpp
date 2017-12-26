@@ -97,7 +97,7 @@
 using namespace Molsketch;
 
 MainWindow::MainWindow()
-  : settings(new ApplicationSettings(SettingsFacade::persistedSettings(), this)),
+  : settings(new ApplicationSettings(SettingsFacade::persistedSettings(new QSettings), this)),
     obabelLoader(new OBabelIfaceLoader(this))
 {
   // Creating the menus and actions

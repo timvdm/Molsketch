@@ -28,25 +28,28 @@ namespace Molsketch {
   SettingsFacade::SettingsFacade(QObject *parent) : QObject(parent){}
 
   class PersistedSettings : public SettingsFacade {
-    QSettings settings;
+    QSettings *settings;
   public:
-    explicit PersistedSettings(QObject *parent) : SettingsFacade(parent) {}
+    explicit PersistedSettings(QSettings *settings, QObject *parent) : SettingsFacade(parent), settings(settings) {
+      settings->setParent(this);
+    }
 
     void setValue(const QString &key, const QVariant &value) override {
-      settings.setValue(key, value);
+      settings->setValue(key, value);
     }
     QVariant value(const QString &key, const QVariant &defaultValue) const override {
-      return settings.value(key, defaultValue);
+      return settings->value(key, defaultValue);
     }
 
   protected:
     QStringList allKeys() const override {
-      return settings.allKeys();
+      return settings->allKeys();
     }
   };
 
-  SettingsFacade *SettingsFacade::persistedSettings(QObject *parent) {
-    return new PersistedSettings(parent);
+  SettingsFacade *SettingsFacade::persistedSettings(QSettings *settings, QObject *parent) {
+    if (!settings) return transientSettings(parent);
+    return new PersistedSettings(settings, parent);
   }
 
   SettingsFacade *SettingsFacade::cloneTransiently() const {

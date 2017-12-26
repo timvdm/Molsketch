@@ -22,6 +22,8 @@
 #include <QObject>
 #include <QVariant>
 
+class QSettings;
+
 namespace Molsketch {
 
   class SettingsFacade : public QObject
@@ -29,7 +31,7 @@ namespace Molsketch {
     Q_OBJECT
   public:
     static SettingsFacade *transientSettings(QObject *parent = 0);
-    static SettingsFacade *persistedSettings(QObject *parent = 0);
+    static SettingsFacade *persistedSettings(QSettings* settings, QObject *parent = 0);
     SettingsFacade *cloneTransiently() const;
     virtual void setValue(const QString& key, const QVariant& value) = 0;
     virtual QVariant value(const QString& key, const QVariant &defaultValue = QVariant()) const = 0;
