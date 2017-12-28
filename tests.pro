@@ -30,7 +30,8 @@ HEADERS += $$TESTS \
     signalcounter.h \
     modelindexsignalcounter.h \
     xmlassertion.h \
-    tempfileprovider.h
+    tempfileprovider.h \
+    qrealsignalcounter.h
 
 FORMS += $$originalForms
 
@@ -46,7 +47,8 @@ SOURCES += \
     programversionvaluetrait.cpp \
     instancecounters.cpp \
     xmlassertion.cpp \
-    tempfileprovider.cpp
+    tempfileprovider.cpp \
+    qrealsignalcounter.cpp
 RESOURCES += \
     $$PWD/../molsketch/*.qrc \
     $$PWD/../libmolsketch/tools/toolicons.qrc

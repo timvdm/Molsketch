@@ -22,6 +22,8 @@
 #include <tuple>
 #include <functional>
 #include <QList>
+#include <utilities.h>
+#include <QDebug>
 
 template<typename ... Types>
 class SignalCounter
@@ -37,6 +39,27 @@ public:
     payloads << std::make_tuple(newPayload...);
     if (callback) callback(newPayload...);
   }
+  void assertPayloads(const QList<std::tuple<Types...>>& expected) { QS_ASSERT_EQUALS(expected, payloads); }
 };
+
+template<typename ... Types>
+QDebug operator<<(QDebug debug, const std::tuple<Types...>& tuple) {
+  debug << "Tuple [";
+  printTupel(tuple, debug);
+  return debug << "]";
+}
+
+template<std::size_t I = 0, typename... TupelTypes>
+typename std::enable_if<I == sizeof...(TupelTypes)>::type
+  printTupel(const std::tuple<TupelTypes...>&, QDebug&) {}
+
+template<std::size_t I = 0, typename... TupelTypes>
+typename std::enable_if<I < sizeof...(TupelTypes)>::type
+  printTupel(const std::tuple<TupelTypes...>& tupel, QDebug& debug)
+  {
+    debug << std::get<I>(tupel);
+    if (I + 1 < sizeof...(TupelTypes)) debug << ", ";
+    printTupel<I + 1, TupelTypes...>(tupel, debug);
+  }
 
 #endif // SIGNALCOUNTER_H
