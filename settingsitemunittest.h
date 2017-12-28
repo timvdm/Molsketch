@@ -68,7 +68,7 @@ public:
     doubleSettingsItem.set(ALTERNATE_VALUE);
 
     TS_ASSERT_EQUALS(facade->value(KEY), ALTERNATE_VARIANT);
-    qrealSignalCounter->assertPayloads({std::make_tuple(ALTERNATE_VALUE)}); // TODO maybe offer a signal recorder w/o tuple?
+    qrealSignalCounter->assertPayloads({ALTERNATE_VALUE}); // TODO maybe offer a signal recorder w/o tuple?
   }
 
   void testSettingString() {
@@ -78,7 +78,7 @@ public:
     doubleSettingsItem.set(ALTERNATE_STRING);
 
     TS_ASSERT_EQUALS(facade->value(KEY), ALTERNATE_VARIANT);
-    qrealSignalCounter->assertPayloads({std::make_tuple(ALTERNATE_VALUE)}); // TODO maybe offer a signal recorder w/o tuple?
+    qrealSignalCounter->assertPayloads({ALTERNATE_VALUE}); // TODO maybe offer a signal recorder w/o tuple?
   }
 
   void testSettingVariant() {
@@ -88,7 +88,7 @@ public:
     doubleSettingsItem.set(ALTERNATE_VARIANT);
 
     TS_ASSERT_EQUALS(facade->value(KEY), ALTERNATE_VARIANT);
-    qrealSignalCounter->assertPayloads({std::make_tuple(ALTERNATE_VALUE)}); // TODO maybe offer a signal recorder w/o tuple?
+    qrealSignalCounter->assertPayloads({ALTERNATE_VALUE}); // TODO maybe offer a signal recorder w/o tuple?
   }
 
   void testProducingWidget() {

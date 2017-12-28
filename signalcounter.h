@@ -29,17 +29,26 @@ template<typename ... Types>
 class SignalCounter
 {
 private:
-  QList<std::tuple<Types...>> payloads;
+  using FirstType = typename std::tuple_element<0, std::tuple<Types...>>::type;
+  using Content = typename std::conditional<(sizeof...(Types) == 1), FirstType, std::tuple<Types...>>::type;
+  QList<Content> payloads;
 public:
   std::function<void(Types...)> callback;
-  std::tuple<Types...> getLatestPayload() const {Q_ASSERT(!payloads.empty()); return payloads.last();}
+  Content getLatestPayload() const {Q_ASSERT(!payloads.empty()); return payloads.last();}
   int count() const { return payloads.size(); }
-  std::tuple<Types...> getPayload(int index) { Q_ASSERT(index >= 0 && index < payloads.size()) ; return payloads[index]; }
-  void addPayload(Types... newPayload) {
+  Content getPayload(int index) { Q_ASSERT(index >= 0 && index < payloads.size()) ; return payloads[index]; }
+  template<typename T = Content>
+  typename std::enable_if<!std::is_same<T, FirstType>::value>::type addPayload(Types... newPayload) {
     payloads << std::make_tuple(newPayload...);
     if (callback) callback(newPayload...);
   }
-  void assertPayloads(const QList<std::tuple<Types...>>& expected) { QS_ASSERT_EQUALS(expected, payloads); }
+  template<typename T = Content>
+  typename std::enable_if<std::is_same<T, FirstType>::value>::type addPayload(Types... newPayload) {
+    payloads << std::get<0>(std::make_tuple(newPayload...));
+    if (callback) callback(newPayload...);
+  }
+
+  void assertPayloads(const QList<Content>& expected) { QS_ASSERT_EQUALS(expected, payloads); }
 };
 
 template<typename ... Types>
