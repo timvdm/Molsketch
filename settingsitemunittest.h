@@ -38,6 +38,18 @@ const QVariant ALTERNATE_VARIANT(4.5);
 class SettingsItemUnitTest : public CxxTest::TestSuite {
   SettingsFacade *facade;
   QRealSignalCounter *qrealSignalCounter;
+
+  template<typename T>
+  void performSetValueTest(const T& newValue) {
+    DoubleSettingsItem doubleSettingsItem(DESCRIPTION, KEY, facade);
+    QObject::connect(&doubleSettingsItem, SIGNAL(updated(qreal)), qrealSignalCounter, SLOT(record(qreal)));
+
+    doubleSettingsItem.set(newValue);
+
+    TS_ASSERT_EQUALS(facade->value(KEY), ALTERNATE_VARIANT);
+    qrealSignalCounter->assertPayloads({ALTERNATE_VALUE});
+  }
+
 public:
   void setUp() {
     facade = SettingsFacade::transientSettings();
@@ -56,33 +68,15 @@ public:
   }
 
   void testSettingValue() {
-    DoubleSettingsItem doubleSettingsItem(DESCRIPTION, KEY, facade);
-    QObject::connect(&doubleSettingsItem, SIGNAL(updated(qreal)), qrealSignalCounter, SLOT(record(qreal)));
-
-    doubleSettingsItem.set(ALTERNATE_VALUE);
-
-    TS_ASSERT_EQUALS(facade->value(KEY), ALTERNATE_VARIANT);
-    qrealSignalCounter->assertPayloads({ALTERNATE_VALUE});
+    performSetValueTest(ALTERNATE_VALUE);
   }
 
   void testSettingString() {
-    DoubleSettingsItem doubleSettingsItem(DESCRIPTION, KEY, facade);
-    QObject::connect(&doubleSettingsItem, SIGNAL(updated(qreal)), qrealSignalCounter, SLOT(record(qreal)));
-
-    doubleSettingsItem.set(ALTERNATE_STRING);
-
-    TS_ASSERT_EQUALS(facade->value(KEY), ALTERNATE_VARIANT);
-    qrealSignalCounter->assertPayloads({ALTERNATE_VALUE});
+    performSetValueTest(ALTERNATE_STRING);
   }
 
   void testSettingVariant() {
-    DoubleSettingsItem doubleSettingsItem(DESCRIPTION, KEY, facade);
-    QObject::connect(&doubleSettingsItem, SIGNAL(updated(qreal)), qrealSignalCounter, SLOT(record(qreal)));
-
-    doubleSettingsItem.set(ALTERNATE_VARIANT);
-
-    TS_ASSERT_EQUALS(facade->value(KEY), ALTERNATE_VARIANT);
-    qrealSignalCounter->assertPayloads({ALTERNATE_VALUE});
+    performSetValueTest(ALTERNATE_VARIANT);
   }
 
   void testProducingWidget() {
