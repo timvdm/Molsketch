@@ -32,9 +32,8 @@ namespace Molsketch {
     Q_OBJECT
     Q_DECLARE_PRIVATE(SettingsItem)
   public:
-    explicit SettingsItem(const char *description, const QString &key, SettingsFacade* facade, QObject *parent = 0);
+    explicit SettingsItem(const QString &key, SettingsFacade* facade, QObject *parent = 0);
     ~SettingsItem();
-    virtual QWidget* produceWidget(QObject *parent) const = 0;
     virtual QString serialize() const = 0;
     virtual QVariant getVariant() const = 0;
     virtual void set(const QVariant&) = 0;
@@ -46,8 +45,7 @@ namespace Molsketch {
   class DoubleSettingsItem : public SettingsItem {
     Q_OBJECT
   public:
-    DoubleSettingsItem(const char* description, const QString &key, SettingsFacade* facade, QObject *parent = 0);
-    QWidget *produceWidget(QObject *parent) const override;
+    DoubleSettingsItem(const QString &key, SettingsFacade* facade, QObject *parent = 0);
     QString serialize() const override;
     QVariant getVariant() const override;
     qreal get() const;
@@ -58,6 +56,52 @@ namespace Molsketch {
   signals:
     void updated(const qreal&);
   };
+
+  class BoolSettingsItem : public SettingsItem {
+    Q_OBJECT
+  public:
+    BoolSettingsItem(const QString &key, SettingsFacade* facade, QObject *parent = 0);
+    QString serialize() const override;
+    QVariant getVariant() const override;
+    bool get() const;
+    void set(const QVariant &) override;
+    void set(const QString &) override;
+  public slots:
+    void set(const bool&);
+  signals:
+    void updated(const bool&);
+  };
+
+  class ColorSettingsItem : public SettingsItem {
+    Q_OBJECT
+  public:
+    ColorSettingsItem(const QString& key, SettingsFacade *facade, QObject *parent = 0);
+    QString serialize() const override;
+    QVariant getVariant() const override;
+    QColor get() const;
+    void set(const QVariant &) override;
+    void set(const QString &) override;
+  public slots:
+    void set(const QColor&);
+  signals:
+    void updated(const QColor&);
+  };
+
+  class FontSettingsItem : public SettingsItem {
+    Q_OBJECT
+  public:
+    FontSettingsItem(const QString& key, SettingsFacade *facade, QObject *parent = 0);
+    QString serialize() const override;
+    QVariant getVariant() const override;
+    QFont get() const;
+    void set(const QVariant &) override;
+    void set(const QString &) override;
+  public slots:
+    void set(const QFont&);
+  signals:
+    void updated(const QFont&);
+  };
+
 } // namespace Molsketch
 
 #endif // MOLSKETCH_SETTINGSITEM_H

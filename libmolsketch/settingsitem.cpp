@@ -18,34 +18,30 @@
  ***************************************************************************/
 #include "settingsfacade.h"
 #include "settingsitem.h"
-#include <QDebug>
+#include "stringify.h"
+#include <QColor>
+#include <QFont>
 
 namespace Molsketch {
 
   struct SettingsItemPrivate {
     SettingsFacade *facade;
-    const char* description;
     QString key;
   };
 
-  SettingsItem::SettingsItem(const char *description, const QString& key, SettingsFacade *facade, QObject *parent)
+  SettingsItem::SettingsItem(const QString& key, SettingsFacade *facade, QObject *parent)
     : QObject(parent),
       d_ptr(new SettingsItemPrivate)
   {
     Q_D(SettingsItem);
     d->facade = facade;
-    d->description = description;
     d->key = key;
   }
 
   SettingsItem::~SettingsItem() {}
 
-  DoubleSettingsItem::DoubleSettingsItem(const char *description, const QString& key, SettingsFacade *facade, QObject *parent)
-    : SettingsItem(description, key, facade, parent) {}
-
-  QWidget *DoubleSettingsItem::produceWidget(QObject *parent) const {
-
-  }
+  DoubleSettingsItem::DoubleSettingsItem(const QString& key, SettingsFacade *facade, QObject *parent)
+    : SettingsItem(key, facade, parent) {}
 
   QString DoubleSettingsItem::serialize() const {
     return QString::number(get());
@@ -72,4 +68,87 @@ namespace Molsketch {
     set(QVariant(value));
   }
 
+  BoolSettingsItem::BoolSettingsItem(const QString &key, SettingsFacade *facade, QObject *parent)
+    : SettingsItem(key, facade, parent) {}
+
+  QString BoolSettingsItem::serialize() const {
+    return get() ? "True" : "False";
+  }
+
+  QVariant BoolSettingsItem::getVariant() const {
+    return QVariant(get());
+  }
+
+  bool BoolSettingsItem::get() const {
+    return d_ptr->facade->value(d_ptr->key).toBool();
+  }
+
+  void BoolSettingsItem::set(const QVariant &value) {
+    d_ptr->facade->setValue(d_ptr->key, value);
+    emit updated(get());
+  }
+
+  void BoolSettingsItem::set(const QString &value) {
+    set(value == "True" || value == "true");
+  }
+
+  void BoolSettingsItem::set(const bool &value) {
+    set(QVariant(value));
+  }
+
+  ColorSettingsItem::ColorSettingsItem(const QString &key, SettingsFacade *facade, QObject *parent)
+    : SettingsItem(key, facade, parent) {}
+
+  QString ColorSettingsItem::serialize() const {
+    return stringify(get());
+  }
+
+  QVariant ColorSettingsItem::getVariant() const {
+    return QVariant(get());
+  }
+
+  QColor ColorSettingsItem::get() const {
+    return d_ptr->facade->value(d_ptr->key).value<QColor>();
+  }
+
+  void ColorSettingsItem::set(const QVariant &value) {
+    d_ptr->facade->setValue(d_ptr->key, value);
+    emit updated(get());
+  }
+
+  void ColorSettingsItem::set(const QString &value) {
+    set(makeFromString<QColor>(value));
+  }
+
+  void ColorSettingsItem::set(const QColor &value) {
+    set(QVariant(value));
+  }
+
+  FontSettingsItem::FontSettingsItem(const QString &key, SettingsFacade *facade, QObject *parent)
+    : SettingsItem(key, facade, parent) {}
+
+  QString FontSettingsItem::serialize() const {
+    return stringify(get());
+  }
+
+  QVariant FontSettingsItem::getVariant() const {
+    return QVariant(get());
+  }
+
+  QFont FontSettingsItem::get() const {
+    return d_ptr->facade->value(d_ptr->key).value<QFont>();
+  }
+
+  void FontSettingsItem::set(const QVariant &value) {
+    d_ptr->facade->setValue(d_ptr->key, value);
+    emit updated(get());
+  }
+
+  void FontSettingsItem::set(const QString &value) {
+    set(makeFromString<QFont>(value));
+  }
+
+  void FontSettingsItem::set(const QFont &value) {
+    set(QVariant(value));
+  }
 } // namespace Molsketch
