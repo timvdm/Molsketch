@@ -28,7 +28,7 @@
 #include <constants.h>
 #include <molecule.h>
 #include <QList>
-#include "modelindexsignalcounter.h"
+#include "signalcounter.h"
 #include "noargsignalcounter.h"
 
 using namespace Molsketch;

@@ -24,6 +24,8 @@
 #include <QList>
 #include <utilities.h>
 #include <QDebug>
+#include <QObject>
+#include <QModelIndex>
 
 template<typename ... Types>
 class SignalCounter
@@ -70,5 +72,46 @@ typename std::enable_if<I < sizeof...(TupelTypes)>::type
     if (I + 1 < sizeof...(TupelTypes)) debug << ", ";
     printTupel<I + 1, TupelTypes...>(tupel, debug);
   }
+
+class QRealSignalCounter : public QObject, public SignalCounter<qreal> {
+  Q_OBJECT
+public:
+  explicit QRealSignalCounter(QObject *parent = 0);
+public slots:
+  void record(const qreal &value);
+};
+
+class BoolSignalCounter : public QObject, public SignalCounter<bool> {
+  Q_OBJECT
+public:
+  explicit BoolSignalCounter(QObject *parent = 0);
+public slots:
+  void record(const bool& value);
+};
+
+class ColorSignalCounter : public QObject, public SignalCounter<QColor> {
+  Q_OBJECT
+public:
+  explicit ColorSignalCounter(QObject *parent = 0);
+public slots:
+  void record(const QColor&value);
+};
+
+class FontSignalCounter : public QObject, public SignalCounter<QFont> {
+  Q_OBJECT
+public:
+  explicit FontSignalCounter(QObject *parent = 0);
+public slots:
+  void record(const QFont&value);
+};
+
+class ModelIndexSignalCounter : public QObject, public SignalCounter<QModelIndex, int, int>
+{
+  Q_OBJECT
+public:
+  explicit ModelIndexSignalCounter(QObject *parent = 0);
+public slots:
+  void record(const QModelIndex& index, int start, int end);
+};
 
 #endif // SIGNALCOUNTER_H

@@ -28,10 +28,8 @@ HEADERS += $$TESTS \
     programversionvaluetrait.h \
     noargsignalcounter.h \
     signalcounter.h \
-    modelindexsignalcounter.h \
     xmlassertion.h \
-    tempfileprovider.h \
-    qrealsignalcounter.h
+    tempfileprovider.h
 
 FORMS += $$originalForms
 
@@ -48,7 +46,7 @@ SOURCES += \
     instancecounters.cpp \
     xmlassertion.cpp \
     tempfileprovider.cpp \
-    qrealsignalcounter.cpp
+    signalcounter.cpp
 RESOURCES += \
     $$PWD/../molsketch/*.qrc \
     $$PWD/../libmolsketch/tools/toolicons.qrc
@@ -85,8 +83,7 @@ SOURCES += $$OUT_PWD/cxxrunner.cpp \
     qvariantvaluetrait.cpp \
     utilities.cpp \
     mocks.cpp \
-    noargsignalcounter.cpp \
-    modelindexsignalcounter.cpp
+    noargsignalcounter.cpp
 
 OTHER_FILES += \
     runnerTemplate.tpl \

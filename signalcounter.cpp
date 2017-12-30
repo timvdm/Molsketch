@@ -16,19 +16,18 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef QREALSIGNALCOUNTER_H
-#define QREALSIGNALCOUNTER_H
-
-#include <QObject>
 #include "signalcounter.h"
 
-class QRealSignalCounter : public QObject, public SignalCounter<qreal>
-{
-  Q_OBJECT
-public:
-  explicit QRealSignalCounter(QObject *parent = 0);
-public slots:
-  void record(const qreal &value);
-};
+#define SIGNAL_COUNTER_DEF(NAME, TYPE) NAME::NAME(QObject *parent) : QObject(parent) {} \
+  void NAME::record(const TYPE& value) { addPayload(value); }
 
-#endif // QREALSIGNALCOUNTER_H
+SIGNAL_COUNTER_DEF(QRealSignalCounter, qreal)
+SIGNAL_COUNTER_DEF(BoolSignalCounter, bool)
+SIGNAL_COUNTER_DEF(ColorSignalCounter, QColor)
+SIGNAL_COUNTER_DEF(FontSignalCounter, QFont)
+
+ModelIndexSignalCounter::ModelIndexSignalCounter(QObject *parent) : QObject(parent) {}
+
+void ModelIndexSignalCounter::record(const QModelIndex &index, int start, int end) {
+  addPayload(index, start, end);
+}
