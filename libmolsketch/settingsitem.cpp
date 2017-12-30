@@ -21,6 +21,7 @@
 #include "stringify.h"
 #include <QColor>
 #include <QFont>
+#include <QDebug>
 
 namespace Molsketch {
 
@@ -52,10 +53,13 @@ namespace Molsketch {
   }
 
   qreal DoubleSettingsItem::get() const {
-    return d_ptr->facade->value(d_ptr->key).toDouble();
+    qreal value = d_ptr->facade->value(d_ptr->key).toDouble();
+    qDebug() << "Obtained value" << value << "for setting" << d_ptr->key;
+    return value;
   }
 
   void DoubleSettingsItem::set(const QVariant &value) {
+    qInfo() << "Setting" << d_ptr->key << "to new value" << value;
     d_ptr->facade->setValue(d_ptr->key, value);
     emit updated(get());
   }
@@ -80,10 +84,13 @@ namespace Molsketch {
   }
 
   bool BoolSettingsItem::get() const {
-    return d_ptr->facade->value(d_ptr->key).toBool();
+    bool value = d_ptr->facade->value(d_ptr->key).toBool();
+    qDebug() << "Obtained value" << value << "for setting" << d_ptr->key;
+    return value;
   }
 
   void BoolSettingsItem::set(const QVariant &value) {
+    qInfo() << "Setting" << d_ptr->key << "to new value" << value;
     d_ptr->facade->setValue(d_ptr->key, value);
     emit updated(get());
   }
@@ -108,10 +115,13 @@ namespace Molsketch {
   }
 
   QColor ColorSettingsItem::get() const {
-    return d_ptr->facade->value(d_ptr->key).value<QColor>();
+    QColor value = d_ptr->facade->value(d_ptr->key).value<QColor>();
+    qDebug() << "Obtained value" << value << "for setting" << d_ptr->key;
+    return value;
   }
 
   void ColorSettingsItem::set(const QVariant &value) {
+    qInfo() << "Setting" << d_ptr->key << "to new value" << value;
     d_ptr->facade->setValue(d_ptr->key, value);
     emit updated(get());
   }
@@ -136,10 +146,13 @@ namespace Molsketch {
   }
 
   QFont FontSettingsItem::get() const {
-    return d_ptr->facade->value(d_ptr->key).value<QFont>();
+    QFont value = d_ptr->facade->value(d_ptr->key).value<QFont>();
+    qDebug() << "Obtained value" << value << "for setting" << d_ptr->key;
+    return value;
   }
 
   void FontSettingsItem::set(const QVariant &value) {
+    qInfo() << "Setting" << d_ptr->key << "to new value" << value;
     d_ptr->facade->setValue(d_ptr->key, value);
     emit updated(get());
   }
