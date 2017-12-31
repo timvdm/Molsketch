@@ -20,6 +20,7 @@
 #include <QSettings>
 #include "scenesettings.h"
 #include "settingsfacade.h"
+#include "settingsitem.h"
 
 Q_DECLARE_METATYPE(Molsketch::SceneSettings::MouseWheelMode)
 
@@ -44,13 +45,70 @@ namespace Molsketch {
   class SceneSettingsPrivate {
     Q_DISABLE_COPY(SceneSettingsPrivate)
   public:
-    SceneSettingsPrivate(SettingsFacade *facade) : settingsFacade(facade){}
     SettingsFacade *settingsFacade;
+    SceneSettings *parent;
+    DoubleSettingsItem *bondAngle,
+    *gridLineWidth,
+    *verticalGridSpacing,
+    *horizontalGridSpacing,
+    *radicalDiameter,
+    *lonePairLength,
+    *lonePairLineWidth,
+    *bondWidth,
+    *bondLength;
+
+    BoolSettingsItem *carbonVisible,
+    *electronSystemsVisible,
+    *chargeVisible;
+
+    ColorSettingsItem *gridColor;
+    FontSettingsItem *atomFont;
+
+    QList<SettingsItem*> settingsItems;
+
+    template<typename ITEM, typename VALUE>
+    ITEM* initializeSetting(const QString& key, const VALUE& defaultValue) {
+      if (!settingsFacade->value(key).isValid())
+        settingsFacade->setValue(key, defaultValue);
+      ITEM* result = new ITEM(key, settingsFacade, parent);
+      settingsItems << result;
+      return result;
+    }
+
+    DoubleSettingsItem* initializeDoubleSetting(const QString& key, const qreal& defaultValue) {
+      return initializeSetting<DoubleSettingsItem, qreal>(key, defaultValue);
+    }
+
+    BoolSettingsItem* initializeBoolSetting(const QString& key, const bool& defaultValue) {
+      return initializeSetting<BoolSettingsItem, bool>(key, defaultValue);
+    }
+
+    SceneSettingsPrivate(SettingsFacade *facade, SceneSettings* parent)
+      : settingsFacade(facade),
+        parent(parent)
+    {
+      bondAngle = initializeDoubleSetting(BOND_ANGLE, 30);
+      gridLineWidth = initializeDoubleSetting(GRID_LINEWIDTH, 0);
+      verticalGridSpacing = initializeDoubleSetting(VERTICAL_GRID_SPACING, 10);
+      horizontalGridSpacing = initializeDoubleSetting(HORIZONTAL_GRID_SPACING, 10);
+      radicalDiameter = initializeDoubleSetting(RADICAL_DIAMETER, 3);
+      lonePairLength = initializeDoubleSetting(LONE_PAIR_LENGTH, 7);
+      lonePairLineWidth = initializeDoubleSetting(LONE_PAIR_LINE_WIDTH, 1);
+      bondWidth = initializeDoubleSetting(BOND_WIDTH, 1);
+      bondLength = initializeDoubleSetting(BOND_LENGTH, 40);
+
+      carbonVisible = initializeBoolSetting(CARBON_VISIBLE, false);
+      electronSystemsVisible = initializeBoolSetting(ELECTRON_SYSTEMS_VISIBLE, false);
+      chargeVisible = initializeBoolSetting(CHARGE_VISIBLE, false);
+
+      gridColor = initializeSetting<ColorSettingsItem, QColor>(GRID_COLOR, QColor(Qt::gray));
+      atomFont = initializeSetting<FontSettingsItem, QFont>(ATOM_FONT, QFont());
+    }
   };
 
   SceneSettings::SceneSettings(SettingsFacade* facade, QObject *parent)
     : QObject(parent),
-      d_ptr(new SceneSettingsPrivate(facade))
+      d_ptr(new SceneSettingsPrivate(facade, this))
   {
     Q_D(SceneSettings);
     d->settingsFacade->setParent(this);
@@ -58,34 +116,36 @@ namespace Molsketch {
 
   SceneSettings::~SceneSettings() {}
 
-#define BOOL_PROPERTY(NAME, CONFIGSTRING) \
-  void SceneSettings::set##NAME(const bool& value) { settingsFacade().setValue(CONFIGSTRING, value); \
-  emit settingsChanged();  } \
-  bool SceneSettings::is##NAME() const { return settingsFacade().value(CONFIGSTRING).toBool(); }
+#define PROPERTY_DEF(TYPE, NAME) \
+  const TYPE* SceneSettings::NAME() const { return d_ptr->NAME; } \
+  TYPE* SceneSettings::NAME() { return d_ptr->NAME; }
 
-#define REAL_PROPERTY(NAME, CONFIGSTRING, DEFAULT) \
-  void SceneSettings::set##NAME(const qreal& value) { settingsFacade().setValue(CONFIGSTRING, value);  \
-  emit settingsChanged(); } \
-  qreal SceneSettings::get##NAME() const { return settingsFacade().value(CONFIGSTRING, DEFAULT).toReal(); }
-
-  BOOL_PROPERTY(CarbonVisible, CARBON_VISIBLE)
-  BOOL_PROPERTY(ChargeVisible, CHARGE_VISIBLE)
-  BOOL_PROPERTY(ElectronSystemsVisible, ELECTRON_SYSTEMS_VISIBLE)
-
-  PROPERTY(AtomFont, QFont, ATOM_FONT)
-  PROPERTY_DEF(GridLineColor, QColor, GRID_COLOR, QColor(Qt::gray))
-
-  REAL_PROPERTY(BondLength, BOND_LENGTH, 40)
-  REAL_PROPERTY(BondWidth, BOND_WIDTH, 1)
-  REAL_PROPERTY(BondAngle, BOND_ANGLE, 30)
-  REAL_PROPERTY(LonePairLineWidth, LONE_PAIR_LINE_WIDTH, 1)
-  REAL_PROPERTY(LonePairLength, LONE_PAIR_LENGTH, 7)
-  REAL_PROPERTY(RadicalDiameter, RADICAL_DIAMETER, 3)
-  REAL_PROPERTY(HorizontalGridSpacing, HORIZONTAL_GRID_SPACING, 10)
-  REAL_PROPERTY(VerticalGridSpacing, VERTICAL_GRID_SPACING, 10)
-  REAL_PROPERTY(GridLinewidth, GRID_LINEWIDTH, 0)
+  PROPERTY_DEF(FontSettingsItem, atomFont)
+  PROPERTY_DEF(ColorSettingsItem, gridColor)
 
   PROPERTY(MouseWheelMode, SceneSettings::MouseWheelMode, MOUSE_CYCLE_MODE)
+
+#define BOOL_PROPERTY_DEF(NAME) \
+  const BoolSettingsItem* SceneSettings::NAME() const { return d_ptr->NAME; } \
+  BoolSettingsItem* SceneSettings::NAME() { return d_ptr->NAME; }
+
+  BOOL_PROPERTY_DEF(carbonVisible)
+  BOOL_PROPERTY_DEF(electronSystemsVisible)
+  BOOL_PROPERTY_DEF(chargeVisible)
+
+#define REAL_PROPERTY_DEF(NAME) \
+  const DoubleSettingsItem* SceneSettings::NAME() const { return d_ptr->NAME; } \
+  DoubleSettingsItem* SceneSettings::NAME() { return d_ptr->NAME; }
+
+  REAL_PROPERTY_DEF(bondAngle)
+  REAL_PROPERTY_DEF(gridLineWidth)
+  REAL_PROPERTY_DEF(verticalGridSpacing)
+  REAL_PROPERTY_DEF(horizontalGridSpacing)
+  REAL_PROPERTY_DEF(radicalDiameter)
+  REAL_PROPERTY_DEF(lonePairLength)
+  REAL_PROPERTY_DEF(lonePairLineWidth)
+  REAL_PROPERTY_DEF(bondWidth)
+  REAL_PROPERTY_DEF(bondLength)
 
   SettingsFacade &SceneSettings::settingsFacade() {
     Q_D(SceneSettings);
@@ -97,5 +157,4 @@ namespace Molsketch {
     Q_D(const SceneSettings);
     return *(d->settingsFacade);
   }
-
 } // namespace Molsketch

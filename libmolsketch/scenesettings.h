@@ -28,6 +28,10 @@ namespace Molsketch {
 
   class SettingsFacade;
   class SceneSettingsPrivate;
+  class DoubleSettingsItem;
+  class BoolSettingsItem;
+  class ColorSettingsItem;
+  class FontSettingsItem;
 
   class SceneSettings : public QObject
   {
@@ -37,36 +41,37 @@ namespace Molsketch {
   public:
     explicit SceneSettings(SettingsFacade *facade, QObject *parent = 0);
     virtual ~SceneSettings();
-    void setCarbonVisible(const bool&);
-    bool isCarbonVisible() const;
-    void setChargeVisible(const bool&);
-    bool isChargeVisible() const;
-    void setElectronSystemsVisible(const bool&);
-    bool isElectronSystemsVisible() const;
-    void setAtomFont(const QFont&);
-    QFont getAtomFont() const;
-    void setBondLength(const qreal&);
-    qreal getBondLength() const;
-    void setBondWidth(const qreal&);
-    qreal getBondWidth() const;
-    void setBondAngle(const qreal&);
-    qreal getBondAngle() const;
-    void setLonePairLineWidth(const qreal&);
-    qreal getLonePairLineWidth() const;
-    void setLonePairLength(const qreal&);
-    qreal getLonePairLength() const;
-    void setRadicalDiameter(const qreal&);
-    qreal getRadicalDiameter() const;
-    void setHorizontalGridSpacing(const qreal&);
-    qreal getHorizontalGridSpacing() const;
-    void setVerticalGridSpacing(const qreal&);
-    qreal getVerticalGridSpacing() const;
-    void setGridLinewidth(const qreal&);
-    qreal getGridLinewidth() const;
-    void setGridLineColor(const QColor&);
-    QColor getGridLineColor() const;
 
-    enum MouseWheelMode {
+#define BOOL_PROPERTY_DECL(NAME) \
+  const BoolSettingsItem* NAME() const; \
+  BoolSettingsItem* NAME();
+
+    BOOL_PROPERTY_DECL(carbonVisible)
+    BOOL_PROPERTY_DECL(electronSystemsVisible)
+    BOOL_PROPERTY_DECL(chargeVisible)
+
+#define REAL_PROPERTY_DECL(NAME) \
+  const DoubleSettingsItem* NAME() const; \
+  DoubleSettingsItem* NAME();
+
+    REAL_PROPERTY_DECL(bondAngle)
+    REAL_PROPERTY_DECL(gridLineWidth)
+    REAL_PROPERTY_DECL(verticalGridSpacing)
+    REAL_PROPERTY_DECL(horizontalGridSpacing)
+    REAL_PROPERTY_DECL(radicalDiameter)
+    REAL_PROPERTY_DECL(lonePairLength)
+    REAL_PROPERTY_DECL(lonePairLineWidth)
+    REAL_PROPERTY_DECL(bondWidth)
+    REAL_PROPERTY_DECL(bondLength)
+
+#define PROPERTY_DECL(TYPE, NAME) \
+  const TYPE* NAME() const; \
+  TYPE* NAME();
+
+    PROPERTY_DECL(FontSettingsItem, atomFont)
+    PROPERTY_DECL(ColorSettingsItem, gridColor)
+
+    enum MouseWheelMode { // TODO migrate this. This is not actually part of the scene settings, but rather the application settings
       Unset,
       CycleTools,
       Zoom,

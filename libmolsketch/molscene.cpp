@@ -73,6 +73,7 @@
 #include "textitem.h"
 #include "constants.h"
 #include "settingsfacade.h"
+#include "settingsitem.h"
 
 #ifdef QT_STATIC_BUILD
 inline void initToolBarIcons() { Q_INIT_RESOURCE(toolicons); }
@@ -208,10 +209,10 @@ namespace Molsketch {
 
   void MolScene::initiializeGrid()
   {
-    d->Grid->setHorizontalInterval(d->settings->getHorizontalGridSpacing());
-    d->Grid->setVerticalInterval(d->settings->getVerticalGridSpacing());
-    d->Grid->setLinewidth(d->settings->getGridLinewidth());
-    d->Grid->setColor(d->settings->getGridLineColor());
+    d->Grid->setHorizontalInterval(d->settings->horizontalGridSpacing()->get());  // FIXME connect signal/slot
+    d->Grid->setVerticalInterval(d->settings->verticalGridSpacing()->get());  // FIXME connect signal/slot
+    d->Grid->setLinewidth(d->settings->gridLineWidth()->get()); // FIXME connect signal/slot
+    d->Grid->setColor(d->settings->gridColor()->get()); // FIXME connect signal/slot
   }
 
   void MolScene::initialize(SceneSettings* settings)
@@ -268,19 +269,19 @@ namespace Molsketch {
   }
 
   QFont MolScene::getAtomFont() const {
-    return d->settings->getAtomFont();
+    return d->settings->atomFont()->get(); // FIXME connect signal/slot
   }
 
   qreal MolScene::getRadicalDiameter() const {
-    return d->settings->getRadicalDiameter();
+    return d->settings->radicalDiameter()->get(); // FIXME connect signal/slot
   }
 
   qreal MolScene::getLonePairLength() const {
-    return d->settings->getLonePairLength();
+    return d->settings->lonePairLength()->get(); // FIXME connect signal/slot
   }
 
   qreal MolScene::getLonePairLineWidth() const {
-    return d->settings->getLonePairLineWidth();
+    return d->settings->lonePairLineWidth()->get(); // FIXME connect signal/slot
   }
 
   QString MolScene::mimeType()

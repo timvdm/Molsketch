@@ -29,6 +29,7 @@
 #include <QFontDialog>
 #include <molscene.h>
 #include <scenesettings.h>
+#include <settingsitem.h>
 
 #include "settingsdialog.h"
 
@@ -59,26 +60,26 @@ void SettingsDialog::setInitialValues()
   ui.spinBoxAutoSave->setValue(settings->autoSaveInterval()/60000);
 
 
-  if (settings->isCarbonVisible())
+  if (settings->carbonVisible()->get()) // FIXME connect signal/slot
     ui.checkBoxShowCarbon->setCheckState(Qt::Checked);
-  if (settings->isChargeVisible())
+  if (settings->chargeVisible()->get()) // FIXME connect signal/slot
     ui.checkBoxShowValency->setCheckState(Qt::Checked);
-  if (settings->isElectronSystemsVisible())
+  if (settings->electronSystemsVisible()->get()) // FIXME connect signal/slot
     ui.checkBoxShowES->setCheckState(Qt::Checked);
 
 
-  QFont atomFont(settings->getAtomFont());
+  QFont atomFont(settings->atomFont()->get()); // FIXME connect signal/slot
   ui.doubleSpinBoxFontSize->setValue(atomFont.pointSizeF());
   ui.fontComboBox->setCurrentFont(atomFont);
 
-  ui.lineEditBondLength->setText(QString::number(settings->getBondLength()));
-  ui.doubleSpinBoxBondWidth->setValue(settings->getBondWidth());
-  ui.spinBoxBondAngle->setValue(settings->getBondAngle());
+  ui.lineEditBondLength->setText(QString::number(settings->bondLength()->get())); // FIXME connect signal/slot
+  ui.doubleSpinBoxBondWidth->setValue(settings->bondWidth()->get()); // FIXME connect signal/slot
+  ui.spinBoxBondAngle->setValue(settings->bondAngle()->get()); // FIXME connect signal/slot
 
-  ui.gridHorizontalSpacing->setValue(settings->getHorizontalGridSpacing());
-  ui.gridVerticalSpacing->setValue(settings->getVerticalGridSpacing());
-  ui.gridLineColor->setColor(settings->getGridLineColor());
-  ui.gridLinewidth->setValue(settings->getGridLinewidth());
+  ui.gridHorizontalSpacing->setValue(settings->horizontalGridSpacing()->get()); // FIXME connect signal/slot
+  ui.gridVerticalSpacing->setValue(settings->verticalGridSpacing()->get()); // FIXME connect signal/slot
+  ui.gridLineColor->setColor(settings->gridColor()->get()); // FIXME connect signal/slot
+  ui.gridLinewidth->setValue(settings->gridLineWidth()->get()); // FIXME connect signal/slot
 
   ui.libraries->clear();
   ui.libraries->addItems(settings->getLibraries());
@@ -102,22 +103,22 @@ void SettingsDialog::applyChanges()
   settings->setAutoSaveInterval(ui.spinBoxAutoSave->value()*60000);
 
   // Atom settings
-  settings->setCarbonVisible(ui.checkBoxShowCarbon->isChecked());
-  settings->setChargeVisible(ui.checkBoxShowValency->isChecked());
-  settings->setElectronSystemsVisible(ui.checkBoxShowES->isChecked());
+  settings->carbonVisible()->set(ui.checkBoxShowCarbon->isChecked()); // FIXME connect signal/slot
+  settings->chargeVisible()->set(ui.checkBoxShowValency->isChecked()); // FIXME connect signal/slot
+  settings->electronSystemsVisible()->set(ui.checkBoxShowES->isChecked()); // FIXME connect signal/slot
   QFont font = ui.fontComboBox->currentFont();
   font.setPointSizeF(ui.doubleSpinBoxFontSize->value());
-  settings->setAtomFont(font);
+  settings->atomFont()->set(font); // FIXME connect signal/slot
 
   // MsKBond settings
-  settings->setBondLength(ui.lineEditBondLength->text().toDouble());
-  settings->setBondWidth(ui.doubleSpinBoxBondWidth->value());
-  settings->setBondAngle(ui.spinBoxBondAngle->value());
+  settings->bondLength()->set(ui.lineEditBondLength->text().toDouble()); // FIXME connect signal/slot
+  settings->bondWidth()->set(ui.doubleSpinBoxBondWidth->value()); // FIXME connect signal/slot
+  settings->bondAngle()->set(ui.spinBoxBondAngle->value()); // FIXME connect signal/slot
 
-  settings->setHorizontalGridSpacing(ui.gridHorizontalSpacing->value());
-  settings->setVerticalGridSpacing(ui.gridVerticalSpacing->value());
-  settings->setGridLineColor(ui.gridLineColor->getColor());
-  settings->setGridLinewidth(ui.gridLinewidth->value());
+  settings->horizontalGridSpacing()->set(ui.gridHorizontalSpacing->value()); // FIXME connect signal/slot
+  settings->verticalGridSpacing()->set(ui.gridVerticalSpacing->value()); // FIXME connect signal/slot
+  settings->gridColor()->set(ui.gridLineColor->getColor()); // FIXME connect signal/slot
+  settings->gridLineWidth()->set(ui.gridLinewidth->value()); // FIXME connect signal/slot
 
   // Library settings
   QStringList libraries;
