@@ -145,7 +145,7 @@ public:
     facade->setValue(COLOR_KEY, COLOR_VALUE);
     facade->setValue(FONT_KEY, FONT_VALUE);
 
-    qrealSignalCounter = new QRealSignalCounter(facade); // TODO add callback to simulate recursive call from receiver
+    qrealSignalCounter = new QRealSignalCounter(facade);
     boolSignalCounter = new BoolSignalCounter(facade);
     colorSignalCounter = new ColorSignalCounter(facade);
     fontSignalCounter = new FontSignalCounter(facade);
