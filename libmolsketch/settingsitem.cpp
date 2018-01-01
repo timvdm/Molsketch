@@ -28,6 +28,7 @@ namespace Molsketch {
   struct SettingsItemPrivate {
     SettingsFacade *facade;
     QString key;
+    bool locked;
   };
 
   SettingsItem::SettingsItem(const QString& key, SettingsFacade *facade, QObject *parent)
@@ -37,6 +38,7 @@ namespace Molsketch {
     Q_D(SettingsItem);
     d->facade = facade;
     d->key = key;
+    d->locked = false;
   }
 
   SettingsItem::~SettingsItem() {}
@@ -59,9 +61,12 @@ namespace Molsketch {
   }
 
   void DoubleSettingsItem::set(const QVariant &value) {
+    if (d_ptr->locked) return;
+    d_ptr->locked = true;
     qInfo() << "Setting" << d_ptr->key << "to new value" << value;
     d_ptr->facade->setValue(d_ptr->key, value);
     emit updated(get());
+    d_ptr->locked = false;
   }
 
   void DoubleSettingsItem::set(const QString &value) {
@@ -90,9 +95,12 @@ namespace Molsketch {
   }
 
   void BoolSettingsItem::set(const QVariant &value) {
+    if (d_ptr->locked) return;
+    d_ptr->locked = true;
     qInfo() << "Setting" << d_ptr->key << "to new value" << value;
     d_ptr->facade->setValue(d_ptr->key, value);
     emit updated(get());
+    d_ptr->locked = false;
   }
 
   void BoolSettingsItem::set(const QString &value) {
@@ -121,9 +129,12 @@ namespace Molsketch {
   }
 
   void ColorSettingsItem::set(const QVariant &value) {
+    if (d_ptr->locked) return;
+    d_ptr->locked = true;
     qInfo() << "Setting" << d_ptr->key << "to new value" << value;
     d_ptr->facade->setValue(d_ptr->key, value);
     emit updated(get());
+    d_ptr->locked = false;
   }
 
   void ColorSettingsItem::set(const QString &value) {
@@ -152,9 +163,12 @@ namespace Molsketch {
   }
 
   void FontSettingsItem::set(const QVariant &value) {
+    if (d_ptr->locked) return;
+    d_ptr->locked = true;
     qInfo() << "Setting" << d_ptr->key << "to new value" << value;
     d_ptr->facade->setValue(d_ptr->key, value);
     emit updated(get());
+    d_ptr->locked = false;
   }
 
   void FontSettingsItem::set(const QString &value) {
