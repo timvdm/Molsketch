@@ -45,18 +45,19 @@ namespace Molsketch {
 
   SettingsItem::~SettingsItem() {}
 
-  QXmlStreamReader &SettingsItem::readXml(QXmlStreamReader &in) {
-    set(in.attributes().value(XML_VALUE_ATTRIBUTE).toString());
-    do in.readNext(); while (!in.isEndElement());
-    return in;
+  QString SettingsItem::xmlName() const {
+    Q_D(const SettingsItem);
+    return d->key;
   }
 
-  QXmlStreamWriter &SettingsItem::writeXml(QXmlStreamWriter &out) const {
-    Q_D(const SettingsItem);
-    out.writeStartElement(d->key);
-    out.writeAttribute(XML_VALUE_ATTRIBUTE, serialize());
-    out.writeEndElement();
-    return out;
+  void SettingsItem::readAttributes(const QXmlStreamAttributes &attributes) {
+    set(attributes.value(XML_VALUE_ATTRIBUTE).toString());
+  }
+
+  QXmlStreamAttributes SettingsItem::xmlAttributes() const {
+    QXmlStreamAttributes result;
+    result.append(XML_VALUE_ATTRIBUTE, serialize());
+    return result;
   }
 
   DoubleSettingsItem::DoubleSettingsItem(const QString& key, SettingsFacade *facade, QObject *parent)

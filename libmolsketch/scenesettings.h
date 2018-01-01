@@ -19,6 +19,8 @@
 #ifndef MOLSKETCH_SCENESETTINGS_H
 #define MOLSKETCH_SCENESETTINGS_H
 
+#include "abstractxmlobject.h"
+
 #include <QObject>
 #include <QColor>
 
@@ -33,7 +35,7 @@ namespace Molsketch {
   class ColorSettingsItem;
   class FontSettingsItem;
 
-  class SceneSettings : public QObject
+  class SceneSettings : public QObject, public abstractXmlObject
   {
     Q_OBJECT
     Q_DECLARE_PRIVATE(SceneSettings)
@@ -41,6 +43,8 @@ namespace Molsketch {
   public:
     explicit SceneSettings(SettingsFacade *facade, QObject *parent = 0);
     virtual ~SceneSettings();
+    QString xmlName() const override;
+    static QString xmlClassName();
 
 #define BOOL_PROPERTY_DECL(NAME) \
   const BoolSettingsItem* NAME() const; \
@@ -83,6 +87,8 @@ namespace Molsketch {
     void settingsChanged();
   protected:
     SettingsFacade &settingsFacade();
+    QList<const XmlObjectInterface *> children() const override;
+    XmlObjectInterface *produceChild(const QString &name, const QString &type) override;
   };
 
 } // namespace Molsketch

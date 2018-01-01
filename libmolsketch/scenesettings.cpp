@@ -116,6 +116,12 @@ namespace Molsketch {
 
   SceneSettings::~SceneSettings() {}
 
+  QString SceneSettings::xmlName() const {
+    return xmlClassName();
+  }
+
+  QString SceneSettings::xmlClassName() { return "settings"; }
+
 #define PROPERTY_DEF(TYPE, NAME) \
   const TYPE* SceneSettings::NAME() const { return d_ptr->NAME; } \
   TYPE* SceneSettings::NAME() { return d_ptr->NAME; }
@@ -155,6 +161,23 @@ namespace Molsketch {
   SettingsFacade &SceneSettings::settingsFacade() {
     Q_D(SceneSettings);
     return *(d->settingsFacade);
+  }
+
+  QList<const XmlObjectInterface *> SceneSettings::children() const {
+    Q_D(const SceneSettings);
+    QList<const XmlObjectInterface *> result;
+    for (auto settingsItem : d->settingsItems)
+      result << dynamic_cast<const XmlObjectInterface *>(settingsItem);
+    return result;
+  }
+
+  XmlObjectInterface *SceneSettings::produceChild(const QString &name, const QString &type) {
+    Q_UNUSED(type)
+    Q_D(SceneSettings);
+    for (auto settingsItem : d->settingsItems)
+      if (settingsItem->xmlName() == name)
+        return settingsItem;
+    return nullptr;
   }
 
   const SettingsFacade &SceneSettings::settingsFacade() const

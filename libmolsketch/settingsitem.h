@@ -29,21 +29,22 @@ namespace Molsketch {
   class SettingsFacade;
   class SettingsItemPrivate;
 
-  class SettingsItem : public QObject, public XmlObjectInterface
+  class SettingsItem : public QObject, public abstractXmlObject
   {
     Q_OBJECT
     Q_DECLARE_PRIVATE(SettingsItem)
   public:
     explicit SettingsItem(const QString &key, SettingsFacade* facade, QObject *parent = 0);
     ~SettingsItem();
-    virtual QString serialize() const = 0;
+    virtual QString serialize() const = 0; // TODO check visibility
     virtual QVariant getVariant() const = 0;
     virtual void set(const QVariant&) = 0;
     virtual void set(const QString&) = 0;
-    QXmlStreamReader &readXml(QXmlStreamReader &in) override;
-    QXmlStreamWriter &writeXml(QXmlStreamWriter &out) const override;
+    QString xmlName() const override;
   protected:
     QScopedPointer<SettingsItemPrivate> d_ptr;
+    void readAttributes(const QXmlStreamAttributes &attributes) override;
+    QXmlStreamAttributes xmlAttributes() const override;
   };
 
   class DoubleSettingsItem : public SettingsItem {
