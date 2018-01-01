@@ -66,19 +66,18 @@ namespace Molsketch {
       MoveItemId,
       MoleculeNameId,
       CoordinateId,
+      SettingsItemId,
     };
 
-
     template<class ItemType, class OwnType, int CommandId = -1>
-    class Command : public QUndoCommand { // TODO unit test
+    class Command : public QUndoCommand {
       ItemType* item;
     protected:
       virtual ItemType* getItem() const { return item; }
-      virtual MolScene* getScene() const { ItemType* actualItem = getItem();
-                                           return actualItem ? dynamic_cast<MolScene*>(actualItem->scene()) : nullptr; }
+      virtual MolScene* getScene() const = 0;
     public:
       explicit Command(const QString& text = "", QUndoCommand* parent = 0)
-        : Command(0, text, parent) {}
+        : Command(nullptr, text, parent) {}
       explicit Command(ItemType* item, const QString& text = "", QUndoCommand* parent = 0)
         : QUndoCommand(text, parent), item(item) {}
       void undo() override { redo(); }
@@ -100,19 +99,31 @@ namespace Molsketch {
       }
     };
 
+    template<class ItemType, class OwnType, int CommandId = -1>
+    class ItemCommand : public Command<ItemType, OwnType, CommandId> { // TODO unit test
+    protected: // TODO make sure that ItemType inherits graphicsItem
+      virtual MolScene* getScene() const { ItemType* actualItem = this->getItem();
+                                           return actualItem ? dynamic_cast<MolScene*>(actualItem->scene()) : nullptr; }
+    public:
+      explicit ItemCommand(const QString& text = "", QUndoCommand* parent = 0)
+        : ItemCommand(0, text, parent) {}
+      explicit ItemCommand(ItemType* item, const QString& text = "", QUndoCommand* parent = 0)
+        : Command<ItemType, OwnType, CommandId>(item, text, parent) {}
+    };
+
     template<class ItemClass,
              class ItemPropertyType,
              void (ItemClass::*setFunction)(const ItemPropertyType&),
              ItemPropertyType (ItemClass::*getFunction)()const,
              int CommandId = -1>
-    class setItemPropertiesCommand : public Command<ItemClass, setItemPropertiesCommand<ItemClass, ItemPropertyType, setFunction, getFunction, CommandId>, CommandId>
+    class setItemPropertiesCommand : public ItemCommand<ItemClass, setItemPropertiesCommand<ItemClass, ItemPropertyType, setFunction, getFunction, CommandId>, CommandId>
     {
     private:
       ItemPropertyType type;
       typedef setItemPropertiesCommand<ItemClass, ItemPropertyType, setFunction, getFunction, CommandId> ownType;
     public:
       setItemPropertiesCommand(ItemClass *item, ItemPropertyType newType, const QString& text = "", QUndoCommand *parent = 0)
-        : Command<ItemClass, ownType, CommandId>(item, text, parent),
+        : ItemCommand<ItemClass, ownType, CommandId>(item, text, parent),
           type(newType){}
       void redo() override {
         ItemPropertyType temp = (this->getItem()->*getFunction)();
@@ -127,14 +138,14 @@ namespace Molsketch {
              void (ItemClass::*setter)(ItemProperty),
              ItemProperty (ItemClass::*getter)() const,
              int CommandId = -1>
-    class SetItemProperty : public Command<ItemClass, SetItemProperty<ItemClass, ItemProperty, setter, getter, CommandId>, CommandId >
+    class SetItemProperty : public ItemCommand<ItemClass, SetItemProperty<ItemClass, ItemProperty, setter, getter, CommandId>, CommandId >
     {
     private:
       ItemProperty value;
       typedef SetItemProperty<ItemClass, ItemProperty, setter, getter, CommandId> ownType;
     public:
       SetItemProperty(ItemClass *item, ItemProperty value, const QString& text = "", QUndoCommand *parent = 0)
-        : Command<ItemClass, ownType, CommandId>(item, text, parent), value(value) {}
+        : ItemCommand<ItemClass, ownType, CommandId>(item, text, parent), value(value) {}
       void redo() override {
         ItemProperty temp = (this->getItem()->*getter)();
         (this->getItem()->*setter)(value);
@@ -143,7 +154,7 @@ namespace Molsketch {
       }
     };
 
-    class AddAtom : public Command<Molecule, AddAtom> {
+    class AddAtom : public ItemCommand<Molecule, AddAtom> {
     public:
       AddAtom(Atom* newAtom, Molecule* molecule, const QString & text = "");
       ~AddAtom();
@@ -154,7 +165,7 @@ namespace Molsketch {
       Molecule* molecule;
     };
 
-    class ChildItemCommand : public Command<QGraphicsItem, ChildItemCommand> {
+    class ChildItemCommand : public ItemCommand<QGraphicsItem, ChildItemCommand> {
     public:
       ChildItemCommand(QGraphicsItem* parent, QGraphicsItem* child, const QString& text = "");
       virtual ~ChildItemCommand();
@@ -227,7 +238,7 @@ namespace Molsketch {
         : setItemPropertiesCommand(bond, qMakePair(bond->endAtom(), bond->beginAtom()), text, parent ) {}
     };
 
-    class ItemAction : public Command<QGraphicsItem, ItemAction> {
+    class ItemAction : public ItemCommand<QGraphicsItem, ItemAction> {
       ItemAction(QGraphicsItem* newItem, MolScene* addScene, const QString & text = "");
     private:
       ~ItemAction();

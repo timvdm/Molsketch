@@ -20,6 +20,8 @@
 #define MOLSKETCH_SETTINGSITEM_H
 #include <QObject>
 
+#include "commands.h"
+
 class QWidget;
 
 namespace Molsketch {
@@ -101,6 +103,29 @@ namespace Molsketch {
   signals:
     void updated(const QFont&);
   };
+
+  template<typename ITEM, typename T>
+  class SettingsItemUndoCommand : public Commands::Command<ITEM, SettingsItemUndoCommand<ITEM, T>, Commands::SettingsItemId> {
+    MolScene *scene;
+    T newValue;
+  public:
+    SettingsItemUndoCommand(ITEM *item, const T &newValue, const QString &text = QString(), MolScene *scene = 0)
+      : Commands::Command<ITEM, SettingsItemUndoCommand<ITEM, T>, Commands::SettingsItemId>(item, text),
+        scene(scene),
+        newValue(newValue){}
+    void redo() override {
+      T currentValue = this->getItem()->get() ;
+      this->getItem()->set(newValue);
+      newValue = currentValue;
+    }
+  protected:
+    MolScene *getScene() const override { return scene; }
+  };
+
+  template<typename ITEM, typename T>
+  SettingsItemUndoCommand<ITEM, T>* undoCommandForSettingsItem(ITEM *settingsItem, const T& newValue, const QString &text = QString(), MolScene *scene = 0) {
+    return new SettingsItemUndoCommand<ITEM, T>(settingsItem, newValue, text, scene);
+  }
 
 } // namespace Molsketch
 
