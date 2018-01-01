@@ -29,6 +29,7 @@ const QString DOUBLE_KEY("TestDoubleKey");
 const qreal DOUBLE_VALUE = 3.75;
 const QVariant DOUBLE_VARIANT(DOUBLE_VALUE);
 const QString DOUBLE_AS_STRING("3.75");
+const QString DOUBLE_XML("<" + DOUBLE_KEY + " value=\"" + DOUBLE_AS_STRING + "\"/>");
 const qreal ALTERNATE_DOUBLE = 4.5;
 const QVariant ALTERNATE_DOUBLE_VARIANT(4.5);
 const QString ALTERNATE_DOUBLE_AS_STRING("4.5");
@@ -36,7 +37,8 @@ const QString ALTERNATE_DOUBLE_AS_STRING("4.5");
 const QString BOOL_KEY("TestBoolKey");
 const bool BOOL_VALUE = false;
 const QVariant BOOL_VARIANT(false);
-const QString BOOL_AS_STRING("False");
+const QString BOOL_AS_STRING("false");
+const QString BOOL_XML("<" + BOOL_KEY + " value=\"" + BOOL_AS_STRING + "\"/>");
 const bool ALTERNATE_BOOL = true;
 const QVariant ALTERNATE_BOOL_VARIANT(true);
 const QString ALTERNATE_BOOL_AS_STRING("True");
@@ -45,6 +47,7 @@ const QString COLOR_KEY("TestColorKey");
 const QColor COLOR_VALUE(Qt::red);
 const QVariant COLOR_VARIANT(COLOR_VALUE);
 const QString COLOR_AS_STRING("Af////8AAAAAAAA=");
+const QString COLOR_XML("<" + COLOR_KEY + " value=\"" + COLOR_AS_STRING + "\"/>");
 const QColor ALTERNATE_COLOR(Qt::blue);
 const QVariant ALTERNATE_COLOR_VARIANT(ALTERNATE_COLOR);
 const QString ALTERNATE_COLOR_AS_STRING("Af//AAAAAP//AAA=");
@@ -53,13 +56,14 @@ const QString FONT_KEY("TestFontKey");
 const QFont FONT_VALUE("Times", 10, QFont::Bold);
 const QVariant FONT_VARIANT(FONT_VALUE);
 const QString FONT_AS_STRING("AAAACgBUAGkAbQBlAHP/////QCQAAAAAAAD/////BQABAEsQAGQBAAAAAAAAAAAAAA==");
+const QString FONT_XML("<" + FONT_KEY + " value=\"" + FONT_AS_STRING + "\"/>");
 const QFont ALTERNATE_FONT("Helvetica", 15, QFont::Cursive);
 const QVariant ALTERNATE_FONT_VARIANT(ALTERNATE_FONT);
 const QString ALTERNATE_FONT_AS_STRING("AAAAEgBIAGUAbAB2AGUAdABpAGMAYf////9ALgAAAAAAAP////8FAAEABhAAZAEAAAAAAAAAAAAA");
 
 
 class SettingsItemUnitTest : public CxxTest::TestSuite {
-  SettingsFacade *facade;
+  SettingsFacade *facade, *emptyFacade;
   QRealSignalCounter *qrealSignalCounter;
   BoolSignalCounter *boolSignalCounter;
   ColorSignalCounter *colorSignalCounter;
@@ -137,6 +141,21 @@ class SettingsItemUnitTest : public CxxTest::TestSuite {
     fontSignalCounter->assertPayloads({ALTERNATE_FONT, FONT_VALUE});
   }
 
+  void assertWritingXml(const SettingsItem &item, const QString &expectedXml) {
+    QString actualXml;
+    QXmlStreamWriter writer(&actualXml);
+    item.writeXml(writer);
+    QS_ASSERT_EQUALS(actualXml, expectedXml);
+  }
+
+  template<typename ITEM, typename T>
+  void assertReadingXml(ITEM &item, const QString &xml, const T &expected) {
+    QXmlStreamReader reader(xml);
+    reader.readNextStartElement();
+    item.readXml(reader);
+    QS_ASSERT_EQUALS(item.get(), expected);
+  }
+
 public:
   void setUp() {
     facade = SettingsFacade::transientSettings();
@@ -144,6 +163,8 @@ public:
     facade->setValue(BOOL_KEY, BOOL_VALUE);
     facade->setValue(COLOR_KEY, COLOR_VALUE);
     facade->setValue(FONT_KEY, FONT_VALUE);
+    emptyFacade = SettingsFacade::transientSettings(facade);
+    emptyFacade->setValue(BOOL_KEY, ALTERNATE_BOOL);
 
     qrealSignalCounter = new QRealSignalCounter(facade);
     boolSignalCounter = new BoolSignalCounter(facade);
@@ -173,6 +194,15 @@ public:
     performDoubleSetterTest(ALTERNATE_DOUBLE_VARIANT, DOUBLE_VARIANT);
   }
 
+  void testWritingDoubleToXml() {
+    assertWritingXml(DoubleSettingsItem(DOUBLE_KEY, facade), DOUBLE_XML);
+  }
+
+  void testReadingDoubleFromXml() {
+    DoubleSettingsItem item(DOUBLE_KEY, emptyFacade);
+    assertReadingXml(item, DOUBLE_XML, DOUBLE_VALUE);
+  }
+
   void testObtainingBoolValue() {
     TS_ASSERT_EQUALS(BoolSettingsItem(BOOL_KEY, facade).get(), BOOL_VALUE);
     QS_ASSERT_EQUALS(BoolSettingsItem(BOOL_KEY, facade).getVariant(), BOOL_VARIANT);
@@ -189,6 +219,15 @@ public:
 
   void testSettingBoolVariant() {
     performBoolSetterTest(ALTERNATE_BOOL_VARIANT, BOOL_VARIANT);
+  }
+
+  void testWritingBoolToXml() {
+    assertWritingXml(BoolSettingsItem(BOOL_KEY, facade), BOOL_XML);
+  }
+
+  void testReadingBoolFromXml() {
+    BoolSettingsItem item(BOOL_KEY, emptyFacade);
+    assertReadingXml(item, BOOL_XML, BOOL_VALUE);
   }
 
   void testObtainingColorValue() {
@@ -209,6 +248,15 @@ public:
     performColorSetterTest(ALTERNATE_COLOR_VARIANT, COLOR_VARIANT);
   }
 
+  void testWritingColorToXml() {
+    assertWritingXml(ColorSettingsItem(COLOR_KEY, facade), COLOR_XML);
+  }
+
+  void testReadingColorFromXml() {
+    ColorSettingsItem item(COLOR_KEY, emptyFacade);
+    assertReadingXml(item, COLOR_XML, COLOR_VALUE);
+  }
+
   void testObtainingFontValue() {
     QS_ASSERT_EQUALS(FontSettingsItem(FONT_KEY, facade).get(), FONT_VALUE);
     QS_ASSERT_EQUALS(FontSettingsItem(FONT_KEY, facade).getVariant(), FONT_VARIANT);
@@ -225,5 +273,14 @@ public:
 
   void testSettingFontVariant() {
     performFontSetterTest(ALTERNATE_FONT_VARIANT, FONT_VARIANT);
+  }
+
+  void testWritingFontToXml() {
+    assertWritingXml(FontSettingsItem(FONT_KEY, facade), FONT_XML);
+  }
+
+  void testReadingFontFromXml() {
+    FontSettingsItem item(FONT_KEY, emptyFacade);
+    assertReadingXml(item, FONT_XML, FONT_VALUE);
   }
 };
