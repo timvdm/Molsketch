@@ -66,47 +66,75 @@ class SettingsItemUnitTest : public CxxTest::TestSuite {
   FontSignalCounter *fontSignalCounter;
 
   template<typename T>
-  void performDoubleSetterTest(const T& newValue) {
+  void performDoubleSetterTest(const T& newValue, const T& oldValue) {
     DoubleSettingsItem doubleSettingsItem(DOUBLE_KEY, facade);
     QObject::connect(&doubleSettingsItem, SIGNAL(updated(qreal)), qrealSignalCounter, SLOT(record(qreal)));
+    qrealSignalCounter->callback =
+        [&] (const qreal&) { qrealSignalCounter->callback = nullptr; doubleSettingsItem.set(newValue); };
 
     doubleSettingsItem.set(newValue);
 
     TS_ASSERT_EQUALS(facade->value(DOUBLE_KEY), ALTERNATE_DOUBLE_VARIANT);
     qrealSignalCounter->assertPayloads({ALTERNATE_DOUBLE});
+
+    doubleSettingsItem.set(oldValue);
+
+    TS_ASSERT_EQUALS(facade->value(DOUBLE_KEY), DOUBLE_VARIANT);
+    qrealSignalCounter->assertPayloads({ALTERNATE_DOUBLE, DOUBLE_VALUE});
   }
 
   template<typename T>
-  void performBoolSetterTest(const T& newValue) {
+  void performBoolSetterTest(const T& newValue, const T& oldValue) {
     BoolSettingsItem boolSettingsItem(BOOL_KEY, facade);
     QObject::connect(&boolSettingsItem, SIGNAL(updated(bool)), boolSignalCounter, SLOT(record(bool)));
+    boolSignalCounter->callback = // TODO is this lambda deleted?
+        [&] (const bool&) { boolSignalCounter->callback = nullptr; boolSettingsItem.set(newValue); };
 
     boolSettingsItem.set(newValue);
 
     TS_ASSERT_EQUALS(facade->value(BOOL_KEY), ALTERNATE_BOOL_VARIANT);
     boolSignalCounter->assertPayloads({ALTERNATE_BOOL});
+
+    boolSettingsItem.set(oldValue);
+
+    TS_ASSERT_EQUALS(facade->value(BOOL_KEY), BOOL_VARIANT);
+    boolSignalCounter->assertPayloads({ALTERNATE_BOOL, BOOL_VALUE});
   }
 
   template<typename T>
-  void performColorSetterTest(const T& newValue) {
+  void performColorSetterTest(const T& newValue, const T& oldValue) {
     ColorSettingsItem colorSettingsItem(COLOR_KEY, facade);
     QObject::connect(&colorSettingsItem, SIGNAL(updated(QColor)), colorSignalCounter, SLOT(record(QColor)));
+    colorSignalCounter->callback =
+        [&] (const QColor&) { colorSignalCounter->callback = nullptr; colorSettingsItem.set(newValue); };
 
     colorSettingsItem.set(newValue);
 
     TS_ASSERT_EQUALS(facade->value(COLOR_KEY), ALTERNATE_COLOR_VARIANT);
     colorSignalCounter->assertPayloads({ALTERNATE_COLOR});
+
+    colorSettingsItem.set(oldValue);
+
+    TS_ASSERT_EQUALS(facade->value(COLOR_KEY), COLOR_VARIANT);
+    colorSignalCounter->assertPayloads({ALTERNATE_COLOR, COLOR_VALUE});
   }
 
   template<typename T>
-  void performFontSetterTest(const T& newValue) {
+  void performFontSetterTest(const T& newValue, const T& oldValue) {
     FontSettingsItem fontSettingsItem(FONT_KEY, facade);
     QObject::connect(&fontSettingsItem, SIGNAL(updated(QFont)), fontSignalCounter, SLOT(record(QFont)));
+    fontSignalCounter->callback =
+        [&] (const QFont&) { fontSignalCounter->callback = nullptr; fontSettingsItem.set(newValue); };
 
     fontSettingsItem.set(newValue);
 
     TS_ASSERT_EQUALS(facade->value(FONT_KEY), ALTERNATE_FONT_VARIANT);
     fontSignalCounter->assertPayloads({ALTERNATE_FONT});
+
+    fontSettingsItem.set(oldValue);
+
+    TS_ASSERT_EQUALS(facade->value(FONT_KEY), FONT_VARIANT);
+    fontSignalCounter->assertPayloads({ALTERNATE_FONT, FONT_VALUE});
   }
 
 public:
@@ -117,7 +145,7 @@ public:
     facade->setValue(COLOR_KEY, COLOR_VALUE);
     facade->setValue(FONT_KEY, FONT_VALUE);
 
-    qrealSignalCounter = new QRealSignalCounter(facade);
+    qrealSignalCounter = new QRealSignalCounter(facade); // TODO add callback to simulate recursive call from receiver
     boolSignalCounter = new BoolSignalCounter(facade);
     colorSignalCounter = new ColorSignalCounter(facade);
     fontSignalCounter = new FontSignalCounter(facade);
@@ -134,15 +162,15 @@ public:
   }
 
   void testSettingDoubleValue() {
-    performDoubleSetterTest(ALTERNATE_DOUBLE);
+    performDoubleSetterTest(ALTERNATE_DOUBLE, DOUBLE_VALUE);
   }
 
   void testSettingDoubleString() {
-    performDoubleSetterTest(ALTERNATE_DOUBLE_AS_STRING);
+    performDoubleSetterTest(ALTERNATE_DOUBLE_AS_STRING, DOUBLE_AS_STRING);
   }
 
   void testSettingDoubleVariant() {
-    performDoubleSetterTest(ALTERNATE_DOUBLE_VARIANT);
+    performDoubleSetterTest(ALTERNATE_DOUBLE_VARIANT, DOUBLE_VARIANT);
   }
 
   void testObtainingBoolValue() {
@@ -152,15 +180,15 @@ public:
   }
 
   void testSettingBoolValue() {
-    performBoolSetterTest(ALTERNATE_BOOL);
+    performBoolSetterTest(ALTERNATE_BOOL, BOOL_VALUE);
   }
 
   void testSettingBoolString() {
-    performBoolSetterTest(ALTERNATE_BOOL_AS_STRING);
+    performBoolSetterTest(ALTERNATE_BOOL_AS_STRING, BOOL_AS_STRING);
   }
 
   void testSettingBoolVariant() {
-    performBoolSetterTest(ALTERNATE_BOOL_VARIANT);
+    performBoolSetterTest(ALTERNATE_BOOL_VARIANT, BOOL_VARIANT);
   }
 
   void testObtainingColorValue() {
@@ -170,15 +198,15 @@ public:
   }
 
   void testSettingColorValue() {
-    performColorSetterTest(ALTERNATE_COLOR);
+    performColorSetterTest(ALTERNATE_COLOR, COLOR_VALUE);
   }
 
   void testSettingColorString() {
-    performColorSetterTest(ALTERNATE_COLOR_AS_STRING);
+    performColorSetterTest(ALTERNATE_COLOR_AS_STRING, COLOR_AS_STRING);
   }
 
   void testSettingColorVariant() {
-    performColorSetterTest(ALTERNATE_COLOR_VARIANT);
+    performColorSetterTest(ALTERNATE_COLOR_VARIANT, COLOR_VARIANT);
   }
 
   void testObtainingFontValue() {
@@ -188,14 +216,14 @@ public:
   }
 
   void testSettingFontValue() {
-    performFontSetterTest(ALTERNATE_FONT);
+    performFontSetterTest(ALTERNATE_FONT, FONT_VALUE);
   }
 
   void testSettingFontString() {
-    performFontSetterTest(ALTERNATE_FONT_AS_STRING);
+    performFontSetterTest(ALTERNATE_FONT_AS_STRING, FONT_AS_STRING);
   }
 
   void testSettingFontVariant() {
-    performFontSetterTest(ALTERNATE_FONT_VARIANT);
+    performFontSetterTest(ALTERNATE_FONT_VARIANT, FONT_VARIANT);
   }
 };
