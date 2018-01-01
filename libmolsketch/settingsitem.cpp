@@ -23,6 +23,8 @@
 #include <QFont>
 #include <QDebug>
 
+const QString XML_VALUE_ATTRIBUTE("value");
+
 namespace Molsketch {
 
   struct SettingsItemPrivate {
@@ -42,6 +44,20 @@ namespace Molsketch {
   }
 
   SettingsItem::~SettingsItem() {}
+
+  QXmlStreamReader &SettingsItem::readXml(QXmlStreamReader &in) {
+    set(in.attributes().value(XML_VALUE_ATTRIBUTE).toString());
+    do in.readNext(); while (!in.isEndElement());
+    return in;
+  }
+
+  QXmlStreamWriter &SettingsItem::writeXml(QXmlStreamWriter &out) const {
+    Q_D(const SettingsItem);
+    out.writeStartElement(d->key);
+    out.writeAttribute(XML_VALUE_ATTRIBUTE, serialize());
+    out.writeEndElement();
+    return out;
+  }
 
   DoubleSettingsItem::DoubleSettingsItem(const QString& key, SettingsFacade *facade, QObject *parent)
     : SettingsItem(key, facade, parent) {}
@@ -81,7 +97,7 @@ namespace Molsketch {
     : SettingsItem(key, facade, parent) {}
 
   QString BoolSettingsItem::serialize() const {
-    return get() ? "True" : "False";
+    return get() ? "true" : "false";
   }
 
   QVariant BoolSettingsItem::getVariant() const {
@@ -104,7 +120,7 @@ namespace Molsketch {
   }
 
   void BoolSettingsItem::set(const QString &value) {
-    set(value == "True" || value == "true");
+    set(value.toLower() == "true");
   }
 
   void BoolSettingsItem::set(const bool &value) {

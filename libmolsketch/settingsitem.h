@@ -29,7 +29,7 @@ namespace Molsketch {
   class SettingsFacade;
   class SettingsItemPrivate;
 
-  class SettingsItem : public QObject
+  class SettingsItem : public QObject, public XmlObjectInterface
   {
     Q_OBJECT
     Q_DECLARE_PRIVATE(SettingsItem)
@@ -40,6 +40,8 @@ namespace Molsketch {
     virtual QVariant getVariant() const = 0;
     virtual void set(const QVariant&) = 0;
     virtual void set(const QString&) = 0;
+    QXmlStreamReader &readXml(QXmlStreamReader &in) override;
+    QXmlStreamWriter &writeXml(QXmlStreamWriter &out) const override;
   protected:
     QScopedPointer<SettingsItemPrivate> d_ptr;
   };
