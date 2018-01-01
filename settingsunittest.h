@@ -35,9 +35,11 @@ const QString SERIALIZED_SETTINGS("");
 const QFont ATOM_FONT("Helvetica", 15, QFont::Cursive);
 const qreal BOND_ANGLE = 1.25;
 const QString BASE64_ATOM_FONT("AAAAEgBIAGUAbAB2AGUAdABpAGMAYf////9ALgAAAAAAAP////8FAAEABhAAZAEAAAAAAAAAAAAA");
+const QString BOND_ANGLE_NAME("bond-angle");
+const QString ATOM_FONT_NAME("atom-symbol-font");
 const QString SETTINGS_XML("<settings>"
-                           "<bond-angle value=\"25\"/>"
-                           "<atom-symbol-font value=\"" + BASE64_ATOM_FONT + "\"/>"
+                           "<" + BOND_ANGLE_NAME + " value=\"25\"/>"
+                           "<" + ATOM_FONT_NAME + " value=\"" + BASE64_ATOM_FONT + "\"/>"
                            "</settings>");
 
 
@@ -99,9 +101,19 @@ public:
   }
 
   void testSettingsDeserialization() {
-    settings = new SceneSettings(SettingsFacade::transientSettings());
     QXmlStreamReader reader(SETTINGS_XML);
+    settings = new SceneSettings(SettingsFacade::transientSettings());
     settings->readXml(reader);
+    QS_ASSERT_EQUALS(settings->bondAngle()->get(), BOND_ANGLE);
+    QS_ASSERT_EQUALS(settings->atomFont()->get(), ATOM_FONT);
+  }
+
+  void testInitializationFromXmlAttributes() {
+    QXmlStreamAttributes attributes;
+    attributes.append(BOND_ANGLE_NAME, QString::number(BOND_ANGLE));
+    attributes.append(ATOM_FONT_NAME, BASE64_ATOM_FONT);
+    settings = new SceneSettings(SettingsFacade::transientSettings());
+    settings->setFromAttributes(attributes);
     QS_ASSERT_EQUALS(settings->bondAngle()->get(), BOND_ANGLE);
     QS_ASSERT_EQUALS(settings->atomFont()->get(), ATOM_FONT);
   }
