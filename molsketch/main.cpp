@@ -23,6 +23,7 @@
 #include <QTranslator>
 #include <QLocale>
 #include <settingsfacade.h>
+#include <QSettings>
 
 #include "applicationsettings.h"
 #include "mainwindow.h"

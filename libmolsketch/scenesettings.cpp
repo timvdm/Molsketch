@@ -123,6 +123,11 @@ namespace Molsketch {
   PROPERTY_DEF(FontSettingsItem, atomFont)
   PROPERTY_DEF(ColorSettingsItem, gridColor)
 
+#define PROPERTY(NAME, TYPE, CONFIGSTRING) \
+  void SceneSettings::set##NAME(const TYPE& value) { settingsFacade().setValue(CONFIGSTRING, value); \
+  emit settingsChanged(); } \
+  TYPE SceneSettings::get##NAME() const { return settingsFacade().value(CONFIGSTRING).value<TYPE>(); }
+
   PROPERTY(MouseWheelMode, SceneSettings::MouseWheelMode, MOUSE_CYCLE_MODE)
 
 #define BOOL_PROPERTY_DEF(NAME) \

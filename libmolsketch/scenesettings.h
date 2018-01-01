@@ -87,20 +87,4 @@ namespace Molsketch {
 
 } // namespace Molsketch
 
-#define PROPERTY(NAME, TYPE, CONFIGSTRING) \
-  void SceneSettings::set##NAME(const TYPE& value) { settingsFacade().setValue(CONFIGSTRING, value); \
-  emit settingsChanged(); } \
-  TYPE SceneSettings::get##NAME() const { return settingsFacade().value(CONFIGSTRING).value<TYPE>(); }
-
-#define PROPERTY_DEF(NAME, TYPE, CONFIGSTRING, DEFAULT) \
-  void SceneSettings::set##NAME(const TYPE& value) { settingsFacade().setValue(CONFIGSTRING, value); \
-  emit settingsChanged();  } \
-  TYPE SceneSettings::get##NAME() const { return settingsFacade().value(CONFIGSTRING, DEFAULT).value<TYPE>(); }
-
-
-#define STRING_PROPERTY(NAME, CONFIGSTRING) \
-  void SceneSettings::set##NAME(const QString& value) { settings().setValue(CONFIGSTRING, value); \
-  emit settingsChanged();  } \
-  QString SceneSettings::get##NAME() const { return settings().value(CONFIGSTRING).toString(); }
-
 #endif // MOLSKETCH_SCENESETTINGS_H
