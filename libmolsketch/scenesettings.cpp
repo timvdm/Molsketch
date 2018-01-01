@@ -64,14 +64,14 @@ namespace Molsketch {
     ColorSettingsItem *gridColor;
     FontSettingsItem *atomFont;
 
-    QList<SettingsItem*> settingsItems;
+    QMap<QString, SettingsItem*> settingsItems;
 
     template<typename ITEM, typename VALUE>
     ITEM* initializeSetting(const QString& key, const VALUE& defaultValue) {
       if (!settingsFacade->value(key).isValid())
         settingsFacade->setValue(key, defaultValue);
       ITEM* result = new ITEM(key, settingsFacade, parent);
-      settingsItems << result;
+      settingsItems[key] = result;
       return result;
     }
 
@@ -115,6 +115,15 @@ namespace Molsketch {
   }
 
   SceneSettings::~SceneSettings() {}
+
+  void SceneSettings::setFromAttributes(const QXmlStreamAttributes &attributes) {
+    Q_D(SceneSettings);
+    for (auto attribute : attributes) {
+      QString name(attribute.name().toString());
+      if (d->settingsItems.contains(name))
+        d->settingsItems[name]->set(attribute.value().toString());
+    }
+  }
 
   QString SceneSettings::xmlName() const {
     return xmlClassName();
@@ -166,7 +175,7 @@ namespace Molsketch {
   QList<const XmlObjectInterface *> SceneSettings::children() const {
     Q_D(const SceneSettings);
     QList<const XmlObjectInterface *> result;
-    for (auto settingsItem : d->settingsItems)
+    for (auto settingsItem : d->settingsItems.values())
       result << dynamic_cast<const XmlObjectInterface *>(settingsItem);
     return result;
   }
@@ -174,9 +183,8 @@ namespace Molsketch {
   XmlObjectInterface *SceneSettings::produceChild(const QString &name, const QString &type) {
     Q_UNUSED(type)
     Q_D(SceneSettings);
-    for (auto settingsItem : d->settingsItems)
-      if (settingsItem->xmlName() == name)
-        return settingsItem;
+    if (d->settingsItems.contains(name))
+      return d->settingsItems[name];
     return nullptr;
   }
 

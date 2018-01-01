@@ -43,6 +43,7 @@ namespace Molsketch {
   public:
     explicit SceneSettings(SettingsFacade *facade, QObject *parent = 0);
     virtual ~SceneSettings();
+    void setFromAttributes(const QXmlStreamAttributes &attributes);
     QString xmlName() const override;
     static QString xmlClassName();
 
