@@ -25,22 +25,44 @@
 #include <settingsitem.h>
 #include <QSettings>
 #include <QRegularExpression>
+#include "xmlassertion.h"
 #include "utilities.h"
 
 using namespace Molsketch;
+using XmlAssert::assertThat;
+
+const QString SERIALIZED_SETTINGS("");
+const QFont ATOM_FONT("Helvetica", 15, QFont::Cursive);
+const qreal BOND_ANGLE = 1.25;
+const QString BASE64_ATOM_FONT("AAAAEgBIAGUAbAB2AGUAdABpAGMAYf////9ALgAAAAAAAP////8FAAEABhAAZAEAAAAAAAAAAAAA");
+const QString SETTINGS_XML("<settings>"
+                           "<bond-angle value=\"25\"/>"
+                           "<atom-symbol-font value=\"" + BASE64_ATOM_FONT + "\"/>"
+                           "</settings>");
+
 
 class SettingsUnitTest : public TempFileProvider, public CxxTest::TestSuite {
   const QString SETTINGS_FILE_CONTENT = "bond-angle=25";
   const qreal BOND_ANGLE = 25;
   const qreal DEFAULT_BOND_ANGLE = 30;
+  SceneSettings *settings;
 
 public:
+  void setUp() {
+    settings = nullptr;
+  }
+
+  void tearDown() {
+    delete settings;
+  }
+
   void testSceneSettingsArePersisted() {
     QFile *settingsFile = createTemporaryFile();
     settingsFile->open(QFile::ReadOnly);
-    SceneSettings *settings = new SceneSettings(SettingsFacade::persistedSettings(new QSettings(settingsFile->fileName(), QSettings::IniFormat)));
+    settings = new SceneSettings(SettingsFacade::persistedSettings(new QSettings(settingsFile->fileName(), QSettings::IniFormat)));
     settings->bondAngle()->set(BOND_ANGLE);
     delete settings;
+    settings = nullptr;
     QFile readFile(settingsFile->fileName());
     readFile.open(QFile::ReadOnly);
     QString fileContent = readFile.readAll();
@@ -53,7 +75,7 @@ public:
     settingsFile->write(SETTINGS_FILE_CONTENT.toUtf8());
     settingsFile->close();
     SettingsFacade *facade = SettingsFacade::persistedSettings(new QSettings(settingsFile->fileName(), QSettings::IniFormat));
-    SceneSettings *settings = new SceneSettings(facade);
+    settings = new SceneSettings(facade);
     TS_ASSERT_EQUALS(settings->bondAngle()->get(), BOND_ANGLE);
   }
 
@@ -61,8 +83,27 @@ public:
     QFile *settingsFile = createTemporaryFile();
     settingsFile->open(QFile::WriteOnly);
     settingsFile->close();
-    SceneSettings *settings = new SceneSettings(SettingsFacade::persistedSettings(new QSettings(settingsFile->fileName(), QSettings::IniFormat)));
+    settings = new SceneSettings(SettingsFacade::persistedSettings(new QSettings(settingsFile->fileName(), QSettings::IniFormat)));
     TS_ASSERT_EQUALS(settings->bondAngle()->get(), DEFAULT_BOND_ANGLE);
+  }
+
+  void testSettingsSerialization() {
+    settings = new SceneSettings(SettingsFacade::transientSettings());
+    settings->atomFont()->set(ATOM_FONT);
+    settings->bondAngle()->set(BOND_ANGLE);
+    QString actualXml;
+    QXmlStreamWriter writer(&actualXml);
+    settings->writeXml(writer);
+    assertThat(actualXml)->contains("/settings/atom-symbol-font/@value/data(.)")->exactlyOnceWithContent(BASE64_ATOM_FONT);
+    assertThat(actualXml)->contains("/settings/bond-angle/@value/data(.)")->exactlyOnceWithContent(QString::number(BOND_ANGLE));
+  }
+
+  void testSettingsDeserialization() {
+    settings = new SceneSettings(SettingsFacade::transientSettings());
+    QXmlStreamReader reader(SETTINGS_XML);
+    settings->readXml(reader);
+    QS_ASSERT_EQUALS(settings->bondAngle()->get(), BOND_ANGLE);
+    QS_ASSERT_EQUALS(settings->atomFont()->get(), ATOM_FONT);
   }
 
   // TODO mouse wheel settings test
