@@ -112,11 +112,11 @@ namespace Molsketch {
       if (value.isValid()) return makeFromString<TYPE>(value.toString()); \
       return DEFAULTVALUE; }
 
+      // TODO delete
       SCENEPROPERTY(B,b,ondLength, qreal, 40)
       SCENEPROPERTY(B,b,ondWidth, qreal, 2)
       SCENEPROPERTY(A,a,rrowWidth, qreal, 1.5)
       SCENEPROPERTY(F,f,rameLinewidth, qreal, 1.5)
-      SCENEPROPERTY(B,b,ondAngle, qreal, 30)
       SCENEPROPERTY(A,a,tomSize, qreal, 5)
       STRINGIFIEDPROPERTY(A,a,tomFont, QFont, QFont())
       SCENEPROPERTY(H,h,ydrogenVisible, bool, true)
@@ -127,8 +127,10 @@ namespace Molsketch {
       SCENEPROPERTY(C,c,hargeVisible, bool, true)
       STRINGIFIEDPROPERTY(D,d,efaultColor, QColor, QColor(Qt::black))
 
+      qreal bondAngle() const;
+
       /**
-       * @return The current RenderMode. Default is RnderLabels
+       * @return The current RenderMode. Default is RenderLabels
        */
       RenderMode renderMode() const; // TODO do we really need this?
       /**

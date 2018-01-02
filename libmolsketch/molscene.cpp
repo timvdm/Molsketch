@@ -484,7 +484,11 @@ namespace Molsketch {
 
   int MolScene::editMode() const
   {
-        return m_editMode;
+    return m_editMode;
+  }
+
+  qreal MolScene::bondAngle() const {
+    return d->settings->bondAngle()->get(); // TODO replace with signals/slots
   }
 
   MolScene::RenderMode MolScene::renderMode() const
@@ -557,6 +561,7 @@ namespace Molsketch {
       if (type == "MechanismArrow") object = new Arrow ;
     }
     if ("textItem" == childName) object = new TextItem;
+    if (d->settings->xmlName() == childName) object = d->settings;
     if (QGraphicsItem* item = dynamic_cast<QGraphicsItem*>(object)) // TODO w/o dynamic_cast
       addItem(item) ;
     return object ;
@@ -565,20 +570,22 @@ namespace Molsketch {
   QList<const XmlObjectInterface *> MolScene::children() const
   {
         QList<const XmlObjectInterface*> childrenList ;
+        childrenList << d->settings;
         foreach(QGraphicsItem* item, items())
         {
           if (item && item->parentItem()) continue;
           XmlObjectInterface *object = dynamic_cast<XmlObjectInterface*>(item);
           if (object) childrenList << object;
         }
-        return childrenList ;
+        return childrenList;
   }
 
   void MolScene::readAttributes(const QXmlStreamAttributes &attributes)
   {
-    foreach(const QXmlStreamAttribute& attribute, attributes)
+    foreach(const QXmlStreamAttribute& attribute, attributes) // TODO remove
       setProperty(attribute.name().toLatin1(), attribute.value().toString());
     clear();
+    d->settings->setFromAttributes(attributes);
   }
 
   QXmlStreamAttributes MolScene::xmlAttributes() const
