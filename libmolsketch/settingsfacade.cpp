@@ -21,6 +21,13 @@
 #include <QSettings>
 #include <QDebug>
 
+const QMap<QString, QString> LEGACY_TO_NEW_NAME = {
+  {"atom-symbol-font", "atom-font"},
+  {"electronSystems-visible", "electron-systems-visible"},
+  {"latestReleaseNotes", "latest-release-notes"},
+  {"toolBarIconStyle", "tool-bar-icon-style"},
+};
+
 namespace Molsketch {
   // TODO test this
   // TODO test that scene correctly transfers settings
@@ -47,8 +54,20 @@ namespace Molsketch {
     }
   };
 
+  void replaceLegacySettingsNames(QSettings *settings) {
+    for (auto key : settings->allKeys()) {
+      if (!LEGACY_TO_NEW_NAME.contains(key)) continue;
+      auto value = settings->value(key);
+      settings->remove(key);
+      settings->setValue(LEGACY_TO_NEW_NAME[key], value);
+      qDebug() << "updated legacy settings key" << key << "to" << LEGACY_TO_NEW_NAME[key];
+    }
+    settings->sync();
+  }
+
   SettingsFacade *SettingsFacade::persistedSettings(QSettings *settings, QObject *parent) {
     if (!settings) return transientSettings(parent);
+    replaceLegacySettingsNames(settings);
     return new PersistedSettings(settings, parent);
   }
 

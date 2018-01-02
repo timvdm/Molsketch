@@ -17,6 +17,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include <QFont>
+#include <QRegularExpression>
 #include <QSettings>
 #include "scenesettings.h"
 #include "settingsfacade.h"
@@ -28,8 +29,8 @@ namespace Molsketch {
 
   static const char CARBON_VISIBLE[] = "carbon-visible";
   static const char CHARGE_VISIBLE[] = "charge-visible";
-  static const char ELECTRON_SYSTEMS_VISIBLE[] = "electronSystems-visible";
-  static const char ATOM_FONT[] = "atom-symbol-font";
+  static const char ELECTRON_SYSTEMS_VISIBLE[] = "electron-systems-visible";
+  static const char ATOM_FONT[] = "atom-font";
   static const char BOND_LENGTH[] = "bond-length";
   static const char BOND_WIDTH[] = "bond-width";
   static const char BOND_ANGLE[] = "bond-angle";

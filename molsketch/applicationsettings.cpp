@@ -33,11 +33,11 @@
 #define OBABELOSSUFFIX
 #endif
 
-static const char LATEST_RELEASE_NOTES_VERSION_SHOWN[] = "latestReleaseNotes";
+static const char LATEST_RELEASE_NOTES_VERSION_SHOWN[] = "latest-release-notes";
 static const char VERSION_FILE[] = ":/version";
 static const char VERSION_NICK_FILE[] = ":/versionnick";
 static const char LIBRARIES[] = "libraries";
-static const char ICON_STYLE[] = "toolBarIconStyle";
+static const char ICON_STYLE[] = "tool-bar-icon-style";
 static const char WINDOW_POSITION[] = "pos";
 static const char WINDOW_SIZE[] = "size";
 static const char WINDOW_STATE[] = "window-state";
