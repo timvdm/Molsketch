@@ -36,7 +36,7 @@ const QFont ATOM_FONT("Helvetica", 15, QFont::Cursive);
 const qreal BOND_ANGLE = 1.25;
 const QString BASE64_ATOM_FONT("AAAAEgBIAGUAbAB2AGUAdABpAGMAYf////9ALgAAAAAAAP////8FAAEABhAAZAEAAAAAAAAAAAAA");
 const QString BOND_ANGLE_NAME("bond-angle");
-const QString ATOM_FONT_NAME("atom-symbol-font");
+const QString ATOM_FONT_NAME("atom-font");
 const QString SETTINGS_XML("<settings>"
                            "<" + BOND_ANGLE_NAME + " value=\"25\"/>"
                            "<" + ATOM_FONT_NAME + " value=\"" + BASE64_ATOM_FONT + "\"/>"
@@ -96,7 +96,7 @@ public:
     QString actualXml;
     QXmlStreamWriter writer(&actualXml);
     settings->writeXml(writer);
-    assertThat(actualXml)->contains("/settings/atom-symbol-font/@value/data(.)")->exactlyOnceWithContent(BASE64_ATOM_FONT);
+    assertThat(actualXml)->contains("/settings/atom-font/@value/data(.)")->exactlyOnceWithContent(BASE64_ATOM_FONT);
     assertThat(actualXml)->contains("/settings/bond-angle/@value/data(.)")->exactlyOnceWithContent(QString::number(BOND_ANGLE));
   }
 

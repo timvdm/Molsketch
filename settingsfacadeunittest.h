@@ -30,6 +30,16 @@ const QVariant SETTINGS_VALUE(QString("TestValue"));
 const QVariant SETTINGS_DEFAULT(QString("TestDefault"));
 const QString SETTINGS_FILE_CONTENT("[General]\n" + SETTINGS_KEY + "=" + SETTINGS_VALUE.toString() + "\n");
 const QString SETTINGS_FILE_EMPTY("");
+const QString LEGACY_CONFIG_FILE("[General]\n"
+                                 "atom-symbol-font=@Variant(\\0\\0\\0@\\0\\0\\0\\x12\\0N\\0o\\0t\\0o\\0 \\0S\\0\\x61\\0n\\0s@ \\0\\0\\0\\0\\0\\0\\xff\\xff\\xff\\xff\\x5\\x1\\0\\x32\\x10)\n"
+                                 "electronSystems-visible=false\n"
+                                 "latestReleaseNotes=0.5.0.0\n"
+                                 "toolBarIconStyle=0\n");
+const QString UPDATED_CONFIG_FILE("[General]\n"
+                                  "atom-font=@Variant(\\0\\0\\0@\\0\\0\\0\\x12\\0N\\0o\\0t\\0o\\0 \\0S\\0\\x61\\0n\\0s@ \\0\\0\\0\\0\\0\\0\\xff\\xff\\xff\\xff\\x5\\x1\\0\\x32\\x10)\n"
+                                  "electron-systems-visible=false\n"
+                                  "latest-release-notes=0.5.0.0\n"
+                                  "tool-bar-icon-style=0\n");
 
 class SettingsFacadeUnitTest : public TempFileProvider, public CxxTest::TestSuite {
   SettingsFacade *facade, *otherFacade;
@@ -62,10 +72,10 @@ class SettingsFacadeUnitTest : public TempFileProvider, public CxxTest::TestSuit
     return actualFileContent;
   }
 
-  void preparePersistedSettingsWithSettingsFile() {
+  void preparePersistedSettingsWithSettingsFile(const QString& content) {
     settingsFile = createTemporaryFile();
     settingsFile->open(QFile::WriteOnly);
-    settingsFile->write(SETTINGS_FILE_CONTENT.toUtf8());
+    settingsFile->write(content.toUtf8());
     settingsFile->close();
     settingsFile->open(QFile::ReadOnly);
 
@@ -80,6 +90,13 @@ public:
   void tearDown() {
     delete facade;
     delete otherFacade;
+  }
+
+  void testConvertingLegacySettingsFile() {
+    preparePersistedSettingsWithSettingsFile(LEGACY_CONFIG_FILE);
+    delete facade;
+    facade = nullptr;
+    QS_ASSERT_EQUALS(settingsFileContent(), UPDATED_CONFIG_FILE);
   }
 
   void testStoringAndRetrievingValuesTransiently() {
@@ -117,7 +134,7 @@ public:
   }
 
   void testStoredValueIsReadFromSettings() {
-    preparePersistedSettingsWithSettingsFile();
+    preparePersistedSettingsWithSettingsFile(SETTINGS_FILE_CONTENT);
     QS_ASSERT_EQUALS(facade->value(SETTINGS_KEY), SETTINGS_VALUE);
   }
 
