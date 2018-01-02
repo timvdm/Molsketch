@@ -26,8 +26,12 @@
 #include <arrow.h>
 #include <textitem.h>
 #include <QDebug>
+#include <scenesettings.h>
 
 using namespace Molsketch;
+
+const qreal BOND_ANGLE_FROM_SETTINGS = 4.5;
+const QString SCENE_XML_WITH_ATTRIBUTE("<molscene bond-angle=\"" + QString::number(BOND_ANGLE_FROM_SETTINGS) + "\"/>");
 
 struct MolSceneForTest : public MolScene {
   XmlObjectInterface* produceChild(const QString &childName, const QString &type) {
@@ -71,12 +75,22 @@ public:
       {"object", "ReactionArrow", typeid(Arrow)},
       {"object", "MechanismArrow", typeid(Arrow)},
       {"textItem", "", typeid(TextItem)},
+      {"settings", "", typeid(SceneSettings)},
       };
     for (auto child : children) {
       XmlObjectInterface *sceneChild = scene->produceChild(child.name, child.type);
+      TSM_ASSERT(child.toString(), sceneChild);
       TSM_ASSERT_EQUALS(child.toString(), child.expectedType, std::type_index(typeid(*(sceneChild))));
       TSM_ASSERT(child.toString(), scene->children().contains(sceneChild));
-      TSM_ASSERT(child.toString(), scene->items().contains(dynamic_cast<QGraphicsItem*>(sceneChild)));
+      if (QGraphicsItem *item = dynamic_cast<QGraphicsItem*>(sceneChild))
+        TSM_ASSERT(child.toString(), scene->items().contains(item));
     }
+  }
+
+  void testInitializingSettingsFromAttributes() {
+    QXmlStreamReader reader(SCENE_XML_WITH_ATTRIBUTE);
+    reader.readNextStartElement();
+    scene->readXml(reader);
+    TS_ASSERT_EQUALS(scene->bondAngle(), BOND_ANGLE_FROM_SETTINGS);
   }
 };
