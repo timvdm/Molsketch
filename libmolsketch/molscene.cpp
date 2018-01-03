@@ -95,26 +95,10 @@ namespace Molsketch {
     MolScene *scene;
     QDockWidget *propertiesDock;
     QLabel *propertiesHelpLabel;
-
-    QAction *bondLengthAction,
-    *bondWidthAction,
-    *arrowWidthAction,
-    *frameLinewidthAction,
-    *bondAngleAction,
-    *atomSizeAction,
-    *atomFontAction,
-    *hydrogenVisibleAction,
-    *carbonVisibleAction,
-    *lonePairsVisibleAction,
-    *autoAddHydrogenAction,
-    *electronSystemsVisibleAction,
-    *chargeVisibleAction,
-    *defaultColorAction;
     SceneSettings *settings;
 
     graphicsItem* dragItem;
 
-    QMap<QAction*, QPair<void (MolScene::*)(const bool&), bool (MolScene::*)() const> > booleanActions;
     void attachDockWidgetToMainWindow(MolScene* scene)
     {
       if (scene)
@@ -132,39 +116,11 @@ namespace Molsketch {
         scene(scene),
         propertiesDock(new QDockWidget(tr("Properties"))),
         propertiesHelpLabel(new QLabel(tr("Select single item to edit properties"), propertiesDock)),
-        bondLengthAction(new QAction(tr("Bond length..."), scene)),
-        bondWidthAction(new QAction(tr("Bond linewidth..."), scene)),
-        arrowWidthAction(new QAction(tr("Arrow width..."), scene)),
-        frameLinewidthAction(new QAction(tr("Bracket linewidth..."), scene)),
-        bondAngleAction(new QAction(tr("Bond snap angle..."), scene)),
-        atomSizeAction(new QAction(tr("Atom size..."), scene)),
-        atomFontAction(new QAction(tr("Atom font..."), scene)),
-        hydrogenVisibleAction(new QAction(tr("Hydrogens visible"), scene)),
-        carbonVisibleAction(new QAction(tr("Carbons visible"), scene)),
-        lonePairsVisibleAction(new QAction(tr("Lone pairs visible"), scene)),
-        autoAddHydrogenAction(new QAction(tr("Auto add hydrogens"), scene)),
-        electronSystemsVisibleAction(new QAction(tr("Electron systems visible"), scene)),
-        chargeVisibleAction(new QAction(tr("Charges visible"), scene)),
-        defaultColorAction(new QAction(tr("Default color..."), scene)),
         dragItem(0)
     {
       selectionRectangle->setPen(QPen(Qt::blue,0,Qt::DashLine));
       selectionRectangle->setZValue(INFINITY);
-#define REGISTER_ACTION(CAPLETTER, LOWERLETTER, PROPNAME) booleanActions[LOWERLETTER##PROPNAME##Action] = qMakePair(&MolScene::set##CAPLETTER##PROPNAME, &MolScene::LOWERLETTER##PROPNAME);
-      REGISTER_ACTION(H,h,ydrogenVisible)
-      REGISTER_ACTION(C,c,arbonVisible)
-      REGISTER_ACTION(L,l,onePairsVisible)
-      REGISTER_ACTION(A,a,utoAddHydrogen)
-      REGISTER_ACTION(E,e,lectronSystemsVisible)
-      REGISTER_ACTION(C,c,hargeVisible)
-      foreach(QAction* booleanAction, booleanActions.keys())
-      {
-        booleanAction->setCheckable(true);
-        booleanAction->setChecked((scene->*booleanActions[booleanAction].second)());
-        connect(booleanAction, SIGNAL(toggled(bool)), scene, SLOT(booleanPropertyChanged(bool)));
-        connect(booleanAction, SIGNAL(toggled(bool)), scene, SLOT(updateAll()));
-        connect(scene, SIGNAL(sceneRectChanged(QRectF)), scene, SLOT(updateGrid(QRectF)));
-      }
+      connect(scene, SIGNAL(sceneRectChanged(QRectF)), scene, SLOT(updateGrid(QRectF)));
 
       propertiesHelpLabel->setAlignment(Qt::AlignTop);
       propertiesHelpLabel->setDisabled(true);
@@ -175,7 +131,7 @@ namespace Molsketch {
     QMenu* contextSubMenu()
     {
       QMenu* menu = new QMenu(tr("Scene properties"));
-      menu->addActions(booleanActions.keys());
+      // TODO
       return menu;
     }
 
@@ -635,13 +591,6 @@ namespace Molsketch {
     graphicsItem* currentItem = 0; // TODO check if focusItem is what we actually want here
     if (selectedItems().size() == 1) currentItem = dynamic_cast<graphicsItem*>(selectedItems().first());
     d->setPropertiesWidget(currentItem);
-  }
-
-  void MolScene::booleanPropertyChanged(bool newValue)
-  {
-    QAction* action = dynamic_cast<QAction*>(sender());
-    if (!d->booleanActions.contains(action)) return;
-    (this->*d->booleanActions.value(action).first)(newValue);
   }
 
   void MolScene::updateGrid(const QRectF& newSceneRect)

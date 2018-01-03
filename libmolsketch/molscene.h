@@ -100,33 +100,6 @@ namespace Molsketch {
        */
       int editMode() const; // TODO obsolete?
 
-#define SCENEPROPERTY(CAPLETTER, LOWERLETTER, PROPNAME, TYPE, DEFAULTVALUE) \
-  void set##CAPLETTER##PROPNAME(const TYPE& value) { setProperty("Molscene" #CAPLETTER #PROPNAME, value); } \
-  TYPE LOWERLETTER##PROPNAME() const { QVariant value = property("Molscene" #CAPLETTER #PROPNAME); \
-      if (value.isValid()) return value.value<TYPE>(); \
-      return DEFAULTVALUE; }
-
-#define STRINGIFIEDPROPERTY(CAPLETTER, LOWERLETTER, PROPNAME, TYPE, DEFAULTVALUE) \
-  void set##CAPLETTER##PROPNAME(const TYPE& value) { setProperty("Molscene" #CAPLETTER #PROPNAME, stringify(value)); } \
-  TYPE LOWERLETTER##PROPNAME() const { QVariant value = property("Molscene" #CAPLETTER #PROPNAME); \
-      if (value.isValid()) return makeFromString<TYPE>(value.toString()); \
-      return DEFAULTVALUE; }
-
-      // TODO delete
-      SCENEPROPERTY(B,b,ondLength, qreal, 40)
-      SCENEPROPERTY(B,b,ondWidth, qreal, 2)
-      SCENEPROPERTY(A,a,rrowWidth, qreal, 1.5)
-      SCENEPROPERTY(F,f,rameLinewidth, qreal, 1.5)
-      SCENEPROPERTY(A,a,tomSize, qreal, 5)
-      STRINGIFIEDPROPERTY(A,a,tomFont, QFont, QFont())
-      SCENEPROPERTY(H,h,ydrogenVisible, bool, true)
-      SCENEPROPERTY(C,c,arbonVisible, bool, false)
-      SCENEPROPERTY(L,l,onePairsVisible, bool, false)
-      SCENEPROPERTY(A,a,utoAddHydrogen, bool, true)
-      SCENEPROPERTY(E,e,lectronSystemsVisible, bool, false)
-      SCENEPROPERTY(C,c,hargeVisible, bool, true)
-      STRINGIFIEDPROPERTY(D,d,efaultColor, QColor, QColor(Qt::black))
-
       qreal bondAngle() const;
 
       /**
@@ -283,7 +256,6 @@ namespace Molsketch {
   private slots:
       void updateAll() ;
       void selectionSlot();
-      void booleanPropertyChanged(bool newValue);
       void updateGrid(const QRectF &newSceneRect);
   };
 

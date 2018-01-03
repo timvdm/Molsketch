@@ -54,11 +54,15 @@ namespace Molsketch {
     BOOL_PROPERTY_DECL(carbonVisible)
     BOOL_PROPERTY_DECL(electronSystemsVisible)
     BOOL_PROPERTY_DECL(chargeVisible)
+    BOOL_PROPERTY_DECL(autoAddHydrogen)
+    BOOL_PROPERTY_DECL(hydrogenVisible)
+    BOOL_PROPERTY_DECL(lonePairsVisible)
 
 #define REAL_PROPERTY_DECL(NAME) \
   const DoubleSettingsItem* NAME() const; \
   DoubleSettingsItem* NAME();
 
+    REAL_PROPERTY_DECL(arrowWidth)
     REAL_PROPERTY_DECL(bondAngle)
     REAL_PROPERTY_DECL(gridLineWidth)
     REAL_PROPERTY_DECL(verticalGridSpacing)
@@ -68,13 +72,15 @@ namespace Molsketch {
     REAL_PROPERTY_DECL(lonePairLineWidth)
     REAL_PROPERTY_DECL(bondWidth)
     REAL_PROPERTY_DECL(bondLength)
+    REAL_PROPERTY_DECL(frameLineWidth)
 
 #define PROPERTY_DECL(TYPE, NAME) \
   const TYPE* NAME() const; \
   TYPE* NAME();
 
-    PROPERTY_DECL(FontSettingsItem, atomFont)
     PROPERTY_DECL(ColorSettingsItem, gridColor)
+    PROPERTY_DECL(ColorSettingsItem, defaultColor)
+    PROPERTY_DECL(FontSettingsItem, atomFont)
 
     enum MouseWheelMode { // TODO migrate this. This is not actually part of the scene settings, but rather the application settings
       Unset,

@@ -27,21 +27,27 @@ Q_DECLARE_METATYPE(Molsketch::SceneSettings::MouseWheelMode)
 
 namespace Molsketch {
 
+  static const char ATOM_FONT[] = "atom-font";
+  static const char ARROW_WIDTH[] = "arrow-width";
+  static const char AUTO_ADD_HYDROGEN[] = "auto-add-hydrogen";
+  static const char BOND_ANGLE[] = "bond-angle";
+  static const char BOND_LENGTH[] = "bond-length";
+  static const char BOND_WIDTH[] = "bond-width";
   static const char CARBON_VISIBLE[] = "carbon-visible";
   static const char CHARGE_VISIBLE[] = "charge-visible";
   static const char ELECTRON_SYSTEMS_VISIBLE[] = "electron-systems-visible";
-  static const char ATOM_FONT[] = "atom-font";
-  static const char BOND_LENGTH[] = "bond-length";
-  static const char BOND_WIDTH[] = "bond-width";
-  static const char BOND_ANGLE[] = "bond-angle";
-  static const char MOUSE_CYCLE_MODE[] = "mouse-cycle-mode";
-  static const char LONE_PAIR_LINE_WIDTH[] = "lone-pair-line-width";
-  static const char LONE_PAIR_LENGTH[] = "lone-pair-length";
-  static const char RADICAL_DIAMETER[] = "radical-diameter";
-  static const char HORIZONTAL_GRID_SPACING[] = "horizontal-grid-spacing";
-  static const char VERTICAL_GRID_SPACING[] = "vertical-grid-spacing";
   static const char GRID_COLOR[] = "grid-color";
   static const char GRID_LINEWIDTH[] = "grid-linewidth";
+  static const char HORIZONTAL_GRID_SPACING[] = "horizontal-grid-spacing";
+  static const char LONE_PAIR_LENGTH[] = "lone-pair-length";
+  static const char LONE_PAIR_LINE_WIDTH[] = "lone-pair-line-width";
+  static const char MOUSE_CYCLE_MODE[] = "mouse-cycle-mode";
+  static const char RADICAL_DIAMETER[] = "radical-diameter";
+  static const char VERTICAL_GRID_SPACING[] = "vertical-grid-spacing";
+  static const char DEFAULT_COLOR[] = "default-color";
+  static const char FRAME_LINE_WIDTH[] = "frame-line-width";
+  static const char HYDROGEN_VISIBLE[] = "hydrogen-visible";
+  static const char LONE_PAIRS_VISIBLE[] = "lone-pairs-visible";
 
   class SceneSettingsPrivate {
     Q_DISABLE_COPY(SceneSettingsPrivate)
@@ -56,13 +62,19 @@ namespace Molsketch {
     *lonePairLength,
     *lonePairLineWidth,
     *bondWidth,
-    *bondLength;
+    *bondLength,
+    *arrowWidth,
+    *frameLineWidth;
 
     BoolSettingsItem *carbonVisible,
     *electronSystemsVisible,
-    *chargeVisible;
+    *chargeVisible,
+    *autoAddHydrogen,
+    *hydrogenVisible,
+    *lonePairsVisible;
 
-    ColorSettingsItem *gridColor;
+    ColorSettingsItem *gridColor,
+    *defaultColor;
     FontSettingsItem *atomFont;
 
     QMap<QString, SettingsItem*> settingsItems;
@@ -88,22 +100,26 @@ namespace Molsketch {
       : settingsFacade(facade),
         parent(parent)
     {
+      atomFont = initializeSetting<FontSettingsItem, QFont>(ATOM_FONT, QFont());
+      arrowWidth = initializeDoubleSetting(ARROW_WIDTH, 1.5);
+      autoAddHydrogen = initializeBoolSetting(AUTO_ADD_HYDROGEN, true);
       bondAngle = initializeDoubleSetting(BOND_ANGLE, 30);
+      bondLength = initializeDoubleSetting(BOND_LENGTH, 40);
+      bondWidth = initializeDoubleSetting(BOND_WIDTH, 2);
+      carbonVisible = initializeBoolSetting(CARBON_VISIBLE, false);
+      chargeVisible = initializeBoolSetting(CHARGE_VISIBLE, false);
+      defaultColor = initializeSetting<ColorSettingsItem, QColor>(DEFAULT_COLOR, QColor(Qt::black));
+      electronSystemsVisible = initializeBoolSetting(ELECTRON_SYSTEMS_VISIBLE, false);
+      frameLineWidth = initializeDoubleSetting(FRAME_LINE_WIDTH, 1.5);
       gridLineWidth = initializeDoubleSetting(GRID_LINEWIDTH, 0);
-      verticalGridSpacing = initializeDoubleSetting(VERTICAL_GRID_SPACING, 10);
+      gridColor = initializeSetting<ColorSettingsItem, QColor>(GRID_COLOR, QColor(Qt::gray));
       horizontalGridSpacing = initializeDoubleSetting(HORIZONTAL_GRID_SPACING, 10);
-      radicalDiameter = initializeDoubleSetting(RADICAL_DIAMETER, 3);
+      hydrogenVisible = initializeBoolSetting(HYDROGEN_VISIBLE, true);
       lonePairLength = initializeDoubleSetting(LONE_PAIR_LENGTH, 7);
       lonePairLineWidth = initializeDoubleSetting(LONE_PAIR_LINE_WIDTH, 1);
-      bondWidth = initializeDoubleSetting(BOND_WIDTH, 1);
-      bondLength = initializeDoubleSetting(BOND_LENGTH, 40);
-
-      carbonVisible = initializeBoolSetting(CARBON_VISIBLE, false);
-      electronSystemsVisible = initializeBoolSetting(ELECTRON_SYSTEMS_VISIBLE, false);
-      chargeVisible = initializeBoolSetting(CHARGE_VISIBLE, false);
-
-      gridColor = initializeSetting<ColorSettingsItem, QColor>(GRID_COLOR, QColor(Qt::gray));
-      atomFont = initializeSetting<FontSettingsItem, QFont>(ATOM_FONT, QFont());
+      lonePairsVisible = initializeBoolSetting(LONE_PAIRS_VISIBLE, false);
+      radicalDiameter = initializeDoubleSetting(RADICAL_DIAMETER, 3);
+      verticalGridSpacing = initializeDoubleSetting(VERTICAL_GRID_SPACING, 10);
     }
   };
 
@@ -117,10 +133,14 @@ namespace Molsketch {
 
   SceneSettings::~SceneSettings() {}
 
+  QString dashifyCamelCaseAttributeName(const QStringRef &originalName) {
+    return originalName.toString().replace(QRegularExpression("([A-Z])"), "-\\1").toLower().remove("-molscene-");
+  }
+
   void SceneSettings::setFromAttributes(const QXmlStreamAttributes &attributes) {
     Q_D(SceneSettings);
     for (auto attribute : attributes) {
-      QString name(attribute.name().toString());
+      QString name(dashifyCamelCaseAttributeName(attribute.name()));
       if (d->settingsItems.contains(name))
         d->settingsItems[name]->set(attribute.value().toString());
     }
@@ -138,6 +158,7 @@ namespace Molsketch {
 
   PROPERTY_DEF(FontSettingsItem, atomFont)
   PROPERTY_DEF(ColorSettingsItem, gridColor)
+  PROPERTY_DEF(ColorSettingsItem, defaultColor)
 
 #define PROPERTY(NAME, TYPE, CONFIGSTRING) \
   void SceneSettings::set##NAME(const TYPE& value) { settingsFacade().setValue(CONFIGSTRING, value); \
@@ -153,6 +174,9 @@ namespace Molsketch {
   BOOL_PROPERTY_DEF(carbonVisible)
   BOOL_PROPERTY_DEF(electronSystemsVisible)
   BOOL_PROPERTY_DEF(chargeVisible)
+  BOOL_PROPERTY_DEF(autoAddHydrogen)
+  BOOL_PROPERTY_DEF(hydrogenVisible)
+  BOOL_PROPERTY_DEF(lonePairsVisible)
 
 #define REAL_PROPERTY_DEF(NAME) \
   const DoubleSettingsItem* SceneSettings::NAME() const { return d_ptr->NAME; } \
@@ -167,6 +191,8 @@ namespace Molsketch {
   REAL_PROPERTY_DEF(lonePairLineWidth)
   REAL_PROPERTY_DEF(bondWidth)
   REAL_PROPERTY_DEF(bondLength)
+  REAL_PROPERTY_DEF(arrowWidth)
+  REAL_PROPERTY_DEF(frameLineWidth)
 
   SettingsFacade &SceneSettings::settingsFacade() {
     Q_D(SceneSettings);
