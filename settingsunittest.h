@@ -36,7 +36,9 @@ const QFont ATOM_FONT("Helvetica", 15, QFont::Cursive);
 const qreal BOND_ANGLE = 1.25;
 const QString BASE64_ATOM_FONT("AAAAEgBIAGUAbAB2AGUAdABpAGMAYf////9ALgAAAAAAAP////8FAAEABhAAZAEAAAAAAAAAAAAA");
 const QString BOND_ANGLE_NAME("bond-angle");
+const QString BOND_ANGLE_OLD_NAME("MolsceneBondAngle");
 const QString ATOM_FONT_NAME("atom-font");
+const QString ATOM_FONT_OLD_NAME("MolsceneAtomFont");
 const QString SETTINGS_XML("<settings>"
                            "<" + BOND_ANGLE_NAME + " value=\"25\"/>"
                            "<" + ATOM_FONT_NAME + " value=\"" + BASE64_ATOM_FONT + "\"/>"
@@ -110,8 +112,8 @@ public:
 
   void testInitializationFromXmlAttributes() {
     QXmlStreamAttributes attributes;
-    attributes.append(BOND_ANGLE_NAME, QString::number(BOND_ANGLE));
-    attributes.append(ATOM_FONT_NAME, BASE64_ATOM_FONT);
+    attributes.append(BOND_ANGLE_OLD_NAME, QString::number(BOND_ANGLE));
+    attributes.append(ATOM_FONT_OLD_NAME, BASE64_ATOM_FONT);
     settings = new SceneSettings(SettingsFacade::transientSettings());
     settings->setFromAttributes(attributes);
     QS_ASSERT_EQUALS(settings->bondAngle()->get(), BOND_ANGLE);

@@ -31,7 +31,7 @@
 using namespace Molsketch;
 
 const qreal BOND_ANGLE_FROM_SETTINGS = 4.5;
-const QString SCENE_XML_WITH_ATTRIBUTE("<molscene bond-angle=\"" + QString::number(BOND_ANGLE_FROM_SETTINGS) + "\"/>");
+const QString SCENE_XML_WITH_ATTRIBUTE("<molscene MolsceneBondAngle=\"" + QString::number(BOND_ANGLE_FROM_SETTINGS) + "\"/>");
 
 struct MolSceneForTest : public MolScene {
   XmlObjectInterface* produceChild(const QString &childName, const QString &type) {
