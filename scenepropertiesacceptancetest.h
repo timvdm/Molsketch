@@ -24,8 +24,12 @@
 #include <molscene.h>
 #include <cxxtest/TestSuite.h>
 
+#include "scenesettings.h"
+#include "settingsitem.h"
+
 using namespace Molsketch;
 
+// TODO move to settings test
 class ScenePropertiesAcceptanceTest : public CxxTest::TestSuite {
   MolScene *scene;
 public:
@@ -39,16 +43,16 @@ public:
 
   void testPropertyUnchangedOnEscapeKeyPress() {
     // TODO iterate over all properties
-    scene->setChargeVisible(true);
+    scene->settings()->chargeVisible()->set(true);
 
     QKeyEvent *event = new QKeyEvent(QKeyEvent::KeyPress, Qt::Key_Escape, Qt::NoModifier);
     QCoreApplication::sendEvent(scene, event);
     delete event;
-    TS_ASSERT(scene->chargeVisible());
+    TS_ASSERT(scene->settings()->chargeVisible()->get());
   }
 
   void testPropertyUnchangedOnDragEnterEvent() {
-    scene->setChargeVisible(true);
+    scene->settings()->chargeVisible()->set(true);
 
     QGraphicsSceneDragDropEvent *event = new QGraphicsSceneDragDropEvent(QEvent::GraphicsSceneDragEnter);
     QMimeData *data = new QMimeData;
@@ -57,6 +61,6 @@ public:
     event->setProposedAction(Qt::CopyAction);
     QCoreApplication::sendEvent(scene, event);
     delete event;
-    TS_ASSERT(scene->chargeVisible());
+    TS_ASSERT(scene->settings()->chargeVisible()->get());
   }
 };

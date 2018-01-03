@@ -23,6 +23,9 @@
 #include <QSet>
 #include <cxxtest/TestSuite.h>
 
+#include "scenesettings.h"
+#include "settingsitem.h"
+
 using namespace Molsketch;
 
 class XmlTest : public CxxTest::TestSuite
@@ -38,7 +41,7 @@ public:
       onlyOneTopLevelItem(loadedScene);
       QGraphicsItem* restoredItem = restoreOnlySceneItem(loadedScene);
       Q_ASSERT(restoredItem);
-      TSM_ASSERT_EQUALS("Bond width", loadedScene.bondWidth(), originalScene.bondWidth());
+      TSM_ASSERT_EQUALS("Bond width", loadedScene.settings()->bondWidth()->get(), originalScene.settings()->bondWidth()->get());
       TSM_ASSERT_EQUALS("Bounding rect", restoredItem->boundingRect(), item->boundingRect());
       TSM_ASSERT_EQUALS("SVG", loadedScene.toSvg(), originalScene.toSvg());
     }
