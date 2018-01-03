@@ -35,6 +35,9 @@
 #include "math2d.h"
 #include "molecule.h"
 
+#include "scenesettings.h"
+#include "settingsitem.h"
+
 #include <QDebug>
 
 namespace Molsketch {
@@ -62,7 +65,7 @@ namespace Molsketch {
       if (size < 3) return;
 
       hintRingPoints.clear();
-      qreal radius = (scene ? scene->bondLength() : 40.) / (2*sin(M_PI/size));
+      qreal radius = (scene ? scene->settings()->bondLength()->get() : 40.) / (2*sin(M_PI/size));
       for (int i = 0; i < size ; ++i)
         hintRingPoints.append(QLineF::fromPolar(radius, 90+(360.*i)/size).p2());
 

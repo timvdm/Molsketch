@@ -41,6 +41,8 @@
 #else
 #include <QtCore/qmath.h>
 #endif
+#include "scenesettings.h"
+#include "settingsitem.h"
 
 namespace Molsketch {
   //                                        //
@@ -211,7 +213,7 @@ namespace Molsketch {
     MolScene *molScene = qobject_cast<MolScene*>(scene());
 
     if (molScene) {
-      setColor (molScene ->defaultColor());
+      setColor (molScene->settings()->defaultColor()->get());
     }
     else setColor (QColor (0, 0, 0));
     // Enabling hovereffects
@@ -244,7 +246,10 @@ namespace Molsketch {
     MolScene* molScene = dynamic_cast<MolScene*>(scene());
     if (!molScene) return true ;
 
-    if ((m_elementSymbol == "C") && !molScene->carbonVisible() && (numBonds() > 1) && ((charge() == 0) || !molScene->chargeVisible()))
+    if ((m_elementSymbol == "C")
+        && !molScene->settings()->carbonVisible()->get()
+        && (numBonds() > 1)
+        && ((charge() == 0) || !molScene->settings()->chargeVisible()->get()))
       return false;
 
     return true;
@@ -586,8 +591,9 @@ namespace Molsketch {
 
     drawAtomLabel(painter, getLabelWithHydrogens(), labelAlignment());
     drawSelectionHighlight(painter);
-    if (molScene->chargeVisible()) drawCharge(painter); // TODO unite with subscript drawing and align appropriately
-    if (molScene->lonePairsVisible()) drawElectrons(painter);
+    if (molScene->settings()->chargeVisible()->get())
+      drawCharge(painter); // TODO unite with subscript drawing and align appropriately
+    if (molScene->settings()->lonePairsVisible()->get()) drawElectrons(painter);
     painter->restore();
   }
 
@@ -864,8 +870,8 @@ namespace Molsketch {
     MolScene* molScene = dynamic_cast<MolScene*>(scene());
     if (molScene)
     {
-      carbonVisible = molScene->carbonVisible();
-      chargeVisible = molScene->chargeVisible();
+      carbonVisible = molScene->settings()->carbonVisible()->get();
+      chargeVisible = molScene->settings()->chargeVisible()->get();
     }
 
     if ((m_elementSymbol == "C")

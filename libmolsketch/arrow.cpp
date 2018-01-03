@@ -28,6 +28,8 @@
 #include <QUndoCommand>
 #include <QMenu>
 
+#include "scenesettings.h"
+#include "settingsitem.h"
 #include "molscene.h"
 #include "math2d.h"
 #include "actions/arrowtypeaction.h"
@@ -428,9 +430,8 @@ namespace Molsketch {
     graphicsItem::prepareContextMenu(contextMenu);
   }
 
-  qreal Arrow::sceneLineWidth(MolScene *scene) const
-  {
-    return scene->arrowWidth();
+  qreal Arrow::sceneLineWidth(MolScene *scene) const {
+    return scene->settings()->arrowWidth()->get();
   }
   bool Arrow::getSpline() const
   {

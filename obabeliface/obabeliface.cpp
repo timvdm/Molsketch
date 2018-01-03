@@ -36,6 +36,9 @@
 #include "atom.h"
 #include "molscene.h"
 
+#include "scenesettings.h"
+#include "settingsitem.h"
+
 #ifdef OPENBABEL2_TRUNK
 #include <openbabel/graphsym.h>
 #include <openbabel/stereo/stereo.h>
@@ -142,7 +145,7 @@ namespace Molsketch
     // Add hydrogens
     if (3 == dim // TODO also for 2D?
       && dynamic_cast<MolScene*>(scene)
-      && dynamic_cast<MolScene*>(scene)->autoAddHydrogen())
+      && dynamic_cast<MolScene*>(scene)->settings()->autoAddHydrogen()->get())
         obmol.AddHydrogens(); // TODO check if this works without begin/end modify
 
     // Checking if the file exists and making a backup

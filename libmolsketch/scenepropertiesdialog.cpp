@@ -3,6 +3,9 @@
 #include "molscene.h"
 #include "ui_scenepropertiesdialog.h"
 
+#include "scenesettings.h"
+#include "settingsitem.h"
+
 namespace Molsketch {
 
   struct ScenePropertiesDialog::privateData
@@ -11,16 +14,14 @@ namespace Molsketch {
     Ui::ScenePropertiesDialog *ui;
 
     void transferSceneToUi() {
-      ui->arrowLineWidth->setValue(scene->arrowWidth());
-//      ui->atomFont->sele
-      ui->atomSize->setValue(scene->atomSize());
-      ui->autoHydrogensVisible->setChecked(scene->autoAddHydrogen());
-      ui->boldFont->setChecked(scene->atomFont().bold());
-      ui->bondAngle->setValue(scene->bondAngle());
-      ui->bondLength->setValue(scene->bondLength());
-      ui->bondLineWidth->setValue(scene->bondWidth());
-      ui->carbonsVisible->setChecked(scene->carbonVisible());
-      ui->chargesVisible->setChecked(scene->chargeVisible());
+      ui->arrowLineWidth->setValue(scene->settings()->arrowWidth()->get());
+      ui->autoHydrogensVisible->setChecked(scene->settings()->autoAddHydrogen()->get());
+      ui->boldFont->setChecked(scene->settings()->atomFont()->get().bold());
+      ui->bondAngle->setValue(scene->settings()->bondAngle()->get());
+      ui->bondLength->setValue(scene->settings()->bondLength()->get());
+      ui->bondLineWidth->setValue(scene->settings()->bondWidth()->get());
+      ui->carbonsVisible->setChecked(scene->settings()->carbonVisible()->get());
+      ui->chargesVisible->setChecked(scene->settings()->chargeVisible()->get());
 //      ui->
       // this is getting cumbersome. How about a generic solution (TDD!)
       // - property owner interface:

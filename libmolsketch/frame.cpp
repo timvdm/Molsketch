@@ -25,6 +25,8 @@
 #include <QPainter>
 #include <QDebug>
 #include <molecule.h>
+#include "scenesettings.h"
+#include "settingsitem.h"
 
 //// code for parsing frame instructions TODO externalize
 ///
@@ -406,9 +408,8 @@ namespace Molsketch {
     return list;
   }
 
-  qreal Frame::sceneLineWidth(MolScene *scene) const
-  {
-    return scene->frameLinewidth();
+  qreal Frame::sceneLineWidth(MolScene *scene) const {
+    return scene->settings()->frameLineWidth()->get();
   }
 
 

@@ -224,6 +224,10 @@ namespace Molsketch {
     clear();
   }
 
+  SceneSettings *MolScene::settings() const {
+    return d->settings;
+  }
+
   QFont MolScene::getAtomFont() const {
     return d->settings->atomFont()->get(); // FIXME connect signal/slot
   }

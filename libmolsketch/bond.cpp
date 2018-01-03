@@ -36,6 +36,8 @@
 #include <actions/bondtypeaction.h>
 #include <actions/flipbondaction.h>
 #include <actions/flipstereobondsaction.h>
+#include "scenesettings.h"
+#include "settingsitem.h"
 
 #define CHECKFORATOMS if (!m_beginAtom || !m_endAtom)
 
@@ -72,7 +74,7 @@ namespace Molsketch {
       #endif
           );
     if (molScene)
-      setColor(molScene->defaultColor());
+      setColor(molScene->settings()->defaultColor()->get());
     else
       setColor(QColor(0, 0, 0));
 
@@ -291,7 +293,7 @@ namespace Molsketch {
     QPointF nvb = vb / sqrt(vb.x()*vb.x() + vb.y()*vb.y());
     QPointF uvb = nvb;
     if (MolScene* s = qobject_cast<MolScene*>(scene()))
-      uvb *= s->bondLength()*lineWidth()/20.;
+      uvb *= s->settings()->bondLength()->get()*lineWidth()/20.;
     QPointF normalVector(uvb.y(), -uvb.x());
 
     // clip for broken bond

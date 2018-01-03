@@ -91,6 +91,8 @@ namespace Molsketch {
        */
       ~MolScene();
 
+      SceneSettings* settings() const;
+
       QFont getAtomFont() const;
 
       static QString mimeType();
