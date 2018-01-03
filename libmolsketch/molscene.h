@@ -44,20 +44,12 @@ namespace Molsketch {
   class genericAction;
   class SceneSettings;
 
-  /**
-   * This class is a subclassed version of QGraphicsScene with addition of some extra methods and
-   * event handling for molecules. In can be used in the same fashion as QGraphicsScene.
-   *
-   */
   class MolScene : public QGraphicsScene, public abstractXmlObject
   {
     Q_OBJECT
 
     public:
     static const QString mouseWheelForCyclingTools;
-      /**
-       * Enum for the different edit modes.
-       */
       enum EditMode {
         MoveMode,     //!< Atoms and molecules are movable.
         DrawMode,     //!< Mode to add atoms and bonds.
@@ -80,24 +72,14 @@ namespace Molsketch {
         RenderColoredWireframe,
       };
 
-      /**
-       * Creates a new MolScene with @p parent.
-       */
       explicit MolScene(QObject* parent = 0);
       /** Creates a new MolScene with @p settings. Will assume ownership of @p settings! */
       MolScene(SceneSettings *settings, QObject* parent = 0);
-      /**
-       * Cleans up the UndoStack and deletes the molscene.
-       */
       ~MolScene();
 
       QFont getAtomFont() const;
 
       static QString mimeType();
-      // Queries
-      /**
-       * @return The current EditMode of the scene.
-       */
       int editMode() const; // TODO obsolete?
 
 #define SCENEPROPERTY(CAPLETTER, LOWERLETTER, PROPNAME, TYPE, DEFAULTVALUE) \

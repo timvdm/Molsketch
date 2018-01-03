@@ -6,6 +6,14 @@
     </ul>
 </b>
 
+<h2>0.5.1 Boron-8</h2>
+<ul>
+    <li>Newman atom</li>
+    <li>New tools for aligning, spacing, and cleaning up molecules</li>
+    <li>Better encapsuled calls to OpenBabel in order to avoid crashes</li>
+    <li>Several fixes to qmake/cmake installation of files (including MIME types)</li>
+</ul>
+
 <h1>0.5.0 Boron</h1>
 <ul>
     <li>change log displayed on startup</li>
