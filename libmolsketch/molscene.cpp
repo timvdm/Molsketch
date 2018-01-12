@@ -94,7 +94,7 @@ namespace Molsketch {
     grid *Grid;
     MolScene *scene;
     QDockWidget *propertiesDock;
-    QLabel *propertiesHelpLabel;
+    QScrollArea *propertiesScrollArea;
     SceneSettings *settings;
 
     graphicsItem* dragItem;
@@ -109,22 +109,28 @@ namespace Molsketch {
       }
     }
 
+    QWidget *generatePropertiesHelpLabel() {
+      QLabel *helpLabel = new QLabel(tr("Select single item to edit properties"), propertiesScrollArea);
+      helpLabel->setAlignment(Qt::AlignTop);
+      helpLabel->setDisabled(true);
+      return helpLabel;
+    }
+
     privateData(MolScene* scene)
       : selectionRectangle(new QGraphicsRectItem),
         inputItem(new TextInputItem),
         Grid(new grid),
         scene(scene),
         propertiesDock(new QDockWidget(tr("Properties"))),
-        propertiesHelpLabel(new QLabel(tr("Select single item to edit properties"), propertiesDock)),
+        propertiesScrollArea(new QScrollArea(propertiesDock)),
         dragItem(0)
     {
       selectionRectangle->setPen(QPen(Qt::blue,0,Qt::DashLine));
       selectionRectangle->setZValue(INFINITY);
       connect(scene, SIGNAL(sceneRectChanged(QRectF)), scene, SLOT(updateGrid(QRectF)));
 
-      propertiesHelpLabel->setAlignment(Qt::AlignTop);
-      propertiesHelpLabel->setDisabled(true);
-      propertiesDock->setWidget(propertiesHelpLabel);
+      propertiesScrollArea->setWidget(generatePropertiesHelpLabel());
+      propertiesDock->setWidget(propertiesScrollArea);
       attachDockWidgetToMainWindow(scene);
     }
 
@@ -140,7 +146,7 @@ namespace Molsketch {
 //      if (inputItem && !inputItem->scene()) // TODO compare with this scene
 //        delete inputItem; // TODO should clean up this item...
 //      delete selectionRectangle; // TODO why?
-      propertiesDock->setWidget(propertiesHelpLabel);
+      propertiesScrollArea->setWidget(nullptr);
       delete propertiesDock;
       if (!Grid->scene()) delete Grid;
     }
@@ -148,11 +154,7 @@ namespace Molsketch {
     bool gridOn()const { return Grid->scene(); }
 
     void setPropertiesWidget(graphicsItem* item) {
-      QWidget* oldWidget = propertiesDock->widget();
-      QWidget* newWidget = item ? item->getPropertiesWidget() : propertiesHelpLabel;
-      propertiesDock->setWidget(newWidget);
-      if (oldWidget != newWidget && oldWidget != propertiesHelpLabel)
-        delete oldWidget;
+      propertiesScrollArea->setWidget(item ? item->getPropertiesWidget() : generatePropertiesHelpLabel());
     }
 
     void moveDragItem(QGraphicsSceneDragDropEvent* event) {
@@ -592,7 +594,7 @@ namespace Molsketch {
   {
     foreach(AbstractItemAction* itemAction, findChildren<AbstractItemAction*>())
       itemAction->setItems(selectedItems());
-    graphicsItem* currentItem = 0; // TODO check if focusItem is what we actually want here
+    graphicsItem* currentItem = nullptr; // TODO check if focusItem is what we actually want here
     if (selectedItems().size() == 1) currentItem = dynamic_cast<graphicsItem*>(selectedItems().first());
     d->setPropertiesWidget(currentItem);
   }
