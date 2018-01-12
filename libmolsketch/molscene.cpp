@@ -129,6 +129,7 @@ namespace Molsketch {
       selectionRectangle->setZValue(INFINITY);
       connect(scene, SIGNAL(sceneRectChanged(QRectF)), scene, SLOT(updateGrid(QRectF)));
 
+      propertiesScrollArea->setWidgetResizable(true);
       propertiesScrollArea->setWidget(generatePropertiesHelpLabel());
       propertiesDock->setWidget(propertiesScrollArea);
       attachDockWidgetToMainWindow(scene);
