@@ -31,15 +31,20 @@
 
   <screenshots>
     <screenshot type="default">
-      <caption>The Molsketch main window</caption>
-      <image>https://github.com/hvennekate/Molsketch/raw/master/screenshots/Screen1.png</image>
+      <caption>Drawing reaction mechanisms</caption>
+      <image>https://a.fsdn.com/con/app/proj/molsketch/screenshots/Screenshot%20from%202018-01-13%2013-03-56.png</image>
     </screenshot>
     <screenshot>
-      <image>https://github.com/hvennekate/Molsketch/raw/master/screenshots/Screen2.png</image>
+      <caption>Arranging molecules</caption>
+      <image>https://a.fsdn.com/con/app/proj/molsketch/screenshots/Screenshot%20from%202018-01-13%2013-15-33.png</image>
     </screenshot>
     <screenshot>
-            <caption>Molecule with electron system visible</caption>
-      <image>https://github.com/hvennekate/Molsketch/raw/master/screenshots/Screen3.png</image>
+      <caption>Editing atom properties</caption>
+      <image>https://a.fsdn.com/con/app/proj/molsketch/screenshots/Screenshot%20from%202018-01-13%2013-25-44.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Newman projections</caption>
+      <image>https://a.fsdn.com/con/app/proj/molsketch/screenshots/Screenshot%20from%202018-01-13%2013-31-38.png</image>
     </screenshot>
   </screenshots>
 
