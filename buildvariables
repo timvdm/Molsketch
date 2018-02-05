@@ -2,6 +2,6 @@
 "Executable destination dir";MSK_INSTALL_BINS;/bin;/bin
 "Headers destination dir";MSK_INSTALL_INCLUDES;/include/molsketch;/include
 "Documentation destination dir";MSK_INSTALL_DOCS;/share/doc/molsketch;/doc
-"Libraries (64bit) destination dir";MSK_INSTALL_LIBS64;/lib64;/lib
-"Libraries (32bit) destination dir";MSK_INSTALL_LIBS;/lib;/lib
+"Libraries (64bit) destination dir";MSK_INSTALL_LIBS64;/lib64/molsketch;/lib
+"Libraries (32bit) destination dir";MSK_INSTALL_LIBS;/lib/molsketch;/lib
 "Build OpenBabel interface";MSK_OBABELIFACE;true;true

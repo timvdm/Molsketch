@@ -88,11 +88,9 @@ else(Qt5Core_FOUND AND Qt5Widgets_FOUND AND Qt5Gui_FOUND AND Qt5PrintSupport_FOU
         message(STATUS "Using Qt4.")
 endif(Qt5Core_FOUND AND Qt5Widgets_FOUND AND Qt5Gui_FOUND AND Qt5PrintSupport_FOUND AND Qt5Svg_FOUND)
 
-if(FORCEQt4)
-        add_definitions(-DQTVERSIONSUFFIX="")
-else(FORCEQt4)
-        add_definitions(-DQTVERSIONSUFFIX="\\\"-qt5\\\"")
-endif(FORCEQt4)
+if(NOT FORCEQt4)
+        set(QTVERSIONSUFFIX "-qt5")
+endif(NOT FORCEQt4)
 
 ################ Reading version and default paths
 
@@ -103,9 +101,9 @@ message(STATUS "Installation settings and corresponding cmake variables (use \"-
 list(APPEND mskprefix "Global install prefix" MSK_INSTALL_PREFIX /usr "C:/Program Files/MolsKetch")
 list(APPEND mskbins Executable MSK_INSTALL_BINS /bin "")
 if( CMAKE_SIZEOF_VOID_P EQUAL 8 AND NOT APPLE )
-        list(APPEND msklibs "Library install folder" MSK_INSTALL_LIBS /lib64 "")
+        list(APPEND msklibs "Library install folder" MSK_INSTALL_LIBS /lib64/molsketch "")
 else( CMAKE_SIZEOF_VOID_P EQUAL 8 AND NOT APPLE )
-        list(APPEND msklibs "Library install folder" MSK_INSTALL_LIBS /lib "")
+        list(APPEND msklibs "Library install folder" MSK_INSTALL_LIBS /lib/molsketch "")
 endif( CMAKE_SIZEOF_VOID_P EQUAL 8 AND NOT APPLE )
 list(APPEND mskincludes "Headers install folder" MSK_INSTALL_INCLUDES /include/molsketch /include)
 list(APPEND mskdocs "Documentation install folder" MSK_INSTALL_DOCS /share/doc/molsketch /doc)
@@ -134,6 +132,12 @@ foreach(varname mskprefix mskbins msklibs mskincludes mskdocs mskversion msknick
         message(STATUS "    ${descriptor}: ${variableName} = ${${variableName}}")
         add_definitions(-D${variableName}="\\\"${${variableName}}\\\"")
 endforeach(varname)
+
+set(OBABEL_IFACE_NAME "libobabeliface${QTVERSIONSUFFIX}.so")
+if(WIN32 OR WIN64)
+        set(OBABEL_IFACE_NAME "obabeliface${QTVERSIONSUFFIX}.dll")
+endif(WIN32 OR WIN64)
+add_definitions(-DOBABEL_IFACE_LOCATION="\\\"${MSK_INSTALL_LIBS}/${OBABEL_IFACE_NAME}\\\"")
 
 set(CMAKE_INSTALL_PREFIX ${MSK_INSTALL_PREFIX})
 

@@ -2,6 +2,7 @@ include(../findOpenBabel.pri)
 include(../settings.pri)
 
 TEMPLATE = lib
+CONFIG += plugin
 HEADERS += obabeliface.h
 SOURCES += obabeliface.cpp
 INCLUDEPATH += $$MSK_SOURCE_BASE/libmolsketch
@@ -15,5 +16,4 @@ DESTDIR = ../lib
 win* : VERSION =
 
 target.path=$${MSK_INSTALL_LIBS}
-contains(QT_ARCH, ".*64.*") : target.path = $${MSK_INSTALL_LIBS64}
 INSTALLS += target

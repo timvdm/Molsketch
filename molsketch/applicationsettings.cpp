@@ -26,12 +26,6 @@
 #include <QSize>
 #include <QDir>
 
-#ifdef _WIN32
-#define OBABELOSSUFFIX ".dll"
-#else
-#define OBABELOSSUFFIX
-#endif
-
 static const char LATEST_RELEASE_NOTES_VERSION_SHOWN[] = "latestReleaseNotes";
 static const char VERSION_FILE[] = ":/version";
 static const char VERSION_NICK_FILE[] = ":/versionnick";
@@ -112,7 +106,7 @@ void ApplicationSettings::setObabelIfacePath(const QString &path) {
 }
 
 QString ApplicationSettings::obabelIfacePath() const {
-  return settings().value(OBABEL_IFACE, "obabeliface" QTVERSIONSUFFIX OBABELOSSUFFIX).toString();
+  return settings().value(OBABEL_IFACE, OBABEL_IFACE_LOCATION).toString();
 }
 
 void ApplicationSettings::setObabelFormatsPath(const QString &path) {

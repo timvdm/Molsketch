@@ -41,18 +41,17 @@ link_directories(${CMAKE_BINARY_DIR}/lib)
 add_executable(molsketch ${molsketch_SRCS} ${molsketch_UIS_H} ${molsketch_MOC_HDRS})
 install(TARGETS molsketch DESTINATION ${MSK_INSTALL_BINS})
 set_property(TARGET molsketch PROPERTY CXX_STANDARD 14)
+set_property(TARGET molsketch PROPERTY INSTALL_RPATH ${MSK_INSTALL_LIBS})
 target_link_libraries(molsketch molsketch_LIB)
 if(FORCEQt4)
         # Link the code against libmolsKetch and Qt
         target_link_libraries(molsketch ${QT_LIBRARIES})
-        set_target_properties(molsketch PROPERTIES OUTPUT_NAME "molsketch")
 else(FORCEQt4)
         foreach(package ${Qt5RequiredPackages})
                 target_link_libraries(molsketch Qt5::${package})
         endforeach(package)
-        set_target_properties(molsketch PROPERTIES OUTPUT_NAME "molsketch-qt5")
 endif(FORCEQt4)
-
+set_target_properties(molsketch PROPERTIES OUTPUT_NAME "molsketch${QTVERSIONSUFFIX}")
 
 # Install the documentation
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/doc/ DESTINATION ${MSK_INSTALL_DOCS})

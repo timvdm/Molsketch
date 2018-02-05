@@ -8,6 +8,7 @@ SOURCES += *.cpp
 LIBS += -L../lib -lmolsketch$$qtVersionSuffix
 TARGET = molsketch$$qtVersionSuffix
 DESTDIR = ../bin
+QMAKE_RPATHDIR = $${MSK_INSTALL_LIBS}
 target.path=$${MSK_INSTALL_BINS}
 INSTALLS += target
 QT += network
@@ -29,7 +30,7 @@ unix {
 
   desktop.files = molsketch.desktop
   desktop.path = $$MSK_PREFIX/share/applications
-  
+
   appdata.files = net.sourceforge.molsketch.appdata.xml
   appdata.path = $$MSK_PREFIX/share/metainfo
 }
