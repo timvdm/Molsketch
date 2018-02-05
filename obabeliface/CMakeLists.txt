@@ -5,7 +5,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/libmolsketch
 set(obabeliface_HDRS obabeliface.h)
 set(obabeliface_SRCS obabeliface.cpp)
 
-if (MSK_OPEN_BABEL)
+if (MSK_OBABELIFACE)
 
   # Including qt4
   if(FORCEQt4)
@@ -44,4 +44,4 @@ if (MSK_OPEN_BABEL)
           LIBRARY DESTINATION ${MSK_INSTALL_LIBS}
           ARCHIVE DESTINATION ${MSK_INSTALL_LIBS}/static)
 
-endif (MSK_OPEN_BABEL)
+endif (MSK_OBABELIFACE)
