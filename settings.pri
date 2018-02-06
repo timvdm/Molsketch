@@ -26,4 +26,6 @@ CONFIG(static) : DEFINES += QT_STATIC_BUILD
 contains(QT_ARCH, ".*64.*") : MSK_INSTALL_LIBS = $${MSK_INSTALL_LIBS64}
 OBABEL_IFACE_NAME = libobabeliface$${qtVersionSuffix}.so
 win* : OBABEL_IFACE_NAME = obabeliface$${qtVersionSuffix}.dll
-DEFINES += "OBABEL_IFACE_LOCATION=\"\\\"$$MSK_INSTALL_LIBS/$$OBABEL_IFACE_NAME\\\"\""
+isEmpty(RELATIVE_OBABELIFACE) : DEFINES += "OBABEL_IFACE_LOCATION=\"\\\"$$MSK_INSTALL_LIBS/$$OBABEL_IFACE_NAME\\\"\""
+!isEmpty(RELATIVE_OBABELIFACE) : DEFINES += "OBABEL_IFACE_LOCATION=\"\\\"obabeliface$${qtVersionSuffix}\\\"\""
+
