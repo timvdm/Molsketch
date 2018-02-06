@@ -88,9 +88,6 @@ else(Qt5Core_FOUND AND Qt5Widgets_FOUND AND Qt5Gui_FOUND AND Qt5PrintSupport_FOU
         message(STATUS "Using Qt4.")
 endif(Qt5Core_FOUND AND Qt5Widgets_FOUND AND Qt5Gui_FOUND AND Qt5PrintSupport_FOUND AND Qt5Svg_FOUND)
 
-if(NOT FORCEQt4)
-        set(QTVERSIONSUFFIX "-qt5")
-endif(NOT FORCEQt4)
 
 ################ Reading installation settings
 
@@ -121,10 +118,16 @@ if( CMAKE_SIZEOF_VOID_P EQUAL 8 AND NOT APPLE )
         set(MSK_INSTALL_LIBS "${MSK_INSTALL_LIBS64}")
 endif( CMAKE_SIZEOF_VOID_P EQUAL 8 AND NOT APPLE )
 
+if(NOT FORCEQt4)
+        set(QTVERSIONSUFFIX "-qt5")
+endif(NOT FORCEQt4)
+
 set(OBABEL_IFACE_NAME "libobabeliface${QTVERSIONSUFFIX}.so")
+
 if(WIN32 OR WIN64)
         set(OBABEL_IFACE_NAME "obabeliface${QTVERSIONSUFFIX}.dll")
 endif(WIN32 OR WIN64)
+
 add_definitions(-DOBABEL_IFACE_LOCATION="\\\"${MSK_INSTALL_LIBS}/${OBABEL_IFACE_NAME}\\\"")
 
 set(CMAKE_INSTALL_PREFIX ${MSK_PREFIX})
