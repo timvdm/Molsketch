@@ -1,7 +1,7 @@
 include(../settings.pri)
 
 TEMPLATE = lib
-CONFIG(!static) : CONFIG += plugin
+CONFIG += plugin
 HEADERS += *.h $$files(actions/*.h)
 SOURCES += *.cpp $$files(actions/*.cpp)
 FORMS += *.ui
