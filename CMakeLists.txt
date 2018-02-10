@@ -133,8 +133,6 @@ add_definitions(-DOBABEL_IFACE_LOCATION="\\\"${MSK_INSTALL_LIBS}/${OBABEL_IFACE_
 set(CMAKE_INSTALL_PREFIX ${MSK_PREFIX})
 
 ################ Adding subdirs
-
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libmolsketch/src)
 add_subdirectory(libmolsketch)
 add_subdirectory(obabeliface)
 add_subdirectory(molsketch)
