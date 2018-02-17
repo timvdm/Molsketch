@@ -50,6 +50,7 @@ namespace Molsketch {
       ui->newmanDiameter->setValue(atom->getNewmanDiameter());
       getRadicalsFromAtom();
       getLonePairsFromAtom();
+      ui->coordinates->resizeRowsToContents();
     }
 
     void getRadicalsFromAtom() {

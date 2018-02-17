@@ -74,6 +74,7 @@
 #include "constants.h"
 #include "settingsfacade.h"
 #include "settingsitem.h"
+#include "scenepropertieswidget.h"
 
 #ifdef QT_STATIC_BUILD
 inline void initToolBarIcons() { Q_INIT_RESOURCE(toolicons); }
@@ -109,13 +110,6 @@ namespace Molsketch {
       }
     }
 
-    QWidget *generatePropertiesHelpLabel() {
-      QLabel *helpLabel = new QLabel(tr("Select single item to edit properties"), propertiesScrollArea);
-      helpLabel->setAlignment(Qt::AlignTop);
-      helpLabel->setDisabled(true);
-      return helpLabel;
-    }
-
     privateData(MolScene* scene)
       : selectionRectangle(new QGraphicsRectItem),
         inputItem(new TextInputItem),
@@ -130,7 +124,6 @@ namespace Molsketch {
       connect(scene, SIGNAL(sceneRectChanged(QRectF)), scene, SLOT(updateGrid(QRectF)));
 
       propertiesScrollArea->setWidgetResizable(true);
-      propertiesScrollArea->setWidget(generatePropertiesHelpLabel());
       propertiesDock->setWidget(propertiesScrollArea);
       attachDockWidgetToMainWindow(scene);
     }
@@ -147,7 +140,6 @@ namespace Molsketch {
 //      if (inputItem && !inputItem->scene()) // TODO compare with this scene
 //        delete inputItem; // TODO should clean up this item...
 //      delete selectionRectangle; // TODO why?
-      propertiesScrollArea->setWidget(nullptr);
       delete propertiesDock;
       if (!Grid->scene()) delete Grid;
     }
@@ -155,7 +147,9 @@ namespace Molsketch {
     bool gridOn()const { return Grid->scene(); }
 
     void setPropertiesWidget(graphicsItem* item) {
-      propertiesScrollArea->setWidget(item ? item->getPropertiesWidget() : generatePropertiesHelpLabel());
+      propertiesScrollArea->setWidget(item
+                                      ? item->getPropertiesWidget()
+                                      : new ScenePropertiesWidget(settings, scene));
     }
 
     void moveDragItem(QGraphicsSceneDragDropEvent* event) {
@@ -166,7 +160,7 @@ namespace Molsketch {
 
   using namespace Commands;
 
-  void MolScene::initiializeGrid()
+  void MolScene::initializeGrid()
   {
     d->Grid->setHorizontalInterval(d->settings->horizontalGridSpacing()->get());  // FIXME connect signal/slot
     d->Grid->setVerticalInterval(d->settings->verticalGridSpacing()->get());  // FIXME connect signal/slot
@@ -203,7 +197,8 @@ namespace Molsketch {
 //    addItem(textItem);
 
     d->settings = settings;
-    initiializeGrid();
+    d->propertiesScrollArea->setWidget(new ScenePropertiesWidget(d->settings, this));
+    initializeGrid();
   }
 
   MolScene::MolScene(QObject* parent)
@@ -345,7 +340,7 @@ namespace Molsketch {
     QGraphicsScene::clear();
     d = new privateData(this);
     d->settings = settings;
-    initiializeGrid();
+    initializeGrid();
   }
 
   QImage MolScene::renderMolToImage (Molecule *mol)

@@ -62,7 +62,11 @@
     </widget>
    </item>
    <item row="10" column="0" colspan="2">
-    <widget class="Molsketch::CoordinateTableView" name="coordinates"/>
+    <widget class="Molsketch::CoordinateTableView" name="coordinates">
+     <property name="alternatingRowColors">
+      <bool>true</bool>
+     </property>
+    </widget>
    </item>
    <item row="3" column="0">
     <widget class="QLabel" name="radicalsLabel">

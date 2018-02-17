@@ -1,17 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Molsketch::ScenePropertiesDialog</class>
- <widget class="QDialog" name="Molsketch::ScenePropertiesDialog">
+ <class>Molsketch::ScenePropertiesWidget</class>
+ <widget class="QWidget" name="Molsketch::ScenePropertiesWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>352</width>
-    <height>452</height>
+    <width>279</width>
+    <height>315</height>
    </rect>
-  </property>
-  <property name="windowTitle">
-   <string>Dialog</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -24,8 +21,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>340</width>
-        <height>272</height>
+        <width>261</width>
+        <height>189</height>
        </rect>
       </property>
       <attribute name="label">
@@ -69,8 +66,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>340</width>
-        <height>272</height>
+        <width>261</width>
+        <height>189</height>
        </rect>
       </property>
       <attribute name="label">
@@ -104,8 +101,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>340</width>
-        <height>272</height>
+        <width>261</width>
+        <height>189</height>
        </rect>
       </property>
       <attribute name="label">
@@ -183,8 +180,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>340</width>
-        <height>272</height>
+        <width>261</width>
+        <height>189</height>
        </rect>
       </property>
       <attribute name="label">
@@ -250,51 +247,8 @@
      </widget>
     </widget>
    </item>
-   <item>
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Apply|QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-     </property>
-    </widget>
-   </item>
   </layout>
  </widget>
  <resources/>
- <connections>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>accepted()</signal>
-   <receiver>Molsketch::ScenePropertiesDialog</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>248</x>
-     <y>254</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>157</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>rejected()</signal>
-   <receiver>Molsketch::ScenePropertiesDialog</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>316</x>
-     <y>260</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>286</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>
