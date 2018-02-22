@@ -83,6 +83,4 @@ public:
 
     for(auto testCase : testCases) testCase.runAssertions();
   }
-
-  void testnull(){}
 };

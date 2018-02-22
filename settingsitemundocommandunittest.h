@@ -50,22 +50,22 @@ public:
   }
 
   void testRedoing() {
-    undoCommandForSettingsItem(testItem, NEW_VALUE, DESCRIPTION, scene)->execute();
+    (new SettingsItemUndoCommand(testItem, NEW_VALUE, DESCRIPTION, scene->stack()))->execute();
     TS_ASSERT_EQUALS(testItem->get(), NEW_VALUE);
     TS_ASSERT_EQUALS(scene->stack()->index(), 1);
     QS_ASSERT_EQUALS(scene->stack()->undoText(), DESCRIPTION);
   }
 
   void testUndoing() {
-    undoCommandForSettingsItem(testItem, NEW_VALUE, DESCRIPTION, scene)->execute();
+    (new SettingsItemUndoCommand(testItem, NEW_VALUE, DESCRIPTION, scene->stack()))->execute();
     scene->stack()->undo();
     TS_ASSERT_EQUALS(testItem->get(), ORIGINAL_VALUE);
     QS_ASSERT_EQUALS(scene->stack()->redoText(), DESCRIPTION);
   }
 
   void testMerging() {
-    undoCommandForSettingsItem(testItem, NEW_VALUE, DESCRIPTION, scene)->execute();
-    undoCommandForSettingsItem(testItem, ORIGINAL_VALUE, DESCRIPTION, scene)->execute();
+    (new SettingsItemUndoCommand(testItem, NEW_VALUE, DESCRIPTION, scene->stack()))->execute();
+    (new SettingsItemUndoCommand(testItem, ORIGINAL_VALUE, DESCRIPTION, scene->stack()))->execute();
 
     TS_ASSERT_EQUALS(scene->stack()->index(), 1);
     QS_ASSERT_EQUALS(scene->stack()->undoText(), DESCRIPTION);
@@ -77,8 +77,8 @@ public:
   }
 
   void testNotMerging() {
-    undoCommandForSettingsItem(testItem, NEW_VALUE, DESCRIPTION, scene)->execute();
-    undoCommandForSettingsItem(secondTestItem, NEW_VALUE, DESCRIPTION, scene)->execute();
+    (new SettingsItemUndoCommand(testItem, NEW_VALUE, DESCRIPTION, scene->stack()))->execute();
+    (new SettingsItemUndoCommand(secondTestItem, NEW_VALUE, DESCRIPTION, scene->stack()))->execute();
 
     TS_ASSERT_EQUALS(scene->stack()->index(), 2);
     TS_ASSERT_EQUALS(testItem->get(), NEW_VALUE);
@@ -86,7 +86,7 @@ public:
   }
 
   void testRedoingWithoutScene() {
-    undoCommandForSettingsItem(testItem, NEW_VALUE)->execute();
+    (new SettingsItemUndoCommand(testItem, NEW_VALUE))->execute();
     TS_ASSERT_EQUALS(testItem->get(), NEW_VALUE);
   }
 };
