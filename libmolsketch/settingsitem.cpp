@@ -195,4 +195,23 @@ namespace Molsketch {
   void FontSettingsItem::set(const QFont &value) {
     set(QVariant(value));
   }
+
+  SettingsItemUndoCommand::SettingsItemUndoCommand(SettingsItem *item, const QVariant &newValue, const QString &text, QUndoStack *stack)
+    : Commands::Command<SettingsItem, SettingsItemUndoCommand, Commands::SettingsItemId>(item, text),
+      stack(stack),
+      newValue(newValue){}
+
+  SettingsItemUndoCommand* SettingsItemUndoCommand::forCurrentValue(SettingsItem *item, const QString &text, QUndoStack *stack) {
+    return new SettingsItemUndoCommand(item, item->getVariant(), text, stack);
+  }
+
+  void SettingsItemUndoCommand::redo() {
+    QVariant currentValue = this->getItem()->getVariant();
+    this->getItem()->set(newValue);
+    newValue = currentValue;
+  }
+
+  QUndoStack *SettingsItemUndoCommand::getStack() {
+    return stack;
+  }
 } // namespace Molsketch

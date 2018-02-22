@@ -71,10 +71,10 @@ namespace Molsketch {
 
     template<class ItemType, class OwnType, int CommandId = -1>
     class Command : public QUndoCommand {
-      ItemType* item;
+      ItemType *item;
     protected:
       virtual ItemType* getItem() const { return item; }
-      virtual MolScene* getScene() const = 0;
+      virtual QUndoStack *getStack() = 0;
     public:
       explicit Command(const QString& text = "", QUndoCommand* parent = 0)
         : Command(nullptr, text, parent) {}
@@ -85,12 +85,11 @@ namespace Molsketch {
       bool mergeWith(const QUndoCommand *other) override {
         auto otherCommand = dynamic_cast<const OwnType*>(other);
         if (!otherCommand) return false;
-        if (otherCommand->getItem()!= this->getItem()) return false;
+        if (otherCommand->getItem() != this->getItem()) return false;
         return true;
       }
       void execute() {
-        MolScene *scene = getScene();
-        QUndoStack *stack = scene ? scene->stack() : nullptr;
+        QUndoStack *stack = getStack();
         if (stack) stack->push(this);
         else {
           redo();
@@ -100,7 +99,22 @@ namespace Molsketch {
     };
 
     template<class ItemType, class OwnType, int CommandId = -1>
-    class ItemCommand : public Command<ItemType, OwnType, CommandId> { // TODO unit test
+    class SceneCommand : public Command<ItemType, OwnType, CommandId> {
+    protected:
+      virtual MolScene* getScene() const = 0;
+      QUndoStack *getStack() {
+        MolScene *scene = getScene();
+        return scene ? scene->stack() : nullptr;
+      }
+    public:
+      explicit SceneCommand(const QString& text = "", QUndoCommand* parent = 0)
+        : SceneCommand(nullptr, text, parent) {}
+      explicit SceneCommand(ItemType* item, const QString& text = "", QUndoCommand* parent = 0)
+        : Command<ItemType, OwnType, CommandId>(item, text, parent) {}
+    };
+
+    template<class ItemType, class OwnType, int CommandId = -1>
+    class ItemCommand : public SceneCommand<ItemType, OwnType, CommandId> { // TODO unit test
     protected: // TODO make sure that ItemType inherits graphicsItem
       virtual MolScene* getScene() const { ItemType* actualItem = this->getItem();
                                            return actualItem ? dynamic_cast<MolScene*>(actualItem->scene()) : nullptr; }
@@ -108,7 +122,7 @@ namespace Molsketch {
       explicit ItemCommand(const QString& text = "", QUndoCommand* parent = 0)
         : ItemCommand(0, text, parent) {}
       explicit ItemCommand(ItemType* item, const QString& text = "", QUndoCommand* parent = 0)
-        : Command<ItemType, OwnType, CommandId>(item, text, parent) {}
+        : SceneCommand<ItemType, OwnType, CommandId>(item, text, parent) {}
     };
 
     template<class ItemClass,

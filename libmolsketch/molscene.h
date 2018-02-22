@@ -43,6 +43,7 @@ namespace Molsketch {
   class TextInputItem;
   class genericAction;
   class SceneSettings;
+  class ScenePropertiesWidget;
 
   /**
    * This class is a subclassed version of QGraphicsScene with addition of some extra methods and
@@ -92,6 +93,8 @@ namespace Molsketch {
       ~MolScene();
 
       SceneSettings* settings() const;
+
+      ScenePropertiesWidget* producePropertiesWidget();
 
       QFont getAtomFont() const;
 

@@ -149,7 +149,7 @@ namespace Molsketch {
     void setPropertiesWidget(graphicsItem* item) {
       propertiesScrollArea->setWidget(item
                                       ? item->getPropertiesWidget()
-                                      : new ScenePropertiesWidget(settings, scene));
+                                      : scene->producePropertiesWidget());
     }
 
     void moveDragItem(QGraphicsSceneDragDropEvent* event) {
@@ -197,7 +197,7 @@ namespace Molsketch {
 //    addItem(textItem);
 
     d->settings = settings;
-    d->propertiesScrollArea->setWidget(new ScenePropertiesWidget(d->settings, this));
+    d->propertiesScrollArea->setWidget(producePropertiesWidget());
     initializeGrid();
   }
 
@@ -224,6 +224,10 @@ namespace Molsketch {
 
   SceneSettings *MolScene::settings() const {
     return d->settings;
+  }
+
+  ScenePropertiesWidget *MolScene::producePropertiesWidget() {
+    return new ScenePropertiesWidget(settings(), this);
   }
 
   QFont MolScene::getAtomFont() const {

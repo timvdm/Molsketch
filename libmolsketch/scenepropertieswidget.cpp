@@ -5,29 +5,30 @@
 
 #include "scenesettings.h"
 #include "settingsitem.h"
+#include "settingsconnector.h"
 
 namespace Molsketch {
 
   struct ScenePropertiesWidget::privateData
   {
-    SceneSettings *settings;
     Ui::ScenePropertiesWidget *ui;
+    MolScene *scene;
 
-    privateData(SceneSettings *settings)
-      : settings(settings),
-        ui(new Ui::ScenePropertiesWidget)
+    privateData(MolScene *scene)
+      : ui(new Ui::ScenePropertiesWidget),
+        scene(scene)
     {}
 
     void setup() {
-      if (!settings) return;
-      ui->bondLineWidth->setValue(settings->bondWidth()->get());
-    }
+      if (!scene) return;
+      SettingsConnector::connect(ui->bondLineWidth, scene->settings()->bondWidth(), scene->stack(), tr("Change bond line width"));
 
+    }
   };
 
   ScenePropertiesWidget::ScenePropertiesWidget(SceneSettings *settings, MolScene *scene) :
     QWidget(0),
-    d(new privateData(settings))
+    d(new privateData(scene))
   {
     d->ui->setupUi(this);
     d->setup();
