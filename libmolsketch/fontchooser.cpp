@@ -22,14 +22,14 @@
 
 namespace Molsketch {
 
-	FontChooser::FontChooser(QWidget *parent) :
-		QWidget(parent),
-		ui(new Ui::FontChooser)
-	{
-		ui->setupUi(this);
-	}
+  FontChooser::FontChooser(QWidget *parent) :
+    QWidget(parent),
+    ui(new Ui::FontChooser)
+  {
+    ui->setupUi(this);
+  }
 
-	FontChooser::~FontChooser()	{
+  FontChooser::~FontChooser()	{
     delete ui;
   }
 
