@@ -576,7 +576,7 @@
                  </widget>
                 </item>
                 <item row="2" column="1">
-                 <widget class="ColorButton" name="gridLineColor">
+                 <widget class="Molsketch::ColorButton" name="gridLineColor">
                   <property name="text">
                    <string/>
                   </property>
@@ -783,7 +783,7 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>ColorButton</class>
+   <class>Molsketch::ColorButton</class>
    <extends>QPushButton</extends>
    <header>colorbutton.h</header>
   </customwidget>

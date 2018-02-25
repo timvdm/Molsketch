@@ -16,23 +16,36 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef COLORBUTTON_H
-#define COLORBUTTON_H
+#include "colorbutton.h"
 
-#include <QPushButton>
+#include <QColorDialog>
 
-class ColorButton : public QPushButton
-{
-  Q_OBJECT
-public:
-  explicit ColorButton(QWidget *parent = 0, const QColor& color = Qt::black);
-  QColor getColor() const;
-public slots:
-  void setColor(const QColor&);
-signals:
-  void colorChanged(const QColor&);
-private slots:
-  void changeColor();
-};
+namespace Molsketch {
 
-#endif // COLORBUTTON_H
+  ColorButton::ColorButton(QWidget *parent, const QColor &color)
+    : QPushButton(parent)
+  {
+    setFlat(true);
+    setAutoFillBackground(true);
+    setColor(color);
+    connect(this, SIGNAL(clicked(bool)), this, SLOT(changeColor()));
+  }
+
+  QColor ColorButton::getColor() const {
+    return palette().color(QPalette::Button);
+  }
+
+  void ColorButton::setColor(const QColor &color) {
+    QPalette p = palette();
+    p.setColor(QPalette::Button, color);
+    setPalette(QPalette(color));
+    emit colorChanged(color);
+  }
+
+  void ColorButton::changeColor()
+  {
+    QColor newColor = QColorDialog::getColor(getColor(), nullptr, tr("Choose color"));
+    if (newColor.isValid()) setColor(newColor);
+  }
+
+} // namespace Molsketch
