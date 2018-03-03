@@ -24,6 +24,7 @@
 #include <QString>
 #include <cxxtest/TestSuite.h>
 #include <QTest>
+#include <functional>
 
 class QTableView;
 class QLineEdit;
@@ -34,6 +35,21 @@ class QXmlStreamAttributes;
 #define QS_ASSERT_EQUALS(VAL1,VAL2) {QString __comparison("\n    "); QDebug __out(&__comparison); __out << VAL1; __comparison += "\n != "; __out << VAL2; TSM_ASSERT_EQUALS(__comparison.toStdString().data(), VAL1, VAL2)}
 
 #define QSM_ASSERT_EQUALS(MESSAGE, VAL1, VAL2) {QString __comparison("\n    "); QDebug __out(&__comparison); __out << VAL1; __comparison += "\n != "; __out << VAL2; TSM_ASSERT_EQUALS((MESSAGE + __comparison).toStdString().data(), VAL1, VAL2)}
+
+#define QSO_ASSERT(ASSERTION, ...) {TSM_ASSERT(joinToString(__VA_ARGS__), ASSERTION)}
+#define QSO_ASSERT_EQUALS(VAL1, VAL2, ...) {TSM_ASSERT_EQUALS(joinToString(__VA_ARGS__), VAL1, VAL2)}
+
+template<typename T>
+QString joinToString(T t) {
+  QString result;
+  QDebug(&result) << t;
+  return result;
+}
+
+template<typename FirstType, typename... InputTypes>
+QString joinToString(FirstType firstInput, InputTypes... inputs) {
+  return joinToString(firstInput) + joinToString(inputs...);
+}
 
 #define QS_ASSERT_ON_POINTER(CAST_TYPE, POINTER, METHOD, VALUE) {\
   TSM_ASSERT(#POINTER " is null", POINTER);\
