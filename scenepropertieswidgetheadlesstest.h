@@ -23,6 +23,7 @@
 #include <scenepropertieswidget.h>
 #include <settingsitem.h>
 #include <settingsfacade.h>
+#include <settingsconnector.h>
 #include "utilities.h"
 
 using namespace Molsketch;
@@ -51,6 +52,24 @@ class ScenePropertiesWidgetHeadlessTest : public CxxTest::TestSuite {
   QDoubleSpinBox *bondLineWidthControl;
   DoubleSettingsItem *bondLineWidthSetting;
   SceneSettingsForTesting *settings;
+
+  QList<QMetaMethod> getAllMetaMethods(const QMetaObject* object, const QMetaMethod::MethodType& type) {
+    QList<QMetaMethod> result;
+    for (int i = object->methodOffset(); i < object->methodCount(); ++i) {
+      auto method = object->method(i);
+      if (type == method.methodType())
+        result << method;
+    }
+    return result;
+  }
+
+  QList<const SettingsConnector*> findConnectors(const QObject *object) {
+    QList<const SettingsConnector*> connectors;
+    auto allConnectors = propertiesWidget->findChildren<SettingsConnector*>();
+    std::copy_if(allConnectors.begin(), allConnectors.end(), std::back_inserter(connectors),
+                 [&](const SettingsConnector* connector) { return object->disconnect(connector);});
+    return connectors;
+  }
 
 public:
   void setUp() override {
@@ -112,19 +131,17 @@ public:
     TS_ASSERT_EQUALS(scene->stack()->count(), 1);
   }
 
-  void testAllSettingsAreConnectedToUi() {
-    for (auto settingsItem : settings->getAllSettingsItems()) {
-      for (int i = settingsItem->metaObject()->methodOffset() ; i < settingsItem->metaObject()->methodCount(); ++i) {
-       auto method = settingsItem->metaObject()->method(i);
-       if (QMetaMethod::Signal == method.methodType())
-         TSM_ASSERT(
-               ("Expecting signal " + method.methodSignature() + " of " + settingsItem->xmlName() + " to be connected").toStdString().c_str(),
-               QObject::disconnect(settingsItem, method, 0, QMetaMethod()));
-       if (QMetaMethod::Slot == method.methodType())
-         TSM_ASSERT(
-               ("Expecting slot " + method.methodSignature() + " of " + settingsItem->xmlName() + " to be connected").toStdString().c_str(),
-               QObject::disconnect(0, QMetaMethod(), settingsItem, method));
-      }
+  void testAllSettingsAreConnectedToAConnector() {
+    for (auto SettingsItem : settings->getAllSettingsItems()) {
+      auto connectors = findConnectors(SettingsItem);
+      QSO_ASSERT(connectors.size() == 1, "Expected to find exactly one connector for ", SettingsItem, ". Got: ", connectors);
+    }
+  }
+
+  void testAllUiElementsAreConnectedToAtMostOneConnector() {
+    for (auto widget : propertiesWidget->findChildren<QWidget*>()) {
+      auto connectors = findConnectors(widget);
+      QSO_ASSERT(connectors.size() <= 1, "Expecting to find at most one connector for ", widget, ". Got: ", connectors);
     }
   }
 };
