@@ -82,4 +82,22 @@ namespace Molsketch {
     locked = false;
   }
 
+#ifdef QT_DEBUG
+  QDebug operator<<(QDebug debug, const SettingsConnector &connector) {
+    debug.nospace() << "SettingsConnector(description: " << connector.description
+                    << ", parent: " << connector.parent()
+                    << ", setting: " << connector.setting
+                    << ", stack: " << connector.stack
+                    << ", locked: " << connector.locked
+                    << ")";
+    return debug;
+  }
+
+  QDebug operator<<(QDebug debug, const SettingsConnector *connector) {
+    debug.nospace() << "SettingsConnector (" << (void*) connector << ", description: " << connector->description << ")";
+    return debug;
+  }
+
+#endif
+
 } // namespace Molsketch

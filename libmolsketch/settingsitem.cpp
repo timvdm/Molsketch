@@ -214,4 +214,22 @@ namespace Molsketch {
   QUndoStack *SettingsItemUndoCommand::getStack() {
     return stack;
   }
+
+#ifdef QT_DEBUG
+  QDebug operator<<(QDebug debug, const SettingsItem &setting) {
+    debug.nospace() << "Settings item ("
+                    << "key: " << setting.d_ptr->key
+                    << ", facade: " << setting.d_ptr->facade
+                    << ", locked: " << setting.d_ptr->locked
+                    << ")";
+    return debug;
+  }
+
+  QDebug operator<<(QDebug debug, const SettingsItem *setting) {
+    debug.nospace() << "SettingsItem (" << (void*) setting << ", key: " << setting->d_ptr->key << ")";
+    return debug;
+  }
+
+#endif
+
 } // namespace Molsketch

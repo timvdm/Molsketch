@@ -44,6 +44,10 @@ namespace Molsketch {
     std::function<void()> settingToUi;
     explicit SettingsConnector(QString description, std::function<void()> uiToSetting, std::function<void()> settingToUi, SettingsItem *setting, QUndoStack *stack, QObject *parent = 0);
   public:
+#ifdef QT_DEBUG
+    friend QDebug operator<<(QDebug debug, const SettingsConnector& connector);
+    friend QDebug operator<<(QDebug debug, const SettingsConnector* connector);
+#endif
     static SettingsConnector *connect(QDoubleSpinBox *control, DoubleSettingsItem *setting, QUndoStack *stack, QString description);
     static SettingsConnector *connect(QCheckBox *control, BoolSettingsItem *setting, QUndoStack *stack, QString description);
     ~SettingsConnector() override;
@@ -51,6 +55,11 @@ namespace Molsketch {
     void settingChanged();
     void uiChanged();
   };
+
+#ifdef QT_DEBUG
+  QDebug operator<<(QDebug debug, const SettingsConnector* connector);
+  QDebug operator<<(QDebug debug, const SettingsConnector& connector);
+#endif
 
 } // namespace Molsketch
 

@@ -43,7 +43,9 @@ namespace Molsketch { // TODO turn on warnings for switch'es
   Anchor convertAnchor(const int& integer);
   Anchor anchorFromString(QString input);
   QString toString(const Anchor& anchor);
+#ifdef QT_DEBUG
   QDebug operator<<(QDebug debug, const Anchor& anchor);
+#endif
 
   class BoundingBoxLinkerPrivate;
 
@@ -60,13 +62,17 @@ namespace Molsketch { // TODO turn on warnings for switch'es
     QXmlStreamAttributes xmlAttributes() const override;
     void readAttributes(const QXmlStreamAttributes& attributes) override;
     bool operator==(const BoundingBoxLinker& other) const;
+#ifdef QT_DEBUG
     friend QDebug operator<<(QDebug debug, const BoundingBoxLinker& linker);
+#endif
     BoundingBoxLinker& operator=(const BoundingBoxLinker& other);
     static const BoundingBoxLinker upperLeft, lowerLeft, upperRight, lowerRight, above, below, toRight, toLeft;
     static const BoundingBoxLinker atTopLeft, atBottomLeft, atTopRight, atBottomRight, atTop, atBottom, atLeft, atRight;
   };
 
+#ifdef QT_DEBUG
   QDebug operator<<(QDebug debug, const BoundingBoxLinker& linker);
+#endif
 
 } // namespace Molsketch
 

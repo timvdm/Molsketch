@@ -45,7 +45,16 @@ namespace Molsketch {
     QScopedPointer<SettingsItemPrivate> d_ptr;
     void readAttributes(const QXmlStreamAttributes &attributes) override;
     QXmlStreamAttributes xmlAttributes() const override;
+#ifdef QT_DEBUG
+    friend QDebug operator<<(QDebug debug, const SettingsItem* setting);
+    friend QDebug operator<<(QDebug debug, const SettingsItem& setting);
+#endif
   };
+
+#ifdef QT_DEBUG
+  QDebug operator<<(QDebug debug, const SettingsItem* setting);
+  QDebug operator<<(QDebug debug, const SettingsItem& setting);
+#endif
 
   class DoubleSettingsItem : public SettingsItem {
     Q_OBJECT
