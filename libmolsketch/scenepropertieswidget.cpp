@@ -52,7 +52,7 @@ namespace Molsketch {
     }
   };
 
-  ScenePropertiesWidget::ScenePropertiesWidget(SceneSettings *settings, MolScene *scene) :
+  ScenePropertiesWidget::ScenePropertiesWidget(MolScene *scene) :
     QWidget(0),
     d(new privateData(scene))
   {

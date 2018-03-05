@@ -227,7 +227,7 @@ namespace Molsketch {
   }
 
   ScenePropertiesWidget *MolScene::producePropertiesWidget() {
-    return new ScenePropertiesWidget(settings(), this);
+    return new ScenePropertiesWidget(this);
   }
 
   QFont MolScene::getAtomFont() const {

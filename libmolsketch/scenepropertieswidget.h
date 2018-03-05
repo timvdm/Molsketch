@@ -16,7 +16,7 @@ namespace Molsketch {
   {
     Q_OBJECT
   public:
-    explicit ScenePropertiesWidget(SceneSettings* settings, MolScene *scene);
+    explicit ScenePropertiesWidget(MolScene *scene);
     ~ScenePropertiesWidget();
   private:
     class privateData;
