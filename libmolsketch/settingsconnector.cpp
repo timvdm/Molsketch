@@ -16,6 +16,8 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#include "colorbutton.h"
+#include "fontchooser.h"
 #include "settingsconnector.h"
 #include "settingsitem.h"
 
@@ -61,6 +63,26 @@ namespace Molsketch {
     QObject::connect(setting, SIGNAL(updated(bool)), connector, SLOT(settingChanged()));
     return connector;
 
+  }
+
+  SettingsConnector *SettingsConnector::connect(ColorButton *control, ColorSettingsItem *setting, QUndoStack *stack, QString description) {
+    auto connector = new SettingsConnector(description,
+                                           [=] { setting->set(control->getColor()); },
+                                           [=] { control->setColor(setting->get()); },
+                                           setting, stack, control);
+    QObject::connect(control, SIGNAL(colorChanged(QColor)), connector, SLOT(uiChanged()));
+    QObject::connect(setting, SIGNAL(updated(QColor)), connector, SLOT(settingChanged()));
+    return connector;
+  }
+
+  SettingsConnector *SettingsConnector::connect(FontChooser *control, FontSettingsItem *setting, QUndoStack *stack, QString description) {
+    auto connector = new SettingsConnector(description,
+                                           [=] { setting->set(control->font()); },
+                                           [=] { control->setFont(setting->get()); },
+                                           setting, stack, control);
+    QObject::connect(control, SIGNAL(fontChanged(QFont)), connector, SLOT(uiChanged()));
+    QObject::connect(setting, SIGNAL(updated(QFont)), connector, SLOT(settingChanged()));
+    return connector;
   }
 
   SettingsConnector::~SettingsConnector() {}

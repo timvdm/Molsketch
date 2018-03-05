@@ -22,7 +22,7 @@
         <x>0</x>
         <y>0</y>
         <width>261</width>
-        <height>189</height>
+        <height>135</height>
        </rect>
       </property>
       <attribute name="label">
@@ -67,7 +67,7 @@
         <x>0</x>
         <y>0</y>
         <width>261</width>
-        <height>189</height>
+        <height>135</height>
        </rect>
       </property>
       <attribute name="label">
@@ -102,7 +102,7 @@
         <x>0</x>
         <y>0</y>
         <width>261</width>
-        <height>189</height>
+        <height>135</height>
        </rect>
       </property>
       <attribute name="label">
@@ -131,7 +131,7 @@
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="Molsketch::FontChooser" name="widget" native="true"/>
+        <widget class="Molsketch::FontChooser" name="atomFont" native="true"/>
        </item>
       </layout>
      </widget>
@@ -141,7 +141,7 @@
         <x>0</x>
         <y>0</y>
         <width>261</width>
-        <height>189</height>
+        <height>135</height>
        </rect>
       </property>
       <attribute name="label">
@@ -202,6 +202,110 @@
           </size>
          </property>
         </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="gridSettings">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>261</width>
+        <height>135</height>
+       </rect>
+      </property>
+      <attribute name="label">
+       <string>Grid</string>
+      </attribute>
+      <layout class="QFormLayout" name="formLayout_4">
+       <item row="0" column="0">
+        <widget class="QLabel" name="gridLineWidthLabel">
+         <property name="text">
+          <string>Line width</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QDoubleSpinBox" name="gridLineWidth"/>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="gridColorSpacing">
+         <property name="text">
+          <string>Line color</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="Molsketch::ColorButton" name="gridColor">
+         <property name="text">
+          <string>PushButton</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="gridHorizontalSpacingLabel">
+         <property name="text">
+          <string>Horizontal spacing</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QDoubleSpinBox" name="gridHorizontalSpacing"/>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="gridVerticalSpacingLabel">
+         <property name="text">
+          <string>Vertical spacing</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QDoubleSpinBox" name="gridVerticalSpacing"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="page">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>261</width>
+        <height>135</height>
+       </rect>
+      </property>
+      <attribute name="label">
+       <string>Lone pairs &amp;&amp; radicals</string>
+      </attribute>
+      <layout class="QFormLayout" name="formLayout_5">
+       <item row="0" column="0">
+        <widget class="QLabel" name="lonePairLineWidthLabel">
+         <property name="text">
+          <string>Lone pair line width</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QDoubleSpinBox" name="lonePairLineWidth"/>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="lonePairLengthLabel">
+         <property name="text">
+          <string>Lone pair length</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QDoubleSpinBox" name="lonePairLength"/>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="radicalDiameterLabel">
+         <property name="text">
+          <string>Radical diameter</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QDoubleSpinBox" name="radicalDiameter"/>
        </item>
       </layout>
      </widget>

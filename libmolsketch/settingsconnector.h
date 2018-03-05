@@ -32,6 +32,10 @@ namespace Molsketch {
   class SettingsItem;
   class DoubleSettingsItem;
   class BoolSettingsItem;
+  class ColorSettingsItem;
+  class FontSettingsItem;
+  class ColorButton;
+  class FontChooser;
 
   class SettingsConnector : public QObject
   {
@@ -50,6 +54,8 @@ namespace Molsketch {
 #endif
     static SettingsConnector *connect(QDoubleSpinBox *control, DoubleSettingsItem *setting, QUndoStack *stack, QString description);
     static SettingsConnector *connect(QCheckBox *control, BoolSettingsItem *setting, QUndoStack *stack, QString description);
+    static SettingsConnector *connect(ColorButton *control, ColorSettingsItem *setting, QUndoStack *stack, QString description);
+    static SettingsConnector *connect(FontChooser *control, FontSettingsItem *setting, QUndoStack *stack, QString description);
     ~SettingsConnector() override;
   private slots:
     void settingChanged();
