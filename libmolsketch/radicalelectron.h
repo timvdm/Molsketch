@@ -41,7 +41,9 @@ namespace Molsketch {
     bool operator==(const RadicalElectron& other);
     QString xmlName() const;
     static QString xmlClassName();
+#ifdef QT_DEBUG
     friend QDebug operator<<(QDebug debug, const RadicalElectron& radicalElectron);
+#endif
   protected:
     void readAttributes(const QXmlStreamAttributes &attributes) override;
     QXmlStreamAttributes xmlAttributes() const override;

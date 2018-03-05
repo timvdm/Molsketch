@@ -100,12 +100,14 @@ namespace Molsketch {
     d->diameter = attributes.value("diameter").toDouble();
   }
 
+#ifdef QT_DEBUG
   QDebug operator<<(QDebug debug, const RadicalElectron &radicalElectron) {
     return debug.nospace() << "RadicalElectron(diameter: " << radicalElectron.d_func()->diameter
                            << ", color: " << radicalElectron.d_func()->color
                            << ", linker: " << radicalElectron.d_func()->linker
                            << ")";
   }
+#endif
 
   QXmlStreamAttributes RadicalElectron::xmlAttributes() const {
     Q_D(const RadicalElectron);

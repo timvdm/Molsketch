@@ -58,6 +58,7 @@ bool LonePair::operator ==(const LonePair &other) {
       && other.pen() == pen();
 }
 
+#ifdef QT_DEBUG
 QDebug operator<< (QDebug debug, const LonePair& lonePair) {
   return debug.nospace() << "LonePair("
                          << "line: " << lonePair.line()
@@ -65,6 +66,7 @@ QDebug operator<< (QDebug debug, const LonePair& lonePair) {
                          << ", linker: " << lonePair.d_ptr->linker
                          << ")";
 }
+#endif
 
 QRectF LonePair::boundingRect () const {
   if (!parentItem()) return QRectF();
