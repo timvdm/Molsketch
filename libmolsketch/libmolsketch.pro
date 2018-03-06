@@ -1,8 +1,8 @@
 include(../settings.pri)
 
 TEMPLATE = lib
-HEADERS += *.h $$files(actions/*.h)
-SOURCES += *.cpp $$files(actions/*.cpp)
+HEADERS += $$files(*.h, true)
+SOURCES += $$files(*.cpp, true)
 FORMS += *.ui
 RESOURCES += tools/toolicons.qrc
 TARGET = molsketch$$qtVersionSuffix
@@ -12,4 +12,7 @@ win* : VERSION =
 
 target.path=$${MSK_INSTALL_LIBS}
 contains(QT_ARCH, ".*64.*") : target.path = $${MSK_INSTALL_LIBS64}
-INSTALLS += target
+INSTALLS += target includes
+includes.files = $$HEADERS
+includes.path = $${MSK_INSTALL_INCLUDES}
+
