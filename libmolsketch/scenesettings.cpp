@@ -107,7 +107,7 @@ namespace Molsketch {
       bondLength = initializeDoubleSetting(BOND_LENGTH, 40);
       bondWidth = initializeDoubleSetting(BOND_WIDTH, 2);
       carbonVisible = initializeBoolSetting(CARBON_VISIBLE, false);
-      chargeVisible = initializeBoolSetting(CHARGE_VISIBLE, false);
+      chargeVisible = initializeBoolSetting(CHARGE_VISIBLE, true);
       defaultColor = initializeSetting<ColorSettingsItem, QColor>(DEFAULT_COLOR, QColor(Qt::black));
       electronSystemsVisible = initializeBoolSetting(ELECTRON_SYSTEMS_VISIBLE, false);
       frameLineWidth = initializeDoubleSetting(FRAME_LINE_WIDTH, 1.5);
