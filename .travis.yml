@@ -7,4 +7,5 @@ before_install:
 script:
     - mkdir build
     - cd build
-    - qmake-qt5 ..
+    - /usr/lib/x86_64-linux-gnu/qt5/bin/qmake ../Molsketch.pro
+    - make
