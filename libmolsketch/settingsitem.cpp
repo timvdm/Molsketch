@@ -73,7 +73,6 @@ namespace Molsketch {
 
   qreal DoubleSettingsItem::get() const {
     qreal value = d_ptr->facade->value(d_ptr->key).toDouble();
-    qDebug() << "Obtained value" << value << "for setting" << d_ptr->key;
     return value;
   }
 
@@ -107,7 +106,6 @@ namespace Molsketch {
 
   bool BoolSettingsItem::get() const {
     bool value = d_ptr->facade->value(d_ptr->key).toBool();
-    qDebug() << "Obtained value" << value << "for setting" << d_ptr->key;
     return value;
   }
 
@@ -141,7 +139,6 @@ namespace Molsketch {
 
   QColor ColorSettingsItem::get() const {
     QColor value = d_ptr->facade->value(d_ptr->key).value<QColor>();
-    qDebug() << "Obtained value" << value << "for setting" << d_ptr->key;
     return value;
   }
 
@@ -175,7 +172,6 @@ namespace Molsketch {
 
   QFont FontSettingsItem::get() const {
     QFont value = d_ptr->facade->value(d_ptr->key).value<QFont>();
-    qDebug() << "Obtained value" << value << "for setting" << d_ptr->key;
     return value;
   }
 
