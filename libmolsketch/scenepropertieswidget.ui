@@ -14,7 +14,7 @@
    <item>
     <widget class="QToolBox" name="toolBox">
      <property name="currentIndex">
-      <number>0</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="lineWidths">
       <property name="geometry">
@@ -162,31 +162,10 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="0">
-        <widget class="QCheckBox" name="hydrogensVisible">
-         <property name="text">
-          <string>Hydrogens</string>
-         </property>
-        </widget>
-       </item>
        <item row="1" column="1">
         <widget class="QCheckBox" name="electronSystemsVisible">
          <property name="text">
           <string>Electron systems</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QCheckBox" name="carbonsVisible">
-         <property name="text">
-          <string>Carbons</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QCheckBox" name="chargesVisible">
-         <property name="text">
-          <string>Charges</string>
          </property>
         </widget>
        </item>
@@ -202,6 +181,20 @@
           </size>
          </property>
         </spacer>
+       </item>
+       <item row="1" column="0">
+        <widget class="QCheckBox" name="carbonsVisible">
+         <property name="text">
+          <string>Carbons</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QCheckBox" name="chargesVisible">
+         <property name="text">
+          <string>Charges</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>

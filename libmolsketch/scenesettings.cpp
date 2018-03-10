@@ -46,7 +46,6 @@ namespace Molsketch {
   static const char VERTICAL_GRID_SPACING[] = "vertical-grid-spacing";
   static const char DEFAULT_COLOR[] = "default-color";
   static const char FRAME_LINE_WIDTH[] = "frame-line-width";
-  static const char HYDROGEN_VISIBLE[] = "hydrogen-visible";
   static const char LONE_PAIRS_VISIBLE[] = "lone-pairs-visible";
 
   class SceneSettingsPrivate {
@@ -70,7 +69,6 @@ namespace Molsketch {
     *electronSystemsVisible,
     *chargeVisible,
     *autoAddHydrogen,
-    *hydrogenVisible,
     *lonePairsVisible;
 
     ColorSettingsItem *gridColor,
@@ -114,7 +112,6 @@ namespace Molsketch {
       gridLineWidth = initializeDoubleSetting(GRID_LINEWIDTH, 0);
       gridColor = initializeSetting<ColorSettingsItem, QColor>(GRID_COLOR, QColor(Qt::gray));
       horizontalGridSpacing = initializeDoubleSetting(HORIZONTAL_GRID_SPACING, 10);
-      hydrogenVisible = initializeBoolSetting(HYDROGEN_VISIBLE, true);
       lonePairLength = initializeDoubleSetting(LONE_PAIR_LENGTH, 7);
       lonePairLineWidth = initializeDoubleSetting(LONE_PAIR_LINE_WIDTH, 1);
       lonePairsVisible = initializeBoolSetting(LONE_PAIRS_VISIBLE, false);
@@ -175,7 +172,6 @@ namespace Molsketch {
   BOOL_PROPERTY_DEF(electronSystemsVisible)
   BOOL_PROPERTY_DEF(chargeVisible)
   BOOL_PROPERTY_DEF(autoAddHydrogen)
-  BOOL_PROPERTY_DEF(hydrogenVisible)
   BOOL_PROPERTY_DEF(lonePairsVisible)
 
 #define REAL_PROPERTY_DEF(NAME) \

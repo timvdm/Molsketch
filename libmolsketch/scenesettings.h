@@ -55,7 +55,6 @@ namespace Molsketch {
     BOOL_PROPERTY_DECL(electronSystemsVisible)
     BOOL_PROPERTY_DECL(chargeVisible)
     BOOL_PROPERTY_DECL(autoAddHydrogen)
-    BOOL_PROPERTY_DECL(hydrogenVisible)
     BOOL_PROPERTY_DECL(lonePairsVisible)
 
 #define REAL_PROPERTY_DECL(NAME) \

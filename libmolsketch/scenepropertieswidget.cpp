@@ -32,7 +32,6 @@ namespace Molsketch {
 
 
       SettingsConnector::connect(ui->autoHydrogensVisible, settings->autoAddHydrogen(), stack, tr("Toggle hydrogens"));
-      SettingsConnector::connect(ui->hydrogensVisible, settings->hydrogenVisible(), stack, tr("Toggle hydrogen visibility"));
       SettingsConnector::connect(ui->carbonsVisible, settings->carbonVisible(), stack, tr("Toggle carbon visibility"));
       SettingsConnector::connect(ui->lonePairsVisible, settings->lonePairsVisible(), stack, tr("Simple lone pairs"));
       SettingsConnector::connect(ui->electronSystemsVisible, settings->electronSystemsVisible(), stack, tr("Toggle electron systems"));
