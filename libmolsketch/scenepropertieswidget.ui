@@ -137,7 +137,7 @@
        <item row="0" column="1">
         <widget class="Molsketch::ColorButton" name="defaultColor">
          <property name="text">
-          <string>...</string>
+          <string/>
          </property>
         </widget>
        </item>
@@ -249,7 +249,7 @@
        <item row="1" column="1">
         <widget class="Molsketch::ColorButton" name="gridColor">
          <property name="text">
-          <string>PushButton</string>
+          <string/>
          </property>
         </widget>
        </item>
