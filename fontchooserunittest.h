@@ -29,6 +29,7 @@ using namespace Molsketch;
 
 const int &FONT_SIZE = 25;
 const int &FONT_INDEX = 5;
+const char* INITIAL_VALUE = "Initial value should be different from test value";
 
 class FontChooserUnitTest : public CxxTest::TestSuite {
   FontChooser *chooser;
@@ -54,26 +55,34 @@ public:
   }
 
   void testFontSizeChange() {
+    TSM_ASSERT_DIFFERS(INITIAL_VALUE, fontSize->value(), FONT_SIZE);
     fontSize->setValue(FONT_SIZE);
     TS_ASSERT_EQUALS(signalCounter->getLatestPayload().pointSize(), FONT_SIZE);
+    TS_ASSERT_EQUALS(chooser->getSelectedFont().pointSize(), FONT_SIZE);
   }
 
   void testFontNameChange() {
+    TSM_ASSERT_DIFFERS(INITIAL_VALUE, fontName->currentIndex(), FONT_INDEX);
     fontName->setCurrentIndex(FONT_INDEX);
-    QS_ASSERT_EQUALS(signalCounter->getLatestPayload().family(), fontName->itemText(FONT_INDEX));
+    QS_ASSERT_EQUALS(signalCounter->getLatestPayload().family(), fontName->currentText());
+    QS_ASSERT_EQUALS(chooser->getSelectedFont().family(), fontName->currentText());
   }
 
   void testSettingBold() {
+    TSM_ASSERT_DIFFERS(INITIAL_VALUE, bold->isChecked(), true);
     bold->setChecked(true);
     TS_ASSERT(signalCounter->getLatestPayload().bold());
+    TS_ASSERT(chooser->getSelectedFont().bold())
   }
 
   void testSettingItalic() {
+    TSM_ASSERT_DIFFERS(INITIAL_VALUE, italic->isChecked(), true);
     italic->setChecked(true);
     TS_ASSERT(signalCounter->getLatestPayload().italic());
+    TS_ASSERT(chooser->getSelectedFont().italic());
   }
 
-  void testSettingFont() {
+  void testSettingFontProgrammatically() {
     TS_ASSERT_DIFFERS(fontName->currentText(), "Times New Roman");
     TS_ASSERT_DIFFERS(fontSize->value(), FONT_SIZE);
     TS_ASSERT(!bold->isChecked());
