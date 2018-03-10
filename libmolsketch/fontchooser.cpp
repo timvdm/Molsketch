@@ -33,6 +33,14 @@ namespace Molsketch {
     delete ui;
   }
 
+  QFont FontChooser::getSelectedFont() const {
+    QFont font = ui->fontName->currentFont();
+    font.setPointSize(ui->size->value());
+    font.setBold(ui->bold->isChecked());
+    font.setItalic(ui->italic->isChecked());
+    return font;
+  }
+
   void FontChooser::setFont(const QFont &font) {
     blockSignals(true);
     ui->fontName->setCurrentFont(font);
@@ -44,11 +52,7 @@ namespace Molsketch {
   }
 
   void FontChooser::fontSelectionChanged() const {
-    QFont font = ui->fontName->currentFont();
-    font.setPointSize(ui->size->value());
-    font.setBold(ui->bold->isChecked());
-    font.setItalic(ui->italic->isChecked());
-    emit fontChanged(font);
+    emit fontChanged(getSelectedFont());
   }
 
 } // namespace Molsketch

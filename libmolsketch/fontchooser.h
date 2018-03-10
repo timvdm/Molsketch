@@ -31,10 +31,10 @@ namespace Molsketch {
   class FontChooser : public QWidget
   {
     Q_OBJECT
-
   public:
     explicit FontChooser(QWidget *parent = 0);
     ~FontChooser();
+    QFont getSelectedFont() const;
   signals:
     void fontChanged(const QFont&) const;
   public slots:

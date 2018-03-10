@@ -14,10 +14,21 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0" colspan="2">
-    <widget class="QFontComboBox" name="fontName"/>
+   <item row="1" column="1">
+    <widget class="QCheckBox" name="bold">
+     <property name="text">
+      <string>Bold</string>
+     </property>
+    </widget>
    </item>
-   <item row="0" column="2">
+   <item row="1" column="2">
+    <widget class="QCheckBox" name="italic">
+     <property name="text">
+      <string>Italic</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
     <widget class="QSpinBox" name="size">
      <property name="minimum">
       <number>1</number>
@@ -27,19 +38,8 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="0">
-    <widget class="QCheckBox" name="bold">
-     <property name="text">
-      <string>Bold</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="1">
-    <widget class="QCheckBox" name="italic">
-     <property name="text">
-      <string>Italic</string>
-     </property>
-    </widget>
+   <item row="0" column="0" colspan="3">
+    <widget class="QFontComboBox" name="fontName"/>
    </item>
   </layout>
  </widget>

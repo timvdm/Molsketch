@@ -77,7 +77,7 @@ namespace Molsketch {
 
   SettingsConnector *SettingsConnector::connect(FontChooser *control, FontSettingsItem *setting, QUndoStack *stack, QString description) {
     auto connector = new SettingsConnector(description,
-                                           [=] { setting->set(control->font()); },
+                                           [=] { setting->set(control->getSelectedFont()); },
                                            [=] { control->setFont(setting->get()); },
                                            setting, stack, control);
     QObject::connect(control, SIGNAL(fontChanged(QFont)), connector, SLOT(uiChanged()));
