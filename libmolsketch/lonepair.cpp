@@ -98,11 +98,11 @@ qreal LonePair::angle() const {
 }
 
 qreal LonePair::length() const {
-  return line().length();
+  return line().length(); // TODO use relative dimension
 }
 
 qreal LonePair::lineWidth() const {
-  return pen().widthF();
+  return pen().widthF(); // TODO use relative dimension
 }
 
 XmlObjectInterface* LonePair::produceChild (const QString& name, const QString& type) {
