@@ -37,7 +37,11 @@
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QDoubleSpinBox" name="bondLineWidth"/>
+        <widget class="QDoubleSpinBox" name="bondLineWidth">
+         <property name="maximum">
+          <double>99.000000000000000</double>
+         </property>
+        </widget>
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="arrowLineWidthLabel">
@@ -82,7 +86,14 @@
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QDoubleSpinBox" name="bondLength"/>
+        <widget class="QDoubleSpinBox" name="bondLength">
+         <property name="minimum">
+          <double>0.010000000000000</double>
+         </property>
+         <property name="maximum">
+          <double>250.000000000000000</double>
+         </property>
+        </widget>
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="bondAngleLabel">
@@ -92,7 +103,14 @@
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QDoubleSpinBox" name="bondAngle"/>
+        <widget class="QDoubleSpinBox" name="bondAngle">
+         <property name="minimum">
+          <double>1.000000000000000</double>
+         </property>
+         <property name="maximum">
+          <double>359.000000000000000</double>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -243,7 +261,14 @@
         </widget>
        </item>
        <item row="2" column="1">
-        <widget class="QDoubleSpinBox" name="gridHorizontalSpacing"/>
+        <widget class="QDoubleSpinBox" name="gridHorizontalSpacing">
+         <property name="minimum">
+          <double>0.010000000000000</double>
+         </property>
+         <property name="maximum">
+          <double>500.000000000000000</double>
+         </property>
+        </widget>
        </item>
        <item row="3" column="0">
         <widget class="QLabel" name="gridVerticalSpacingLabel">
@@ -253,7 +278,14 @@
         </widget>
        </item>
        <item row="3" column="1">
-        <widget class="QDoubleSpinBox" name="gridVerticalSpacing"/>
+        <widget class="QDoubleSpinBox" name="gridVerticalSpacing">
+         <property name="minimum">
+          <double>0.010000000000000</double>
+         </property>
+         <property name="maximum">
+          <double>500.000000000000000</double>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
