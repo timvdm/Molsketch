@@ -36,6 +36,7 @@ if(WIN32)
 endif(WIN32)
 
 # Create the main executable
+add_definitions( -fexceptions )
 link_directories(${CMAKE_BINARY_DIR}/lib)
 add_executable(molsketch ${molsketch_SRCS} ${molsketch_UIS_H} ${molsketch_MOC_HDRS})
 install(TARGETS molsketch DESTINATION ${MSK_INSTALL_BINS})
