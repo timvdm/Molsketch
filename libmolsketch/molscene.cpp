@@ -97,7 +97,6 @@ namespace Molsketch {
     QDockWidget *propertiesDock;
     QScrollArea *propertiesScrollArea;
     SceneSettings *settings;
-
     graphicsItem* dragItem;
 
     void attachDockWidgetToMainWindow(MolScene* scene)
@@ -110,13 +109,14 @@ namespace Molsketch {
       }
     }
 
-    privateData(MolScene* scene)
+    privateData(MolScene* scene, SceneSettings* settings)
       : selectionRectangle(new QGraphicsRectItem),
         inputItem(new TextInputItem),
-        grid(new Grid),
+        grid(new Grid(settings)),
         scene(scene),
         propertiesDock(new QDockWidget(tr("Properties"))),
         propertiesScrollArea(new QScrollArea(propertiesDock)),
+        settings(settings),
         dragItem(0)
     {
       selectionRectangle->setPen(QPen(Qt::blue,0,Qt::DashLine));
@@ -160,15 +160,13 @@ namespace Molsketch {
 
   using namespace Commands;
 
-  void MolScene::initializeGrid()
-  {
-    d->grid->setHorizontalInterval(d->settings->horizontalGridSpacing()->get());  // FIXME connect signal/slot
-    d->grid->setVerticalInterval(d->settings->verticalGridSpacing()->get());  // FIXME connect signal/slot
-    d->grid->setLinewidth(d->settings->gridLineWidth()->get()); // FIXME connect signal/slot
-    d->grid->setColor(d->settings->gridColor()->get()); // FIXME connect signal/slot
-  }
+  MolScene::MolScene(QObject* parent)
+    : MolScene(nullptr, parent)
+  {}
 
-  void MolScene::initialize(SceneSettings* settings)
+  MolScene::MolScene(SceneSettings* settings, QObject *parent)
+    : QGraphicsScene(parent),
+      d(new privateData(this, nullptr == settings ? new SceneSettings(SettingsFacade::transientSettings(), this) : settings))
   {
     //Initializing properties
     m_editMode = MolScene::DrawMode;
@@ -196,23 +194,7 @@ namespace Molsketch {
 //    textItem->setTextInteractionFlags(Qt::TextEditorInteraction);
 //    addItem(textItem);
 
-    d->settings = settings;
     d->propertiesScrollArea->setWidget(producePropertiesWidget());
-    initializeGrid();
-  }
-
-  MolScene::MolScene(QObject* parent)
-    : QGraphicsScene(parent),
-      d(new privateData(this))
-  {
-    initialize(new SceneSettings(SettingsFacade::transientSettings(), this));
-  }
-
-  MolScene::MolScene(SceneSettings* settings, QObject *parent)
-    : QGraphicsScene(parent),
-      d(new privateData(this))
-  {
-    initialize(settings);
   }
 
   MolScene::~MolScene() {
@@ -342,9 +324,7 @@ namespace Molsketch {
     SceneSettings *settings = d->settings;
     delete d; // TODO this seems a little extreme and dangerous!
     QGraphicsScene::clear();
-    d = new privateData(this);
-    d->settings = settings;
-    initializeGrid();
+    d = new privateData(this, settings);
   }
 
   QImage MolScene::renderMolToImage (Molecule *mol)

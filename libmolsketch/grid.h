@@ -23,22 +23,16 @@
 
 namespace Molsketch {
 
+  class SceneSettings;
+
   class Grid : public QGraphicsItem // TODO this should really be done in QGraphicsScene::drawBackground
   {
   public:
-    Grid();
+    Grid(SceneSettings *settings);
     ~Grid();
     virtual QPointF alignPoint(const QPointF& point);
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     QRectF boundingRect() const;
-    void setHorizontalInterval(qreal h);
-    void setVerticalInterval(qreal v);
-    void setColor(const QColor& color);
-    void setLinewidth(const qreal& linewidth);
-    qreal horizontalInterval() const;
-    qreal verticalInterval() const;
-    QColor color() const;
-    qreal linewidth() const;
   private:
     class privateData;
     privateData *d;

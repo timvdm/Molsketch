@@ -254,9 +254,6 @@ namespace Molsketch {
       // Auxillary feedback items
       /** The highlight rectangle. */
       QGraphicsPathItem* m_hoverRect;
-      void initialize(SceneSettings *settings);
-
-      void initializeGrid();
 
   private slots:
       void updateAll() ;
