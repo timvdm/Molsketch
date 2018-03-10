@@ -4,6 +4,8 @@
 #include "scenesettings.h"
 #include <QWidget>
 
+class QUndoStack;
+
 namespace Molsketch {
 
   class MolScene;
@@ -16,7 +18,7 @@ namespace Molsketch {
   {
     Q_OBJECT
   public:
-    explicit ScenePropertiesWidget(MolScene *scene);
+    ScenePropertiesWidget(SceneSettings *settings, QUndoStack *stack, QWidget *parent = 0);
     ~ScenePropertiesWidget();
   private:
     class privateData;

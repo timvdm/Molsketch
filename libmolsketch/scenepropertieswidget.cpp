@@ -12,17 +12,16 @@ namespace Molsketch {
   struct ScenePropertiesWidget::privateData
   {
     Ui::ScenePropertiesWidget *ui;
-    MolScene *scene;
+    SceneSettings *settings;
+    QUndoStack *stack;
 
-    privateData(MolScene *scene)
+    privateData(SceneSettings *settings, QUndoStack *stack)
       : ui(new Ui::ScenePropertiesWidget),
-        scene(scene)
+        settings(settings),
+        stack(stack)
     {}
 
     void setup() {
-      if (!scene) return;
-      auto settings = scene->settings();
-      auto stack = scene->stack();
       SettingsConnector::connect(ui->bondLineWidth, settings->bondWidth(), stack, tr("Change bond line width"));
       SettingsConnector::connect(ui->arrowLineWidth, settings->arrowWidth(), stack, tr("Change arrow line width"));
       SettingsConnector::connect(ui->frameLineWidth, settings->frameLineWidth(), stack, tr("Change frame line width"));
@@ -51,9 +50,9 @@ namespace Molsketch {
     }
   };
 
-  ScenePropertiesWidget::ScenePropertiesWidget(MolScene *scene) :
-    QWidget(0),
-    d(new privateData(scene))
+  ScenePropertiesWidget::ScenePropertiesWidget(SceneSettings *settings, QUndoStack *stack, QWidget *parent) :
+    QWidget(parent),
+    d(new privateData(settings, stack))
   {
     d->ui->setupUi(this);
     d->setup();

@@ -80,8 +80,6 @@ namespace Molsketch {
 
       SceneSettings* settings() const;
 
-      ScenePropertiesWidget* producePropertiesWidget();
-
       QFont getAtomFont() const;
 
       static QString mimeType();
@@ -219,19 +217,12 @@ namespace Molsketch {
       QPointF toGrid(const QPointF &position);
 
 
-      // Scene properties
       /** Stores the edit mode of the scene as an integer. */
       int m_editMode;
       RenderMode m_renderMode;
 
       class privateData;
       privateData *d;
-
-      // Undo stack
-      /** The undo stack of the commands used to edit the scene. */
-      QUndoStack * m_stack;
-
-      // Event handlers
 
       // Auxillary feedback items
       /** The highlight rectangle. */
