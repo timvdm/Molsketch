@@ -21,15 +21,13 @@
 
 #include <QGraphicsItem>
 
-
-
 namespace Molsketch {
 
-  class grid : public QGraphicsItem // TODO this should really be done in QGraphicsScene::drawBackground
+  class Grid : public QGraphicsItem // TODO this should really be done in QGraphicsScene::drawBackground
   {
   public:
-    grid();
-    ~grid();
+    Grid();
+    ~Grid();
     virtual QPointF alignPoint(const QPointF& point);
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     QRectF boundingRect() const;

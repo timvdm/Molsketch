@@ -92,7 +92,7 @@ namespace Molsketch {
   {
     QGraphicsRectItem *selectionRectangle;
     TextInputItem *inputItem;
-    grid *Grid;
+    Grid *grid;
     MolScene *scene;
     QDockWidget *propertiesDock;
     QScrollArea *propertiesScrollArea;
@@ -113,7 +113,7 @@ namespace Molsketch {
     privateData(MolScene* scene)
       : selectionRectangle(new QGraphicsRectItem),
         inputItem(new TextInputItem),
-        Grid(new grid),
+        grid(new Grid),
         scene(scene),
         propertiesDock(new QDockWidget(tr("Properties"))),
         propertiesScrollArea(new QScrollArea(propertiesDock)),
@@ -141,10 +141,10 @@ namespace Molsketch {
 //        delete inputItem; // TODO should clean up this item...
 //      delete selectionRectangle; // TODO why?
       delete propertiesDock;
-      if (!Grid->scene()) delete Grid;
+      if (!grid->scene()) delete grid;
     }
 
-    bool gridOn()const { return Grid->scene(); }
+    bool gridOn()const { return grid->scene(); }
 
     void setPropertiesWidget(graphicsItem* item) {
       propertiesScrollArea->setWidget(item
@@ -162,10 +162,10 @@ namespace Molsketch {
 
   void MolScene::initializeGrid()
   {
-    d->Grid->setHorizontalInterval(d->settings->horizontalGridSpacing()->get());  // FIXME connect signal/slot
-    d->Grid->setVerticalInterval(d->settings->verticalGridSpacing()->get());  // FIXME connect signal/slot
-    d->Grid->setLinewidth(d->settings->gridLineWidth()->get()); // FIXME connect signal/slot
-    d->Grid->setColor(d->settings->gridColor()->get()); // FIXME connect signal/slot
+    d->grid->setHorizontalInterval(d->settings->horizontalGridSpacing()->get());  // FIXME connect signal/slot
+    d->grid->setVerticalInterval(d->settings->verticalGridSpacing()->get());  // FIXME connect signal/slot
+    d->grid->setLinewidth(d->settings->gridLineWidth()->get()); // FIXME connect signal/slot
+    d->grid->setColor(d->settings->gridColor()->get()); // FIXME connect signal/slot
   }
 
   void MolScene::initialize(SceneSettings* settings)
@@ -476,7 +476,7 @@ namespace Molsketch {
   QPointF MolScene::snapToGrid(const QPointF &point, bool force)
   {
     if (!d->gridOn() && !force) return point;
-    return d->Grid->alignPoint(point);
+    return d->grid->alignPoint(point);
   }
 
   bool MolScene::snappingToGrid() const
@@ -505,8 +505,8 @@ namespace Molsketch {
 
   void MolScene::setGrid(bool on)
   {
-    if (on) addItem(d->Grid);
-    else removeItem(d->Grid);
+    if (on) addItem(d->grid);
+    else removeItem(d->grid);
   }
 
   XmlObjectInterface *MolScene::produceChild(const QString &childName, const QString &type)
@@ -601,7 +601,7 @@ namespace Molsketch {
 
   void MolScene::updateGrid(const QRectF& newSceneRect)
   {
-    d->Grid->update(newSceneRect);
+    d->grid->update(newSceneRect);
   }
 
   Atom* MolScene::atomAt(const QPointF &pos) // TODO consider replacing with itemAt()

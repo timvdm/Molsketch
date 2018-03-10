@@ -27,13 +27,13 @@
 
 namespace Molsketch {
 
-  struct grid::privateData
+  struct Grid::privateData
   {
     qreal vertical, horizontal, linewidth;
     QColor color;
   };
 
-  grid::grid()
+  Grid::Grid()
     : d(new privateData)
   {
     setZValue(-INFINITY);
@@ -44,18 +44,18 @@ namespace Molsketch {
     d->color = Qt::gray;
   }
 
-  grid::~grid()
+  Grid::~Grid()
   {
     delete d;
   }
 
-  QPointF grid::alignPoint(const QPointF &point)
+  QPointF Grid::alignPoint(const QPointF &point)
   {
     return QPointF(qRound(point.x()/d->horizontal)*d->horizontal,
                    qRound(point.y()/d->vertical)*d->vertical);
   }
 
-  void grid::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+  void Grid::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
   {
     Q_UNUSED(option)
     Q_UNUSED(widget)
@@ -71,52 +71,52 @@ namespace Molsketch {
     painter->restore();
   }
 
-  QRectF grid::boundingRect() const
+  QRectF Grid::boundingRect() const
   {
     if (!scene()) return QRectF();
     return scene()->sceneRect();
   }
 
-  void grid::setHorizontalInterval(qreal h)
+  void Grid::setHorizontalInterval(qreal h)
   {
     d->horizontal = h;
     update();
   }
 
-  void grid::setVerticalInterval(qreal v)
+  void Grid::setVerticalInterval(qreal v)
   {
     d->vertical = v;
     update();
   }
 
-  void grid::setColor(const QColor &color)
+  void Grid::setColor(const QColor &color)
   {
     d->color = color;
     update();
   }
 
-  void grid::setLinewidth(const qreal &linewidth)
+  void Grid::setLinewidth(const qreal &linewidth)
   {
     d->linewidth = linewidth;
     update();
   }
 
-  qreal grid::horizontalInterval() const
+  qreal Grid::horizontalInterval() const
   {
     return d->horizontal;
   }
 
-  qreal grid::verticalInterval() const
+  qreal Grid::verticalInterval() const
   {
     return d->vertical;
   }
 
-  QColor grid::color() const
+  QColor Grid::color() const
   {
     return d->color;
   }
 
-  qreal grid::linewidth() const
+  qreal Grid::linewidth() const
   {
     return d->linewidth;
   }
