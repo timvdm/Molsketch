@@ -155,9 +155,6 @@ namespace Molsketch {
       void selectAll();
       /** Slot to add a copy of molecule @p mol. */
       void addMolecule(Molecule* mol);
-      /** Slot to align the molecules of the scene to the grid. */
-      void alignToGrid(); // TODO obsolete
-
       /** enable/disable grid */
       void setGrid(bool on = true);
 
@@ -211,11 +208,6 @@ namespace Molsketch {
       // Hinting methods and properties
       /** Shows a highlight rectangle around @p item. */
       void setHoverRect( QGraphicsItem* item );
-
-      // Auxillary methods
-      /** Returns the nearest grid point, starting from @p position. */
-      QPointF toGrid(const QPointF &position);
-
 
       /** Stores the edit mode of the scene as an integer. */
       int m_editMode;

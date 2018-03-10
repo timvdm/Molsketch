@@ -230,18 +230,6 @@ namespace Molsketch {
   {
     return moleculeMimeType;
   }
-  // Commands
-
-  void MolScene::alignToGrid() // TODO this isn't used (and not correct)
-  {
-    setGrid(true);
-        m_stack->beginMacro(tr("aligning to grid"));
-        foreach(QGraphicsItem* item,items())
-          if (item->type() == Molecule::Type)
-                m_stack->push(MoveItem::relative(item,toGrid(item->scenePos()) - item->scenePos()));
-        m_stack->endMacro();
-        update();
-  }
 
   void MolScene::setEditMode(int mode)
   {
@@ -439,16 +427,6 @@ namespace Molsketch {
   void MolScene::setRenderMode(MolScene::RenderMode mode)
   {
         m_renderMode = mode;
-  }
-
-  QPointF MolScene::toGrid(const QPointF &position) // TODO obsolete
-  {
-        QPointF p = position;
-        int factor = 40;
-        p.rx() = floor(p.x() / factor) * factor;
-        p.ry() = floor(p.y() / factor) * factor;
-
-        return p;
   }
 
   QPointF MolScene::snapToGrid(const QPointF &point, bool force)
