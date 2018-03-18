@@ -75,7 +75,7 @@ public:
   void setUp() override {
     settings = new SceneSettingsForTesting;
     scene = new MolScene(settings);
-    propertiesWidget = scene->producePropertiesWidget();
+    propertiesWidget = new ScenePropertiesWidget(scene->settings(), scene->stack());
     bondLineWidthControl = assertNotNull<QDoubleSpinBox>(propertiesWidget->findChild<QDoubleSpinBox*>("bondLineWidth"));
     bondLineWidthSetting = assertNotNull<DoubleSettingsItem>(scene->settings()->bondWidth());
   }

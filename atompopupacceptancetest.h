@@ -27,6 +27,8 @@
 #include <molscene.h>
 #include <commands.h>
 #include <molview.h>
+#include <scenesettings.h>
+#include <settingsitem.h>
 #include <QCheckBox>
 #include <radicalelectron.h>
 #include <lonepair.h>
@@ -50,6 +52,7 @@ class AtomPopupUnitTest : public CxxTest::TestSuite {
   QLineEdit *elementEditor;
   QSpinBox *hydrogenBox;
   CoordinateTableView *coordinateTable;
+  QDoubleSpinBox *radicalDiameter, *lonePairLength, *lonePairLineWidth;
   MolScene* scene;
   static constexpr char const* initialElement = "Ca";
   void resetAtom() {
@@ -72,6 +75,9 @@ public:
     chargeBox = popup->findChild<QSpinBox*>("charge");
     hydrogenBox = popup->findChild<QSpinBox*>("hydrogens");
     coordinateTable = popup->findChild<CoordinateTableView*>("coordinates");
+    radicalDiameter = popup->findChild<QDoubleSpinBox*>("radicalDiameter");
+    lonePairLength = popup->findChild<QDoubleSpinBox*>("lonePairLength");
+    lonePairLineWidth = popup->findChild<QDoubleSpinBox*>("lonePairLineWidth");
   }
 
   void tearDown() {
@@ -84,6 +90,9 @@ public:
     TS_ASSERT(chargeBox);
     TS_ASSERT(hydrogenBox);
     TS_ASSERT(coordinateTable);
+    TS_ASSERT(radicalDiameter);
+    TS_ASSERT(lonePairLength);
+    TS_ASSERT(lonePairLineWidth);
 
     TS_ASSERT(!popup->isEnabled());
   }
@@ -105,6 +114,9 @@ public:
     QS_ASSERT_EQUALS(chargeBox->value(), charge);
     QS_ASSERT_EQUALS(hydrogenBox->value(), numImplicitHydrogens);
     QS_ASSERT_EQUALS(coordinateTable->model()->getCoordinates(), coordinates);
+    QS_ASSERT_EQUALS(radicalDiameter->value(), scene->settings()->radicalDiameter()->get());
+    QS_ASSERT_EQUALS(lonePairLength->value(), scene->settings()->lonePairLength()->get());
+    QS_ASSERT_EQUALS(lonePairLineWidth->value(), scene->settings()->lonePairLineWidth()->get());
     QS_ASSERT_EQUALS(atom->numImplicitHydrogens(), numImplicitHydrogens); // TODO remove exposition of this to GUI or at least make it transparent
     TS_ASSERT(popup->isEnabled());
   }
