@@ -684,26 +684,22 @@ MolScene* Molecule::scene() const
   return static_cast<MolScene*>(QGraphicsItem::scene());
 }
 
-bool NumAtomsLessThan(const ElectronSystem *es1, const ElectronSystem *es2)
+bool NumAtomsMoreThan(const ElectronSystem *es1, const ElectronSystem *es2)
 {
-  return es1->numAtoms() < es2->numAtoms();
+  return es1->numAtoms() > es2->numAtoms();
 }
 
-bool canMerge(const Molecule *mol, const ElectronSystem *es1, const ElectronSystem *es2)
+bool canMerge(const ElectronSystem *es1, const ElectronSystem *es2)
 {
-  bool result = false;
+  auto firstSetOfAtoms = es1->atoms().toSet();
+  auto secondSetOfAtoms = es2->atoms().toSet();
+  // may not share an atom
+  if (!(firstSetOfAtoms & secondSetOfAtoms).empty()) return false;
 
-  foreach (Atom *a1, es1->atoms()) {
-    foreach (Atom *a2, es2->atoms()) {
-      if (a1 == a2)
-        return false; // may not share an atom
-      if (mol->bondBetween(a1, a2)) {
-        result = true; // can be merged if two atoms in the electron system are next to each other
-      }
-    }
-  }
-
-  return result;
+  QSet<Atom*> neighborsOfFirstSet;
+  std::for_each(firstSetOfAtoms.begin(), firstSetOfAtoms.end(),
+                [&] (Atom* a) { neighborsOfFirstSet += a->neighbours().toSet();});
+  return !(neighborsOfFirstSet & secondSetOfAtoms).empty();
 }
 
 void merge(QList<ElectronSystem*> &electronSystems, ElectronSystem *es1, ElectronSystem *es2)
@@ -756,53 +752,23 @@ void Molecule::updateElectronSystems()
   m_electronSystems.clear();
 
   foreach (Bond *bond, m_bondList) {
-    int order = bond->bondOrder();
-    QList<Atom*> atoms;
-    atoms.append(bond->beginAtom());
-    atoms.append(bond->endAtom());
-
-    if (order >= 2) {
-      PiElectrons *piEle = new PiElectrons;
-      piEle->setAtoms(atoms);
-      piEle->setNumElectrons(2);
-      m_electronSystems.append(piEle);
-    }
-
-    if (order == 3) {
-      PiElectrons *piEle = new PiElectrons;
-      piEle->setAtoms(atoms);
-      piEle->setNumElectrons(2);
-      m_electronSystems.append(piEle);
-    }
+    int piOrder = bond->bondOrder() - 1;
+    while (piOrder--) m_electronSystems << new PiElectrons(bond->atoms(), 2);
   }
 
   foreach (Atom *atom, m_atomList) {
-    int unboundElectrons = atom->numNonBondingElectrons();
-    QList<Atom*> atoms;
-    atoms.append(atom);
-
-    for (int i = 2; i <= unboundElectrons; i+=2) {
-      PiElectrons *piEle = new PiElectrons;
-      piEle->setAtoms(atoms);
-      piEle->setNumElectrons(2);
-      m_electronSystems.append(piEle);
-    }
-
-    if (unboundElectrons % 2 == 1) {
-      PiElectrons *piEle = new PiElectrons;
-      piEle->setAtoms(atoms);
-      piEle->setNumElectrons(1);
-      m_electronSystems.append(piEle);
-    }
+    int unboundElectronPairs = atom->numNonBondingElectrons() / 2;
+    while (unboundElectronPairs--) m_electronSystems << new PiElectrons({atom}, 2);
+    if (atom->numNonBondingElectrons() % 2) m_electronSystems << new PiElectrons({atom}, 1);
   }
 
-  qSort(m_electronSystems.begin(), m_electronSystems.end(), NumAtomsLessThan);
+  qSort(m_electronSystems.begin(), m_electronSystems.end(), NumAtomsMoreThan);
 
   for (int i = 0; i < 1000; ++i) {
     bool restart = false;
     foreach (ElectronSystem *es1, m_electronSystems) {
       foreach (ElectronSystem *es2, m_electronSystems) {
-        if (canMerge(this, es1, es2)) {
+        if (canMerge(es1, es2)) {
           merge(m_electronSystems, es1, es2);
           restart = true;
           break;

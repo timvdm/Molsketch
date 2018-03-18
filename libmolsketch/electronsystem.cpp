@@ -23,13 +23,11 @@ namespace Molsketch {
   class Atom;
   class Molecule;
 
-  ElectronSystem::ElectronSystem() : m_molecule(0), m_numElectrons(0)
-  {
-  }
-  
-  ElectronSystem::~ElectronSystem()
-  {
-  }
+  ElectronSystem::ElectronSystem(const QList<Atom *> &atoms, int numElectrons)
+    : m_molecule(0),
+      m_atoms(atoms),
+      m_numElectrons(numElectrons)
+  {}
 
   int ElectronSystem::numAtoms() const
   {
@@ -46,6 +44,10 @@ namespace Molsketch {
     m_atoms = atoms;
   }
 
+  void ElectronSystem::setAtoms(const QPair<Atom *, Atom *> &atoms) {
+    setAtoms(QList<Atom*>{atoms.first, atoms.second});
+  }
+
   int ElectronSystem::numElectrons() const
   {
     return m_numElectrons;
@@ -56,7 +58,11 @@ namespace Molsketch {
     m_numElectrons = numElectrons;
   }
 
+  PiElectrons::PiElectrons(QList<Atom *> atoms, int numElectrons)
+    : ElectronSystem(atoms, numElectrons) {}
 
-
+  PiElectrons::PiElectrons(const QPair<Atom *, Atom *> &atoms, int numElectrons)
+    : PiElectrons(QList<Atom*>{atoms.first, atoms.second}, numElectrons)
+  {}
 
 }
