@@ -6,10 +6,12 @@
 #include "scenesettings.h"
 #include "settingsitem.h"
 #include "settingsconnector.h"
+#include "settingsfacade.h"
+#include <QDebug>
 
 namespace Molsketch {
 
-  struct ScenePropertiesWidget::privateData
+  struct ScenePropertiesWidget::privateData // TODO actually we only need the setup function
   {
     Ui::ScenePropertiesWidget *ui;
     SceneSettings *settings;
@@ -58,8 +60,17 @@ namespace Molsketch {
     d->setup();
   }
 
+  ScenePropertiesWidget::ScenePropertiesWidget(SceneSettings* settings, QWidget *parent)
+    : QWidget(parent),
+      d(new privateData(settings, nullptr))
+  {
+    d->ui->setupUi(this);
+    d->setup();
+  }
+
   ScenePropertiesWidget::~ScenePropertiesWidget()
   {
+    qDebug() << "deleting properties widget" << this;
     delete d->ui;
     delete d;
   }

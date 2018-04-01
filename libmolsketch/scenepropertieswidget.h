@@ -19,7 +19,9 @@ namespace Molsketch {
     Q_OBJECT
   public:
     ScenePropertiesWidget(SceneSettings *settings, QUndoStack *stack, QWidget *parent = 0);
+    explicit ScenePropertiesWidget(SceneSettings *settings, QWidget *parent = 0);
     ~ScenePropertiesWidget();
+
   private:
     class privateData;
     privateData *d;

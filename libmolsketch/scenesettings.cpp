@@ -19,6 +19,7 @@
 #include <QFont>
 #include <QRegularExpression>
 #include <QSettings>
+#include <QDebug>
 #include "scenesettings.h"
 #include "settingsfacade.h"
 #include "settingsitem.h"
@@ -140,6 +141,17 @@ namespace Molsketch {
       QString name(dashifyCamelCaseAttributeName(attribute.name()));
       if (d->settingsItems.contains(name))
         d->settingsItems[name]->set(attribute.value().toString());
+    }
+  }
+
+  void SceneSettings::transferFrom(const SettingsFacade &facade) {
+    Q_D(SceneSettings);
+    for (auto key : facade.allKeys()) {
+      if (!d->settingsItems.contains(key)) {
+        qDebug() << "Key" << key << "not contained in settings" << this;
+        continue;
+      }
+      d->settingsItems[key]->set(facade.value(key));
     }
   }
 

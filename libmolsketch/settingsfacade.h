@@ -37,9 +37,9 @@ namespace Molsketch {
     virtual QVariant value(const QString& key, const QVariant &defaultValue = QVariant()) const = 0;
     SettingsFacade& operator =(const SettingsFacade& other);
     bool operator ==(const SettingsFacade& other);
+    virtual QStringList allKeys() const = 0;
   protected:
     explicit SettingsFacade(QObject *parent = nullptr);
-    virtual QStringList allKeys() const = 0;
   };
 
 } // namespace Molsketch

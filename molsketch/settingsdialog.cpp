@@ -32,24 +32,36 @@
 #include <settingsitem.h>
 
 #include "settingsdialog.h"
+#include "scenepropertieswidget.h"
+#include "settingsfacade.h"
+
+// TODO this is a make-shift solution to enable resetting to default values!
+void setupDrawingSettings(Molsketch::SceneSettings *settings, QWidget *drawingPage) {
+  QLayout *drawingPageLayout = drawingPage->layout();
+  while (drawingPageLayout->count()) {
+    auto layoutItem = drawingPageLayout->takeAt(0);
+    delete layoutItem->widget();
+    delete layoutItem;
+  }
+  drawingPageLayout->addWidget(new Molsketch::ScenePropertiesWidget(settings, drawingPage));
+}
 
 SettingsDialog::SettingsDialog(ApplicationSettings *settings, QWidget * parent, Qt::WindowFlags f )
   : QDialog(parent,f),
-    settings(settings)
+    settings(settings),
+    sceneSettingsFacade(const_cast<const ApplicationSettings*>(settings)->settingsFacade().cloneTransiently()) // TODO ownership?
 {
-  // Setup the user interface
   ui.setupUi(this);
+  QWidget *drawingPage = findChild<QWidget*>("drawingPage");
+  setupDrawingSettings(new Molsketch::SceneSettings(sceneSettingsFacade, drawingPage), drawingPage);
 
   foreach(QListWidgetItem * item, ui.listWidget->findItems("*",Qt::MatchWildcard))
     item->setTextAlignment(Qt::AlignHCenter);
   ui.listWidget->setCurrentRow(0);
 
-  // Connect signals and slots
-  connect(ui.pushButtonFont, SIGNAL(clicked()), this, SLOT(selectFont()));
   connect(ui.buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(buttonClicked(QAbstractButton*)));
   connect(ui.buttonBox, SIGNAL(helpRequested()), this, SLOT(showHelp()));
 
-  // Setting initial values
   setInitialValues();
 }
 
@@ -58,28 +70,6 @@ SettingsDialog::~SettingsDialog( ){}
 void SettingsDialog::setInitialValues()
 {
   ui.spinBoxAutoSave->setValue(settings->autoSaveInterval()/60000);
-
-
-  if (settings->carbonVisible()->get()) // FIXME connect signal/slot
-    ui.checkBoxShowCarbon->setCheckState(Qt::Checked);
-  if (settings->chargeVisible()->get()) // FIXME connect signal/slot
-    ui.checkBoxShowValency->setCheckState(Qt::Checked);
-  if (settings->electronSystemsVisible()->get()) // FIXME connect signal/slot
-    ui.checkBoxShowES->setCheckState(Qt::Checked);
-
-
-  QFont atomFont(settings->atomFont()->get()); // FIXME connect signal/slot
-  ui.doubleSpinBoxFontSize->setValue(atomFont.pointSizeF());
-  ui.fontComboBox->setCurrentFont(atomFont);
-
-  ui.lineEditBondLength->setText(QString::number(settings->bondLength()->get())); // FIXME connect signal/slot
-  ui.doubleSpinBoxBondWidth->setValue(settings->bondWidth()->get()); // FIXME connect signal/slot
-  ui.spinBoxBondAngle->setValue(settings->bondAngle()->get()); // FIXME connect signal/slot
-
-  ui.gridHorizontalSpacing->setValue(settings->horizontalGridSpacing()->get()); // FIXME connect signal/slot
-  ui.gridVerticalSpacing->setValue(settings->verticalGridSpacing()->get()); // FIXME connect signal/slot
-  ui.gridLineColor->setColor(settings->gridColor()->get()); // FIXME connect signal/slot
-  ui.gridLinewidth->setValue(settings->gridLineWidth()->get()); // FIXME connect signal/slot
 
   ui.libraries->clear();
   ui.libraries->addItems(settings->getLibraries());
@@ -90,6 +80,10 @@ void SettingsDialog::setInitialValues()
 
   ui.libraryPath->setText(settings->obabelIfacePath());
   ui.obfPath->setText(settings->obabelFormatsPath());
+
+  QWidget *drawingPage = findChild<QWidget*>("drawingPage");
+  setupDrawingSettings(new Molsketch::SceneSettings(Molsketch::SettingsFacade::transientSettings(drawingPage), drawingPage), drawingPage);
+  // TODO accceptance test
 }
 
 void SettingsDialog::accept()
@@ -101,24 +95,6 @@ void SettingsDialog::accept()
 void SettingsDialog::applyChanges()
 {
   settings->setAutoSaveInterval(ui.spinBoxAutoSave->value()*60000);
-
-  // Atom settings
-  settings->carbonVisible()->set(ui.checkBoxShowCarbon->isChecked()); // FIXME connect signal/slot
-  settings->chargeVisible()->set(ui.checkBoxShowValency->isChecked()); // FIXME connect signal/slot
-  settings->electronSystemsVisible()->set(ui.checkBoxShowES->isChecked()); // FIXME connect signal/slot
-  QFont font = ui.fontComboBox->currentFont();
-  font.setPointSizeF(ui.doubleSpinBoxFontSize->value());
-  settings->atomFont()->set(font); // FIXME connect signal/slot
-
-  // MsKBond settings
-  settings->bondLength()->set(ui.lineEditBondLength->text().toDouble()); // FIXME connect signal/slot
-  settings->bondWidth()->set(ui.doubleSpinBoxBondWidth->value()); // FIXME connect signal/slot
-  settings->bondAngle()->set(ui.spinBoxBondAngle->value()); // FIXME connect signal/slot
-
-  settings->horizontalGridSpacing()->set(ui.gridHorizontalSpacing->value()); // FIXME connect signal/slot
-  settings->verticalGridSpacing()->set(ui.gridVerticalSpacing->value()); // FIXME connect signal/slot
-  settings->gridColor()->set(ui.gridLineColor->getColor()); // FIXME connect signal/slot
-  settings->gridLineWidth()->set(ui.gridLinewidth->value()); // FIXME connect signal/slot
 
   // Library settings
   QStringList libraries;
@@ -135,19 +111,10 @@ void SettingsDialog::applyChanges()
 
   settings->setObabelIfacePath(ui.libraryPath->text());
   settings->setObabelFormatsPath(ui.obfPath->text());
-  emit settingsChanged();
-}
 
-void SettingsDialog::selectFont()
-{
-  bool * ok = NULL;
-  QFont previousFont = ui.fontComboBox->currentFont();
-  previousFont.setPointSizeF(ui.doubleSpinBoxFontSize->value());
-  QFont font = QFontDialog::getFont(ok, previousFont, this, "molsKetch - Select atomsymbol font");
-  if (ok) {
-    ui.fontComboBox->setCurrentFont(font);
-    ui.doubleSpinBoxFontSize->setValue(font.pointSizeF());
-  }
+  settings->transferFrom(*sceneSettingsFacade);
+
+  emit settingsChanged();
 }
 
 void SettingsDialog::buttonClicked(QAbstractButton * button)

@@ -48,7 +48,6 @@ namespace Molsketch {
       return settings->value(key, defaultValue);
     }
 
-  protected:
     QStringList allKeys() const override {
       return settings->allKeys();
     }
@@ -108,7 +107,6 @@ namespace Molsketch {
       return settings.value(key, defaultValue);
     }
 
-  protected:
     QStringList allKeys() const override {
       return settings.keys();
     }

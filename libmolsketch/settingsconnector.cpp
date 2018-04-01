@@ -45,6 +45,12 @@ namespace Molsketch {
 
   SettingsConnector *SettingsConnector::connect(QDoubleSpinBox *control, DoubleSettingsItem *setting, QUndoStack *stack, QString description)
   {
+    if (!stack) {
+      control->setValue(setting->get());
+      QObject::connect(control, SIGNAL(valueChanged(double)), setting, SLOT(set(qreal)));
+      QObject::connect(setting, SIGNAL(updated(qreal)), control, SLOT(setValue(double)));
+      return nullptr;
+    }
     auto connector = new SettingsConnector(description,
                                  [=] { setting->set(control->value()); },
                                  [=] { qDebug() << "setting to control:" << setting->get(); control->setValue(setting->get()); },
@@ -55,6 +61,12 @@ namespace Molsketch {
   }
 
   SettingsConnector *SettingsConnector::connect(QCheckBox *control, BoolSettingsItem *setting, QUndoStack *stack, QString description) {
+    if (!stack) {
+      control->setChecked(setting->get());
+      QObject::connect(control, SIGNAL(toggled(bool)), setting, SLOT(set(bool)));
+      QObject::connect(setting, SIGNAL(updated(bool)), control, SLOT(setChecked(bool)));
+      return nullptr;
+    }
     auto connector = new SettingsConnector(description,
                                  [=] { setting->set(control->isChecked()); },
                                  [=] { control->setChecked(setting->get()); },
@@ -66,6 +78,12 @@ namespace Molsketch {
   }
 
   SettingsConnector *SettingsConnector::connect(ColorButton *control, ColorSettingsItem *setting, QUndoStack *stack, QString description) {
+    if (!stack) {
+      control->setColor(setting->get());
+      QObject::connect(control, SIGNAL(colorChanged(QColor)), setting, SLOT(set(QColor)));
+      QObject::connect(setting, SIGNAL(updated(QColor)), control, SLOT(setColor(QColor)));
+      return nullptr;
+    }
     auto connector = new SettingsConnector(description,
                                            [=] { setting->set(control->getColor()); },
                                            [=] { control->setColor(setting->get()); },
@@ -76,6 +94,12 @@ namespace Molsketch {
   }
 
   SettingsConnector *SettingsConnector::connect(FontChooser *control, FontSettingsItem *setting, QUndoStack *stack, QString description) {
+    if (!stack) {
+      control->setFont(setting->get());
+      QObject::connect(control, SIGNAL(fontChanged(QFont)), setting, SLOT(set(QFont)));
+      QObject::connect(setting, SIGNAL(updated(QFont)), control, SLOT(setFont(QFont)));
+      return nullptr;
+    }
     auto connector = new SettingsConnector(description,
                                            [=] { setting->set(control->getSelectedFont()); },
                                            [=] { control->setFont(setting->get()); },
