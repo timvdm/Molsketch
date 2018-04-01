@@ -49,7 +49,8 @@ public:
 class ScenePropertiesWidgetHeadlessTest : public CxxTest::TestSuite {
   MolScene *scene;
   ScenePropertiesWidget *propertiesWidget;
-  QDoubleSpinBox *bondLineWidthControl;
+  ScenePropertiesWidget *settingsWidget;
+  QDoubleSpinBox *bondLineWidthControl, *bondLineWidthSettingsControl;
   DoubleSettingsItem *bondLineWidthSetting;
   SceneSettingsForTesting *settings;
 
@@ -78,15 +79,20 @@ public:
     propertiesWidget = new ScenePropertiesWidget(scene->settings(), scene->stack());
     bondLineWidthControl = assertNotNull<QDoubleSpinBox>(propertiesWidget->findChild<QDoubleSpinBox*>("bondLineWidth"));
     bondLineWidthSetting = assertNotNull<DoubleSettingsItem>(scene->settings()->bondWidth());
+
+    settingsWidget = new ScenePropertiesWidget(scene->settings());
+    bondLineWidthSettingsControl = assertNotNull<QDoubleSpinBox>(settingsWidget->findChild<QDoubleSpinBox*>("bondLineWidth"));
   }
 
   void tearDown() override {
     delete propertiesWidget;
+    delete settingsWidget;
     delete scene;
   }
 
   void testSettingAndUiSyncedInitially() {
     TS_ASSERT_EQUALS(bondLineWidthControl->value(), bondLineWidthSetting->get());
+    TS_ASSERT_EQUALS(bondLineWidthSettingsControl->value(), bondLineWidthSetting->get());
   }
 
   void testSettingPropertyThroughControl() {
@@ -95,6 +101,12 @@ public:
     TS_ASSERT_EQUALS(bondLineWidthControl->value(), BOND_LINE_WIDTH);
     TS_ASSERT_EQUALS(scene->stack()->index(), 1);
     TS_ASSERT_EQUALS(scene->stack()->count(), 1);
+  }
+
+  void testChangeSettingThroughControl() {
+    bondLineWidthSettingsControl->setValue(BOND_LINE_WIDTH);
+    TS_ASSERT_EQUALS(bondLineWidthSetting->get(), BOND_LINE_WIDTH);
+    TS_ASSERT_EQUALS(bondLineWidthSettingsControl->value(), BOND_LINE_WIDTH);
   }
 
   void testSettingPropertyThroughControlMultipleTimes() {
