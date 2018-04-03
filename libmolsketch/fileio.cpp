@@ -69,7 +69,6 @@ namespace Molsketch
     QXmlStreamReader xml(&file);
     while (xml.name().toString() != scene->xmlName() && xml.name().toString() != "div") // TODO div is only for old versions
       xml.readNext() ;
-    scene->clear();
     xml >> *scene ;
     if (xml.hasError()) {
       qDebug() << "ERROR while reading " << fileName;
