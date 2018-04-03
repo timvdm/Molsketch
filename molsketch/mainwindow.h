@@ -72,7 +72,6 @@ class MainWindow : public QMainWindow
   Q_OBJECT
 
 public:
-  /** Constructor */
   MainWindow();
 
   QMenu* createPopupMenu();
@@ -81,8 +80,7 @@ protected:
   /** Reimplements the close event to asked for a save on exit. */
   void closeEvent(QCloseEvent *event);
 
-
-
+  explicit MainWindow(ApplicationSettings* appSetttings);
 
 private slots:
   /** Opens a new empty file. */
@@ -133,8 +131,6 @@ private slots:
   void zoomReset();
   /** Adjust the zoom leven to fit the whole document in the view. */
   void zoomFit();
-  /** Update the window to match the edit mode @p mode. */
-  void updateEditMode(int mode);
   /** Reloads the preferences */
   void readPreferences();
   void showReleaseNotes();

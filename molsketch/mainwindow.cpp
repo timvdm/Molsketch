@@ -97,10 +97,16 @@
 using namespace Molsketch;
 
 MainWindow::MainWindow()
-  : settings(new ApplicationSettings(SettingsFacade::persistedSettings(new QSettings), this)),
+  : MainWindow(new ApplicationSettings(SettingsFacade::persistedSettings(new QSettings)))
+{}
+
+MainWindow::MainWindow(ApplicationSettings *appSetttings)
+  : settings(appSetttings),
     obabelLoader(new OBabelIfaceLoader(this))
 {
-  // Creating the menus and actions
+  settings->setParent(this);
+  setWindowIcon(QIcon(":/images/molsketch.svg"));
+
   createView();
   createToolBox();
   createWikiDock();
@@ -111,17 +117,14 @@ MainWindow::MainWindow()
   createToolBarContextMenuOptions();
   initializeAssistant();
 
-  setWindowIcon(QIcon(":/images/molsketch.svg"));
 
-  // Loading settings
   readSettings();
 
   QStringList args = qApp->arguments();
   if (!args.empty()) args.removeFirst();
-  QRegExp rx("^[^\\-]");
   QStringList loadedFiles;
 
-  for(QString fileName : args.filter(rx)) {
+  for(QString fileName : args.filter(QRegExp("^[^\\-]"))) {
     if (fileName.endsWith(".msk")) {
       readMskFile(fileName, m_scene);
       loadedFiles << fileName;
@@ -131,7 +134,6 @@ MainWindow::MainWindow()
         m_scene->addMolecule(mol);
         loadedFiles << fileName;
       } else {
-        // Display error message if load fails
         QMessageBox::critical(this,tr(PROGRAM_NAME),tr("Error while loading file\n") + fileName + tr("\nOpenBabel not available or file corrupt"),QMessageBox::Ok,QMessageBox::Ok);
       }
     }
@@ -141,7 +143,6 @@ MainWindow::MainWindow()
   if (loadedFiles.count() == 1) setCurrentFile(loadedFiles.first());
 
   connect(m_scene->stack(),SIGNAL(cleanChanged(bool)), this, SLOT(documentWasModified( )));
-  connect(m_scene,SIGNAL(editModeChange(int)),this,SLOT(updateEditMode(int)));
 
   m_molView->setAcceptDrops(true);
 }
@@ -157,27 +158,22 @@ QMenu *MainWindow::createPopupMenu()
   return popupMenu;
 }
 
-// Event handlers
-
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-  if (maybeSave())
-    {
-        writeSettings();
-      if (assistantClient)
-        {
+  if (maybeSave()) {
+    writeSettings();
+    if (assistantClient) {
 #if QT_VERSION <= 0x040603
           assistantClient->closeAssistant();
 #else
           assistantClient->terminate();
 #endif
-        }
-      event->accept();
     }
-  else
-    {
-      event->ignore();
-    }
+    event->accept();
+    deleteLater();
+  } else {
+    event->ignore();
+  }
 }
 
 void MainWindow::newFile()
@@ -494,13 +490,6 @@ void MainWindow::documentWasModified()
   setWindowModified(!m_scene->stack()->isClean());
 }
 
-void MainWindow::updateEditMode(int mode)
-{
-  Q_UNUSED(mode);
-//  m_molView->setDragMode(QGraphicsView::NoDrag);
-
-}
-
 // Widget creators
 
 void MainWindow::createActions()
@@ -598,6 +587,7 @@ void MainWindow::createActions()
   prefAct = new QAction(QIcon::fromTheme("preferences-system", QIcon(":icons/preferences-system.svg")),tr("Edit Pre&ferences..."),this);
   prefAct->setShortcut(tr("Ctrl+F"));
   prefAct->setStatusTip(tr("Edit your preferences"));
+  prefAct->setObjectName("preferencesAction");
   connect(prefAct, SIGNAL(triggered()), this, SLOT(editPreferences()));
 
   // Zoom actions
@@ -671,6 +661,7 @@ void MainWindow::createMenus()
   fileMenu->addAction(exitAct);
 
   editMenu = menuBar()->addMenu(tr("&Edit"));
+  editMenu->setObjectName("editMenu");
   editMenu->addAction(undoAct);
   editMenu->addAction(redoAct);
   editMenu->addSeparator();
@@ -681,7 +672,6 @@ void MainWindow::createMenus()
   editMenu->addSeparator();
   editMenu->addAction(selectAllAct);
   editMenu->addAction(alignAct);
-  editMenu->addSeparator();
   editMenu->addSeparator();
   editMenu->addAction(prefAct);
 
@@ -944,16 +934,6 @@ void MainWindow::readPreferences()
 {
   m_autoSaveTimer->setInterval(settings->autoSaveInterval());
   m_autoSaveTimer->start();
-
-  // TODO fix this (protected in Qt4)
-#if QT_VERSION >= 0x050000
-  foreach(QAction *action, m_scene->sceneActions())
-    emit action->changed();
-#endif
-
-  // TODO add scene default properties
-
-  // Update the scene contents
   m_scene->update();
   buildLibraries();
 }
@@ -991,7 +971,7 @@ void MainWindow::setCurrentFile(const QString &fileName)
   m_curFile = fileName;
   QString shownName;
   if (m_curFile.isEmpty())
-    shownName = tr("untitled.mol");
+    shownName = tr("untitled.msk");
   else
     shownName = QFileInfo(m_curFile).fileName();
 
@@ -1001,7 +981,6 @@ void MainWindow::setCurrentFile(const QString &fileName)
 
 void MainWindow::editPreferences( )
 {
-  // Opens the settings dialog
   SettingsDialog dialog(settings);
   connect(&dialog, SIGNAL(settingsChanged()), this, SLOT(readPreferences()));
   dialog.exec();
