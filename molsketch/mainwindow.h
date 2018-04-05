@@ -123,15 +123,6 @@ private slots:
   /** Mark the current document as modified. */
   void documentWasModified( );
 
-
-  /** Zoom in on the current view. */
-  void zoomIn();
-  /** Zoom out on the current view. */
-  void zoomOut();
-  /** Restore the original position and zoom level. */
-  void zoomReset();
-  /** Adjust the zoom leven to fit the whole document in the view. */
-  void zoomFit();
   /** Reloads the preferences */
   void readPreferences();
   void showReleaseNotes();

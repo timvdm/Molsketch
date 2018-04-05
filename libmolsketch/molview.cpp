@@ -1,5 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2007-2008 by Harm van Eersel                            *
+ *   Copyright (C) 2018 (updated) by Hendrik Vennekate                     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -17,7 +18,6 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-
 #include "molview.h"
 
 #include <QDebug>
@@ -25,6 +25,8 @@
 #include <QWheelEvent>
 
 #include <math.h>
+
+const qreal SCALING_FACTOR = 2.;
 
 namespace Molsketch {
 
@@ -44,8 +46,24 @@ namespace Molsketch {
 #endif
   }
 
-  void MolView::scaleView(qreal scaleFactor)
-  {
+  void MolView::zoomIn() {
+    scale(SCALING_FACTOR, SCALING_FACTOR);
+  }
+
+  void MolView::zoomOut() {
+    scale(1./SCALING_FACTOR, 1./SCALING_FACTOR);
+  }
+
+  void MolView::zoomReset() {
+    resetMatrix();
+  }
+
+  void MolView::zoomFit() {
+    if (!scene()) return;
+    fitInView(scene()->itemsBoundingRect(), Qt::KeepAspectRatio);
+  }
+
+  void MolView::scaleView(qreal scaleFactor) {
     qreal factor = matrix().scale(scaleFactor, scaleFactor).mapRect(QRect(0,0,1,1)).width();
     if (factor < 0.07 || factor > 100) return;
     scale(scaleFactor, scaleFactor);

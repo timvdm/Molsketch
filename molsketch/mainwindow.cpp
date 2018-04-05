@@ -385,27 +385,6 @@ void MainWindow::setToolButtonStyle(QAction *styleAction)
   QMainWindow::setToolButtonStyle((Qt::ToolButtonStyle) styleAction->data().toInt());
 }
 
-
-void MainWindow::zoomIn()
-{
-  m_molView->scale(2,2);
-}
-
-void MainWindow::zoomOut()
-{
-  m_molView->scale(0.5,0.5);
-}
-
-void MainWindow::zoomReset()
-{
-  m_molView->resetMatrix();
-}
-
-void MainWindow::zoomFit()
-{
-  m_molView->fitInView(m_scene->itemsBoundingRect(),Qt::KeepAspectRatio);
-}
-
 void MainWindow::assistant()
 {
   QFileInfo file(MSK_INSTALL_DOCS + QString("/index.html"));
@@ -557,22 +536,22 @@ void MainWindow::createActions()
   zoomInAct = new QAction(QIcon::fromTheme("zoom-in", QIcon(":icons/zoom-in.svg")),tr("Zoom &In"), this);
   zoomInAct->setShortcut(tr("Ctrl++"));
   zoomInAct->setStatusTip(tr("Zoom in on the canvas"));
-  connect(zoomInAct, SIGNAL(triggered()), this, SLOT(zoomIn()));
+  connect(zoomInAct, SIGNAL(triggered()), m_molView, SLOT(zoomIn()));
 
   zoomOutAct = new QAction(QIcon::fromTheme("zoom-out", QIcon(":icons/zoom-out.svg")),tr("Zoom &Out"), this);
   zoomOutAct->setShortcut(tr("Ctrl+-"));
   zoomOutAct->setStatusTip(tr("Zoom out on the canvas"));
-  connect(zoomOutAct, SIGNAL(triggered()), this, SLOT(zoomOut()));
+  connect(zoomOutAct, SIGNAL(triggered()), m_molView, SLOT(zoomOut()));
 
   zoomResetAct = new QAction(QIcon::fromTheme("zoom-original", QIcon(":icons/zoom-original.svg")),tr("Zoom &Reset"), this);
   zoomResetAct->setShortcut(tr("Ctrl+="));
   zoomResetAct->setStatusTip(tr("Reset the zoom level"));
-  connect(zoomResetAct, SIGNAL(triggered()), this, SLOT(zoomReset()));
+  connect(zoomResetAct, SIGNAL(triggered()), m_molView, SLOT(zoomReset()));
 
   zoomFitAct = new QAction(QIcon::fromTheme("zoom-fit-best", QIcon(":icons/zoom-fit-best.svg")),tr("Zoom &Fit"), this);
   zoomFitAct->setShortcut(tr("Ctrl+*"));
   zoomFitAct->setStatusTip(tr("Fit to screen"));
-  connect(zoomFitAct, SIGNAL(triggered()), this, SLOT(zoomFit()));
+  connect(zoomFitAct, SIGNAL(triggered()), m_molView, SLOT(zoomFit()));
 
   // Help actions
   helpContentsAct = new QAction(QIcon::fromTheme("help-contents", QIcon(":icons/help-contents.svg")),tr("&Help Contents..."), this);
