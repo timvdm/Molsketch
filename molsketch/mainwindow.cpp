@@ -130,7 +130,7 @@ MainWindow::MainWindow(ApplicationSettings *appSetttings)
   show();
 }
 
-QMenu *MainWindow::createPopupMenu()
+QMenu *MainWindow::createPopupMenu() // TODO outsource
 {
   QMenu* popupMenu = QMainWindow::createPopupMenu();
   if (!popupMenu) return popupMenu;
@@ -165,16 +165,13 @@ void MainWindow::newFile() {
 
 void MainWindow::open()
 {
-  if (!maybeSave()) return;
-
   QStringList readableFormats;
   readableFormats << MSK_DEFAULT_FORMAT << obabelLoader->inputFormats();
-  QString fileName = QFileDialog::getOpenFileName(this,tr("Open - Molsketch"), settings->lastPath(),
+  QString fileName = QFileDialog::getOpenFileName(this,
+                                                  tr("Open - Molsketch"),
+                                                  settings->lastPath(),
                                                   readableFormats.join(";;"));
   if (fileName.isEmpty()) return;
-
-  settings->setLastPath(QFileInfo(fileName).path());
-  m_scene->clear(); // just delete
 
   open(fileName);
 }
@@ -198,36 +195,40 @@ void MainWindow::open(const QString& fileName) {
     return;
   }
 
+  settings->setLastPath(QFileInfo(fileName).path());
   if (fileName.endsWith(MSK_NATIVE_FORMAT)) readMskFile(fileName, m_scene);
   else readToSceneUsingOpenBabel(fileName);
 
   setCurrentFile(fileName);
 }
 
-bool MainWindow::save()
-{
-  if (m_curFile.isEmpty())
-      return saveAs();
-  if (m_curFile.endsWith(".msk")) {
-      if (!writeMskFile(m_curFile, m_scene)) {
-        QMessageBox::warning(this, tr("Saving file failed!"), tr("Could not save file ") + m_curFile);
+bool MainWindow::save(const QString& fileName) {
+  if (fileName.endsWith(".msk")) {
+      if (!writeMskFile(fileName, m_scene)) {
+        QMessageBox::warning(this, tr("Saving file failed!"), tr("Could not save file ") + fileName);
         return false;
       }
-      m_scene->stack()->setClean() ;
-      return true ;
-  }
-  bool threeD = QMessageBox::question(this, tr("Save as 3D?"), tr("Save as three dimensional coordinates?")) == QMessageBox::Yes;
-  if (!obabelLoader->saveFile(m_curFile, m_scene, threeD)) {
-    QMessageBox::warning(0, tr("Could not save"), tr("Could not save file using OpenBabel: ") + m_curFile);
-    return false ;
+  } else {
+    bool threeD = QMessageBox::question(this, tr("Save as 3D?"), tr("Save as three dimensional coordinates?")) == QMessageBox::Yes;
+    if (!obabelLoader->saveFile(fileName, m_scene, threeD)) {
+      QMessageBox::warning(0, tr("Could not save"), tr("Could not save file using OpenBabel: ") + fileName);
+      return false ;
+    }
   }
   m_scene->stack()->setClean();
+  setCurrentFile(fileName);
   return true ;
+}
+
+bool MainWindow::save()
+{
+  if (windowFilePath().isEmpty()) return saveAs();
+  return save(windowFilePath());
 }
 
 bool MainWindow::autoSave()
 {
-  QFileInfo fileName(m_curFile);
+  QFileInfo fileName(windowFilePath());
 
   // Do nothing if there is nothing to save
   if(m_scene->stack()->isClean()) return true; // TODO use isWindowModified() instead
@@ -237,7 +238,7 @@ bool MainWindow::autoSave()
   if (!fileName.exists())
     fileName = QDir::homePath() + tr("/untitled.backup.msk");
   else
-    fileName = QFileInfo(m_curFile).path() + QFileInfo(m_curFile).baseName() +  ".backup." + QFileInfo(m_curFile).completeSuffix();
+    fileName = fileName.path() + fileName.baseName() +  ".backup." + fileName.completeSuffix();
   // And save the file
   if (fileName.suffix() == "msk") {
     bool saved = writeMskFile(fileName.absoluteFilePath(), m_scene);
@@ -254,9 +255,7 @@ bool MainWindow::autoSave()
   return true;
 }
 
-bool MainWindow::saveAs()
-{
-  // Get the filename to save under
+bool MainWindow::saveAs() {
   QString filter = MSK_DEFAULT_FORMAT;
   QStringList supportedFormats;
   supportedFormats << MSK_DEFAULT_FORMAT << obabelLoader->outputFormats();
@@ -267,10 +266,8 @@ bool MainWindow::saveAs()
                                                   &filter);
   if (fileName.isEmpty()) return false;
 
-  // Save accessed path
   settings->setLastPath(QFileInfo(fileName).path());
 
-  // Finding the right extension
   if (QFileInfo(fileName).suffix().isEmpty())
   {
     int index = filter.indexOf(QRegExp("\\*."));
@@ -281,25 +278,7 @@ bool MainWindow::saveAs()
   }
   qDebug() << "Trying to save as " << fileName << "\n";
 
-  if (fileName.endsWith(".msk")) {
-    if (!writeMskFile(fileName, m_scene)) {
-      QMessageBox::warning(0, tr("Saving file failed!"), tr("Could not save file ") + fileName);
-      return false;
-    }
-    setCurrentFile(fileName);
-    m_scene->stack()->setClean();
-    return true ;
-  } else {
-    bool threeD = QMessageBox::question(this, tr("Save as 3D?"), tr("Save as three dimensional coordinates?")) == QMessageBox::Yes;
-    if(obabelLoader->saveFile(fileName, m_scene, threeD))
-    {
-      setCurrentFile(fileName);
-      m_scene->stack()->setClean();
-      return true;
-    }
-  }
-  QMessageBox::critical(this,tr(PROGRAM_NAME),tr("Invalid name or unknown file type"),QMessageBox::Ok,QMessageBox::Ok);
-  return false;
+  return save(fileName);
 }
 
 
@@ -904,8 +883,6 @@ void MainWindow::initializeAssistant()
 #endif
 }
 
-// Auxillary methods
-
 void MainWindow::readSettings()
 {
   resize(settings->getWindowSize());
@@ -931,33 +908,31 @@ void MainWindow::writeSettings()
 }
 
 
-bool MainWindow::maybeSave()
-{
-  /* TODO */
-  if (isWindowModified())
-    {
-      QMessageBox::StandardButton ret;
-      ret = QMessageBox::warning(this,tr(PROGRAM_NAME),
-                                 tr("This document has been modified.\n"
-                                    "Do you want to save your changes?"),
-                                 QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
-      if (ret == QMessageBox::Save)
-        return save();
-      else if (ret == QMessageBox::Cancel)
-        return false;
-    }
-  return true;
+bool MainWindow::maybeSave() {
+  if (!isWindowModified()) return true;
+
+  QMessageBox::StandardButton ret =
+      QMessageBox::warning(this,tr(PROGRAM_NAME),
+                           tr("This document has been modified.\n"
+                              "Do you want to save your changes?"),
+                           QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+  switch (ret) {
+    case QMessageBox::Save: return save();
+    case QMessageBox::Discard: return true;
+    case QMessageBox::Cancel:
+    default: return false;
+  }
 }
 
 void MainWindow::setCurrentFile(const QString &fileName)
 {
   // Synthesizing the correct name
-  m_curFile = fileName;
+  setWindowFilePath(fileName);
   QString shownName;
-  if (m_curFile.isEmpty())
+  if (fileName.isEmpty())
     shownName = tr(EMPTY_FILENAME);
   else
-    shownName = QFileInfo(m_curFile).fileName();
+    shownName = QFileInfo(fileName).fileName();
 
   // Setting the windowtitle
   setWindowTitle(tr("%1[*] - %2").arg(shownName).arg(tr(PROGRAM_NAME))); // TODO use windowFilePath instead
@@ -970,14 +945,11 @@ void MainWindow::editPreferences( )
   dialog.exec();
 }
 
-void MainWindow::submitBug()
-{
-  // Opens a browser with the bug tracker
+void MainWindow::submitBug() {
   QDesktopServices::openUrl(QUrl("http://sourceforge.net/tracker/?func=add&group_id=191562&atid=937880"));
 }
 
-void MainWindow::goToYouTube()
-{
+void MainWindow::goToYouTube() {
   QDesktopServices::openUrl(QUrl("https://www.youtube.com/channel/UCIYnNzSnI9AHpB_c48BR7fQ"));
 }
 

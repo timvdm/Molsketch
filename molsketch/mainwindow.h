@@ -183,8 +183,6 @@ private:
   Molsketch::MolScene* m_scene;
   /** The view of the MolScene. */
   Molsketch::MolView* m_molView;
-  /** The file name of the current document. */
-  QString m_curFile;
 
   /** The dock widget for the toolbox. */
   QDockWidget* toolBoxDock;
@@ -294,6 +292,7 @@ private:
   void buildLibraries();
   void createWikiDock();
   void readToSceneUsingOpenBabel(const QString &fileName);
+  bool save(const QString &filename);
 };
 
 QString readFileContent(const QString& absolutePath);
