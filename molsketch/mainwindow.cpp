@@ -129,7 +129,7 @@ MainWindow::MainWindow(ApplicationSettings *appSetttings)
       readMskFile(fileName, m_scene);
       loadedFiles << fileName;
     } else {
-      Molecule *mol = obabelLoader->loadFile(fileName);
+      Molecule *mol = obabelLoader->loadFile(fileName); // TODO this is also used further down, but there the molecule is split before adding it to the scene!
       if (mol) {
         m_scene->addMolecule(mol);
         loadedFiles << fileName;
@@ -142,7 +142,7 @@ MainWindow::MainWindow(ApplicationSettings *appSetttings)
   setCurrentFile("");
   if (loadedFiles.count() == 1) setCurrentFile(loadedFiles.first());
 
-  connect(m_scene->stack(),SIGNAL(cleanChanged(bool)), this, SLOT(documentWasModified( )));
+  connect(m_scene->stack(),SIGNAL(cleanChanged(bool)), this, SLOT(documentWasModified( ))); // TODO this is essential in creating a new scene
 
   m_molView->setAcceptDrops(true);
 }
@@ -180,7 +180,7 @@ void MainWindow::newFile()
 {
   if (maybeSave())
     {
-      m_scene->clear();
+      m_scene->clear(); // TODO just delete the old scene here
       setCurrentFile("");
       m_molView->resetMatrix();
     }
@@ -197,7 +197,7 @@ void MainWindow::open()
   if (fileName.isEmpty()) return;
 
   settings->setLastPath(QFileInfo(fileName).path());
-  m_scene->clear();
+  m_scene->clear(); // just delete
 
   if (fileName.endsWith(".msk")) {
     readMskFile(fileName, m_scene);
@@ -246,7 +246,7 @@ bool MainWindow::autoSave()
   QFileInfo fileName(m_curFile);
 
   // Do nothing if there is nothing to save
-  if(m_scene->stack()->isClean()) return true;
+  if(m_scene->stack()->isClean()) return true; // TODO use isWindowModified() instead
 
   // TODO extract file infos into separate class (i.e. last path, 3d choice, file name)
   // Else construct the filename
@@ -925,7 +925,7 @@ void MainWindow::initializeAssistant()
 void MainWindow::readSettings()
 {
   resize(settings->getWindowSize());
-  move(settings->getWindowPosition());
+  move(settings->getWindowPosition()); // TODO this should be the job of the window manager.
   restoreState(settings->windowState());
   readPreferences();
 }

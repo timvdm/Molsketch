@@ -123,7 +123,7 @@ namespace Molsketch
     return conv.WriteString(&obmol).c_str() ;
   }
 
-  bool saveFile(const QString &fileName, QGraphicsScene* scene, unsigned short int dim)
+  bool saveFile(const QString &fileName, QGraphicsScene* scene, unsigned short int dim) // TODO this should really take all the molecules instead of the entire scene!
   {
     using namespace OpenBabel;
     OBConversion conversion;
