@@ -28,27 +28,27 @@
 
 namespace Molsketch {
 
-MolView::MolView(QGraphicsScene* scene) : QGraphicsView(scene)
-{
-	setContextMenuPolicy(Qt::ActionsContextMenu);
-	setMouseTracking(true);
-	setAcceptDrops(true);
-	setRenderHints(QPainter::Antialiasing);
-	setResizeAnchor(QGraphicsView::AnchorViewCenter);
-	setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
-        setStyleSheet("");
-        setContextMenuPolicy(Qt::DefaultContextMenu);
+  MolView::MolView(QGraphicsScene* scene) : QGraphicsView(scene)
+  {
+    setContextMenuPolicy(Qt::ActionsContextMenu);
+    setMouseTracking(true);
+    setAcceptDrops(true);
+    setRenderHints(QPainter::Antialiasing);
+    setResizeAnchor(QGraphicsView::AnchorViewCenter);
+    setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+    setStyleSheet("");
+    setContextMenuPolicy(Qt::DefaultContextMenu);
 
 #if QT_VERSION >= 0x040300
-        setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+    setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 #endif
-}
+  }
 
-void MolView::scaleView(qreal scaleFactor)
-{
-	qreal factor = matrix().scale(scaleFactor, scaleFactor).mapRect(QRect(0,0,1,1)).width();
-	if (factor < 0.07 || factor > 100) return;
-	scale(scaleFactor, scaleFactor);
-}
+  void MolView::scaleView(qreal scaleFactor)
+  {
+    qreal factor = matrix().scale(scaleFactor, scaleFactor).mapRect(QRect(0,0,1,1)).width();
+    if (factor < 0.07 || factor > 100) return;
+    scale(scaleFactor, scaleFactor);
+  }
 
 }

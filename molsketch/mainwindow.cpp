@@ -127,7 +127,6 @@ MainWindow::MainWindow(ApplicationSettings *appSetttings)
 
   connect(m_scene->stack(),SIGNAL(cleanChanged(bool)), this, SLOT(documentWasModified( ))); // TODO this is essential in creating a new scene
 
-  m_molView->setAcceptDrops(true);
   show();
 }
 
@@ -144,20 +143,20 @@ QMenu *MainWindow::createPopupMenu()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-  if (maybeSave()) {
-    writeSettings();
-    if (assistantClient) {
-#if QT_VERSION <= 0x040603
-          assistantClient->closeAssistant();
-#else
-          assistantClient->terminate();
-#endif
-    }
-    event->accept();
-    deleteLater();
-  } else {
+  if (!maybeSave()) {
     event->ignore();
+    return;
   }
+  writeSettings();
+  if (assistantClient) {
+#if QT_VERSION <= 0x040603
+    assistantClient->closeAssistant();
+#else
+    assistantClient->terminate();
+#endif
+  }
+  event->accept();
+  deleteLater();
 }
 
 void MainWindow::newFile() {
