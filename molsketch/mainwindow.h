@@ -76,6 +76,7 @@ public:
 
   QMenu* createPopupMenu();
 
+  void open(const QString &fileName);
 protected:
   /** Reimplements the close event to asked for a save on exit. */
   void closeEvent(QCloseEvent *event);
@@ -292,6 +293,7 @@ private:
 
   void buildLibraries();
   void createWikiDock();
+  void readToSceneUsingOpenBabel(const QString &fileName);
 };
 
 QString readFileContent(const QString& absolutePath);

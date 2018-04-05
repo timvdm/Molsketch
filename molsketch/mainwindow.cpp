@@ -94,6 +94,9 @@
 #define OBABELOSSUFFIX
 #endif
 
+const char EMPTY_FILENAME[] = "untitled.msk";
+const char MSK_NATIVE_FORMAT[] = ".msk";
+
 using namespace Molsketch;
 
 MainWindow::MainWindow()
@@ -104,6 +107,7 @@ MainWindow::MainWindow(ApplicationSettings *appSetttings)
   : settings(appSetttings),
     obabelLoader(new OBabelIfaceLoader(this))
 {
+  setAttribute(Qt::WA_DeleteOnClose);
   settings->setParent(this);
   setWindowIcon(QIcon(":/images/molsketch.svg"));
 
@@ -119,32 +123,12 @@ MainWindow::MainWindow(ApplicationSettings *appSetttings)
 
 
   readSettings();
-
-  QStringList args = qApp->arguments();
-  if (!args.empty()) args.removeFirst();
-  QStringList loadedFiles;
-
-  for(QString fileName : args.filter(QRegExp("^[^\\-]"))) {
-    if (fileName.endsWith(".msk")) {
-      readMskFile(fileName, m_scene);
-      loadedFiles << fileName;
-    } else {
-      Molecule *mol = obabelLoader->loadFile(fileName); // TODO this is also used further down, but there the molecule is split before adding it to the scene!
-      if (mol) {
-        m_scene->addMolecule(mol);
-        loadedFiles << fileName;
-      } else {
-        QMessageBox::critical(this,tr(PROGRAM_NAME),tr("Error while loading file\n") + fileName + tr("\nOpenBabel not available or file corrupt"),QMessageBox::Ok,QMessageBox::Ok);
-      }
-    }
-  }
-
   setCurrentFile("");
-  if (loadedFiles.count() == 1) setCurrentFile(loadedFiles.first());
 
   connect(m_scene->stack(),SIGNAL(cleanChanged(bool)), this, SLOT(documentWasModified( ))); // TODO this is essential in creating a new scene
 
   m_molView->setAcceptDrops(true);
+  show();
 }
 
 QMenu *MainWindow::createPopupMenu()
@@ -176,14 +160,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
   }
 }
 
-void MainWindow::newFile()
-{
-  if (maybeSave())
-    {
-      m_scene->clear(); // TODO just delete the old scene here
-      setCurrentFile("");
-      m_molView->resetMatrix();
-    }
+void MainWindow::newFile() {
+  new MainWindow();
 }
 
 void MainWindow::open()
@@ -199,12 +177,10 @@ void MainWindow::open()
   settings->setLastPath(QFileInfo(fileName).path());
   m_scene->clear(); // just delete
 
-  if (fileName.endsWith(".msk")) {
-    readMskFile(fileName, m_scene);
-    setCurrentFile(fileName);
-    return;
-  }
+  open(fileName);
+}
 
+void MainWindow::readToSceneUsingOpenBabel(const QString& fileName) {
   Molecule* mol = obabelLoader->loadFile(fileName); // TODO add coordinates if format does not supply them (e.g. InChI)
   if (!mol) {
     qCritical() << "Could not read file using OpenBabel. Filename: " + fileName;
@@ -212,10 +188,19 @@ void MainWindow::open()
     return;
   }
 
-  // Add molecule to scene
-  QList<Molecule*> molList = mol->split();
-  foreach(Molecule* mol,molList)
-    m_scene->addItem(mol);
+  for(auto molecule : mol->split())
+    m_scene->addItem(molecule);
+  delete mol;
+}
+
+void MainWindow::open(const QString& fileName) {
+  if (isWindowModified() || !windowFilePath().isEmpty()) {
+    (new MainWindow())->open(fileName);
+    return;
+  }
+
+  if (fileName.endsWith(MSK_NATIVE_FORMAT)) readMskFile(fileName, m_scene);
+  else readToSceneUsingOpenBabel(fileName);
 
   setCurrentFile(fileName);
 }
@@ -971,12 +956,12 @@ void MainWindow::setCurrentFile(const QString &fileName)
   m_curFile = fileName;
   QString shownName;
   if (m_curFile.isEmpty())
-    shownName = tr("untitled.msk");
+    shownName = tr(EMPTY_FILENAME);
   else
     shownName = QFileInfo(m_curFile).fileName();
 
   // Setting the windowtitle
-  setWindowTitle(tr("%1[*] - %2").arg(shownName).arg(tr(PROGRAM_NAME)));
+  setWindowTitle(tr("%1[*] - %2").arg(shownName).arg(tr(PROGRAM_NAME))); // TODO use windowFilePath instead
 }
 
 void MainWindow::editPreferences( )
