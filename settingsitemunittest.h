@@ -61,6 +61,14 @@ const QFont ALTERNATE_FONT("Helvetica", 15, QFont::Cursive);
 const QVariant ALTERNATE_FONT_VARIANT(ALTERNATE_FONT);
 const QString ALTERNATE_FONT_AS_STRING("AAAAEgBIAGUAbAB2AGUAdABpAGMAYf////9ALgAAAAAAAP////8FAAEABhAAZAEAAAAAAAAAAAAA");
 
+const QString STRING_LIST_KEY("TestStringListKey");
+const QStringList STRING_LIST_VALUE{"testString1", "testString2"};
+const QVariant STRING_LIST_VARIANT(STRING_LIST_VALUE);
+const QString STRING_LIST_AS_STRING("AAAAAgAAABYAdABlAHMAdABTAHQAcgBpAG4AZwAxAAAAFgB0AGUAcwB0AFMAdAByAGkAbgBnADI=");
+const QString STRING_LIST_XML("<" + STRING_LIST_KEY + " value=\"" + STRING_LIST_AS_STRING + "\"/>");
+const QStringList ALTERNATE_STRING_LIST{"alternate1", "Alternate2"};
+const QVariant ALTERNATE_STRING_LIST_VARIANT(ALTERNATE_STRING_LIST);
+const QString ALTERNATE_STRING_LIST_AS_STRING("AAAAAgAAABQAYQBsAHQAZQByAG4AYQB0AGUAMQAAABQAQQBsAHQAZQByAG4AYQB0AGUAMg==");
 
 class SettingsItemUnitTest : public CxxTest::TestSuite {
   SettingsFacade *facade, *emptyFacade;
@@ -68,6 +76,7 @@ class SettingsItemUnitTest : public CxxTest::TestSuite {
   BoolSignalCounter *boolSignalCounter;
   ColorSignalCounter *colorSignalCounter;
   FontSignalCounter *fontSignalCounter;
+  StringListSignalCounter *stringListSignalCounter;
 
   template<typename T>
   void performDoubleSetterTest(const T& newValue, const T& oldValue) {
@@ -141,6 +150,23 @@ class SettingsItemUnitTest : public CxxTest::TestSuite {
     fontSignalCounter->assertPayloads({ALTERNATE_FONT, FONT_VALUE});
   }
 
+  template<typename T>
+  void performStringListSetterTest(const T& newValue, const T& oldValue) {
+    StringListSettingsItem stringListSettingsItem(STRING_LIST_KEY, facade);
+    QObject::connect(&stringListSettingsItem, SIGNAL(updated(QStringList)), stringListSignalCounter, SLOT(record(QStringList)));
+    stringListSignalCounter->callback = [&] (const QStringList&) { stringListSignalCounter->callback = nullptr; stringListSettingsItem.set(newValue); }; // TODO why?
+
+    stringListSettingsItem.set(newValue);
+
+    QS_ASSERT_EQUALS(facade->value(STRING_LIST_KEY), ALTERNATE_STRING_LIST_VARIANT);
+    stringListSignalCounter->assertPayloads({ALTERNATE_STRING_LIST});
+
+    stringListSettingsItem.set(oldValue);
+
+    QS_ASSERT_EQUALS(facade->value(STRING_LIST_KEY), STRING_LIST_VARIANT);
+    stringListSignalCounter->assertPayloads({ALTERNATE_STRING_LIST, STRING_LIST_VALUE});
+  }
+
   void assertWritingXml(const SettingsItem &item, const QString &expectedXml) {
     QString actualXml;
     QXmlStreamWriter writer(&actualXml);
@@ -163,6 +189,7 @@ public:
     facade->setValue(BOOL_KEY, BOOL_VALUE);
     facade->setValue(COLOR_KEY, COLOR_VALUE);
     facade->setValue(FONT_KEY, FONT_VALUE);
+    facade->setValue(STRING_LIST_KEY, STRING_LIST_VALUE);
     emptyFacade = SettingsFacade::transientSettings(facade);
     emptyFacade->setValue(BOOL_KEY, ALTERNATE_BOOL);
 
@@ -170,6 +197,7 @@ public:
     boolSignalCounter = new BoolSignalCounter(facade);
     colorSignalCounter = new ColorSignalCounter(facade);
     fontSignalCounter = new FontSignalCounter(facade);
+    stringListSignalCounter = new StringListSignalCounter(facade);
   }
 
   void tearDown() {
@@ -282,5 +310,32 @@ public:
   void testReadingFontFromXml() {
     FontSettingsItem item(FONT_KEY, emptyFacade);
     assertReadingXml(item, FONT_XML, FONT_VALUE);
+  }
+
+  void testObtainingStringListValue() {
+    QS_ASSERT_EQUALS(StringListSettingsItem(STRING_LIST_KEY, facade).get(), STRING_LIST_VALUE);
+    QS_ASSERT_EQUALS(StringListSettingsItem(STRING_LIST_KEY, facade).getVariant(), STRING_LIST_VARIANT);
+    QS_ASSERT_EQUALS(StringListSettingsItem(STRING_LIST_KEY, facade).serialize(), STRING_LIST_AS_STRING);
+  }
+
+  void testSettingStringListValue() {
+    performStringListSetterTest(ALTERNATE_STRING_LIST, STRING_LIST_VALUE);
+  }
+
+  void testSettingStringListString() {
+    performStringListSetterTest(ALTERNATE_STRING_LIST_AS_STRING, STRING_LIST_AS_STRING);
+  }
+
+  void testSettingStringListVariant() {
+    performStringListSetterTest(ALTERNATE_STRING_LIST_VARIANT, STRING_LIST_VARIANT);
+  }
+
+  void testWritingStringListToXml() {
+    assertWritingXml(StringListSettingsItem(STRING_LIST_KEY, facade), STRING_LIST_XML);
+  }
+
+  void testReadingStringListFromXml() {
+    StringListSettingsItem item(STRING_LIST_KEY, emptyFacade);
+    assertReadingXml(item, STRING_LIST_XML, STRING_LIST_VALUE);
   }
 };

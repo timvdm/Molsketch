@@ -32,7 +32,18 @@ class QCheckBox;
 class QXmlStreamReader;
 class QXmlStreamAttributes;
 
-#define QS_ASSERT_EQUALS(VAL1,VAL2) {QString __comparison("\n    "); QDebug __out(&__comparison); __out << VAL1; __comparison += "\n != "; __out << VAL2; TSM_ASSERT_EQUALS(__comparison.toStdString().data(), VAL1, VAL2)}
+#define QS_ASSERT_EQUALS(VAL1,VAL2) {_TS_TRY { if (!(VAL1 == VAL2)) CxxTest::tracker().failedTest(__FILE__, __LINE__, makeComparisonString(#VAL1, #VAL2, VAL1, VAL2).toStdString().data()); } __TS_CATCH(__FILE__, __LINE__) }
+
+template<typename T, typename U>
+QString makeComparisonString(QString first, const QString second, T expected, U actual) {
+  QString comparison;
+  QDebug out(&comparison);
+  out.setAutoInsertSpaces(false);
+  out << first << " != " << second
+      << "\n    Expected:       " << expected
+      << "\n    to be equal to: " << actual;
+  return comparison;
+}
 
 #define QSM_ASSERT_EQUALS(MESSAGE, VAL1, VAL2) {QString __comparison("\n    "); QDebug __out(&__comparison); __out << VAL1; __comparison += "\n != "; __out << VAL2; TSM_ASSERT_EQUALS((MESSAGE + __comparison).toStdString().data(), VAL1, VAL2)}
 

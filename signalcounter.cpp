@@ -25,6 +25,7 @@ SIGNAL_COUNTER_DEF(QRealSignalCounter, qreal)
 SIGNAL_COUNTER_DEF(BoolSignalCounter, bool)
 SIGNAL_COUNTER_DEF(ColorSignalCounter, QColor)
 SIGNAL_COUNTER_DEF(FontSignalCounter, QFont)
+SIGNAL_COUNTER_DEF(StringListSignalCounter, QStringList)
 
 ModelIndexSignalCounter::ModelIndexSignalCounter(QObject *parent) : QObject(parent) {}
 

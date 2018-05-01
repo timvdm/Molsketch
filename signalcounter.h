@@ -105,6 +105,14 @@ public slots:
   void record(const QFont&value);
 };
 
+class StringListSignalCounter : public QObject, public SignalCounter<QStringList> {
+  Q_OBJECT
+public:
+  explicit StringListSignalCounter(QObject *parent = 0);
+public slots:
+  void record(const QStringList&value);
+};
+
 class ModelIndexSignalCounter : public QObject, public SignalCounter<QModelIndex, int, int>
 {
   Q_OBJECT
