@@ -32,16 +32,25 @@ class QCheckBox;
 class QXmlStreamReader;
 class QXmlStreamAttributes;
 
-#define QS_ASSERT_EQUALS(VAL1,VAL2) {_TS_TRY { if (!(VAL1 == VAL2)) CxxTest::tracker().failedTest(__FILE__, __LINE__, makeComparisonString(#VAL1, #VAL2, VAL1, VAL2).toStdString().data()); } __TS_CATCH(__FILE__, __LINE__) }
+#define QS_ASSERT_EQUALS(VAL1,VAL2) {_TS_TRY { \
+  if (!(VAL1 == VAL2)) CxxTest::tracker().failedTest(__FILE__, __LINE__, \
+  makeComparisonString(#VAL1, #VAL2, VAL1, VAL2, "!=", "    Expected:       ", "    to be equal to: ").toStdString().data()); \
+  } __TS_CATCH(__FILE__, __LINE__) }
+
+#define QS_ASSERT_NOT_EQUALS(VAL1,VAL2) {_TS_TRY { \
+  if (VAL1 == VAL2) CxxTest::tracker().failedTest(__FILE__, __LINE__, \
+  makeComparisonString(#VAL1, #VAL2, VAL1, VAL2, "==", "    Expected:           ", "    not to be equal to: ").toStdString().data()); \
+  } __TS_CATCH(__FILE__, __LINE__) }
 
 template<typename T, typename U>
-QString makeComparisonString(QString first, const QString second, T expected, U actual) {
+QString makeComparisonString(const char *first, const char *second, T expected, U actual, const char *op,
+                             const char *expectedIntro, const char *actualIntro) {
   QString comparison;
   QDebug out(&comparison);
   out.setAutoInsertSpaces(false);
-  out << first << " != " << second
-      << "\n    Expected:       " << expected
-      << "\n    to be equal to: " << actual;
+  out << first << op << second
+      << "\n" << expectedIntro << expected
+      << "\n" << actualIntro << actual;
   return comparison;
 }
 
