@@ -192,6 +192,40 @@ namespace Molsketch {
     set(QVariant(value));
   }
 
+  StringListSettingsItem::StringListSettingsItem(const QString &key, SettingsFacade *facade, QObject *parent)
+    : SettingsItem(key, facade, parent) {}
+
+  QString StringListSettingsItem::serialize() const {
+    return stringify(get());
+  }
+
+  QVariant StringListSettingsItem::getVariant() const {
+    return d_ptr->facade->value(d_ptr->key); // TODO fix in others as well
+  }
+
+  QStringList StringListSettingsItem::get() const {
+    return getVariant().toStringList();
+  }
+
+  void StringListSettingsItem::set(const QVariant &value) {
+    if (d_ptr->locked) return;
+    d_ptr->locked = true;
+    qInfo() << "Setting" << d_ptr->key << "to new value" << value;
+    d_ptr->facade->setValue(d_ptr->key, value);
+    emit updated(get());
+    d_ptr->locked = false;
+  }
+
+  void StringListSettingsItem::set(const QString &value) {
+    auto sl = makeFromString<QStringList>(value);
+    qDebug() << "making string list: " << sl;
+    set(makeFromString<QStringList>(value));
+  }
+
+  void StringListSettingsItem::set(const QStringList &value) {
+    set(QVariant(value));
+  }
+
   SettingsItemUndoCommand::SettingsItemUndoCommand(SettingsItem *item, const QVariant &newValue, const QString &text, QUndoStack *stack)
     : Commands::Command<SettingsItem, SettingsItemUndoCommand, Commands::SettingsItemId>(item, text),
       stack(stack),
@@ -225,7 +259,6 @@ namespace Molsketch {
     debug.nospace() << "SettingsItem (" << (void*) setting << ", key: " << setting->d_ptr->key << ")";
     return debug;
   }
-
 #endif
 
 } // namespace Molsketch

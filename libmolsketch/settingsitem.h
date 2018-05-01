@@ -116,6 +116,21 @@ namespace Molsketch {
     void updated(const QFont&);
   };
 
+  class StringListSettingsItem : public SettingsItem {
+    Q_OBJECT
+  public:
+    StringListSettingsItem(const QString& key, SettingsFacade *facade, QObject *parent = 0);
+    QString serialize() const override;
+    QVariant getVariant() const override;
+    QStringList get() const;
+    void set(const QVariant&) override;
+    void set(const QString&) override;
+  public slots:
+    void set(const QStringList&);
+  signals:
+    void updated(const QStringList&);
+  };
+
   class SettingsItemUndoCommand : public Commands::Command<SettingsItem, SettingsItemUndoCommand, Commands::SettingsItemId> {
     QUndoStack *stack;
     QVariant newValue;

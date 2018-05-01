@@ -24,18 +24,17 @@
 #include <QString>
 #include <QDataStream>
 
-#define READSTREAMABLE(STREAMABLE) \
-  QByteArray ba(QByteArray::fromBase64(data.toUtf8())); \
-  QDataStream in(&ba, QIODevice::ReadOnly); \
-  in >> STREAMABLE;
+
 
 namespace Molsketch {
 
   template<class QDataStreamable>
   QDataStreamable makeFromString(const QString& data)
   {
+    QByteArray ba(QByteArray::fromBase64(data.toUtf8()));
+    QDataStream in(&ba, QIODevice::ReadOnly);
     QDataStreamable streamable;
-    READSTREAMABLE(streamable)
+    in >> streamable;
     return streamable;
   }
 
@@ -45,7 +44,7 @@ namespace Molsketch {
     QByteArray ba;
     QDataStream out(&ba, QIODevice::WriteOnly);
     out << streamable;
-    out.setDevice(0);
+    out.setDevice(nullptr);
     return ba.toBase64();
   }
 
