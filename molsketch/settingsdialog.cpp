@@ -72,7 +72,7 @@ void SettingsDialog::setInitialValues()
   ui.spinBoxAutoSave->setValue(settings->autoSaveInterval()/60000);
 
   ui.libraries->clear();
-  ui.libraries->addItems(settings->getLibraries());
+  ui.libraries->addItems(settings->libraries()->get());
 
   Molsketch::SceneSettings::MouseWheelMode mouseWheelForTools = settings->getMouseWheelMode();
   ui.mouseWheelCycleTools->setChecked(Molsketch::SceneSettings::CycleTools == mouseWheelForTools);
@@ -100,7 +100,7 @@ void SettingsDialog::applyChanges()
   QStringList libraries;
   for (int i = 0 ; i < ui.libraries->count() ; ++i)
     libraries << ui.libraries->item(i)->text();
-  settings->setLibraries(libraries);
+  settings->libraries()->set(libraries);
 
   if (ui.mouseWheelCycleTools->isChecked())
     settings->setMouseWheelMode(ApplicationSettings::MouseWheelMode::CycleTools);

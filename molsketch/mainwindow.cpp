@@ -58,27 +58,23 @@
 #include <actions/textaction.h>
 #include <actions/itemtypeselectionaction.h>
 #include <actions/alignmentaction.h>
+#include "optimizestructureaction.h"
 
 #include "mainwindow.h"
 
-#include "molecule.h"
 #include "molview.h"
-#include "molscene.h"
-#include "element.h"
 #include "fileio.h"
 
 #include "programversion.h"
 
-// widgets
-#include "applicationsettings.h"
-#include "helpforemptytoolbox.h"
 #include "indicator.h"
 #include "obabelifaceloader.h"
 #include "releasenotesdialog.h"
 #include "settingsdialog.h"
 #include "wikiquerywidget.h"
 #include "constants.h"
-#include "optimizestructureaction.h"
+#include "librarytoolbox.h"
+#include "settingsitem.h"
 
 
 #define PROGRAM_NAME "Molsketch"
@@ -112,15 +108,16 @@ MainWindow::MainWindow(ApplicationSettings *appSetttings)
   setWindowIcon(QIcon(":/images/molsketch.svg"));
 
   createView();
-  createToolBox();
-  createWikiDock();
+  auto libraryDock = new LibraryToolBox(settings->libraries()->get());
+  connect(settings->libraries(), SIGNAL(updated(QStringList)), libraryDock, SLOT(rebuildLibraries(QStringList)));
+  addDockWidget(Qt::LeftDockWidgetArea, libraryDock);
+  addDockWidget(Qt::LeftDockWidgetArea, new WikiQueryWidget(obabelLoader, this));
   createActions();
   createMenus();
   createToolBars();
   createStatusBar();
   createToolBarContextMenuOptions();
   initializeAssistant();
-
 
   readSettings();
   setCurrentFile("");
@@ -228,13 +225,10 @@ bool MainWindow::save()
 
 bool MainWindow::autoSave()
 {
+  if(!isWindowModified()) return true;
   QFileInfo fileName(windowFilePath());
 
-  // Do nothing if there is nothing to save
-  if(m_scene->stack()->isClean()) return true; // TODO use isWindowModified() instead
 
-  // TODO extract file infos into separate class (i.e. last path, 3d choice, file name)
-  // Else construct the filename
   if (!fileName.exists())
     fileName = QDir::homePath() + tr("/untitled.backup.msk");
   else
@@ -757,51 +751,6 @@ void MainWindow::createStatusBar()
   obabelLoader->setObabelFormats(settings->obabelFormatsPath());
 }
 
-void MainWindow::buildLibraries()
-{
-  foreach(LibraryListWidget* library, toolBox->findChildren<LibraryListWidget*>())
-    delete library;
-
-  foreach(const QString& folder, settings->getLibraries())
-  {
-    LibraryListWidget* library = new LibraryListWidget(folder, toolBox);
-    toolBox->addItem(library, library->title());
-    connect(refreshLibraries, SIGNAL(clicked()), library, SLOT(refreshItems()));
-  }
-}
-
-void MainWindow::createToolBox()
-{
-  // Creating the dockwidgets
-  toolBoxDock = new QDockWidget(tr("Molecule libraries"), this);
-  toolBoxDock->setObjectName("toolbox-dockwidget");
-  toolBoxDock->setMinimumWidth(270);
-  // Create a library toolbox and add the libraries
-  QWidget* toolBoxDockContent = new QWidget;
-  QLayout* layout = new QVBoxLayout(toolBoxDockContent);
-  toolBoxDockContent->setLayout(layout);
-  toolBox = new QToolBox;
-  layout->addWidget(new HelpForEmptyToolBox(tr("Define libraries using <b>Edit > Edit Preferences... > Libraries</b>."), toolBox, toolBoxDockContent));
-  layout->addWidget(refreshLibraries = new QPushButton(QIcon::fromTheme("view-refresh", QIcon(":icons/view-refresh.svg")),""));
-  layout->addWidget(toolBox);
-  layout->setMargin(0);
-  toolBoxDock->setWidget(toolBoxDockContent);
-  // Placing the dockwidgets in their default position
-  setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
-  setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
-  addDockWidget(Qt::LeftDockWidgetArea,toolBoxDock);
-#ifdef __ANDROID__
-  toolBoxDock->hide();
-#endif
-  buildLibraries();
-}
-
-void MainWindow::createWikiDock() {
-  wikidataDock = new WikiQueryWidget(obabelLoader, this);
-  wikidataDock->setObjectName("wikidata-query-widget");
-  addDockWidget(Qt::LeftDockWidgetArea, wikidataDock);
-}
-
 void MainWindow::createToolBarContextMenuOptions()
 {
   toolBarTextsAndIcons = new QActionGroup(this);
@@ -875,7 +824,6 @@ void MainWindow::readPreferences()
   m_autoSaveTimer->setInterval(settings->autoSaveInterval());
   m_autoSaveTimer->start();
   m_scene->update();
-  buildLibraries();
 }
 
 void MainWindow::writeSettings()

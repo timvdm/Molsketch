@@ -26,12 +26,17 @@
 #include <QSize>
 #include <QDir>
 #include <settingsfacade.h>
+#include <settingsitem.h>
 
 #ifdef _WIN32
 #define OBABELOSSUFFIX ".dll"
 #else
 #define OBABELOSSUFFIX
 #endif
+
+#define PROPERTY_DEF(TYPE, NAME) \
+  const TYPE* ApplicationSettings::NAME() const { return d_ptr->NAME; } \
+  TYPE* ApplicationSettings::NAME() { return d_ptr->NAME; }
 
 static const char LATEST_RELEASE_NOTES_VERSION_SHOWN[] = "latest-release-notes";
 static const char VERSION_FILE[] = ":/version";
@@ -60,8 +65,19 @@ QString readFileContent(const QString& absolutePath) {
 
 using namespace Molsketch;
 
+class ApplicationSettingsPrivate {
+  Q_DISABLE_COPY(ApplicationSettingsPrivate)
+public:
+  StringListSettingsItem *libraries;
+  ApplicationSettingsPrivate(SettingsFacade *facade, QObject *parent) {
+    libraries = new StringListSettingsItem(LIBRARIES, facade, parent);
+  }
+};
+
 ApplicationSettings::ApplicationSettings(SettingsFacade *facade, QObject *parent)
-  : SceneSettings(facade, parent) {}
+  : SceneSettings(facade, parent), d_ptr(new ApplicationSettingsPrivate(facade, this)) {}
+
+ApplicationSettings::~ApplicationSettings() {}
 
 ProgramVersion ApplicationSettings::latestReleaseNotesVersionShown() const {
   return ProgramVersion(settingsFacade().value(LATEST_RELEASE_NOTES_VERSION_SHOWN).toString());
@@ -79,10 +95,11 @@ QString ApplicationSettings::versionNick() const {
   return readFileContent(VERSION_NICK_FILE);
 }
 
-APP_PROPERTY(Libraries, QStringList, LIBRARIES)
 APP_PROPERTY(ToolButtonStyle, Qt::ToolButtonStyle, ICON_STYLE)
 APP_PROPERTY(WindowPosition, QPoint, WINDOW_POSITION)
 APP_PROPERTY(WindowSize, QSize, WINDOW_SIZE)
+
+PROPERTY_DEF(StringListSettingsItem, libraries)
 
 void ApplicationSettings::setWindowState(const QByteArray &state) {
   settingsFacade().setValue(WINDOW_STATE, state);

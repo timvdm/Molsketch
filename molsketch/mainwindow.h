@@ -175,12 +175,8 @@ private:
   /** The view of the MolScene. */
   Molsketch::MolView* m_molView;
 
-  /** The dock widget for the toolbox. */
-  QDockWidget* toolBoxDock;
   /** The toolbox with the libraries. */
   QToolBox* toolBox;
-  /** The dock widget for wikidata queries. */
-  QDockWidget* wikidataDock;
 
   // Menus
   /** The file menu. */
@@ -280,8 +276,6 @@ private:
   ApplicationSettings *settings;
   OBabelIfaceLoader *obabelLoader;
 
-  void buildLibraries();
-  void createWikiDock();
   void readToSceneUsingOpenBabel(const QString &fileName);
   bool save(const QString &filename);
 };
