@@ -96,7 +96,6 @@ QString ApplicationSettings::versionNick() const {
 }
 
 APP_PROPERTY(ToolButtonStyle, Qt::ToolButtonStyle, ICON_STYLE)
-APP_PROPERTY(WindowPosition, QPoint, WINDOW_POSITION)
 APP_PROPERTY(WindowSize, QSize, WINDOW_SIZE)
 
 PROPERTY_DEF(StringListSettingsItem, libraries)

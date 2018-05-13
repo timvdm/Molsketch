@@ -575,7 +575,6 @@ void MainWindow::readPreferences() {
 
 void MainWindow::saveWindowProperties()
 {
-  settings->setWindowPosition(pos());
   settings->setWindowSize(size());
   settings->setToolButtonStyle(toolButtonStyle());
   settings->setWindowState(saveState());

@@ -48,8 +48,6 @@ public:
   PROPERTY_DECL(Molsketch::StringListSettingsItem, libraries)
   void setToolButtonStyle(const Qt::ToolButtonStyle&);
   Qt::ToolButtonStyle getToolButtonStyle() const;
-  void setWindowPosition(const QPoint&);
-  QPoint getWindowPosition() const;
   void setWindowSize(const QSize&);
   QSize getWindowSize() const;
   void setWindowState(const QByteArray&);
