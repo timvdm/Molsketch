@@ -23,14 +23,23 @@
 #include <QDebug>
 #include <QGraphicsScene>
 #include <QWheelEvent>
+#include "molscene.h"
+#include "scenesettings.h"
 
+#include <QMenu>
+#include <QToolBar>
 #include <math.h>
 
 const qreal SCALING_FACTOR = 2.;
 
 namespace Molsketch {
 
-  MolView::MolView(QGraphicsScene* scene) : QGraphicsView(scene)
+  struct MolViewPrivate {
+  };
+
+  MolView::MolView(MolScene *scene)
+    : QGraphicsView(scene),
+      d_ptr(new MolViewPrivate)
   {
     setContextMenuPolicy(Qt::ActionsContextMenu);
     setMouseTracking(true);
@@ -41,9 +50,21 @@ namespace Molsketch {
     setStyleSheet("");
     setContextMenuPolicy(Qt::DefaultContextMenu);
 
+    // TODO this is essential in creating a new scene
+    connect(scene->stack(), &QUndoStack::cleanChanged, this, &MolView::modificationStateChanged);
+
 #if QT_VERSION >= 0x040300
     setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 #endif
+  }
+
+  MolView::~MolView() {}
+
+  MolView *MolView::createView(SettingsFacade *sceneSettingsFacade) {
+    MolScene *scene = new MolScene(new SceneSettings(sceneSettingsFacade));
+    MolView *view = new MolView(scene);
+    scene->setParent(view);
+    return view;
   }
 
   void MolView::zoomIn() {
@@ -69,4 +90,11 @@ namespace Molsketch {
     scale(scaleFactor, scaleFactor);
   }
 
+  MolScene *MolView::scene() const {
+    return dynamic_cast<MolScene*>(QGraphicsView::scene());
+  }
+
+  void MolView::modificationStateChanged(const bool &clean) {
+    setWindowModified(!clean);
+  }
 }

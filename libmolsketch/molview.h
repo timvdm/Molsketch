@@ -26,21 +26,31 @@
 
 #define MOUSEWHEELDIVIDER 120 // TODO change
 
+class QToolBar;
+class QMenu;
+
 namespace Molsketch {
+  class SettingsFacade;
+  class MolScene;
+  class MolViewPrivate;
 
   class MolView : public QGraphicsView
   {
     Q_OBJECT
-
+    Q_DECLARE_PRIVATE(MolView)
+    QScopedPointer<MolViewPrivate> d_ptr;
   public:
-    MolView(QGraphicsScene* scene);
-
+    explicit MolView(Molsketch::MolScene *scene);
+    ~MolView();
+    static MolView* createView(SettingsFacade*);
+    MolScene *scene() const;
   public slots:
     void zoomIn();
     void zoomOut();
     void zoomReset();
     void zoomFit();
     void scaleView(qreal scaleFactor);
+    void modificationStateChanged(const bool &clean);
   };
 
 } // namespace
