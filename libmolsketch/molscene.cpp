@@ -152,6 +152,7 @@ namespace Molsketch {
       if(propertiesScrollArea->widget() != scenePropertiesWidget) delete scenePropertiesWidget;
       delete propertiesDock;
       if (!grid->scene()) delete grid;
+      if (!selectionRectangle->scene()) delete selectionRectangle;
     }
 
     bool gridOn()const { return grid->scene(); }
@@ -180,7 +181,7 @@ namespace Molsketch {
     : QGraphicsScene(parent),
       m_editMode(MolScene::DrawMode),
       m_renderMode(RenderLabels),
-    d(new privateData(this, nullptr == settings ? new SceneSettings(SettingsFacade::transientSettings(), this) : settings))
+      d(new privateData(this, nullptr == settings ? new SceneSettings(SettingsFacade::transientSettings(), this) : settings))
   {
     setSceneRect(QRectF(-5000,-5000,10000,10000));
     connect(this, SIGNAL(selectionChanged()), this, SLOT(selectionSlot()));
@@ -203,7 +204,7 @@ namespace Molsketch {
     for(QObject *child : QObject::children())
       if (QAction *action = dynamic_cast<QAction*>(child))
         action->setChecked(false);
-    clear();
+    delete d;
   }
 
   SceneSettings *MolScene::settings() const {
@@ -740,8 +741,8 @@ namespace Molsketch {
     foreach(QGraphicsView* vp, views()) // TODO track back event to originator
     {
       MolView *mvp = qobject_cast<MolView*>(vp);
-      if (mvp)
-        mvp->scaleView(pow((double)2, -event->delta() / MOUSEWHEELDIVIDER));
+      if (!mvp) continue;
+      mvp->scaleView(pow((double)2, -event->delta() / MOUSEWHEELDIVIDER));
     }
   }
 
