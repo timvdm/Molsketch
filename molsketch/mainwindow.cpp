@@ -1,6 +1,7 @@
 /***************************************************************************
  *   Copyright (C) 2007-2008 by Harm van Eersel                            *
  *   Copyright (C) 2009 Tim Vandermeersch                                  *
+ *   Copyright (C) 2018 Hendrik Vennekate                                  *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,7 +19,6 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#include <QLibrary>
 #include <QtGui>
 #include <QToolBar>
 #include <QMessageBox>
@@ -27,17 +27,12 @@
 #include <QProgressBar>
 #include <QPrintPreviewDialog>
 #include <QMenuBar>
-#include <QMenu>
-#include <QDockWidget>
-#include <QToolBox>
-#include <QInputDialog>
 #include <lineupaction.h>
 #if QT_VERSION <= 0x040603
 #include <QAssistantClient>
-#else
-#include <QProcess>
 #endif
-#include <QGridLayout>
+
+#include <QToolTip>
 #include <settingsfacade.h>
 
 #include <actions/arrowtypeaction.h>
@@ -75,6 +70,7 @@
 #include "constants.h"
 #include "librarytoolbox.h"
 #include "settingsitem.h"
+#include "actioncontainer.h"
 
 
 #define PROGRAM_NAME "Molsketch"
@@ -95,34 +91,62 @@ const char MSK_NATIVE_FORMAT[] = ".msk";
 
 using namespace Molsketch;
 
+void setIconSizeOfAllToolBars(QObject* parent, QSize size) {
+  foreach (QToolBar* bar, parent->findChildren<QToolBar*>())
+    bar->setIconSize(size);
+}
+
 MainWindow::MainWindow()
   : MainWindow(new ApplicationSettings(SettingsFacade::persistedSettings(new QSettings)))
 {}
 
 MainWindow::MainWindow(ApplicationSettings *appSetttings)
-  : settings(appSetttings),
+  : m_autoSaveTimer(new QTimer(this)),
+    settings(appSetttings),
     obabelLoader(new OBabelIfaceLoader(this))
 {
   setAttribute(Qt::WA_DeleteOnClose);
   settings->setParent(this);
   setWindowIcon(QIcon(":/images/molsketch.svg"));
 
-  createView();
+  m_molView = MolView::createView(const_cast<const ApplicationSettings*>(settings)->settingsFacade().cloneTransiently());
+  setCentralWidget(m_molView);
+
+  actionContainer = new ActionContainer(m_molView, this);
+  createFileMenuAndToolBar();
+
+  menuBar()->addMenu(actionContainer->createEditMenu(this));
+  addToolBar(actionContainer->createEditToolBar(this));
+
+  menuBar()->addMenu(actionContainer->createViewMenu(this));
+  addToolBar(actionContainer->createZoomToolBar(this));
+
+  addToolBar(actionContainer->createDrawingToolBar(m_molView->scene(), this));
+  addToolBar(actionContainer->createModifyToolBar(m_molView->scene(), this));
+  addToolBar(actionContainer->createAlignmentToolBar(m_molView->scene(), obabelLoader, this));
+  setIconSizeOfAllToolBars(this,
+#ifdef __ANDROID__
+                        QSize(48,48)
+#else
+                        QSize(22,22)
+#endif
+                        );
+  actionContainer->addContextMenuActions(m_molView->scene());
+
+  createHelpMenu();
+
   auto libraryDock = new LibraryToolBox(settings->libraries()->get());
   connect(settings->libraries(), SIGNAL(updated(QStringList)), libraryDock, SLOT(rebuildLibraries(QStringList)));
   addDockWidget(Qt::LeftDockWidgetArea, libraryDock);
+
   addDockWidget(Qt::LeftDockWidgetArea, new WikiQueryWidget(obabelLoader, this));
-  createActions();
-  createMenus();
-  createToolBars();
   createStatusBar();
   createToolBarContextMenuOptions();
   initializeAssistant();
 
   readSettings();
   setCurrentFile("");
-
-  connect(m_scene->stack(),SIGNAL(cleanChanged(bool)), this, SLOT(documentWasModified( ))); // TODO this is essential in creating a new scene
+  connect(m_autoSaveTimer, SIGNAL(timeout()), this, SLOT(autoSave()));
 
   show();
 }
@@ -144,7 +168,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     event->ignore();
     return;
   }
-  writeSettings();
+  saveWindowProperties();
   if (assistantClient) {
 #if QT_VERSION <= 0x040603
     assistantClient->closeAssistant();
@@ -170,7 +194,7 @@ void MainWindow::open()
                                                   readableFormats.join(";;"));
   if (fileName.isEmpty()) return;
 
-  open(fileName);
+  openFile(fileName);
 }
 
 void MainWindow::readToSceneUsingOpenBabel(const QString& fileName) {
@@ -181,38 +205,38 @@ void MainWindow::readToSceneUsingOpenBabel(const QString& fileName) {
     return;
   }
 
-  for(auto molecule : mol->split())
-    m_scene->addItem(molecule);
+  // TODO encapsulate access to scene
+  for(auto molecule : mol->split()) m_molView->scene()->addItem(molecule);
   delete mol;
 }
 
-void MainWindow::open(const QString& fileName) {
+void MainWindow::openFile(const QString& fileName) {
   if (isWindowModified() || !windowFilePath().isEmpty()) {
-    (new MainWindow())->open(fileName);
+    (new MainWindow())->openFile(fileName);
     return;
   }
 
   settings->setLastPath(QFileInfo(fileName).path());
-  if (fileName.endsWith(MSK_NATIVE_FORMAT)) readMskFile(fileName, m_scene);
+  if (fileName.endsWith(MSK_NATIVE_FORMAT)) readMskFile(fileName, m_molView->scene());
   else readToSceneUsingOpenBabel(fileName);
 
   setCurrentFile(fileName);
 }
 
-bool MainWindow::save(const QString& fileName) {
+bool MainWindow::saveFile(const QString& fileName) {
   if (fileName.endsWith(".msk")) {
-      if (!writeMskFile(fileName, m_scene)) {
+      if (!writeMskFile(fileName, m_molView->scene())) {
         QMessageBox::warning(this, tr("Saving file failed!"), tr("Could not save file ") + fileName);
         return false;
       }
   } else {
     bool threeD = QMessageBox::question(this, tr("Save as 3D?"), tr("Save as three dimensional coordinates?")) == QMessageBox::Yes;
-    if (!obabelLoader->saveFile(fileName, m_scene, threeD)) {
+    if (!obabelLoader->saveFile(fileName, m_molView->scene(), threeD)) {
       QMessageBox::warning(0, tr("Could not save"), tr("Could not save file using OpenBabel: ") + fileName);
       return false ;
     }
   }
-  m_scene->stack()->setClean();
+  m_molView->scene()->stack()->setClean();
   setCurrentFile(fileName);
   return true ;
 }
@@ -220,7 +244,7 @@ bool MainWindow::save(const QString& fileName) {
 bool MainWindow::save()
 {
   if (windowFilePath().isEmpty()) return saveAs();
-  return save(windowFilePath());
+  return saveFile(windowFilePath());
 }
 
 bool MainWindow::autoSave()
@@ -235,12 +259,12 @@ bool MainWindow::autoSave()
     fileName = fileName.path() + fileName.baseName() +  ".backup." + fileName.completeSuffix();
   // And save the file
   if (fileName.suffix() == "msk") {
-    bool saved = writeMskFile(fileName.absoluteFilePath(), m_scene);
+    bool saved = writeMskFile(fileName.absoluteFilePath(), m_molView->scene());
     statusBar()->showMessage(saved ? tr("Document autosaved") : tr("Autosave failed!"));
     return saved;
   } else {
     bool threeD = QMessageBox::question(this, tr("Save as 3D?"), tr("Save as three dimensional coordinates?")) == QMessageBox::Yes; // TODO not in autosave!
-    if (!obabelLoader->saveFile(fileName.absoluteFilePath(), m_scene, threeD)) {
+    if (!obabelLoader->saveFile(fileName.absoluteFilePath(), m_molView->scene(), threeD)) {
       statusBar()->showMessage(tr("Autosave failed! OpenBabel unavailable."), 10000);
       return false ;
     }
@@ -272,7 +296,7 @@ bool MainWindow::saveAs() {
   }
   qDebug() << "Trying to save as " << fileName << "\n";
 
-  return save(fileName);
+  return saveFile(fileName);
 }
 
 
@@ -285,7 +309,7 @@ bool MainWindow::saveAs() {
       // Save accessed path
       settings->setLastPath(QFileInfo(fileName).path());
 
-      m_scene->clear();
+      m_molView->scene()->clear(); // TODO this should actually end up in a new window!
       QProgressBar *pb = new QProgressBar(this);
       pb->setMinimum(0);
       pb->setMaximum(0);
@@ -294,9 +318,9 @@ bool MainWindow::saveAs() {
         if (mol->canSplit()) {
           QList<Molecule*> molList = mol->split();
           foreach(Molecule* mol,molList)
-            m_scene->addItem(mol);
+            m_molView->scene()->addItem(mol);
         } else {
-          m_scene->addItem(mol);
+          m_molView->scene()->addItem(mol);
         }
 
         setCurrentFile(fileName);
@@ -337,21 +361,17 @@ bool MainWindow::exportDoc()
   settings->setLastPath(QFileInfo(fileName).path());
 
   // Try to export the file
-  if (fileName.endsWith(".svg")) return Molsketch::saveToSVG(fileName, m_scene);
+  if (fileName.endsWith(".svg")) return Molsketch::saveToSVG(fileName, m_molView->scene());
 
-  if (Molsketch::exportFile(fileName,m_scene))
-    {
-      return true;
-    }
-  else
-    {
-      QMessageBox::critical(this,tr(PROGRAM_NAME),tr("Error while exporting file"),QMessageBox::Ok,QMessageBox::Ok);
-      return false;
-    }
+  if (!Molsketch::exportFile(fileName,m_molView->scene())) {
+    QMessageBox::critical(this,tr(PROGRAM_NAME),tr("Error while exporting file"),QMessageBox::Ok,QMessageBox::Ok);
+    return false;
+  }
+  return true;
 }
 
 void MainWindow::paintSceneOn (QPrinter *printer) {
-  Molsketch::printFile(*printer,m_scene);
+  Molsketch::printFile(*printer,m_molView->scene());
 }
 
 bool MainWindow::print()
@@ -363,23 +383,13 @@ bool MainWindow::print()
   return true;
 }
 
-void MainWindow::checkPasteAvailable() {
-  pasteAct->setEnabled(QApplication::clipboard()->mimeData()->hasFormat(moleculeMimeType));
-}
-
-void MainWindow::checkCopyAvailable() {
-  bool copyAvailable = !m_scene->selectedItems().empty();
-  copyAct->setEnabled(copyAvailable);
-  cutAct->setEnabled(copyAvailable);
-}
-
 void MainWindow::setToolButtonStyle(QAction *styleAction)
 {
   if (!styleAction) return;
   QMainWindow::setToolButtonStyle((Qt::ToolButtonStyle) styleAction->data().toInt());
 }
 
-void MainWindow::assistant()
+void MainWindow::openAssistant()
 {
   QFileInfo file(MSK_INSTALL_DOCS + QString("/index.html"));
   if (!file.exists()) file.setFile(QApplication::applicationDirPath() + "/doc/en/index.html");
@@ -421,302 +431,49 @@ void MainWindow::showReleaseNotes() {
   ReleaseNotesDialog().exec();
 }
 
-void MainWindow::documentWasModified()
-{
-  setWindowModified(!m_scene->stack()->isClean());
-}
-
-// Widget creators
-
-void MainWindow::createActions()
-{
-  newAct = new QAction(QIcon::fromTheme("document-new", QIcon(":icons/document-new.svg")), tr("&New"),this);
-  newAct->setShortcut(tr("Ctrl+N"));
-  newAct->setStatusTip(tr("Create a new file"));
-  connect(newAct, SIGNAL(triggered()), this, SLOT(newFile()));
-
-  openAct = new QAction(QIcon::fromTheme("document-open", QIcon(":icons/document-open.svg")),tr("&Open..."), this);
-  openAct->setShortcut(tr("Ctrl+O"));
-  openAct->setStatusTip(tr("Open an existing file"));
-  connect(openAct, SIGNAL(triggered()), this, SLOT(open()));
-
-  saveAct = new QAction(QIcon::fromTheme("document-save", QIcon(":icons/document-save.svg")), tr("&Save"), this);
-  saveAct->setShortcut(tr("Ctrl+S"));
-  saveAct->setStatusTip(tr("Save the document to disk"));
-  connect(saveAct, SIGNAL(triggered()), this, SLOT(save()));
-
-  saveAsAct = new QAction(QIcon::fromTheme("document-save-as", QIcon(":icons/document-save-as.svg")),tr("Save &As..."), this);
-  saveAsAct->setStatusTip(tr("Save the document under a new name"));
-  connect(saveAsAct, SIGNAL(triggered()), this, SLOT(saveAs()));
-
-  autoSaveAct = new QAction(tr("Autosave document"), this);
-  m_autoSaveTimer = new QTimer(this);
-//   m_autoSaveTimer->setInterval(m_autoSaveTime);
-  connect(autoSaveAct, SIGNAL(triggered()), this, SLOT(autoSave()));
-  connect(m_autoSaveTimer, SIGNAL(timeout()), autoSaveAct, SIGNAL(triggered()));
-//   m_autoSaveTimer->start();
-
-  importAct = new QAction(QIcon::fromTheme("document-import", QIcon(":icons/document-import.svg")),tr("&Import..."), this);
-  importAct->setShortcut(tr("Ctrl+I"));
-  importAct->setStatusTip(tr("Insert an existing molecule into the document"));
-  connect(importAct, SIGNAL(triggered()), this, SLOT(importDoc()));
-
-  exportAct = new QAction(QIcon::fromTheme("document-export", QIcon(":icons/document-export.svg")),tr("&Export..."), this);
-  exportAct->setShortcut(tr("Ctrl+E"));
-  exportAct->setStatusTip(tr("Export the current document as a picture"));
-  connect(exportAct, SIGNAL(triggered()), this, SLOT(exportDoc()));
-
-  printAct = new QAction(QIcon::fromTheme("document-print", QIcon(":icons/document-print.svg")),tr("&Print..."), this);
-  printAct->setShortcut(tr("Ctrl+P"));
-  printAct->setStatusTip(tr("Print the current document"));
-  connect(printAct, SIGNAL(triggered()), this, SLOT(print()));
-
-  exitAct = new QAction(QIcon::fromTheme("application-exit", QIcon(":icons/application-exit.svg")),tr("E&xit"), this);
-  exitAct->setShortcut(tr("Ctrl+Q"));
-  exitAct->setStatusTip(tr("Exit the application"));
-  connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
-
-  // Edit actions
-  undoAct = m_scene->stack()->createUndoAction(this);
-  undoAct->setIcon(QIcon::fromTheme("edit-undo", QIcon(":icons/edit-undo.svg")));
-  undoAct->setShortcut(tr("Ctrl+Z"));
-  undoAct->setStatusTip(tr("Undo the last action"));
-
-  redoAct = m_scene->stack()->createRedoAction(this);
-  redoAct->setIcon(QIcon::fromTheme("edit-redo", QIcon(":icons/edit-redo.svg")));
-  redoAct->setShortcut(tr("Ctrl+Shift+Z"));
-  redoAct->setStatusTip(tr("Redo the last action"));
-
-  cutAct = new QAction(QIcon::fromTheme("edit-cut", QIcon(":icons/edit-cut.svg")), tr("Cu&t"), this);
-  cutAct->setShortcut(tr("Ctrl+X"));
-  cutAct->setStatusTip(tr("Cut the current selection's contents to the "
-                          "clipboard"));
-  connect(cutAct, SIGNAL(triggered()), m_scene, SLOT(cut()));
-
-  copyAct = new QAction(QIcon::fromTheme("edit-copy", QIcon(":icons/edit-copy.svg")), tr("&Copy"), this);
-  copyAct->setShortcut(tr("Ctrl+C"));
-  copyAct->setStatusTip(tr("Copy the current selection's contents to the "
-                           "clipboard"));
-  connect(copyAct, SIGNAL(triggered()), m_scene, SLOT(copy()));
-
-  pasteAct = new QAction(QIcon::fromTheme("edit-paste", QIcon(":icons/edit-paste.svg")), tr("&Paste"), this);
-  pasteAct->setShortcut(tr("Ctrl+V"));
-  pasteAct->setStatusTip(tr("Paste the clipboard's contents into the current "
-                            "selection"));
-  connect(pasteAct, SIGNAL(triggered()), m_scene, SLOT(paste()));
-
-  convertImageAct = new QAction(QIcon(""), tr("C&onvert Image to Mol"),this);
-  convertImageAct->setShortcut(tr("Ctrl+M"));
-  convertImageAct->setStatusTip(tr("Convert Image to Mol using OSRA"));
-  connect(convertImageAct, SIGNAL(triggered()), m_scene, SLOT(convertImage()));
-
-  selectAllAct = new QAction(QIcon::fromTheme("edit-select-all", QIcon(":icons/edit-select-all.svg")), tr("&Select all"),this);
-  selectAllAct->setShortcut(tr("Ctrl+A"));
-  selectAllAct->setStatusTip(tr("Selects all elements on the scene"));
-  connect(selectAllAct, SIGNAL(triggered()), m_scene, SLOT(selectAll()));
-
-  alignAct = new QAction(QIcon(""), tr("Show grid"), this);
-  alignAct->setStatusTip(tr("Shows grid and snaps to it while drawing"));
-  alignAct->setCheckable(true);
-  connect(alignAct, SIGNAL(toggled(bool)), m_scene, SLOT(setGrid(bool)));
-
-  prefAct = new QAction(QIcon::fromTheme("preferences-system", QIcon(":icons/preferences-system.svg")),tr("Edit Pre&ferences..."),this);
-  prefAct->setShortcut(tr("Ctrl+F"));
-  prefAct->setStatusTip(tr("Edit your preferences"));
-  prefAct->setObjectName("preferencesAction");
-  connect(prefAct, SIGNAL(triggered()), this, SLOT(editPreferences()));
-
-  // Zoom actions
-  zoomInAct = new QAction(QIcon::fromTheme("zoom-in", QIcon(":icons/zoom-in.svg")),tr("Zoom &In"), this);
-  zoomInAct->setShortcut(tr("Ctrl++"));
-  zoomInAct->setStatusTip(tr("Zoom in on the canvas"));
-  connect(zoomInAct, SIGNAL(triggered()), m_molView, SLOT(zoomIn()));
-
-  zoomOutAct = new QAction(QIcon::fromTheme("zoom-out", QIcon(":icons/zoom-out.svg")),tr("Zoom &Out"), this);
-  zoomOutAct->setShortcut(tr("Ctrl+-"));
-  zoomOutAct->setStatusTip(tr("Zoom out on the canvas"));
-  connect(zoomOutAct, SIGNAL(triggered()), m_molView, SLOT(zoomOut()));
-
-  zoomResetAct = new QAction(QIcon::fromTheme("zoom-original", QIcon(":icons/zoom-original.svg")),tr("Zoom &Reset"), this);
-  zoomResetAct->setShortcut(tr("Ctrl+="));
-  zoomResetAct->setStatusTip(tr("Reset the zoom level"));
-  connect(zoomResetAct, SIGNAL(triggered()), m_molView, SLOT(zoomReset()));
-
-  zoomFitAct = new QAction(QIcon::fromTheme("zoom-fit-best", QIcon(":icons/zoom-fit-best.svg")),tr("Zoom &Fit"), this);
-  zoomFitAct->setShortcut(tr("Ctrl+*"));
-  zoomFitAct->setStatusTip(tr("Fit to screen"));
-  connect(zoomFitAct, SIGNAL(triggered()), m_molView, SLOT(zoomFit()));
-
-  // Help actions
-  helpContentsAct = new QAction(QIcon::fromTheme("help-contents", QIcon(":icons/help-contents.svg")),tr("&Help Contents..."), this);
-  helpContentsAct->setShortcut(tr("F1"));
-  helpContentsAct->setStatusTip(tr("Show the application's help contents"));
-  connect(helpContentsAct, SIGNAL(triggered()), this, SLOT(assistant()));
-
-  submitBugAct = new QAction(QIcon(""),tr("Submit &Bug..."), this);
-  submitBugAct->setStatusTip(tr("Open the browser with the bug tracker"));
-  connect(submitBugAct, SIGNAL(triggered()), this, SLOT(submitBug()));
-
-  youtubeChannelAction = new QAction(tr("YouTube channel..."), this);
-  youtubeChannelAction->setStatusTip(tr("Open the browser with the YouTube channel page"));
-  connect(youtubeChannelAction, SIGNAL(triggered()), this, SLOT(goToYouTube()));
-
-  aboutAct = new QAction(QIcon::fromTheme("help-about", QIcon(":icons/help-about.svg")),tr("&About..."), this);
-  aboutAct->setStatusTip(tr("Show the application's About box"));
-  connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));
-
-  releaseNotesAct = new QAction(tr("Show release notes..."), this);
-  releaseNotesAct->setStatusTip(tr("Show the entire release notes list for all versions of Molsketch"));
-  connect(releaseNotesAct, SIGNAL(triggered()), this, SLOT(showReleaseNotes()));
-
-  aboutQtAct = new QAction(tr("About &Qt..."), this);
-  aboutQtAct->setStatusTip(tr("Show the Qt library's About box"));
-  connect(aboutQtAct, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
-
-  // Setting actions in their initial states
-  cutAct->setEnabled(false);
-  copyAct->setEnabled(false);
-  pasteAct->setEnabled(false);
-  connect(m_scene, SIGNAL(selectionChanged()), this, SLOT(checkCopyAvailable()));
-  connect(QApplication::clipboard(), SIGNAL(dataChanged()), this, SLOT(checkPasteAvailable()));
-}
-
-
-void MainWindow::createMenus()
-{
-  fileMenu = menuBar()->addMenu(tr("&File"));
-  fileMenu->addAction(newAct);
-  fileMenu->addAction(openAct);
-  fileMenu->addAction(saveAct);
-  fileMenu->addAction(saveAsAct);
-  fileMenu->addSeparator();
-  fileMenu->addAction(importAct);
-  fileMenu->addAction(exportAct);
-  fileMenu->addAction(printAct);
-  fileMenu->addSeparator();
-  fileMenu->addAction(exitAct);
-
-  editMenu = menuBar()->addMenu(tr("&Edit"));
-  editMenu->setObjectName("editMenu");
-  editMenu->addAction(undoAct);
-  editMenu->addAction(redoAct);
-  editMenu->addSeparator();
-  editMenu->addAction(cutAct);
-  editMenu->addAction(copyAct);
-  editMenu->addAction(pasteAct);
-  editMenu->addAction(convertImageAct);
-  editMenu->addSeparator();
-  editMenu->addAction(selectAllAct);
-  editMenu->addAction(alignAct);
-  editMenu->addSeparator();
-  editMenu->addAction(prefAct);
-
-  viewMenu = menuBar()->addMenu(tr("&View"));
-  viewMenu->addAction(zoomInAct);
-  viewMenu->addAction(zoomOutAct);
-  viewMenu->addAction(zoomResetAct);
-  viewMenu->addAction(zoomFitAct);
-
+void MainWindow::createHelpMenu() {
   menuBar()->addSeparator();
+  auto helpMenu = menuBar()->addMenu(tr("&Help"));
+  helpMenu->addActions(QList<QAction*>{
+                         ActionContainer::generateAction("help-contents", ":icons/help-contents.svg", tr("&Help Contents..."), tr("F1"), tr("Show the application's help contents"), this, &MainWindow::openAssistant),
+                         ActionContainer::generateAction("", "", tr("Submit &Bug..."),"", tr("Open the browser with the bug tracker"), this, &MainWindow::submitBug),
+                         ActionContainer::generateAction("", "", tr("YouTube channel..."), "", tr("Open the browser with the YouTube channel page"), this, &MainWindow::goToYouTube),
+                         ActionContainer::generateAction("help-about", ":icons/help-about.svg", tr("&About..."), "", tr("Show the application's About box"), this, &MainWindow::about),
+                         ActionContainer::generateAction("", "", tr("Show release notes..."), "", tr("Show the entire release notes list for all versions of Molsketch"), this, &MainWindow::showReleaseNotes)
+                       });
 
-  helpMenu = menuBar()->addMenu(tr("&Help"));
-  helpMenu->addAction(helpContentsAct);
-  helpMenu->addSeparator();
-  helpMenu->addAction(submitBugAct);
-  helpMenu->addAction(youtubeChannelAction);
-  helpMenu->addSeparator();
-  helpMenu->addAction(aboutAct);
-  helpMenu->addAction(releaseNotesAct);
-  helpMenu->addAction(aboutQtAct);
+  auto aboutQtAction = ActionContainer::generateAction("", "", tr("About &Qt..."), "", tr("Show the Qt library's About box"), this);
+  connect(aboutQtAction, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
+  helpMenu->addAction(aboutQtAction);
 }
 
-void setAllToolBarChildren(QObject* parent,
-                           QSize size)
-{
-  foreach (QToolBar* bar, parent->findChildren<QToolBar*>())
-    bar->setIconSize(size);
-}
+void MainWindow::createFileMenuAndToolBar() {
+  auto newAction = ActionContainer::generateAction("document-new", ":icons/document-new.svg", tr("&New"), tr("Ctrl+N"), tr("Create a new file"), this, &MainWindow::newFile);
+  auto openAction = ActionContainer::generateAction("document-open", ":icons/document-open.svg", tr("&Open..."), tr("Ctrl+O"), tr("Open an existing file"), this, &MainWindow::open);
+  auto saveAction = ActionContainer::generateAction("document-save", ":icons/document-save.svg", tr("&Save"), tr("Ctrl+S"), tr("Save the document to disk"), this, &MainWindow::save);
+  auto importAction = ActionContainer::generateAction("document-import", ":icons/document-import.svg", tr("&Import..."), tr("Ctrl+I"), tr("Insert an existing molecule into the document"), this, &MainWindow::importDoc);
+  auto exportAction = ActionContainer::generateAction("document-export", ":icons/document-export.svg", tr("&Export..."), tr("Ctrl+E"), tr("Export the current document as a picture"), this, &MainWindow::exportDoc);
+  auto printAction = ActionContainer::generateAction("document-print", ":icons/document-print.svg", tr("&Print..."), tr("Ctrl+P"), tr("Print the current document"), this, &MainWindow::print);
 
-void MainWindow::createToolBars()
-{
-  fileToolBar = addToolBar(tr("File"));
+  auto fileMenu = menuBar()->addMenu(tr("&File"));
+  fileMenu->addActions(QList<QAction*>{ newAction, openAction, saveAction,
+                        ActionContainer::generateAction("document-save-as", ":icons/document-save-as.svg", tr("Save &As..."), tr("Ctrl+Shift+S"), tr("Save the document under a new name"), this, &MainWindow::saveAs)});
+  fileMenu->addSeparator();
+  fileMenu->addActions({ importAction, exportAction, printAction });
+  fileMenu->addSeparator();
+  fileMenu->addAction(ActionContainer::generateAction("preferences-system", ":icons/preferences-system.svg", tr("Pre&ferences..."), tr("Ctrl+F"), tr("Edit your preferences"), this, &MainWindow::editPreferences)
+        );
+  fileMenu->addSeparator();
+  fileMenu->addAction(ActionContainer::generateAction("application-exit", ":icons/application-exit.svg", tr("E&xit"), tr("Ctrl+Q"), tr("Exit the application"), this, &MainWindow::close));
+
+  auto fileToolBar = addToolBar(tr("File"));
   fileToolBar->setObjectName("file-toolbar");
-  fileToolBar->addAction(newAct);
-  fileToolBar->addAction(openAct);
-  fileToolBar->addAction(saveAct);
-  fileToolBar->addAction(importAct);
-  fileToolBar->addAction(exportAct);
-  fileToolBar->addAction(printAct);
-
-  editToolBar = addToolBar(tr("Edit"));
-  editToolBar->setObjectName("edit-toolbar");
-  editToolBar->addAction(undoAct);
-  editToolBar->addAction(redoAct);
-  editToolBar->addSeparator();
-  editToolBar->addAction(cutAct);
-  editToolBar->addAction(copyAct);
-  editToolBar->addAction(pasteAct);
-
-
-  zoomToolBar = addToolBar(tr("Zoom"));
-  zoomToolBar->setObjectName("zoom-toolbar");
-  zoomToolBar->addAction(zoomInAct);
-  zoomToolBar->addAction(zoomOutAct);
-  zoomToolBar->addAction(zoomResetAct);
-  zoomToolBar->addAction(zoomFitAct);
-
-#ifdef QT_DEBUG
-  QAction *debugAction = new QAction("debug scene", this);
-  connect(debugAction, SIGNAL(triggered()), m_scene, SLOT(debugScene()));
-  zoomToolBar->addAction(debugAction);
-#endif
-
-  drawToolBar = addToolBar(tr("Drawing"));
-  drawToolBar->setObjectName("drawing-toolbar");
-  drawToolBar->addAction(new drawAction(m_scene)); // TODO add these actions to the view widget?
-  drawToolBar->addAction(new ringAction(m_scene));
-  drawToolBar->addAction(new reactionArrowAction(m_scene));
-  drawToolBar->addAction(new mechanismArrowAction(m_scene));
-  drawToolBar->addAction(new FrameAction(m_scene));
-  drawToolBar->addAction(new TextAction(m_scene));
-
-  modifyToolBar = addToolBar(tr("Modify"));
-  modifyToolBar->setObjectName("modify-toolbar");
-  modifyToolBar->addAction(new ItemTypeSelectionAction(m_scene));
-  modifyToolBar->addAction(new rotateAction(m_scene));
-  modifyToolBar->addAction(new colorAction(m_scene));
-  modifyToolBar->addAction(new lineWidthAction(m_scene));
-  modifyToolBar->addAction(new chargeAction(m_scene));
-  modifyToolBar->addAction(new hydrogenAction(m_scene));
-  modifyToolBar->addAction(new connectAction(m_scene));
-  modifyToolBar->addAction(new deleteAction(m_scene));
-  modifyToolBar->addAction(new flipBondAction(m_scene));
-  modifyToolBar->addAction(new flipStereoBondsAction(m_scene));
-
-  alignmentToolBar = addToolBar(tr("Align"));
-  alignmentToolBar->setObjectName("alignment-toolbar");
-  alignmentToolBar->addAction(AlignmentAction::flushLeft(m_scene));
-  alignmentToolBar->addAction(AlignmentAction::atHorizontalCenter(m_scene));
-  alignmentToolBar->addAction(AlignmentAction::flushRight(m_scene));
-  alignmentToolBar->addAction(AlignmentAction::atTop(m_scene));
-  alignmentToolBar->addAction(AlignmentAction::atVerticalCenter(m_scene));
-  alignmentToolBar->addAction(AlignmentAction::atBottom(m_scene));
-  alignmentToolBar->addAction(LineUpAction::horizontal(m_scene));
-  alignmentToolBar->addAction(LineUpAction::vertical(m_scene));
-  alignmentToolBar->addAction(new OptimizeStructureAction(obabelLoader, m_scene));
-
-  new arrowTypeAction(m_scene);
-  new bondTypeAction(m_scene);
-  new flipBondAction(m_scene);
-  new FrameTypeAction(m_scene);
-
-  setAllToolBarChildren(this,
-#ifdef __ANDROID__
-                        QSize(48,48)
-#else
-                        QSize(22,22)
-#endif
-                        );
+  fileToolBar->addAction(newAction);
+  fileToolBar->addAction(openAction);
+  fileToolBar->addAction(saveAction);
+  fileToolBar->addAction(importAction);
+  fileToolBar->addAction(exportAction);
+  fileToolBar->addAction(printAction);
 }
 
 void MainWindow::createStatusBar()
@@ -769,14 +526,6 @@ void MainWindow::createToolBarContextMenuOptions()
   connect(toolBarTextsAndIcons, SIGNAL(triggered(QAction*)), this, SLOT(setToolButtonStyle(QAction*)));
 }
 
-void MainWindow::createView()
-{
-  SettingsFacade *sceneSettingsFacade = const_cast<const ApplicationSettings*>(settings)->settingsFacade().cloneTransiently();
-  m_scene = new MolScene(new SceneSettings(sceneSettingsFacade), this);
-  m_molView = new MolView(m_scene);
-  setCentralWidget(m_molView);
-}
-
 void MainWindow::initializeAssistant()
 {
 #if QT_VERSION <= 0x040603
@@ -814,19 +563,17 @@ void MainWindow::initializeAssistant()
 void MainWindow::readSettings()
 {
   resize(settings->getWindowSize());
-  move(settings->getWindowPosition()); // TODO this should be the job of the window manager.
   restoreState(settings->windowState());
   readPreferences();
 }
 
-void MainWindow::readPreferences()
-{
+void MainWindow::readPreferences() {
   m_autoSaveTimer->setInterval(settings->autoSaveInterval());
   m_autoSaveTimer->start();
-  m_scene->update();
+  m_molView->scene()->update();
 }
 
-void MainWindow::writeSettings()
+void MainWindow::saveWindowProperties()
 {
   settings->setWindowPosition(pos());
   settings->setWindowSize(size());

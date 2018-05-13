@@ -18,13 +18,6 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-/** @file
- * This file is part of molsKetch and defines the mainwindow of molsKetch.
- *
- * @author Harm van Eersel <devsciurus@xs4all.nl>
- * @since Hydrogen
- */
-
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
@@ -55,6 +48,7 @@ class QProcess ;
 class QTimer;
 class QActionGroup;
 class ApplicationSettings;
+class ActionContainer;
 
 namespace Molsketch {
   class Molecule;
@@ -76,7 +70,7 @@ public:
 
   QMenu* createPopupMenu();
 
-  void open(const QString &fileName);
+  void openFile(const QString &fileName);
 protected:
   /** Reimplements the close event to asked for a save on exit. */
   void closeEvent(QCloseEvent *event);
@@ -101,9 +95,6 @@ private slots:
   /** Prints the current document. */
   bool print();
 
-  void checkPasteAvailable();
-  void checkCopyAvailable();
-
   void setToolButtonStyle(QAction* styleAction);
 
         //used for print preview
@@ -112,31 +103,18 @@ private slots:
   /** Open the preferences editor. */
   void editPreferences();
 
-  /** Open the help window. */
-  void assistant();
-  /** Open a browser with the bugtracker. */
+  void openAssistant();
   void submitBug();
   void goToYouTube();
   /** Open the molsKetch about dialog. */
   void about();
 
-  /** Mark the current document as modified. */
-  void documentWasModified( );
-
   /** Reloads the preferences */
   void readPreferences();
   void showReleaseNotes();
 private:
-  /** Creates the QActions of the MainWindow. */
-  void createActions();
-  /** Creates the menus of the MainWindow. */
-  void createMenus();
-  /** Creates the toolbars of the MainWindow. */
-  void createToolBars();
   /** Creates the status bar of the MainWindow. */
   void createStatusBar();
-  /** Creates the view of the MainWindow. */
-  void createView();
   /** Creates the toolboxes of the MainWindow. */
   void createToolBox();
 
@@ -145,7 +123,7 @@ private:
   /** Loads the previous settings of molsKetch. */
   void readSettings();
   /** Saves the current settings of molsKetch. */
-  void writeSettings();
+  void saveWindowProperties();
 
   /** Ask if the document should be saved. */
   bool maybeSave();
@@ -169,115 +147,18 @@ private:
   /** Initialize the help client. */
   void initializeAssistant();
 
-  // Widgets
-  /** The scene that contains the document's molecules. */
-  Molsketch::MolScene* m_scene;
-  /** The view of the MolScene. */
   Molsketch::MolView* m_molView;
-
-  /** The toolbox with the libraries. */
-  QToolBox* toolBox;
-
-  // Menus
-  /** The file menu. */
-  QMenu* fileMenu;
-  /** The edit menu. */
-  QMenu* editMenu;
-  /** The view menu. */
-  QMenu* viewMenu;
-  /** The window menu. */
-  QMenu* windowMenu;
-  /** The help menu. */
-  QMenu* helpMenu;
-
-  // Toolbars
-  /** The file toolbar. */
-  QToolBar* fileToolBar;
-  /** The edit toolbar. */
-  QToolBar* editToolBar;
-  /** The zoom toolbar. */
-  QToolBar* zoomToolBar;
-  /** The draw toolbar. */
-  QToolBar* drawToolBar;
-  /** The modify toolbar */
-  QToolBar* modifyToolBar;
-  /** The alignment toolbar */
-  QToolBar* alignmentToolBar;
-
-  // File actions
-  /** Open a new empty file action. */
-  QAction* newAct;
-  /** Open an existing file action. */
-  QAction* openAct;
-  /** Save the current document action. */
-  QAction* saveAct;
-  /** Save the current document under a new name action. */
-  QAction* saveAsAct;
-  /** Save a backup of the current document. */
-  QAction* autoSaveAct;
-  /** Import an existing file action. */
-  QAction* importAct;
-  /** Export the current document as a picture action. */
-  QAction* exportAct;
-  /** Print the current document action. */
-  QAction* printAct;
-  /** Exit molsKetch action. */
-  QAction* exitAct;
 
   QActionGroup* toolBarTextsAndIcons;
 
-  QPushButton *refreshLibraries;
-
-  // Edit actions
-  /** Undo the last command action. */
-  QAction* undoAct;
-  /** Redo the last command action. */
-  QAction* redoAct;
-  /** Cut the selected item action. */
-  QAction* cutAct;
-  /** Copy the selected item action. */
-  QAction* copyAct;
-  /** Paste the contents of the clipboard action. */
-  QAction* pasteAct;
-  /** Converts Image to Mol using OSRA */
-  QAction* convertImageAct;
-  /** Select all items on the scene action. */
-  QAction* selectAllAct;
-  /** Align all items to the grid action. */
-  QAction* alignAct;
-  /** Open the settings dialog action. */
-  QAction* prefAct;
-
-  // Tools actions
-  QAction *insertSmilesAct;
-  QAction *insertGraphSymAct;
-
-  // View actions
-  /** Zoom in on the view action. */
-  QAction* zoomInAct;
-  /** Zoom out on the view action. */
-  QAction* zoomOutAct;
-  /** Reset the position and zoom leven of the view action. */
-  QAction* zoomResetAct;
-  /** Adjust the zoom level to fit all items in the view action. */
-  QAction* zoomFitAct;
-
-  // Help actions
-  /** Show the help contents action. */
-  QAction* helpContentsAct;
-  /** Submit a bug action. */
-  QAction* submitBugAct;
-  QAction* youtubeChannelAction;
-  /** Show the molsKetch about dialog action. */
-  QAction* aboutAct;
-  QAction* releaseNotesAct;
-  /** Show the Qt about dialog action. */
-  QAction* aboutQtAct;
   ApplicationSettings *settings;
   OBabelIfaceLoader *obabelLoader;
+  ActionContainer *actionContainer;
 
   void readToSceneUsingOpenBabel(const QString &fileName);
-  bool save(const QString &filename);
+  bool saveFile(const QString &filename);
+  void createHelpMenu();
+  void createFileMenuAndToolBar();
 };
 
 QString readFileContent(const QString& absolutePath);

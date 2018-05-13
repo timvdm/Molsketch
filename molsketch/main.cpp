@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
   parser.addPositionalArgument("files", QApplication::translate("main", "Files to open, optionally."), "[files...]");
   parser.process(app);
   auto filesToOpen = parser.positionalArguments();
-  for(auto filename : filesToOpen) (new MainWindow())->open(filename);
+  for(auto filename : filesToOpen) (new MainWindow())->openFile(filename);
   if (filesToOpen.isEmpty()) new MainWindow();
 
   ApplicationSettings appSettings(Molsketch::SettingsFacade::persistedSettings(new QSettings));
