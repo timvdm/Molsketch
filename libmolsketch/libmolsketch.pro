@@ -3,8 +3,9 @@ include(../settings.pri)
 TEMPLATE = lib
 HEADERS += $$files(*.h, true)
 SOURCES += $$files(*.cpp, true)
-FORMS += *.ui
-RESOURCES += tools/toolicons.qrc
+FORMS += $$files(*.ui, true)
+RESOURCES += $$files(*.qrc, true)
+
 TARGET = molsketch$$qtVersionSuffix
 DESTDIR = ../lib
 QMAKE_CXXFLAGS_DEBUG +=  -g -gstabs
