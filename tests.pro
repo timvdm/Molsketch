@@ -4,54 +4,20 @@ include(../settings.pri)
 
 TESTS = *test.h
 
-originalSources = \
-    $$PWD/../libmolsketch/*.cpp \
-    $$PWD/../libmolsketch/actions/*.cpp \
-    $$PWD/../obabeliface/*.cpp \
-    $$files($$PWD/../molsketch/*.cpp)
-originalSources -= $$PWD/../molsketch/main.cpp
-originalHeaders = \
-    $$PWD/../libmolsketch/*.h \
-    $$PWD/../libmolsketch/actions/*.h \
-    $$PWD/../obabeliface/*.h \
-    $$PWD/../molsketch/*.h
-originalForms = \
-    $$PWD/../libmolsketch/*.ui \
-    $$PWD/../molsketch/*.ui
-
-HEADERS += $$TESTS \
-    $$originalHeaders \
-    rectanglevaluetrait.h \
-    qstringvaluetrait.h \
-    qvariantvaluetrait.h \
-    utilities.h \
-    programversionvaluetrait.h \
-    noargsignalcounter.h \
-    signalcounter.h \
-    xmlassertion.h \
-    tempfileprovider.h
-
-FORMS += $$originalForms
+SOURCES += $$files($$PWD/../*.cpp, true)
+SOURCES -= $$PWD/../molsketch/main.cpp
+HEADERS += $$files($$PWD/../*.h, true)
+FORMS += $$files($$PWD/../*.ui, true)
+RESOURCES += $$files($$PWD/../*.qrc, true)
 
 CONFIG += c++14
+QT += widgets printsupport svg testlib network xmlpatterns
 
 INCLUDEPATH += $$CXXTEST_PATH \
     /usr/include/boost/stacktrace \
     ../libmolsketch \
     ../molsketch \
     ../obabeliface
-
-SOURCES += \
-    programversionvaluetrait.cpp \
-    instancecounters.cpp \
-    xmlassertion.cpp \
-    tempfileprovider.cpp \
-    signalcounter.cpp
-RESOURCES += \
-    $$PWD/../molsketch/*.qrc \
-    $$PWD/../libmolsketch/tools/toolicons.qrc
-
-QT += widgets printsupport svg testlib network xmlpatterns
 
 TEMPLATE = app
 
@@ -70,20 +36,13 @@ changelogSyntax.depends = $$PWD/../CHANGELOG
 QMAKE_EXTRA_TARGETS += changelogSyntax
 POST_TARGETDEPS += $$changelogSyntax.target
 
-cxxrunner.target = cxxrunner.cpp
-cxxrunner.commands = $$CXXTEST_PATH/bin/cxxtestgen --have-eh --xunit-printer --root -o cxxrunner.cpp --template $$PWD/runnerTemplate.tpl
-cxxrunner.depends = $$PWD/runnerTemplate.tpl
-#cxxrunner.output = cxxrunner.cpp
-#cxxrunner.variable_out = SOURCES
-QMAKE_EXTRA_TARGETS += cxxrunner
-SOURCES += $$OUT_PWD/cxxrunner.cpp \
-    $$originalSources \
-    rectanglevaluetrait.cpp \
-    qstringvaluetrait.cpp \
-    qvariantvaluetrait.cpp \
-    utilities.cpp \
-    mocks.cpp \
-    noargsignalcounter.cpp
+CXXRUNNER_TEMPLATE = $$PWD/runnerTemplate.tpl
+cxxrunner.output = cxxrunner.cpp
+cxxrunner.commands = $$CXXTEST_PATH/bin/cxxtestgen --have-eh --xunit-printer --root -o ${QMAKE_FILE_OUT} --template ${QMAKE_FILE_NAME}
+cxxrunner.dependency_type = TYPE_C
+cxxrunner.input = CXXRUNNER_TEMPLATE
+cxxrunner.variable_out = SOURCES
+QMAKE_EXTRA_COMPILERS += cxxrunner
 
 OTHER_FILES += \
     runnerTemplate.tpl \
