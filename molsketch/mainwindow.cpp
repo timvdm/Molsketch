@@ -35,33 +35,11 @@
 #include <QToolTip>
 #include <settingsfacade.h>
 
-#include <actions/arrowtypeaction.h>
-#include <actions/bondtypeaction.h>
-#include <actions/coloraction.h>
-#include <actions/connectaction.h>
-#include <actions/deleteaction.h>
-#include <actions/drawaction.h>
-#include <actions/flipbondaction.h>
-#include <actions/frameaction.h>
-#include <actions/frametypeaction.h>
-#include <actions/incdecaction.h>
-#include <actions/linewidthaction.h>
-#include <actions/mechanismarrowaction.h>
-#include <actions/ringaction.h>
-#include <actions/rotateaction.h>
-#include <actions/flipstereobondsaction.h>
-#include <actions/textaction.h>
-#include <actions/itemtypeselectionaction.h>
-#include <actions/alignmentaction.h>
-#include "optimizestructureaction.h"
-
 #include "mainwindow.h"
 
 #include "molview.h"
 #include "fileio.h"
-
 #include "programversion.h"
-
 #include "indicator.h"
 #include "obabelifaceloader.h"
 #include "releasenotesdialog.h"
