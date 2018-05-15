@@ -66,8 +66,23 @@ namespace Molsketch { // TODO turn on warnings for switch'es
     friend QDebug operator<<(QDebug debug, const BoundingBoxLinker& linker);
 #endif
     BoundingBoxLinker& operator=(const BoundingBoxLinker& other);
-    static const BoundingBoxLinker upperLeft, lowerLeft, upperRight, lowerRight, above, below, toRight, toLeft;
-    static const BoundingBoxLinker atTopLeft, atBottomLeft, atTopRight, atBottomRight, atTop, atBottom, atLeft, atRight;
+    static BoundingBoxLinker upperLeft();
+    static BoundingBoxLinker lowerLeft();
+    static BoundingBoxLinker upperRight();
+    static BoundingBoxLinker lowerRight();
+    static BoundingBoxLinker above();
+    static BoundingBoxLinker below();
+    static BoundingBoxLinker toRight();
+    static BoundingBoxLinker toLeft();
+
+    static BoundingBoxLinker atTopLeft();
+    static BoundingBoxLinker atBottomLeft();
+    static BoundingBoxLinker atTopRight();
+    static BoundingBoxLinker atBottomRight();
+    static BoundingBoxLinker atTop();
+    static BoundingBoxLinker atBottom();
+    static BoundingBoxLinker atLeft();
+    static BoundingBoxLinker atRight();
   };
 
 #ifdef QT_DEBUG

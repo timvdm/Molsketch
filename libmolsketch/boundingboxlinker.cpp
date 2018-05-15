@@ -168,22 +168,22 @@ namespace Molsketch {
   }
 #endif
 
-  const BoundingBoxLinker BoundingBoxLinker::above = BoundingBoxLinker(Anchor::Top, Anchor::Bottom);
-  const BoundingBoxLinker BoundingBoxLinker::below = BoundingBoxLinker(Anchor::Bottom, Anchor::Top);
-  const BoundingBoxLinker BoundingBoxLinker::toLeft = BoundingBoxLinker(Anchor::Left, Anchor::Right);
-  const BoundingBoxLinker BoundingBoxLinker::toRight = BoundingBoxLinker(Anchor::Right, Anchor::Left);
-  const BoundingBoxLinker BoundingBoxLinker::upperLeft = BoundingBoxLinker(Anchor::TopLeft, Anchor::BottomRight);
-  const BoundingBoxLinker BoundingBoxLinker::upperRight = BoundingBoxLinker(Anchor::TopRight, Anchor::BottomLeft);
-  const BoundingBoxLinker BoundingBoxLinker::lowerLeft = BoundingBoxLinker(Anchor::BottomLeft, Anchor::TopRight);
-  const BoundingBoxLinker BoundingBoxLinker::lowerRight = BoundingBoxLinker(Anchor::BottomRight, Anchor::TopLeft);
+  BoundingBoxLinker BoundingBoxLinker::above() { return BoundingBoxLinker(Anchor::Top, Anchor::Bottom); }
+  BoundingBoxLinker BoundingBoxLinker::below() { return BoundingBoxLinker(Anchor::Bottom, Anchor::Top); }
+  BoundingBoxLinker BoundingBoxLinker::toLeft() { return BoundingBoxLinker(Anchor::Left, Anchor::Right); }
+  BoundingBoxLinker BoundingBoxLinker::toRight() { return BoundingBoxLinker(Anchor::Right, Anchor::Left); }
+  BoundingBoxLinker BoundingBoxLinker::upperLeft() { return BoundingBoxLinker(Anchor::TopLeft, Anchor::BottomRight); }
+  BoundingBoxLinker BoundingBoxLinker::upperRight() { return BoundingBoxLinker(Anchor::TopRight, Anchor::BottomLeft); }
+  BoundingBoxLinker BoundingBoxLinker::lowerLeft() { return BoundingBoxLinker(Anchor::BottomLeft, Anchor::TopRight); }
+  BoundingBoxLinker BoundingBoxLinker::lowerRight() { return BoundingBoxLinker(Anchor::BottomRight, Anchor::TopLeft); }
 
   // TODO consider converting constructor
-  const BoundingBoxLinker BoundingBoxLinker::atBottom = BoundingBoxLinker(Anchor::Bottom);
-  const BoundingBoxLinker BoundingBoxLinker::atTop = BoundingBoxLinker(Anchor::Top);
-  const BoundingBoxLinker BoundingBoxLinker::atLeft = BoundingBoxLinker(Anchor::Left);
-  const BoundingBoxLinker BoundingBoxLinker::atRight = BoundingBoxLinker(Anchor::Right);
-  const BoundingBoxLinker BoundingBoxLinker::atTopLeft = BoundingBoxLinker(Anchor::TopLeft);
-  const BoundingBoxLinker BoundingBoxLinker::atTopRight = BoundingBoxLinker(Anchor::TopRight);
-  const BoundingBoxLinker BoundingBoxLinker::atBottomLeft = BoundingBoxLinker(Anchor::BottomLeft);
-  const BoundingBoxLinker BoundingBoxLinker::atBottomRight = BoundingBoxLinker(Anchor::BottomRight);
+  BoundingBoxLinker BoundingBoxLinker::atBottom() { return BoundingBoxLinker(Anchor::Bottom); }
+  BoundingBoxLinker BoundingBoxLinker::atTop() { return BoundingBoxLinker(Anchor::Top); }
+  BoundingBoxLinker BoundingBoxLinker::atLeft() { return BoundingBoxLinker(Anchor::Left); }
+  BoundingBoxLinker BoundingBoxLinker::atRight() { return BoundingBoxLinker(Anchor::Right); }
+  BoundingBoxLinker BoundingBoxLinker::atTopLeft() { return BoundingBoxLinker(Anchor::TopLeft); }
+  BoundingBoxLinker BoundingBoxLinker::atTopRight() { return BoundingBoxLinker(Anchor::TopRight); }
+  BoundingBoxLinker BoundingBoxLinker::atBottomLeft() { return BoundingBoxLinker(Anchor::BottomLeft); }
+  BoundingBoxLinker BoundingBoxLinker::atBottomRight() { return BoundingBoxLinker(Anchor::BottomRight); }
 } // namespace Molsketch

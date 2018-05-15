@@ -66,14 +66,14 @@ namespace Molsketch {
 
       QVector<BoundingBoxLinker> radicalPositions(radicals.size());
       std::transform(radicals.begin(), radicals.end(), radicalPositions.begin(), [](const RadicalElectron* radical) {return radical->linker();});
-      ui->topLeftRadical->setChecked(radicalPositions.contains(BoundingBoxLinker::upperLeft)); // TODO link checkbox to linker
-      ui->topRightRadical->setChecked(radicalPositions.contains(BoundingBoxLinker::upperRight));
-      ui->bottomLeftRadical->setChecked(radicalPositions.contains(BoundingBoxLinker::lowerLeft));
-      ui->bottomRightRadical->setChecked(radicalPositions.contains(BoundingBoxLinker::lowerRight));
-      ui->topRadical->setChecked(radicalPositions.contains(BoundingBoxLinker::above));
-      ui->bottomRadical->setChecked(radicalPositions.contains(BoundingBoxLinker::below));
-      ui->leftRadical->setChecked(radicalPositions.contains(BoundingBoxLinker::toLeft));
-      ui->rightRadical->setChecked(radicalPositions.contains(BoundingBoxLinker::toRight));
+      ui->topLeftRadical->setChecked(radicalPositions.contains(BoundingBoxLinker::upperLeft())); // TODO link checkbox to linker
+      ui->topRightRadical->setChecked(radicalPositions.contains(BoundingBoxLinker::upperRight()));
+      ui->bottomLeftRadical->setChecked(radicalPositions.contains(BoundingBoxLinker::lowerLeft()));
+      ui->bottomRightRadical->setChecked(radicalPositions.contains(BoundingBoxLinker::lowerRight()));
+      ui->topRadical->setChecked(radicalPositions.contains(BoundingBoxLinker::above()));
+      ui->bottomRadical->setChecked(radicalPositions.contains(BoundingBoxLinker::below()));
+      ui->leftRadical->setChecked(radicalPositions.contains(BoundingBoxLinker::toLeft()));
+      ui->rightRadical->setChecked(radicalPositions.contains(BoundingBoxLinker::toRight()));
     }
 
     void getLonePairsFromAtom() {
@@ -89,14 +89,14 @@ namespace Molsketch {
 
       QVector<BoundingBoxLinker> lonePairPositions(lonePairs.size());
       std::transform(lonePairs.begin(), lonePairs.end(), lonePairPositions.begin(), [](const LonePair* lonePair) { return lonePair->linker();});
-      ui->topLeftLonePair->setChecked(lonePairPositions.contains(BoundingBoxLinker::atTopLeft));
-      ui->topLonePair->setChecked(lonePairPositions.contains(BoundingBoxLinker::atTop));
-      ui->topRightLonePair->setChecked(lonePairPositions.contains(BoundingBoxLinker::atTopRight));
-      ui->bottomLeftLonePair->setChecked(lonePairPositions.contains(BoundingBoxLinker::atBottomLeft));
-      ui->bottomLonePair->setChecked(lonePairPositions.contains(BoundingBoxLinker::atBottom));
-      ui->bottomRightLonePair->setChecked(lonePairPositions.contains(BoundingBoxLinker::atBottomRight));
-      ui->leftLonePair->setChecked(lonePairPositions.contains(BoundingBoxLinker::atLeft));
-      ui->rightLonePair->setChecked(lonePairPositions.contains(BoundingBoxLinker::atRight));
+      ui->topLeftLonePair->setChecked(lonePairPositions.contains(BoundingBoxLinker::atTopLeft()));
+      ui->topLonePair->setChecked(lonePairPositions.contains(BoundingBoxLinker::atTop()));
+      ui->topRightLonePair->setChecked(lonePairPositions.contains(BoundingBoxLinker::atTopRight()));
+      ui->bottomLeftLonePair->setChecked(lonePairPositions.contains(BoundingBoxLinker::atBottomLeft()));
+      ui->bottomLonePair->setChecked(lonePairPositions.contains(BoundingBoxLinker::atBottom()));
+      ui->bottomRightLonePair->setChecked(lonePairPositions.contains(BoundingBoxLinker::atBottomRight()));
+      ui->leftLonePair->setChecked(lonePairPositions.contains(BoundingBoxLinker::atLeft()));
+      ui->rightLonePair->setChecked(lonePairPositions.contains(BoundingBoxLinker::atRight()));
     }
   };
 
@@ -152,14 +152,14 @@ namespace Molsketch {
     attemptBeginMacro(tr("Change radical electrons"));
     for (RadicalElectron* child : d->childrenOfAtom<RadicalElectron>())
       attemptToPushUndoCommand(new Commands::ChildItemCommand(d->atom, child));
-    addRadical(ui->topLeftRadical, BoundingBoxLinker::upperLeft);
-    addRadical(ui->topRightRadical, BoundingBoxLinker::upperRight);
-    addRadical(ui->bottomLeftRadical, BoundingBoxLinker::lowerLeft);
-    addRadical(ui->bottomRightRadical, BoundingBoxLinker::lowerRight);
-    addRadical(ui->topRadical, BoundingBoxLinker::above);
-    addRadical(ui->bottomRadical, BoundingBoxLinker::below);
-    addRadical(ui->leftRadical, BoundingBoxLinker::toLeft);
-    addRadical(ui->rightRadical, BoundingBoxLinker::toRight);
+    addRadical(ui->topLeftRadical, BoundingBoxLinker::upperLeft());
+    addRadical(ui->topRightRadical, BoundingBoxLinker::upperRight());
+    addRadical(ui->bottomLeftRadical, BoundingBoxLinker::lowerLeft());
+    addRadical(ui->bottomRightRadical, BoundingBoxLinker::lowerRight());
+    addRadical(ui->topRadical, BoundingBoxLinker::above());
+    addRadical(ui->bottomRadical, BoundingBoxLinker::below());
+    addRadical(ui->leftRadical, BoundingBoxLinker::toLeft());
+    addRadical(ui->rightRadical, BoundingBoxLinker::toRight());
     attemptEndMacro();
   }
 
@@ -169,14 +169,14 @@ namespace Molsketch {
     attemptBeginMacro(tr("Change lone pairs"));
     for (LonePair *child : d->childrenOfAtom<LonePair>())
       attemptToPushUndoCommand(new Commands::ChildItemCommand(d->atom, child));
-    addLonePair(ui->topLeftLonePair, BoundingBoxLinker::atTopLeft, 45);
-    addLonePair(ui->topRightLonePair, BoundingBoxLinker::atTopRight, 315);
-    addLonePair(ui->bottomLeftLonePair, BoundingBoxLinker::atBottomLeft, 135);
-    addLonePair(ui->bottomRightLonePair, BoundingBoxLinker::atBottomRight, 225);
-    addLonePair(ui->topLonePair, BoundingBoxLinker::atTop, 0);
-    addLonePair(ui->bottomLonePair, BoundingBoxLinker::atBottom, 180);
-    addLonePair(ui->leftLonePair, BoundingBoxLinker::atLeft, 90);
-    addLonePair(ui->rightLonePair, BoundingBoxLinker::atRight, 270);
+    addLonePair(ui->topLeftLonePair, BoundingBoxLinker::atTopLeft(), 45);
+    addLonePair(ui->topRightLonePair, BoundingBoxLinker::atTopRight(), 315);
+    addLonePair(ui->bottomLeftLonePair, BoundingBoxLinker::atBottomLeft(), 135);
+    addLonePair(ui->bottomRightLonePair, BoundingBoxLinker::atBottomRight(), 225);
+    addLonePair(ui->topLonePair, BoundingBoxLinker::atTop(), 0);
+    addLonePair(ui->bottomLonePair, BoundingBoxLinker::atBottom(), 180);
+    addLonePair(ui->leftLonePair, BoundingBoxLinker::atLeft(), 90);
+    addLonePair(ui->rightLonePair, BoundingBoxLinker::atRight(), 270);
     attemptEndMacro();
   }
 
