@@ -30,7 +30,7 @@ CLASS_FOR_TESTING_WITH_FUNCTIONS(RadicalElectron, \
                                  : RadicalElectron(diameter, linker, color){})
 const int DIAMETER = 2;
 const QString RADICAL_ELECTRON_XML("<radicalElectron diameter=\"5\" colorR=\"255\" colorG=\"0\" colorB=\"0\"><bbLinker originAnchor=\"TopLeft\" targetAnchor=\"BottomRight\" xOffset=\"0\" yOffset=\"0\"/></radicalElectron>");
-const RadicalElectron SAMPLE_RADICAL_ELECTRON(5, BoundingBoxLinker::upperLeft, Qt::red);
+const RadicalElectron SAMPLE_RADICAL_ELECTRON(5, BoundingBoxLinker::upperLeft(), Qt::red);
 
 class RadicalElectronUnitTest : public CxxTest::TestSuite {
   MolScene *scene;

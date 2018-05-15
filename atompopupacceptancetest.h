@@ -234,18 +234,18 @@ public:
   }
 
   void testRadicalConfigurationTransferredToGui() {
-    checkRadicalConfigurationTransferredToCheckBox(BoundingBoxLinker::above, "topRadical");
-    checkRadicalConfigurationTransferredToCheckBox(BoundingBoxLinker::below, "bottomRadical");
-    checkRadicalConfigurationTransferredToCheckBox(BoundingBoxLinker::toLeft, "leftRadical");
-    checkRadicalConfigurationTransferredToCheckBox(BoundingBoxLinker::toRight, "rightRadical");
-    checkRadicalConfigurationTransferredToCheckBox(BoundingBoxLinker::upperLeft, "topLeftRadical");
-    checkRadicalConfigurationTransferredToCheckBox(BoundingBoxLinker::upperRight, "topRightRadical");
-    checkRadicalConfigurationTransferredToCheckBox(BoundingBoxLinker::lowerLeft, "bottomLeftRadical");
-    checkRadicalConfigurationTransferredToCheckBox(BoundingBoxLinker::lowerRight, "bottomRightRadical");
+    checkRadicalConfigurationTransferredToCheckBox(BoundingBoxLinker::above(), "topRadical");
+    checkRadicalConfigurationTransferredToCheckBox(BoundingBoxLinker::below(), "bottomRadical");
+    checkRadicalConfigurationTransferredToCheckBox(BoundingBoxLinker::toLeft(), "leftRadical");
+    checkRadicalConfigurationTransferredToCheckBox(BoundingBoxLinker::toRight(), "rightRadical");
+    checkRadicalConfigurationTransferredToCheckBox(BoundingBoxLinker::upperLeft(), "topLeftRadical");
+    checkRadicalConfigurationTransferredToCheckBox(BoundingBoxLinker::upperRight(), "topRightRadical");
+    checkRadicalConfigurationTransferredToCheckBox(BoundingBoxLinker::lowerLeft(), "bottomLeftRadical");
+    checkRadicalConfigurationTransferredToCheckBox(BoundingBoxLinker::lowerRight(), "bottomRightRadical");
   }
 
   void testChangingRadicalWorks() {
-    (new RadicalElectron(RADICAL_DIAMETER, BoundingBoxLinker::above))->setParentItem(atom);
+    (new RadicalElectron(RADICAL_DIAMETER, BoundingBoxLinker::above()))->setParentItem(atom);
     popup->connectAtom(atom);
 
     clickCheckBox(assertNotNull(popup->findChild<QCheckBox*>("topRadical")));
@@ -257,13 +257,13 @@ public:
   }
 
   void testRadicalDiameterIsShown() {
-    (new RadicalElectron(RADICAL_DIAMETER, BoundingBoxLinker::above))->setParentItem(atom);
+    (new RadicalElectron(RADICAL_DIAMETER, BoundingBoxLinker::above()))->setParentItem(atom);
     popup->connectAtom(atom);
     TS_ASSERT_EQUALS(assertNotNull(popup->findChild<QDoubleSpinBox*>("radicalDiameter"))->value(), RADICAL_DIAMETER);
   }
 
   void testRadicalDiameterCanBeChanged() {
-    (new RadicalElectron(RADICAL_DIAMETER, BoundingBoxLinker::above))->setParentItem(atom);
+    (new RadicalElectron(RADICAL_DIAMETER, BoundingBoxLinker::above()))->setParentItem(atom);
     popup->connectAtom(atom);
 
     assertNotNull(popup->findChild<QDoubleSpinBox*>("radicalDiameter"))->setValue(OTHER_RADICAL_DIAMETER);
@@ -326,18 +326,18 @@ public:
   }
 
   void testLonePairConfigurationTransferredToGui() {
-    checkLonePairConfigurationTransferredToCheckBox(BoundingBoxLinker::atTop, "topLonePair");
-    checkLonePairConfigurationTransferredToCheckBox(BoundingBoxLinker::atBottom, "bottomLonePair");
-    checkLonePairConfigurationTransferredToCheckBox(BoundingBoxLinker::atLeft, "leftLonePair");
-    checkLonePairConfigurationTransferredToCheckBox(BoundingBoxLinker::atRight, "rightLonePair");
-    checkLonePairConfigurationTransferredToCheckBox(BoundingBoxLinker::atTopLeft, "topLeftLonePair");
-    checkLonePairConfigurationTransferredToCheckBox(BoundingBoxLinker::atTopRight, "topRightLonePair");
-    checkLonePairConfigurationTransferredToCheckBox(BoundingBoxLinker::atBottomLeft, "bottomLeftLonePair");
-    checkLonePairConfigurationTransferredToCheckBox(BoundingBoxLinker::atBottomRight, "bottomRightLonePair");
+    checkLonePairConfigurationTransferredToCheckBox(BoundingBoxLinker::atTop(), "topLonePair");
+    checkLonePairConfigurationTransferredToCheckBox(BoundingBoxLinker::atBottom(), "bottomLonePair");
+    checkLonePairConfigurationTransferredToCheckBox(BoundingBoxLinker::atLeft(), "leftLonePair");
+    checkLonePairConfigurationTransferredToCheckBox(BoundingBoxLinker::atRight(), "rightLonePair");
+    checkLonePairConfigurationTransferredToCheckBox(BoundingBoxLinker::atTopLeft(), "topLeftLonePair");
+    checkLonePairConfigurationTransferredToCheckBox(BoundingBoxLinker::atTopRight(), "topRightLonePair");
+    checkLonePairConfigurationTransferredToCheckBox(BoundingBoxLinker::atBottomLeft(), "bottomLeftLonePair");
+    checkLonePairConfigurationTransferredToCheckBox(BoundingBoxLinker::atBottomRight(), "bottomRightLonePair");
   }
 
   void testChangingLonePairsWorks() {
-    (new LonePair(LONE_PAIR_ANGLE, LONE_PAIR_LINE_WIDTH, LONE_PAIR_LENGTH, BoundingBoxLinker::atTop))->setParentItem(atom);
+    (new LonePair(LONE_PAIR_ANGLE, LONE_PAIR_LINE_WIDTH, LONE_PAIR_LENGTH, BoundingBoxLinker::atTop()))->setParentItem(atom);
     popup->connectAtom(atom);
 
     clickCheckBox(assertNotNull(popup->findChild<QCheckBox*>("topLonePair")));
@@ -349,14 +349,14 @@ public:
   }
 
   void testLonePairLengthAndLineWidthDisplayed() {
-    (new LonePair(LONE_PAIR_ANGLE, LONE_PAIR_LINE_WIDTH, LONE_PAIR_LENGTH, BoundingBoxLinker::atTop))->setParentItem(atom);
+    (new LonePair(LONE_PAIR_ANGLE, LONE_PAIR_LINE_WIDTH, LONE_PAIR_LENGTH, BoundingBoxLinker::atTop()))->setParentItem(atom);
     popup->connectAtom(atom);
     TS_ASSERT_EQUALS(assertNotNull(popup->findChild<QDoubleSpinBox*>("lonePairLength"))->value(), LONE_PAIR_LENGTH);
     TS_ASSERT_EQUALS(assertNotNull(popup->findChild<QDoubleSpinBox*>("lonePairLineWidth"))->value(), LONE_PAIR_LINE_WIDTH);
   }
 
   void testLonePairLengthChangeWorks() {
-    (new LonePair(LONE_PAIR_ANGLE, LONE_PAIR_LINE_WIDTH, LONE_PAIR_LENGTH, BoundingBoxLinker::atTop))->setParentItem(atom);
+    (new LonePair(LONE_PAIR_ANGLE, LONE_PAIR_LINE_WIDTH, LONE_PAIR_LENGTH, BoundingBoxLinker::atTop()))->setParentItem(atom);
     popup->connectAtom(atom);
 
     assertNotNull(popup->findChild<QDoubleSpinBox*>("lonePairLength"))->setValue(OTHER_LONE_PAIR_LENGTH);
@@ -367,7 +367,7 @@ public:
   }
 
   void testLonePairLineWidthChangeWorks() {
-    (new LonePair(LONE_PAIR_ANGLE, LONE_PAIR_LINE_WIDTH, LONE_PAIR_LENGTH, BoundingBoxLinker::atTop))->setParentItem(atom);
+    (new LonePair(LONE_PAIR_ANGLE, LONE_PAIR_LINE_WIDTH, LONE_PAIR_LENGTH, BoundingBoxLinker::atTop()))->setParentItem(atom);
     popup->connectAtom(atom);
 
     assertNotNull(popup->findChild<QDoubleSpinBox*>("lonePairLineWidth"))->setValue(OTHER_LONE_PAIR_LINE_WIDTH);
