@@ -72,6 +72,9 @@
 #include "scenesettings.h"
 #include "textitem.h"
 #include "constants.h"
+#include "settingsfacade.h"
+#include "settingsitem.h"
+#include "scenepropertieswidget.h"
 
 #ifdef QT_STATIC_BUILD
 inline void initToolBarIcons() { Q_INIT_RESOURCE(toolicons); }
@@ -89,30 +92,15 @@ namespace Molsketch {
   {
     QGraphicsRectItem *selectionRectangle;
     TextInputItem *inputItem;
-    grid *Grid;
+    Grid *grid;
     MolScene *scene;
-    QDockWidget *propertiesDock;
-    QLabel *propertiesHelpLabel;
-
-    QAction *bondLengthAction,
-    *bondWidthAction,
-    *arrowWidthAction,
-    *frameLinewidthAction,
-    *bondAngleAction,
-    *atomSizeAction,
-    *atomFontAction,
-    *hydrogenVisibleAction,
-    *carbonVisibleAction,
-    *lonePairsVisibleAction,
-    *autoAddHydrogenAction,
-    *electronSystemsVisibleAction,
-    *chargeVisibleAction,
-    *defaultColorAction;
+    QUndoStack *stack;
     SceneSettings *settings;
-
+    QDockWidget *propertiesDock;
+    QScrollArea *propertiesScrollArea;
+    ScenePropertiesWidget *scenePropertiesWidget;
     graphicsItem* dragItem;
 
-    QMap<QAction*, QPair<void (MolScene::*)(const bool&), bool (MolScene::*)() const> > booleanActions;
     void attachDockWidgetToMainWindow(MolScene* scene)
     {
       if (scene)
@@ -123,57 +111,36 @@ namespace Molsketch {
       }
     }
 
-    privateData(MolScene* scene)
+    privateData(MolScene* scene, SceneSettings* settings)
       : selectionRectangle(new QGraphicsRectItem),
         inputItem(new TextInputItem),
-        Grid(new grid),
+        grid(new Grid(settings)),
         scene(scene),
+        stack(new QUndoStack(scene)),
+        settings(settings),
         propertiesDock(new QDockWidget(tr("Properties"))),
-        propertiesHelpLabel(new QLabel(tr("Select single item to edit properties"), propertiesDock)),
-        bondLengthAction(new QAction(tr("Bond length..."), scene)),
-        bondWidthAction(new QAction(tr("Bond linewidth..."), scene)),
-        arrowWidthAction(new QAction(tr("Arrow width..."), scene)),
-        frameLinewidthAction(new QAction(tr("Bracket linewidth..."), scene)),
-        bondAngleAction(new QAction(tr("Bond snap angle..."), scene)),
-        atomSizeAction(new QAction(tr("Atom size..."), scene)),
-        atomFontAction(new QAction(tr("Atom font..."), scene)),
-        hydrogenVisibleAction(new QAction(tr("Hydrogens visible"), scene)),
-        carbonVisibleAction(new QAction(tr("Carbons visible"), scene)),
-        lonePairsVisibleAction(new QAction(tr("Lone pairs visible"), scene)),
-        autoAddHydrogenAction(new QAction(tr("Auto add hydrogens"), scene)),
-        electronSystemsVisibleAction(new QAction(tr("Electron systems visible"), scene)),
-        chargeVisibleAction(new QAction(tr("Charges visible"), scene)),
-        defaultColorAction(new QAction(tr("Default color..."), scene)),
+        propertiesScrollArea(new QScrollArea(propertiesDock)),
+        scenePropertiesWidget(new ScenePropertiesWidget(settings, stack)),
         dragItem(0)
     {
       selectionRectangle->setPen(QPen(Qt::blue,0,Qt::DashLine));
       selectionRectangle->setZValue(INFINITY);
-#define REGISTER_ACTION(CAPLETTER, LOWERLETTER, PROPNAME) booleanActions[LOWERLETTER##PROPNAME##Action] = qMakePair(&MolScene::set##CAPLETTER##PROPNAME, &MolScene::LOWERLETTER##PROPNAME);
-      REGISTER_ACTION(H,h,ydrogenVisible)
-      REGISTER_ACTION(C,c,arbonVisible)
-      REGISTER_ACTION(L,l,onePairsVisible)
-      REGISTER_ACTION(A,a,utoAddHydrogen)
-      REGISTER_ACTION(E,e,lectronSystemsVisible)
-      REGISTER_ACTION(C,c,hargeVisible)
-      foreach(QAction* booleanAction, booleanActions.keys())
-      {
-        booleanAction->setCheckable(true);
-        booleanAction->setChecked((scene->*booleanActions[booleanAction].second)());
-        connect(booleanAction, SIGNAL(toggled(bool)), scene, SLOT(booleanPropertyChanged(bool)));
-        connect(booleanAction, SIGNAL(toggled(bool)), scene, SLOT(updateAll()));
-        connect(scene, SIGNAL(sceneRectChanged(QRectF)), scene, SLOT(updateGrid(QRectF)));
-      }
+      connect(scene, SIGNAL(sceneRectChanged(QRectF)), scene, SLOT(updateGrid(QRectF)));
 
-      propertiesHelpLabel->setAlignment(Qt::AlignTop);
-      propertiesHelpLabel->setDisabled(true);
-      propertiesDock->setWidget(propertiesHelpLabel);
+      connect(stack, SIGNAL(indexChanged(int)), scene, SIGNAL(documentChange()));
+      connect(stack, SIGNAL(indexChanged(int)), scene, SLOT(update()));
+      connect(stack, SIGNAL(indexChanged(int)), scene, SLOT(updateAll())) ;
+
+      propertiesScrollArea->setWidgetResizable(true);
+      propertiesDock->setWidget(propertiesScrollArea);
+      propertiesScrollArea->setWidget(scenePropertiesWidget);
       attachDockWidgetToMainWindow(scene);
     }
 
     QMenu* contextSubMenu()
     {
       QMenu* menu = new QMenu(tr("Scene properties"));
-      menu->addActions(booleanActions.keys());
+      // TODO
       return menu;
     }
 
@@ -182,19 +149,20 @@ namespace Molsketch {
 //      if (inputItem && !inputItem->scene()) // TODO compare with this scene
 //        delete inputItem; // TODO should clean up this item...
 //      delete selectionRectangle; // TODO why?
-      propertiesDock->setWidget(propertiesHelpLabel);
+      if(propertiesScrollArea->widget() != scenePropertiesWidget) delete scenePropertiesWidget;
       delete propertiesDock;
-      if (!Grid->scene()) delete Grid;
+      if (!grid->scene()) delete grid;
+      if (!selectionRectangle->scene()) delete selectionRectangle;
     }
 
-    bool gridOn()const { return Grid->scene(); }
+    bool gridOn()const { return grid->scene(); }
 
     void setPropertiesWidget(graphicsItem* item) {
-      QWidget* oldWidget = propertiesDock->widget();
-      QWidget* newWidget = item ? item->getPropertiesWidget() : propertiesHelpLabel;
-      propertiesDock->setWidget(newWidget);
-      if (oldWidget != newWidget && oldWidget != propertiesHelpLabel)
-        delete oldWidget;
+      if (propertiesScrollArea->widget() == scenePropertiesWidget)
+        propertiesScrollArea->takeWidget();
+      propertiesScrollArea->setWidget(item
+                                      ? item->getPropertiesWidget()
+                                      : scenePropertiesWidget);
     }
 
     void moveDragItem(QGraphicsSceneDragDropEvent* event) {
@@ -205,29 +173,20 @@ namespace Molsketch {
 
   using namespace Commands;
 
+  MolScene::MolScene(QObject* parent)
+    : MolScene(nullptr, parent)
+  {}
 
-  //////////////////////////////////////////////////////////////////////////////
-  //
-  // Constructor & destructor
-  //
-  //////////////////////////////////////////////////////////////////////////////
-
-  void MolScene::initialize(SceneSettings* settings)
+  MolScene::MolScene(SceneSettings* settings, QObject *parent)
+    : QGraphicsScene(parent),
+      m_editMode(MolScene::DrawMode),
+      m_renderMode(RenderLabels),
+      d(new privateData(this, nullptr == settings ? new SceneSettings(SettingsFacade::transientSettings(), this) : settings))
   {
-    //Initializing properties
-    m_editMode = MolScene::DrawMode;
-    m_renderMode = RenderLabels;
-
-    // Prepare undo m_stack
-    m_stack = new QUndoStack(this);
-    connect(m_stack, SIGNAL(indexChanged(int)), this, SIGNAL(documentChange()));
-    connect(m_stack, SIGNAL(indexChanged(int)), this, SLOT(update()));
-    connect(m_stack, SIGNAL(indexChanged(int)), this, SLOT(updateAll())) ;
+    setSceneRect(QRectF(-5000,-5000,10000,10000));
     connect(this, SIGNAL(selectionChanged()), this, SLOT(selectionSlot()));
 
-    // Set initial size
-    QRectF sizerect(-5000,-5000,10000,10000);
-    setSceneRect(sizerect);
+
     // TODO - add text item
     // - subclass QGraphicsTextItem?
     // - make movable
@@ -239,63 +198,38 @@ namespace Molsketch {
 //    textItem->setHtml("some <b>text</b> example");
 //    textItem->setTextInteractionFlags(Qt::TextEditorInteraction);
 //    addItem(textItem);
-
-    d->settings = settings;
-    settings->setParent(this);
-  }
-
-  MolScene::MolScene(QObject* parent)
-    : QGraphicsScene(parent),
-      d(new privateData(this))
-  {
-    initialize(new SceneSettings(this));
-  }
-
-  MolScene::MolScene(SceneSettings* settings, QObject *parent)
-    : QGraphicsScene(parent),
-      d(new privateData(this))
-  {
-    initialize(settings);
   }
 
   MolScene::~MolScene() {
     for(QObject *child : QObject::children())
       if (QAction *action = dynamic_cast<QAction*>(child))
         action->setChecked(false);
-    clear();
+    delete d;
+  }
+
+  SceneSettings *MolScene::settings() const {
+    return d->settings;
   }
 
   QFont MolScene::getAtomFont() const {
-    return d->settings->getAtomFont();
+    return d->settings->atomFont()->get(); // FIXME connect signal/slot
   }
 
   qreal MolScene::getRadicalDiameter() const {
-    return d->settings->getRadicalDiameter();
+    return d->settings->radicalDiameter()->get(); // FIXME connect signal/slot
   }
 
   qreal MolScene::getLonePairLength() const {
-    return d->settings->getLonePairLength();
+    return d->settings->lonePairLength()->get(); // FIXME connect signal/slot
   }
 
   qreal MolScene::getLonePairLineWidth() const {
-    return d->settings->getLonePairLineWidth();
+    return d->settings->lonePairLineWidth()->get(); // FIXME connect signal/slot
   }
 
   QString MolScene::mimeType()
   {
     return moleculeMimeType;
-  }
-  // Commands
-
-  void MolScene::alignToGrid() // TODO this isn't used (and not correct)
-  {
-    setGrid(true);
-        m_stack->beginMacro(tr("aligning to grid"));
-        foreach(QGraphicsItem* item,items())
-          if (item->type() == Molecule::Type)
-                m_stack->push(MoveItem::relative(item,toGrid(item->scenePos()) - item->scenePos()));
-        m_stack->endMacro();
-        update();
   }
 
   void MolScene::setEditMode(int mode)
@@ -309,10 +243,10 @@ namespace Molsketch {
   void MolScene::cut() {
         if (selectedItems().isEmpty()) return;
         copy();
-        m_stack->beginMacro(tr("cutting items"));
+        d->stack->beginMacro(tr("cutting items"));
         foreach (QGraphicsItem* item, selectedItems())
           ItemAction::removeItemFromScene(item);
-        m_stack->endMacro();
+        d->stack->endMacro();
   }
 
   void MolScene::copy() {
@@ -338,10 +272,10 @@ namespace Molsketch {
   void MolScene::paste() {
     const QMimeData *mimeData = QApplication::clipboard()->mimeData();
     if (!mimeData->hasFormat(moleculeMimeType)) return;
-    m_stack->beginMacro(tr("Paste"));
+    d->stack->beginMacro(tr("Paste"));
     for (auto newItem : graphicsItem::deserialize(mimeData->data(moleculeMimeType)))
       ItemAction::addItemToScene(newItem, this);
-    m_stack->endMacro();
+    d->stack->endMacro();
   }
 
 #ifdef QT_DEBUG
@@ -373,12 +307,11 @@ namespace Molsketch {
   void MolScene::clear()
   {
     clearSelection();
-    m_stack->clear();
+    d->stack->clear();
     SceneSettings *settings = d->settings;
     delete d; // TODO this seems a little extreme and dangerous!
     QGraphicsScene::clear();
-    d = new privateData(this);
-    d->settings = settings;
+    d = new privateData(this, settings);
   }
 
   QImage MolScene::renderMolToImage (Molecule *mol)
@@ -439,14 +372,14 @@ namespace Molsketch {
   {
         Q_CHECK_PTR(mol);
         if (!mol) return;
-        m_stack->beginMacro(tr("add molecule"));
+        d->stack->beginMacro(tr("add molecule"));
         ItemAction::addItemToScene(mol, this);
         if (mol->canSplit()) {
           for(Molecule* molecule : mol->split())
             ItemAction::addItemToScene(molecule, this);
           ItemAction::removeItemFromScene(mol);
         }
-        m_stack->endMacro();
+        d->stack->endMacro();
   }
 
   void MolScene::selectAll()
@@ -480,7 +413,11 @@ namespace Molsketch {
 
   int MolScene::editMode() const
   {
-        return m_editMode;
+    return m_editMode;
+  }
+
+  qreal MolScene::bondAngle() const {
+    return d->settings->bondAngle()->get(); // TODO replace with signals/slots
   }
 
   MolScene::RenderMode MolScene::renderMode() const
@@ -493,20 +430,10 @@ namespace Molsketch {
         m_renderMode = mode;
   }
 
-  QPointF MolScene::toGrid(const QPointF &position) // TODO obsolete
-  {
-        QPointF p = position;
-        int factor = 40;
-        p.rx() = floor(p.x() / factor) * factor;
-        p.ry() = floor(p.y() / factor) * factor;
-
-        return p;
-  }
-
   QPointF MolScene::snapToGrid(const QPointF &point, bool force)
   {
     if (!d->gridOn() && !force) return point;
-    return d->Grid->alignPoint(point);
+    return d->grid->alignPoint(point);
   }
 
   bool MolScene::snappingToGrid() const
@@ -535,8 +462,8 @@ namespace Molsketch {
 
   void MolScene::setGrid(bool on)
   {
-    if (on) addItem(d->Grid);
-    else removeItem(d->Grid);
+    if (on) addItem(d->grid);
+    else removeItem(d->grid);
   }
 
   XmlObjectInterface *MolScene::produceChild(const QString &childName, const QString &type)
@@ -553,6 +480,7 @@ namespace Molsketch {
       if (type == "MechanismArrow") object = new Arrow ;
     }
     if ("textItem" == childName) object = new TextItem;
+    if (d->settings->xmlName() == childName) object = d->settings;
     if (QGraphicsItem* item = dynamic_cast<QGraphicsItem*>(object)) // TODO w/o dynamic_cast
       addItem(item) ;
     return object ;
@@ -561,20 +489,22 @@ namespace Molsketch {
   QList<const XmlObjectInterface *> MolScene::children() const
   {
         QList<const XmlObjectInterface*> childrenList ;
+        childrenList << d->settings;
         foreach(QGraphicsItem* item, items())
         {
           if (item && item->parentItem()) continue;
           XmlObjectInterface *object = dynamic_cast<XmlObjectInterface*>(item);
           if (object) childrenList << object;
         }
-        return childrenList ;
+        return childrenList;
   }
 
   void MolScene::readAttributes(const QXmlStreamAttributes &attributes)
   {
-    foreach(const QXmlStreamAttribute& attribute, attributes)
+    foreach(const QXmlStreamAttribute& attribute, attributes) // TODO remove
       setProperty(attribute.name().toLatin1(), attribute.value().toString());
     clear();
+    d->settings->setFromAttributes(attributes);
   }
 
   QXmlStreamAttributes MolScene::xmlAttributes() const
@@ -621,21 +551,14 @@ namespace Molsketch {
   {
     foreach(AbstractItemAction* itemAction, findChildren<AbstractItemAction*>())
       itemAction->setItems(selectedItems());
-    graphicsItem* currentItem = 0; // TODO check if focusItem is what we actually want here
+    graphicsItem* currentItem = nullptr; // TODO check if focusItem is what we actually want here
     if (selectedItems().size() == 1) currentItem = dynamic_cast<graphicsItem*>(selectedItems().first());
     d->setPropertiesWidget(currentItem);
   }
 
-  void MolScene::booleanPropertyChanged(bool newValue)
-  {
-    QAction* action = dynamic_cast<QAction*>(sender());
-    if (!d->booleanActions.contains(action)) return;
-    (this->*d->booleanActions.value(action).first)(newValue);
-  }
-
   void MolScene::updateGrid(const QRectF& newSceneRect)
   {
-    d->Grid->update(newSceneRect);
+    d->grid->update(newSceneRect);
   }
 
   Atom* MolScene::atomAt(const QPointF &pos) // TODO consider replacing with itemAt()
@@ -818,8 +741,8 @@ namespace Molsketch {
     foreach(QGraphicsView* vp, views()) // TODO track back event to originator
     {
       MolView *mvp = qobject_cast<MolView*>(vp);
-      if (mvp)
-        mvp->scaleView(pow((double)2, -event->delta() / MOUSEWHEELDIVIDER));
+      if (!mvp) continue;
+      mvp->scaleView(pow((double)2, -event->delta() / MOUSEWHEELDIVIDER));
     }
   }
 
@@ -830,7 +753,7 @@ namespace Molsketch {
 
   QUndoStack * MolScene::stack()
   {
-    return m_stack;
+    return d->stack;
   }
 
   QList<genericAction *> MolScene::sceneActions() const

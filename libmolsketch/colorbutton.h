@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2015 Hendrik Vennekate                                  *
+ *   Copyright (C) 2017 by Hendrik Vennekate                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -14,30 +14,29 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef MOLSKETCH_GRID_H
-#define MOLSKETCH_GRID_H
+#ifndef COLORBUTTON_H
+#define COLORBUTTON_H
 
-#include <QGraphicsItem>
+#include <QPushButton>
 
 namespace Molsketch {
 
-  class SceneSettings;
-
-  class Grid : public QGraphicsItem // TODO this should really be done in QGraphicsScene::drawBackground
+  class ColorButton : public QPushButton
   {
+    Q_OBJECT
   public:
-    Grid(SceneSettings *settings);
-    ~Grid();
-    virtual QPointF alignPoint(const QPointF& point);
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    QRectF boundingRect() const;
-  private:
-    class privateData;
-    privateData *d;
+    explicit ColorButton(QWidget *parent = 0, const QColor& color = Qt::black);
+    QColor getColor() const;
+  public slots:
+    void setColor(const QColor&);
+  signals:
+    void colorChanged(const QColor&);
+  private slots:
+    void changeColor();
   };
 
 } // namespace Molsketch
 
-#endif // MOLSKETCH_GRID_H
+#endif // COLORBUTTON_H

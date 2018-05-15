@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2015 Hendrik Vennekate                                  *
+ *   Copyright (C) 2017 by Hendrik Vennekate                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -14,30 +14,38 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef MOLSKETCH_GRID_H
-#define MOLSKETCH_GRID_H
+#include "colorbutton.h"
 
-#include <QGraphicsItem>
+#include <QColorDialog>
 
 namespace Molsketch {
 
-  class SceneSettings;
-
-  class Grid : public QGraphicsItem // TODO this should really be done in QGraphicsScene::drawBackground
+  ColorButton::ColorButton(QWidget *parent, const QColor &color)
+    : QPushButton(parent)
   {
-  public:
-    Grid(SceneSettings *settings);
-    ~Grid();
-    virtual QPointF alignPoint(const QPointF& point);
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    QRectF boundingRect() const;
-  private:
-    class privateData;
-    privateData *d;
-  };
+    setFlat(true);
+    setAutoFillBackground(true);
+    setColor(color);
+    connect(this, SIGNAL(clicked(bool)), this, SLOT(changeColor()));
+  }
+
+  QColor ColorButton::getColor() const {
+    return palette().color(QPalette::Button);
+  }
+
+  void ColorButton::setColor(const QColor &color) {
+    QPalette p = palette();
+    p.setColor(QPalette::Button, color);
+    setPalette(QPalette(color));
+    emit colorChanged(color);
+  }
+
+  void ColorButton::changeColor()
+  {
+    QColor newColor = QColorDialog::getColor(getColor(), nullptr, tr("Choose color"));
+    if (newColor.isValid()) setColor(newColor);
+  }
 
 } // namespace Molsketch
-
-#endif // MOLSKETCH_GRID_H

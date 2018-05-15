@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2018 by Hendrik Vennekate, HVennekate@gmx.de            *
+ *   Copyright (C) 2017 by Hendrik Vennekate                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -14,36 +14,34 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
+#ifndef SETTINGSFACADE_H
+#define SETTINGSFACADE_H
 
-#ifndef MOLSKETCH_SCENEPROPERTIESDIALOG_H
-#define MOLSKETCH_SCENEPROPERTIESDIALOG_H
+#include <QObject>
+#include <QVariant>
 
-#include <QDialog>
+class QSettings;
 
 namespace Molsketch {
 
-  class MolScene;
-
-  namespace Ui {
-    class ScenePropertiesDialog;
-  }
-
-  class ScenePropertiesDialog : public QDialog
+  class SettingsFacade : public QObject
   {
     Q_OBJECT
-
   public:
-    explicit ScenePropertiesDialog(QWidget *parent = 0);
-    ~ScenePropertiesDialog();
-
-    void setScene(MolScene* scene);
-  private:
-    class privateData;
-    privateData *d;
+    static SettingsFacade *transientSettings(QObject *parent = 0);
+    static SettingsFacade *persistedSettings(QSettings* settings, QObject *parent = 0);
+    SettingsFacade *cloneTransiently() const;
+    virtual void setValue(const QString& key, const QVariant& value) = 0;
+    virtual QVariant value(const QString& key, const QVariant &defaultValue = QVariant()) const = 0;
+    SettingsFacade& operator =(const SettingsFacade& other);
+    bool operator ==(const SettingsFacade& other);
+    virtual QStringList allKeys() const = 0;
+  protected:
+    explicit SettingsFacade(QObject *parent = nullptr);
   };
 
-
 } // namespace Molsketch
-#endif // MOLSKETCH_SCENEPROPERTIESDIALOG_H
+
+#endif // SETTINGSFACADE_H

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2015 Hendrik Vennekate                                  *
+ *   Copyright (C) 2018 by Hendrik Vennekate                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -14,30 +14,45 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef MOLSKETCH_GRID_H
-#define MOLSKETCH_GRID_H
 
-#include <QGraphicsItem>
+#include "fontchooser.h"
+#include "ui_fontchooser.h"
 
 namespace Molsketch {
 
-  class SceneSettings;
-
-  class Grid : public QGraphicsItem // TODO this should really be done in QGraphicsScene::drawBackground
+  FontChooser::FontChooser(QWidget *parent) :
+    QWidget(parent),
+    ui(new Ui::FontChooser)
   {
-  public:
-    Grid(SceneSettings *settings);
-    ~Grid();
-    virtual QPointF alignPoint(const QPointF& point);
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    QRectF boundingRect() const;
-  private:
-    class privateData;
-    privateData *d;
-  };
+    ui->setupUi(this);
+  }
+
+  FontChooser::~FontChooser()	{
+    delete ui;
+  }
+
+  QFont FontChooser::getSelectedFont() const {
+    QFont font = ui->fontName->currentFont();
+    font.setPointSize(ui->size->value());
+    font.setBold(ui->bold->isChecked());
+    font.setItalic(ui->italic->isChecked());
+    return font;
+  }
+
+  void FontChooser::setFont(const QFont &font) {
+    blockSignals(true);
+    ui->fontName->setCurrentFont(font);
+    ui->size->setValue(font.pointSize());
+    ui->bold->setChecked(font.bold());
+    ui->italic->setChecked(font.italic());
+    blockSignals(false);
+    fontSelectionChanged();
+  }
+
+  void FontChooser::fontSelectionChanged() const {
+    emit fontChanged(getSelectedFont());
+  }
 
 } // namespace Molsketch
-
-#endif // MOLSKETCH_GRID_H

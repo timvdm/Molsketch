@@ -29,45 +29,39 @@
 #include <QFontDialog>
 #include <molscene.h>
 #include <scenesettings.h>
+#include <settingsitem.h>
 
 #include "settingsdialog.h"
+#include "scenepropertieswidget.h"
+#include "settingsfacade.h"
+
+// TODO this is a make-shift solution to enable resetting to default values!
+void setupDrawingSettings(Molsketch::SceneSettings *settings, QWidget *drawingPage) {
+  QLayout *drawingPageLayout = drawingPage->layout();
+  while (drawingPageLayout->count()) {
+    auto layoutItem = drawingPageLayout->takeAt(0);
+    delete layoutItem->widget();
+    delete layoutItem;
+  }
+  drawingPageLayout->addWidget(new Molsketch::ScenePropertiesWidget(settings, drawingPage));
+}
 
 SettingsDialog::SettingsDialog(ApplicationSettings *settings, QWidget * parent, Qt::WindowFlags f )
   : QDialog(parent,f),
-    settings(settings)
+    settings(settings),
+    sceneSettingsFacade(const_cast<const ApplicationSettings*>(settings)->settingsFacade().cloneTransiently()) // TODO ownership?
 {
-  // Setup the user interface
   ui.setupUi(this);
+  QWidget *drawingPage = findChild<QWidget*>("drawingPage");
+  setupDrawingSettings(new Molsketch::SceneSettings(sceneSettingsFacade, drawingPage), drawingPage);
 
   foreach(QListWidgetItem * item, ui.listWidget->findItems("*",Qt::MatchWildcard))
     item->setTextAlignment(Qt::AlignHCenter);
   ui.listWidget->setCurrentRow(0);
 
-  // Connect signals and slots
-  connect(ui.pushButtonFont, SIGNAL(clicked()), this, SLOT(selectFont()));
   connect(ui.buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(buttonClicked(QAbstractButton*)));
   connect(ui.buttonBox, SIGNAL(helpRequested()), this, SLOT(showHelp()));
 
-  // Setting translations
-  ui.groupBoxGeneral->setTitle(tr("Save options"));
-  ui.labelAutoSave->setText(tr("Autosave every"));
-  ui.labelDefaultFileType->setText(tr("Default file type"));
-  ui.labelDefaultImageType->setText(tr("Default image type"));
-
-  ui.groupBoxAtom->setTitle(tr("Atom settings"));
-  ui.checkBoxShowCarbon->setText(tr("Show neutral carbon atoms"));
-  ui.checkBoxShowValency->setText(tr("Show atom charge"));
-  ui.labelAtomSymbolFont->setText(tr("Atom symbol font"));
-
-  ui.groupBoxBond->setTitle(tr("Bond settings"));
-//   ui.labelMsKAtomSize->setText(tr("Atom size: "));
-  ui.labelBondLength->setText(tr("Bond length: "));
-  ui.labelBondWidth->setText(tr("Bond width: "));
-  ui.labelBondAngle->setText(tr("Bond angle: "));
-
-  ui.groupBoxLibraries->setTitle(tr("Libraries"));
-
-  // Setting initial values
   setInitialValues();
 }
 
@@ -77,25 +71,8 @@ void SettingsDialog::setInitialValues()
 {
   ui.spinBoxAutoSave->setValue(settings->autoSaveInterval()/60000);
 
-
-  if (settings->isCarbonVisible())
-    ui.checkBoxShowCarbon->setCheckState(Qt::Checked);
-  if (settings->isChargeVisible())
-    ui.checkBoxShowValency->setCheckState(Qt::Checked);
-  if (settings->isElectronSystemsVisible())
-    ui.checkBoxShowES->setCheckState(Qt::Checked);
-
-
-  QFont atomFont(settings->getAtomFont());
-  ui.doubleSpinBoxFontSize->setValue(atomFont.pointSizeF());
-  ui.fontComboBox->setCurrentFont(atomFont);
-
-  ui.lineEditBondLength->setText(QString::number(settings->getBondLength()));
-  ui.doubleSpinBoxBondWidth->setValue(settings->getBondWidth());
-  ui.spinBoxBondAngle->setValue(settings->getBondAngle());
-
   ui.libraries->clear();
-  ui.libraries->addItems(settings->getLibraries());
+  ui.libraries->addItems(settings->libraries()->get());
 
   Molsketch::SceneSettings::MouseWheelMode mouseWheelForTools = settings->getMouseWheelMode();
   ui.mouseWheelCycleTools->setChecked(Molsketch::SceneSettings::CycleTools == mouseWheelForTools);
@@ -103,14 +80,15 @@ void SettingsDialog::setInitialValues()
 
   ui.libraryPath->setText(settings->obabelIfacePath());
   ui.obfPath->setText(settings->obabelFormatsPath());
+
+  QWidget *drawingPage = findChild<QWidget*>("drawingPage");
+  setupDrawingSettings(new Molsketch::SceneSettings(Molsketch::SettingsFacade::transientSettings(drawingPage), drawingPage), drawingPage);
+  // TODO accceptance test
 }
 
 void SettingsDialog::accept()
 {
-  // Applying changes
   applyChanges();
-
-  // Close dialog
   QDialog::accept();
 }
 
@@ -118,24 +96,11 @@ void SettingsDialog::applyChanges()
 {
   settings->setAutoSaveInterval(ui.spinBoxAutoSave->value()*60000);
 
-  // Atom settings
-  settings->setCarbonVisible(ui.checkBoxShowCarbon->isChecked());
-  settings->setChargeVisible(ui.checkBoxShowValency->isChecked());
-  settings->setElectronSystemsVisible(ui.checkBoxShowES->isChecked());
-  QFont font = ui.fontComboBox->currentFont();
-  font.setPointSizeF(ui.doubleSpinBoxFontSize->value());
-  settings->setAtomFont(font);
-
-  // MsKBond settings
-  settings->setBondLength(ui.lineEditBondLength->text().toDouble());
-  settings->setBondWidth(ui.doubleSpinBoxBondWidth->value());
-  settings->setBondAngle(ui.spinBoxBondAngle->value());
-
   // Library settings
   QStringList libraries;
   for (int i = 0 ; i < ui.libraries->count() ; ++i)
     libraries << ui.libraries->item(i)->text();
-  settings->setLibraries(libraries);
+  settings->libraries()->set(libraries);
 
   if (ui.mouseWheelCycleTools->isChecked())
     settings->setMouseWheelMode(ApplicationSettings::MouseWheelMode::CycleTools);
@@ -146,19 +111,10 @@ void SettingsDialog::applyChanges()
 
   settings->setObabelIfacePath(ui.libraryPath->text());
   settings->setObabelFormatsPath(ui.obfPath->text());
-  emit settingsChanged();
-}
 
-void SettingsDialog::selectFont()
-{
-  bool * ok = NULL;
-  QFont previousFont = ui.fontComboBox->currentFont();
-  previousFont.setPointSizeF(ui.doubleSpinBoxFontSize->value());
-  QFont font = QFontDialog::getFont(ok, previousFont, this, "molsKetch - Select atomsymbol font");
-  if (ok) {
-    ui.fontComboBox->setCurrentFont(font);
-    ui.doubleSpinBoxFontSize->setValue(font.pointSizeF());
-  }
+  settings->transferFrom(*sceneSettingsFacade);
+
+  emit settingsChanged();
 }
 
 void SettingsDialog::buttonClicked(QAbstractButton * button)

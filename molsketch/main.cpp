@@ -22,6 +22,9 @@
 #include <QApplication>
 #include <QTranslator>
 #include <QLocale>
+#include <settingsfacade.h>
+#include <QSettings>
+#include <QCommandLineParser>
 
 #include "applicationsettings.h"
 #include "mainwindow.h"
@@ -64,10 +67,14 @@ int main(int argc, char *argv[])
   translator.load(QString("molsketch_") + locale);
   app.installTranslator(&translator);
 
-  MainWindow window;
-  window.show();
+  QCommandLineParser parser;
+  parser.addPositionalArgument("files", QApplication::translate("main", "Files to open, optionally."), "[files...]");
+  parser.process(app);
+  auto filesToOpen = parser.positionalArguments();
+  for(auto filename : filesToOpen) (new MainWindow())->openFile(filename);
+  if (filesToOpen.isEmpty()) new MainWindow();
 
-  ApplicationSettings appSettings;
+  ApplicationSettings appSettings(Molsketch::SettingsFacade::persistedSettings(new QSettings));
 
   if (appSettings.latestReleaseNotesVersionShown() < appSettings.currentVersion()) {
     ReleaseNotesDialog().exec(); // TODO check that this still works

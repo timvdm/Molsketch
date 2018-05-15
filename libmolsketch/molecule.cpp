@@ -35,6 +35,8 @@
 #include "math2d.h"
 
 #include "electronsystem.h"
+#include "scenesettings.h"
+#include "settingsitem.h"
 
 namespace Molsketch {
 
@@ -198,7 +200,7 @@ namespace Molsketch {
     m_atomList.append(atom);
     atom->setParentItem(this);
     if (scene ()) {
-      atom ->setColor (dynamic_cast<MolScene *> (scene ()) ->defaultColor());
+      atom ->setColor (dynamic_cast<MolScene *> (scene ())->settings() ->defaultColor()->get());
     }
 
     m_electronSystemsUpdate = true;
@@ -232,12 +234,12 @@ namespace Molsketch {
 //    Q_ASSERT(m_atomList.contains(bond->beginAtom()));
 //    Q_ASSERT(m_atomList.contains(bond->endAtom()));
 
-    if (scene ()) bond ->setColor(scene()->defaultColor()); // TODO ??
+    if (scene ()) bond ->setColor(scene()->settings()->defaultColor()->get()); // TODO ??
     // Checking if and altering when a bond exists
     Bond* bondX = bondBetween(bond->beginAtom(), bond->endAtom());
     if (bondX) {
       delete bond;
-      if (scene ()) bondX ->setColor(scene()->defaultColor());
+      if (scene ()) bondX ->setColor(scene()->settings()->defaultColor()->get());
       return bondX;
     }
 
@@ -427,7 +429,7 @@ namespace Molsketch {
       totalCharge += atom->charge();
 
     /* TODO can be improved */
-    return totalCharge < 0 && scene()->autoAddHydrogen() ? 0 : totalCharge;
+    return totalCharge < 0 && scene()->settings()->autoAddHydrogen()->get() ? 0 : totalCharge;
   }
 
   QString Molecule::formula( ) const
@@ -560,7 +562,7 @@ namespace Molsketch {
     // draw the electron systems
 
     if (scene()) {
-      if (!scene()->electronSystemsVisible())
+      if (!scene()->settings()->electronSystemsVisible()->get())
         return;
 
       updateElectronSystems();
@@ -955,7 +957,7 @@ namespace Molsketch {
     if (molecule->atoms().size() > 20)
       renderScene.setRenderMode(MolScene::RenderColoredCircles);
     renderScene.addItem(molecule);
-    renderScene.setChargeVisible(true);
+    renderScene.settings()->chargeVisible()->set(true);
     renderScene.setSceneRect(molecule->boundingRect());
     QPixmap pixmap(qCeil(renderScene.width()), qCeil(renderScene.height()));
     if (pixmap.isNull()) return pixmap;

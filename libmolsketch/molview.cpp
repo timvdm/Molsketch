@@ -1,5 +1,6 @@
 /***************************************************************************
  *   Copyright (C) 2007-2008 by Harm van Eersel                            *
+ *   Copyright (C) 2018 (updated) by Hendrik Vennekate                     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -17,38 +18,83 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
 
-
 #include "molview.h"
 
 #include <QDebug>
 #include <QGraphicsScene>
 #include <QWheelEvent>
+#include "molscene.h"
+#include "scenesettings.h"
 
+#include <QMenu>
+#include <QToolBar>
 #include <math.h>
+
+const qreal SCALING_FACTOR = 2.;
 
 namespace Molsketch {
 
-MolView::MolView(QGraphicsScene* scene) : QGraphicsView(scene)
-{
-	setContextMenuPolicy(Qt::ActionsContextMenu);
-	setMouseTracking(true);
-	setAcceptDrops(true);
-	setRenderHints(QPainter::Antialiasing);
-	setResizeAnchor(QGraphicsView::AnchorViewCenter);
-	setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
-        setStyleSheet("");
-        setContextMenuPolicy(Qt::DefaultContextMenu);
+  struct MolViewPrivate {
+  };
+
+  MolView::MolView(MolScene *scene)
+    : QGraphicsView(scene),
+      d_ptr(new MolViewPrivate)
+  {
+    setContextMenuPolicy(Qt::ActionsContextMenu);
+    setMouseTracking(true);
+    setAcceptDrops(true);
+    setRenderHints(QPainter::Antialiasing);
+    setResizeAnchor(QGraphicsView::AnchorViewCenter);
+    setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+    setStyleSheet("");
+    setContextMenuPolicy(Qt::DefaultContextMenu);
+
+    // TODO this is essential in creating a new scene
+    connect(scene->stack(), &QUndoStack::cleanChanged, this, &MolView::modificationStateChanged);
 
 #if QT_VERSION >= 0x040300
-        setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+    setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 #endif
-}
+  }
 
-void MolView::scaleView(qreal scaleFactor)
-{
-	qreal factor = matrix().scale(scaleFactor, scaleFactor).mapRect(QRect(0,0,1,1)).width();
-	if (factor < 0.07 || factor > 100) return;
-	scale(scaleFactor, scaleFactor);
-}
+  MolView::~MolView() {}
 
+  MolView *MolView::createView(SettingsFacade *sceneSettingsFacade) {
+    MolScene *scene = new MolScene(new SceneSettings(sceneSettingsFacade));
+    MolView *view = new MolView(scene);
+    scene->setParent(view);
+    return view;
+  }
+
+  void MolView::zoomIn() {
+    scale(SCALING_FACTOR, SCALING_FACTOR);
+  }
+
+  void MolView::zoomOut() {
+    scale(1./SCALING_FACTOR, 1./SCALING_FACTOR);
+  }
+
+  void MolView::zoomReset() {
+    resetMatrix();
+  }
+
+  void MolView::zoomFit() {
+    if (!scene()) return;
+    fitInView(scene()->itemsBoundingRect(), Qt::KeepAspectRatio);
+  }
+
+  void MolView::scaleView(qreal scaleFactor) {
+    qreal factor = matrix().scale(scaleFactor, scaleFactor).mapRect(QRect(0,0,1,1)).width();
+    if (factor < 0.07 || factor > 100) return;
+    scale(scaleFactor, scaleFactor);
+  }
+
+  MolScene *MolView::scene() const {
+    return dynamic_cast<MolScene*>(QGraphicsView::scene());
+  }
+
+  void MolView::modificationStateChanged(const bool &clean) {
+    setWindowModified(!clean);
+  }
 }

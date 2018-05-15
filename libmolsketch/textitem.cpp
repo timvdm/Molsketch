@@ -83,7 +83,7 @@ namespace Molsketch {
     Commands::MoveItem::absolute(this, newPosition, tr("Move text item"))->execute();
   }
 
-  class TextEditingUndoCommand : public Commands::Command<TextItem, TextEditingUndoCommand>  { // TODO unit test
+  class TextEditingUndoCommand : public Commands::ItemCommand<TextItem, TextEditingUndoCommand>  { // TODO unit test
     TextItem *item;
     QTextDocument *originalContent;
   public:
@@ -96,7 +96,7 @@ namespace Molsketch {
       originalContent = old;
     }
     explicit TextEditingUndoCommand(TextItem *item, const QString& text )
-      : Command(text),
+      : ItemCommand(text),
         item(item), originalContent(item->document()->clone()) {}
     ~TextEditingUndoCommand() { delete originalContent; }
     TextItem* getItem() const override { return item; }

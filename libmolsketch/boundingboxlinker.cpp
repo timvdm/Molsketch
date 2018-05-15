@@ -153,6 +153,7 @@ namespace Molsketch {
     return "Center";
   }
 
+#ifdef QT_DEBUG
   QDebug operator<<(QDebug debug, const Anchor &anchor) {
     debug << toString(anchor);
     return debug;
@@ -165,6 +166,7 @@ namespace Molsketch {
                     << ")";
     return debug;
   }
+#endif
 
   const BoundingBoxLinker BoundingBoxLinker::above = BoundingBoxLinker(Anchor::Top, Anchor::Bottom);
   const BoundingBoxLinker BoundingBoxLinker::below = BoundingBoxLinker(Anchor::Bottom, Anchor::Top);

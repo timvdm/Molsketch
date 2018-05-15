@@ -1,6 +1,7 @@
 /***************************************************************************
  *   Copyright (C) 2007-2008 by Harm van Eersel                            *
  *   devsciurus@xs4all.nl                                                  *
+ *   Copyright (C) 2018 (updated) by Hendrik Vennekate                     *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -18,13 +19,6 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
 
-/** @file
- * This file is part of molsKetch and contains the MolView class.
- *
- * @author Harm van Eersel <devsciurus@xs4all.nl>
- * @since Hydrogen
- */
-
 #ifndef molview_H
 #define molview_H
 
@@ -32,25 +26,31 @@
 
 #define MOUSEWHEELDIVIDER 120 // TODO change
 
-namespace Molsketch {
+class QToolBar;
+class QMenu;
 
-/**
- * The view of the molecule scene. This is a subclass of QGraphicsView with
- * with zooming events added.
- *
- * @author Harm van Eersel
- */
-class MolView : public QGraphicsView
+namespace Molsketch {
+  class SettingsFacade;
+  class MolScene;
+  class MolViewPrivate;
+
+  class MolView : public QGraphicsView
   {
     Q_OBJECT
-
+    Q_DECLARE_PRIVATE(MolView)
+    QScopedPointer<MolViewPrivate> d_ptr;
   public:
-    /** Creates a new MolView.*/
-    MolView(QGraphicsScene* scene);
-    /*		void itemMoved();*/
-
-    /** Scales the view with factor @p scaleFactor. */
+    explicit MolView(Molsketch::MolScene *scene);
+    ~MolView();
+    static MolView* createView(SettingsFacade*);
+    MolScene *scene() const;
+  public slots:
+    void zoomIn();
+    void zoomOut();
+    void zoomReset();
+    void zoomFit();
     void scaleView(qreal scaleFactor);
+    void modificationStateChanged(const bool &clean);
   };
 
 } // namespace

@@ -49,6 +49,7 @@ class TypeMap : public QMap<QString,std::function<Molsketch::XmlObjectInterface*
     REGISTER_XML_CLASS(RadicalElectron);
     REGISTER_XML_CLASS(Arrow);
     REGISTER_XML_CLASS(Frame);
+    // TODO register settings items here?
   }
 };
 const TypeMap registeredTypes;

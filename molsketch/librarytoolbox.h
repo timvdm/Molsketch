@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2015 Hendrik Vennekate                                  *
+ *   Copyright (C) 2018 Hendrik Vennekate                                  *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -14,30 +14,25 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef MOLSKETCH_GRID_H
-#define MOLSKETCH_GRID_H
 
-#include <QGraphicsItem>
+#ifndef LIBRARYTOOLBOX_H
+#define LIBRARYTOOLBOX_H
 
-namespace Molsketch {
+#include <QDockWidget>
 
-  class SceneSettings;
+class LibraryToolBoxPrivate;
+class ApplicationSettings;
 
-  class Grid : public QGraphicsItem // TODO this should really be done in QGraphicsScene::drawBackground
-  {
-  public:
-    Grid(SceneSettings *settings);
-    ~Grid();
-    virtual QPointF alignPoint(const QPointF& point);
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    QRectF boundingRect() const;
-  private:
-    class privateData;
-    privateData *d;
-  };
-
-} // namespace Molsketch
-
-#endif // MOLSKETCH_GRID_H
+class LibraryToolBox : public QDockWidget {
+	Q_OBJECT
+  Q_DECLARE_PRIVATE(LibraryToolBox)
+  QScopedPointer<LibraryToolBoxPrivate> d_ptr;
+public:
+  explicit LibraryToolBox(const QStringList &folders, QWidget *parent = 0);
+	~LibraryToolBox();
+public slots:
+  void rebuildLibraries(const QStringList &folders);
+};
+#endif // LIBRARYTOOLBOX_H

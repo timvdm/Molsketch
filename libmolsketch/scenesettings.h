@@ -19,62 +19,85 @@
 #ifndef MOLSKETCH_SCENESETTINGS_H
 #define MOLSKETCH_SCENESETTINGS_H
 
+#include "abstractxmlobject.h"
+
 #include <QObject>
+#include <QColor>
 
 class QSettings;
 
 namespace Molsketch {
 
+  class SettingsFacade;
   class SceneSettingsPrivate;
+  class DoubleSettingsItem;
+  class BoolSettingsItem;
+  class ColorSettingsItem;
+  class FontSettingsItem;
 
-  class SceneSettings : public QObject
+  class SceneSettings : public QObject, public abstractXmlObject
   {
+    Q_OBJECT
     Q_DECLARE_PRIVATE(SceneSettings)
     QScopedPointer<SceneSettingsPrivate> d_ptr;
   public:
-    explicit SceneSettings(QObject *parent = 0);
+    explicit SceneSettings(SettingsFacade *facade, QObject *parent = 0);
     virtual ~SceneSettings();
-    void setCarbonVisible(const bool&);
-    bool isCarbonVisible() const;
-    void setChargeVisible(const bool&);
-    bool isChargeVisible() const;
-    void setElectronSystemsVisible(const bool&);
-    bool isElectronSystemsVisible() const;
-    void setAtomFont(const QFont&);
-    QFont getAtomFont() const;
-    void setBondLength(const qreal&);
-    qreal getBondLength() const;
-    void setBondWidth(const qreal&);
-    qreal getBondWidth() const;
-    void setBondAngle(const qreal&);
-    qreal getBondAngle() const;
-    void setLonePairLineWidth(const qreal&);
-    qreal getLonePairLineWidth() const;
-    void setLonePairLength(const qreal&);
-    qreal getLonePairLength() const;
-    void setRadicalDiameter(const qreal&);
-    qreal getRadicalDiameter() const;
+    void setFromAttributes(const QXmlStreamAttributes &attributes);
+    void transferFrom(const SettingsFacade& facade);
+    QString xmlName() const override;
+    static QString xmlClassName();
 
-    enum MouseWheelMode {
+#define BOOL_PROPERTY_DECL(NAME) \
+  const BoolSettingsItem* NAME() const; \
+  BoolSettingsItem* NAME();
+
+    BOOL_PROPERTY_DECL(carbonVisible)
+    BOOL_PROPERTY_DECL(electronSystemsVisible)
+    BOOL_PROPERTY_DECL(chargeVisible)
+    BOOL_PROPERTY_DECL(autoAddHydrogen)
+    BOOL_PROPERTY_DECL(lonePairsVisible)
+
+#define REAL_PROPERTY_DECL(NAME) \
+  const DoubleSettingsItem* NAME() const; \
+  DoubleSettingsItem* NAME();
+
+    REAL_PROPERTY_DECL(arrowWidth)
+    REAL_PROPERTY_DECL(bondAngle)
+    REAL_PROPERTY_DECL(gridLineWidth)
+    REAL_PROPERTY_DECL(verticalGridSpacing)
+    REAL_PROPERTY_DECL(horizontalGridSpacing)
+    REAL_PROPERTY_DECL(radicalDiameter)
+    REAL_PROPERTY_DECL(lonePairLength)
+    REAL_PROPERTY_DECL(lonePairLineWidth)
+    REAL_PROPERTY_DECL(bondWidth)
+    REAL_PROPERTY_DECL(bondLength)
+    REAL_PROPERTY_DECL(frameLineWidth)
+
+#define PROPERTY_DECL(TYPE, NAME) \
+  const TYPE* NAME() const; \
+  TYPE* NAME();
+
+    PROPERTY_DECL(ColorSettingsItem, gridColor)
+    PROPERTY_DECL(ColorSettingsItem, defaultColor)
+    PROPERTY_DECL(FontSettingsItem, atomFont)
+
+    enum MouseWheelMode { // TODO migrate this. This is not actually part of the scene settings, but rather the application settings
       Unset,
       CycleTools,
       Zoom,
     };
     void setMouseWheelMode(const MouseWheelMode&);
     MouseWheelMode getMouseWheelMode() const;
+    const SettingsFacade &settingsFacade() const;
+  signals:
+    void settingsChanged();
   protected:
-    QSettings& settings();
-    const QSettings& settings() const;
+    SettingsFacade &settingsFacade();
+    QList<const XmlObjectInterface *> children() const override;
+    XmlObjectInterface *produceChild(const QString &name, const QString &type) override;
   };
 
 } // namespace Molsketch
-
-#define PROPERTY(NAME, TYPE, CONFIGSTRING) \
-  void SceneSettings::set##NAME(const TYPE& value) { settings().setValue(CONFIGSTRING, value); } \
-  TYPE SceneSettings::get##NAME() const { return settings().value(CONFIGSTRING).value<TYPE>(); }
-
-#define STRING_PROPERTY(NAME, CONFIGSTRING) \
-  void SceneSettings::set##NAME(const QString& value) { settings().setValue(CONFIGSTRING, value); } \
-  QString SceneSettings::get##NAME() const { return settings().value(CONFIGSTRING).toString(); }
 
 #endif // MOLSKETCH_SCENESETTINGS_H

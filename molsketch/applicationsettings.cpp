@@ -25,12 +25,18 @@
 #include <QSettings>
 #include <QSize>
 #include <QDir>
+#include <settingsfacade.h>
+#include <settingsitem.h>
 
-static const char LATEST_RELEASE_NOTES_VERSION_SHOWN[] = "latestReleaseNotes";
+#define PROPERTY_DEF(TYPE, NAME) \
+  const TYPE* ApplicationSettings::NAME() const { return d_ptr->NAME; } \
+  TYPE* ApplicationSettings::NAME() { return d_ptr->NAME; }
+
+static const char LATEST_RELEASE_NOTES_VERSION_SHOWN[] = "latest-release-notes";
 static const char VERSION_FILE[] = ":/version";
 static const char VERSION_NICK_FILE[] = ":/versionnick";
 static const char LIBRARIES[] = "libraries";
-static const char ICON_STYLE[] = "toolBarIconStyle";
+static const char ICON_STYLE[] = "tool-bar-icon-style";
 static const char WINDOW_POSITION[] = "pos";
 static const char WINDOW_SIZE[] = "size";
 static const char WINDOW_STATE[] = "window-state";
@@ -53,10 +59,22 @@ QString readFileContent(const QString& absolutePath) {
 
 using namespace Molsketch;
 
-ApplicationSettings::ApplicationSettings(QObject *parent) : SceneSettings(parent) {}
+class ApplicationSettingsPrivate {
+  Q_DISABLE_COPY(ApplicationSettingsPrivate)
+public:
+  StringListSettingsItem *libraries;
+  ApplicationSettingsPrivate(SettingsFacade *facade, QObject *parent) {
+    libraries = new StringListSettingsItem(LIBRARIES, facade, parent);
+  }
+};
+
+ApplicationSettings::ApplicationSettings(SettingsFacade *facade, QObject *parent)
+  : SceneSettings(facade, parent), d_ptr(new ApplicationSettingsPrivate(facade, this)) {}
+
+ApplicationSettings::~ApplicationSettings() {}
 
 ProgramVersion ApplicationSettings::latestReleaseNotesVersionShown() const {
-  return ProgramVersion(settings().value(LATEST_RELEASE_NOTES_VERSION_SHOWN).toString());
+  return ProgramVersion(settingsFacade().value(LATEST_RELEASE_NOTES_VERSION_SHOWN).toString());
 }
 
 ProgramVersion ApplicationSettings::currentVersion() const {
@@ -64,58 +82,58 @@ ProgramVersion ApplicationSettings::currentVersion() const {
 }
 
 void ApplicationSettings::updateReleaseNotesShownVersion() {
-  settings().setValue(LATEST_RELEASE_NOTES_VERSION_SHOWN, currentVersion().toString());
+  settingsFacade().setValue(LATEST_RELEASE_NOTES_VERSION_SHOWN, currentVersion().toString());
 }
 
 QString ApplicationSettings::versionNick() const {
   return readFileContent(VERSION_NICK_FILE);
 }
 
-APP_PROPERTY(Libraries, QStringList, LIBRARIES)
 APP_PROPERTY(ToolButtonStyle, Qt::ToolButtonStyle, ICON_STYLE)
-APP_PROPERTY(WindowPosition, QPoint, WINDOW_POSITION)
 APP_PROPERTY(WindowSize, QSize, WINDOW_SIZE)
 
+PROPERTY_DEF(StringListSettingsItem, libraries)
+
 void ApplicationSettings::setWindowState(const QByteArray &state) {
-  settings().setValue(WINDOW_STATE, state);
+  settingsFacade().setValue(WINDOW_STATE, state);
 }
 
 QByteArray ApplicationSettings::windowState() const {
-  return settings().value(WINDOW_STATE, DEFAULT_WINDOW_STATE).toByteArray();
+  return settingsFacade().value(WINDOW_STATE, DEFAULT_WINDOW_STATE).toByteArray();
 }
 
 void ApplicationSettings::setLastPath(const QString &path) {
-  settings().setValue(LAST_SAVE_PATH, path);
+  settingsFacade().setValue(LAST_SAVE_PATH, path);
 }
 
 QString ApplicationSettings::lastPath() const {
-  return settings().value(LAST_SAVE_PATH, DEFAULT_LAST_SAVE_PATH).toString();
+  return settingsFacade().value(LAST_SAVE_PATH, DEFAULT_LAST_SAVE_PATH).toString();
 }
 
 void ApplicationSettings::setAutoSaveInterval(const int &interval) {
-  settings().setValue(AUTO_SAVE_INTERVAL, interval);
+  settingsFacade().setValue(AUTO_SAVE_INTERVAL, interval);
 }
 
 int ApplicationSettings::autoSaveInterval() const {
-  return settings().value(AUTO_SAVE_INTERVAL, DEFAULT_AUTO_SAVE_INTERVAL).toInt();
+  return settingsFacade().value(AUTO_SAVE_INTERVAL, DEFAULT_AUTO_SAVE_INTERVAL).toInt();
 }
 
 void ApplicationSettings::setObabelIfacePath(const QString &path) {
-  settings().setValue(OBABEL_IFACE, path);
+  settingsFacade().setValue(OBABEL_IFACE, path);
   emit changedObabelIfacePath(path);
 }
 
 QString ApplicationSettings::obabelIfacePath() const {
-  return settings().value(OBABEL_IFACE, OBABEL_IFACE_LOCATION).toString();
+  return settingsFacade().value(OBABEL_IFACE, OBABEL_IFACE_LOCATION).toString();
 }
 
 void ApplicationSettings::setObabelFormatsPath(const QString &path) {
-  settings().setValue(OBABEL_FORMATS, path);
+  settingsFacade().setValue(OBABEL_FORMATS, path);
   emit changeObabelFormatsPath(path);
 }
 
 QString ApplicationSettings::obabelFormatsPath() const {
-  return settings().value(OBABEL_FORMATS).toString();
+  return settingsFacade().value(OBABEL_FORMATS).toString();
 }
 
 

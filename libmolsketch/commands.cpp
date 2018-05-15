@@ -35,7 +35,7 @@ using Molsketch::Molecule;
 using namespace Molsketch::Commands;
 
 AddAtom::AddAtom(Atom * newAtom, Molecule * newMol, const QString & text)
-  : Command(newMol, text), atom(newAtom), molecule(newMol)
+  : ItemCommand(newMol, text), atom(newAtom), molecule(newMol)
 {}
 
 AddAtom::~AddAtom()
@@ -139,7 +139,7 @@ void DelBond::redo()
 }
 
 ItemAction::ItemAction(QGraphicsItem* newItem, MolScene* addScene, const QString & text)
-  : Command(newItem, text), m_scene(addScene), owning(!newItem->scene())
+  : ItemCommand(newItem, text), m_scene(addScene), owning(!newItem->scene())
 {}
 
 ItemAction::~ItemAction() {
@@ -192,7 +192,7 @@ MoveItem *MoveItem::absolute(QGraphicsItem *item, const QPointF &newPos, const Q
 }
 
 ChildItemCommand::ChildItemCommand(QGraphicsItem *parent, QGraphicsItem *child, const QString &text)
-  : Command(parent, text),
+  : ItemCommand(parent, text),
     child(child),
     owning(child && child->parentItem() != parent)
 {}

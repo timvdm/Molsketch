@@ -38,7 +38,9 @@ public:
   ~LonePair ();
   BoundingBoxLinker linker () const;
   bool operator ==(const LonePair& other);
+#ifdef QT_DEBUG
   friend QDebug operator<< (QDebug debug, const LonePair& lonePair);
+#endif
   QRectF boundingRect () const override;
   void paint (QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
   QString xmlName() const override;

@@ -1,10 +1,11 @@
 include(../settings.pri)
 
 TEMPLATE = app
-RESOURCES += *.qrc
-FORMS += *.ui
-HEADERS += *.h
-SOURCES += *.cpp
+HEADERS += $$files(*.h, true)
+SOURCES += $$files(*.cpp, true)
+FORMS += $$files(*.ui, true)
+RESOURCES += $$files(*.qrc, true)
+
 LIBS += -L../lib -lmolsketch$$qtVersionSuffix
 TARGET = molsketch$$qtVersionSuffix
 DESTDIR = ../bin

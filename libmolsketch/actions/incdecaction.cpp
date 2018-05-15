@@ -132,12 +132,6 @@ namespace Molsketch {
     return scene()->atomNear(p) ;
   }
 
-  template<>
-  Bond *incDecAction<Bond>::getItem(const QPointF &p)
-  {
-    return scene()->bondAt(p) ; // TODO use bondNear()
-  }
-
   template <class T>
   T *incDecAction<T>::getItem(const QPointF &p)
   {
@@ -183,5 +177,4 @@ namespace Molsketch {
 
   // instantiation
   template class incDecAction<Atom> ;
-  template class incDecAction<Bond> ; // TODO is this ever used?
 } // namespace

@@ -58,6 +58,7 @@ bool LonePair::operator ==(const LonePair &other) {
       && other.pen() == pen();
 }
 
+#ifdef QT_DEBUG
 QDebug operator<< (QDebug debug, const LonePair& lonePair) {
   return debug.nospace() << "LonePair("
                          << "line: " << lonePair.line()
@@ -65,6 +66,7 @@ QDebug operator<< (QDebug debug, const LonePair& lonePair) {
                          << ", linker: " << lonePair.d_ptr->linker
                          << ")";
 }
+#endif
 
 QRectF LonePair::boundingRect () const {
   if (!parentItem()) return QRectF();
@@ -96,11 +98,11 @@ qreal LonePair::angle() const {
 }
 
 qreal LonePair::length() const {
-  return line().length();
+  return line().length(); // TODO use relative dimension
 }
 
 qreal LonePair::lineWidth() const {
-  return pen().widthF();
+  return pen().widthF(); // TODO use relative dimension
 }
 
 XmlObjectInterface* LonePair::produceChild (const QString& name, const QString& type) {

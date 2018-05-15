@@ -17,7 +17,6 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
 #include "propertieswidget.h"
-#include <QMutex>
 #include <QSet>
 #include <QUndoCommand>
 #include "molscene.h"
@@ -47,9 +46,10 @@ namespace Molsketch {
     d->lock = false;
   }
 
-  void PropertiesWidget::attemptBeginMacro(const QString &text) const { // TODO write test, possibly this also needs a lock
+  void PropertiesWidget::attemptBeginMacro(const QString &text) const { // TODO write test
+    if (d->lock) return;
     MolScene *molscene = dynamic_cast<MolScene*>(scene());
-    if (!molscene || !molscene->stack() || d->lock) return;
+    if (!molscene || !molscene->stack()) return;
     molscene->stack()->beginMacro(text);
   }
 

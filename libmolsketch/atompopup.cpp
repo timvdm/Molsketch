@@ -20,6 +20,9 @@
 #include "ui_atompopup.h"
 #include "coordinatemodel.h"
 #include "commands.h"
+#include "molscene.h"
+#include "scenesettings.h"
+#include "settingsitem.h"
 #include "atom.h"
 #include "molscene.h"
 #include "radicalelectron.h"
@@ -50,13 +53,16 @@ namespace Molsketch {
       ui->newmanDiameter->setValue(atom->getNewmanDiameter());
       getRadicalsFromAtom();
       getLonePairsFromAtom();
+      ui->coordinates->resizeRowsToContents();
     }
 
     void getRadicalsFromAtom() {
+      MolScene *scene = dynamic_cast<MolScene*>(atom->scene());
+      qreal defaultRadicalDiameter = scene ?  scene->settings()->radicalDiameter()->get() : 1.5;
       auto radicals = childrenOfAtom<RadicalElectron>();
       qreal sumOfDiameters = 0;
       std::for_each(radicals.begin(), radicals.end(), [&](const RadicalElectron* radical) { sumOfDiameters += radical->diameter();});
-      ui->radicalDiameter->setValue(radicals.isEmpty() ? 1.5 : (sumOfDiameters / radicals.size())); // TODO apply scene default!
+      ui->radicalDiameter->setValue(radicals.isEmpty() ? defaultRadicalDiameter : (sumOfDiameters / radicals.size()));
 
       QVector<BoundingBoxLinker> radicalPositions(radicals.size());
       std::transform(radicals.begin(), radicals.end(), radicalPositions.begin(), [](const RadicalElectron* radical) {return radical->linker();});
@@ -71,12 +77,15 @@ namespace Molsketch {
     }
 
     void getLonePairsFromAtom() {
+      MolScene *scene = dynamic_cast<MolScene*>(atom->scene());
+      qreal defaultLonePairLength = scene ?  scene->settings()->lonePairLength()->get() : 5;
+      qreal defaultLonePairLineWidth = scene ? scene->settings()->lonePairLineWidth()->get() : 1;
       auto lonePairs = childrenOfAtom<LonePair>();
       qreal sumOfLineWidths = 0, sumOfLengths = 0;
       std::for_each(lonePairs.begin(), lonePairs.end(), [&] (const LonePair* lonePair) { sumOfLengths += lonePair->length();
       sumOfLineWidths += lonePair->lineWidth(); });
-      ui->lonePairLength->setValue(lonePairs.empty() ? 5 : (sumOfLengths / lonePairs.size())); // TODO apply scene default!
-      ui->lonePairLineWidth->setValue(lonePairs.empty() ? 1 : (sumOfLineWidths / lonePairs.size())); // TODO apply scene default!
+      ui->lonePairLength->setValue(lonePairs.empty() ? defaultLonePairLength : (sumOfLengths / lonePairs.size()));
+      ui->lonePairLineWidth->setValue(lonePairs.empty() ? defaultLonePairLineWidth : (sumOfLineWidths / lonePairs.size()));
 
       QVector<BoundingBoxLinker> lonePairPositions(lonePairs.size());
       std::transform(lonePairs.begin(), lonePairs.end(), lonePairPositions.begin(), [](const LonePair* lonePair) { return lonePair->linker();});

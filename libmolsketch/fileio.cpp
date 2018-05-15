@@ -43,7 +43,7 @@ namespace Molsketch
     return true;
   }
 
-  bool writeMskFile(const QString &fileName, abstractXmlObject *xmlObject) // TODO compare output to old version
+  bool writeMskFile(const QString &fileName, abstractXmlObject *xmlObject) // TODO compare output to old version // TODO turn into static member function
   {
     QFile file(fileName);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
@@ -60,7 +60,7 @@ namespace Molsketch
     return true;
   }
 
-  void readMskFile(const QString &fileName, MolScene *scene)
+  void readMskFile(const QString &fileName, MolScene *scene) // TODO this should be a static member of MolScene and create the scene from the file
   {
     QFile file(fileName);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -69,7 +69,6 @@ namespace Molsketch
     QXmlStreamReader xml(&file);
     while (xml.name().toString() != scene->xmlName() && xml.name().toString() != "div") // TODO div is only for old versions
       xml.readNext() ;
-    scene->clear();
     xml >> *scene ;
     if (xml.hasError()) {
       qDebug() << "ERROR while reading " << fileName;
@@ -77,7 +76,7 @@ namespace Molsketch
     }
   }
 
-  bool exportFile(const QString &fileName, MolScene * scene)
+  bool exportFile(const QString &fileName, MolScene * scene) // TODO make part of scene
   {
     // Clear selection
     QList<QGraphicsItem*> selList(scene->selectedItems());

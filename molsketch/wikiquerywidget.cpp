@@ -48,6 +48,7 @@ WikiQueryWidget::WikiQueryWidget(OBabelIfaceLoader *loader, QWidget *parent) :
   manager(new QNetworkAccessManager(this)),
   obloader(loader)
 {
+  setObjectName("wikidata-query-widget");
   ui->setupUi(this);
   ui->moleculeListView->setModel(new LibraryModel(this));
   connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(processMoleculeQuery(QNetworkReply*)));

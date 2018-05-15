@@ -12,11 +12,10 @@ endif(FORCEQt4)
 get_directory_property(tmp_include_dirs INCLUDE_DIRECTORIES)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/obabeliface)
 
-file(GLOB libmolsketch_HDRS *.h)
-file(GLOB action_HDRS actions/*.h)
-file(GLOB libmolsketch_SRCS *.cpp actions/*.cpp)
-file(GLOB molsketch_UIS "*.ui")
-set(toolicon_RCS tools/toolicons.qrc)
+file(GLOB_RECURSE libmolsketch_HDRS *.h)
+file(GLOB_RECURSE libmolsketch_SRCS *.cpp)
+file(GLOB_RECURSE molsketch_UIS *.ui)
+file(GLOB_RECURSE toolicon_RCS *.qrc)
 
 if(FORCEQt4)
     qt4_automoc(${libmolsketch_HDRS})
@@ -30,8 +29,7 @@ endif(FORCEQt4)
 
 # MOC-ing headers
 if(FORCEQt4)
-    set(molsketch_LIB_MOC_HDRS ${libmolsketch_HDRS} ${action_HDRS})
-    set(molsketch_MOC_HDRS mainwindow.h settings.h drawwidget.h reactionarrowdialog.h mechanismarrowdialog.h)
+    set(molsketch_LIB_MOC_HDRS ${libmolsketch_HDRS})
     qt4_wrap_cpp(libmolsketch_SRCS ${molsketch_LIB_MOC_HDRS})
     # Take care of the .moc files
     qt4_automoc(${libmolsketch_SRCS})

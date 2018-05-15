@@ -43,6 +43,7 @@ namespace Molsketch {
   class TextInputItem;
   class genericAction;
   class SceneSettings;
+  class ScenePropertiesWidget;
 
   class MolScene : public QGraphicsScene, public abstractXmlObject
   {
@@ -77,40 +78,17 @@ namespace Molsketch {
       MolScene(SceneSettings *settings, QObject* parent = 0);
       ~MolScene();
 
+      SceneSettings* settings() const;
+
       QFont getAtomFont() const;
 
       static QString mimeType();
       int editMode() const; // TODO obsolete?
 
-#define SCENEPROPERTY(CAPLETTER, LOWERLETTER, PROPNAME, TYPE, DEFAULTVALUE) \
-  void set##CAPLETTER##PROPNAME(const TYPE& value) { setProperty("Molscene" #CAPLETTER #PROPNAME, value); } \
-  TYPE LOWERLETTER##PROPNAME() const { QVariant value = property("Molscene" #CAPLETTER #PROPNAME); \
-      if (value.isValid()) return value.value<TYPE>(); \
-      return DEFAULTVALUE; }
-
-#define STRINGIFIEDPROPERTY(CAPLETTER, LOWERLETTER, PROPNAME, TYPE, DEFAULTVALUE) \
-  void set##CAPLETTER##PROPNAME(const TYPE& value) { setProperty("Molscene" #CAPLETTER #PROPNAME, stringify(value)); } \
-  TYPE LOWERLETTER##PROPNAME() const { QVariant value = property("Molscene" #CAPLETTER #PROPNAME); \
-      if (value.isValid()) return makeFromString<TYPE>(value.toString()); \
-      return DEFAULTVALUE; }
-
-      SCENEPROPERTY(B,b,ondLength, qreal, 40)
-      SCENEPROPERTY(B,b,ondWidth, qreal, 2)
-      SCENEPROPERTY(A,a,rrowWidth, qreal, 1.5)
-      SCENEPROPERTY(F,f,rameLinewidth, qreal, 1.5)
-      SCENEPROPERTY(B,b,ondAngle, qreal, 30)
-      SCENEPROPERTY(A,a,tomSize, qreal, 5)
-      STRINGIFIEDPROPERTY(A,a,tomFont, QFont, QFont())
-      SCENEPROPERTY(H,h,ydrogenVisible, bool, true)
-      SCENEPROPERTY(C,c,arbonVisible, bool, false)
-      SCENEPROPERTY(L,l,onePairsVisible, bool, false)
-      SCENEPROPERTY(A,a,utoAddHydrogen, bool, true)
-      SCENEPROPERTY(E,e,lectronSystemsVisible, bool, false)
-      SCENEPROPERTY(C,c,hargeVisible, bool, true)
-      STRINGIFIEDPROPERTY(D,d,efaultColor, QColor, QColor(Qt::black))
+      qreal bondAngle() const;
 
       /**
-       * @return The current RenderMode. Default is RnderLabels
+       * @return The current RenderMode. Default is RenderLabels
        */
       RenderMode renderMode() const; // TODO do we really need this?
       /**
@@ -177,9 +155,6 @@ namespace Molsketch {
       void selectAll();
       /** Slot to add a copy of molecule @p mol. */
       void addMolecule(Molecule* mol);
-      /** Slot to align the molecules of the scene to the grid. */
-      void alignToGrid(); // TODO obsolete
-
       /** enable/disable grid */
       void setGrid(bool on = true);
 
@@ -234,12 +209,6 @@ namespace Molsketch {
       /** Shows a highlight rectangle around @p item. */
       void setHoverRect( QGraphicsItem* item );
 
-      // Auxillary methods
-      /** Returns the nearest grid point, starting from @p position. */
-      QPointF toGrid(const QPointF &position);
-
-
-      // Scene properties
       /** Stores the edit mode of the scene as an integer. */
       int m_editMode;
       RenderMode m_renderMode;
@@ -247,21 +216,13 @@ namespace Molsketch {
       class privateData;
       privateData *d;
 
-      // Undo stack
-      /** The undo stack of the commands used to edit the scene. */
-      QUndoStack * m_stack;
-
-      // Event handlers
-
       // Auxillary feedback items
       /** The highlight rectangle. */
       QGraphicsPathItem* m_hoverRect;
-      void initialize(SceneSettings *settings);
 
   private slots:
       void updateAll() ;
       void selectionSlot();
-      void booleanPropertyChanged(bool newValue);
       void updateGrid(const QRectF &newSceneRect);
   };
 

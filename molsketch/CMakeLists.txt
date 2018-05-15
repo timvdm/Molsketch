@@ -14,10 +14,10 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}
                     ${CMAKE_SOURCE_DIR}/obabeliface
 )
 
-file(GLOB molsketch_SRCS *.cpp)
-file(GLOB molsketch_MOC_HDRS *.h)
-file(GLOB molsketch_RCS "*.qrc")
-file(GLOB molsketch_UIS "*.ui")
+file(GLOB_RECURSE molsketch_SRCS *.cpp)
+file(GLOB_RECURSE molsketch_MOC_HDRS *.h)
+file(GLOB_RECURSE molsketch_RCS *.qrc)
+file(GLOB_RECURSE molsketch_UIS *.ui)
 
 if(FORCEQt4)
         qt4_wrap_cpp(molsketch_SRCS ${molsketch_MOC_HDRS})

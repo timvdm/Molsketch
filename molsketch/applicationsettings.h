@@ -26,22 +26,28 @@
 class ProgramVersion;
 class QByteArray;
 
+namespace Molsketch {
+  class StringListSettingsItem;
+}
+
+class ApplicationSettingsPrivate;
+
 class ApplicationSettings : public Molsketch::SceneSettings // TODO this doesn't seem to be such a very good idea... better have these settings independent of the scene settings
 {
   Q_OBJECT
+  Q_DECLARE_PRIVATE(ApplicationSettings)
+  QScopedPointer<ApplicationSettingsPrivate> d_ptr;
 public:
-  explicit ApplicationSettings(QObject *parent = 0);
+  explicit ApplicationSettings(Molsketch::SettingsFacade *facade, QObject *parent = 0);
+  ~ApplicationSettings();
 
   ProgramVersion latestReleaseNotesVersionShown() const;
   ProgramVersion currentVersion() const;
   void updateReleaseNotesShownVersion();
   QString versionNick() const;
-  void setLibraries(const QStringList&);
-  QStringList getLibraries() const;
+  PROPERTY_DECL(Molsketch::StringListSettingsItem, libraries)
   void setToolButtonStyle(const Qt::ToolButtonStyle&);
   Qt::ToolButtonStyle getToolButtonStyle() const;
-  void setWindowPosition(const QPoint&);
-  QPoint getWindowPosition() const;
   void setWindowSize(const QSize&);
   QSize getWindowSize() const;
   void setWindowState(const QByteArray&);
@@ -60,8 +66,8 @@ signals:
 };
 
 #define APP_PROPERTY(NAME, TYPE, CONFIGSTRING) \
-  void ApplicationSettings::set##NAME(const TYPE& value) { settings().setValue(CONFIGSTRING, value); } \
-  TYPE ApplicationSettings::get##NAME() const { return settings().value(CONFIGSTRING).value<TYPE>(); }
+  void ApplicationSettings::set##NAME(const TYPE& value) { settingsFacade().setValue(CONFIGSTRING, value); } \
+  TYPE ApplicationSettings::get##NAME() const { return settingsFacade().value(CONFIGSTRING).value<TYPE>(); }
 
 
 #endif // APPLICATIONSETTINGS_H

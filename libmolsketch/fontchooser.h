@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2015 Hendrik Vennekate                                  *
+ *   Copyright (C) 2018 by Hendrik Vennekate                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -14,30 +14,37 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#ifndef MOLSKETCH_GRID_H
-#define MOLSKETCH_GRID_H
 
-#include <QGraphicsItem>
+#ifndef MOLSKETCH_FONTCHOOSER_H
+#define MOLSKETCH_FONTCHOOSER_H
+
+#include <QWidget>
 
 namespace Molsketch {
 
-  class SceneSettings;
+  namespace Ui {
+    class FontChooser;
+  }
 
-  class Grid : public QGraphicsItem // TODO this should really be done in QGraphicsScene::drawBackground
+  class FontChooser : public QWidget
   {
+    Q_OBJECT
   public:
-    Grid(SceneSettings *settings);
-    ~Grid();
-    virtual QPointF alignPoint(const QPointF& point);
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    QRectF boundingRect() const;
+    explicit FontChooser(QWidget *parent = 0);
+    ~FontChooser();
+    QFont getSelectedFont() const;
+  signals:
+    void fontChanged(const QFont&) const;
+  public slots:
+    void setFont(const QFont&);
+  private slots:
+    void fontSelectionChanged() const;
   private:
-    class privateData;
-    privateData *d;
+    Ui::FontChooser *ui;
   };
 
-} // namespace Molsketch
 
-#endif // MOLSKETCH_GRID_H
+} // namespace Molsketch
+#endif // MOLSKETCH_FONTCHOOSER_H

@@ -30,6 +30,8 @@
 #endif
 #include <QDebug>
 #include <actions/rotateaction.h>
+#include "scenesettings.h"
+#include "settingsitem.h"
 
 namespace Molsketch {
 
@@ -319,9 +321,8 @@ namespace Molsketch {
     prepareContextMenu(contextMenu);
   }
 
-  qreal graphicsItem::sceneLineWidth(MolScene *scene) const
-  {
-    return scene->bondWidth() ;
+  qreal graphicsItem::sceneLineWidth(MolScene *scene) const {
+    return scene->settings()->bondWidth()->get();
   }
 
   void graphicsItem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
