@@ -43,6 +43,7 @@ namespace Molsketch {
     settingChanged();
   }
 
+  // TODO refactor to use ordinary properties widget mechanism
   SettingsConnector *SettingsConnector::connect(QDoubleSpinBox *control, DoubleSettingsItem *setting, QUndoStack *stack, QString description)
   {
     if (!stack) {

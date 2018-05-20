@@ -43,7 +43,6 @@ namespace Molsketch {
   class TextInputItem;
   class genericAction;
   class SceneSettings;
-  class ScenePropertiesWidget;
 
   class MolScene : public QGraphicsScene, public abstractXmlObject
   {
@@ -105,8 +104,7 @@ namespace Molsketch {
       QByteArray toSvg();
 
 
-      /** Access to the stack */
-      QUndoStack * stack();
+      QUndoStack *stack() const;
 
       QList<Molsketch::genericAction *> sceneActions() const;
 
@@ -197,6 +195,7 @@ namespace Molsketch {
       qreal getRadicalDiameter() const;
       qreal getLonePairLength() const;
       qreal getLonePairLineWidth() const;
+      QWidget *getPropertiesWidget(); // TODO there should be an intgerface for this
   protected:
       XmlObjectInterface *produceChild(const QString &childName, const QString& type) ;
       QList<const XmlObjectInterface *> children() const ;

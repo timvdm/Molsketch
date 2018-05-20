@@ -33,6 +33,7 @@
 #endif
 
 #include <QToolTip>
+#include <propertiesdock.h>
 #include <settingsfacade.h>
 
 #include "mainwindow.h"
@@ -118,6 +119,12 @@ MainWindow::MainWindow(ApplicationSettings *appSetttings)
   addDockWidget(Qt::LeftDockWidgetArea, libraryDock);
 
   addDockWidget(Qt::LeftDockWidgetArea, new WikiQueryWidget(obabelLoader, this));
+
+  auto propertiesDock = new Molsketch::PropertiesDock(m_molView);
+  addDockWidget(Qt::LeftDockWidgetArea, propertiesDock);
+  connect(m_molView->scene(), &MolScene::selectionChanged, propertiesDock, &PropertiesDock::selectionChanged);
+  emit m_molView->scene()->selectionChanged();
+
   createStatusBar();
   createToolBarContextMenuOptions();
   initializeAssistant();

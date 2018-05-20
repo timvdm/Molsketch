@@ -16,36 +16,24 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
-#ifndef MOLSKETCH_SCENEPROPERTIESWIDGET_H
-#define MOLSKETCH_SCENEPROPERTIESWIDGET_H
-
-#include "scenesettings.h"
-#include "propertieswidget.h"
-
-class QUndoStack;
+#ifndef PROPERTIESDOCK_H
+#define PROPERTIESDOCK_H
+#include <QDockWidget>
 
 namespace Molsketch {
+  class PropertiesDockPrivate;
 
-  class MolScene;
-
-  namespace Ui {
-    class ScenePropertiesWidget;
-  }
-
-  class ScenePropertiesWidget : public PropertiesWidget {
+  class PropertiesDock : public QDockWidget {
     Q_OBJECT
-  private:
-    class privateData;
-    privateData *d;
-  public:
-    ScenePropertiesWidget(SceneSettings *settings, QUndoStack *stack, QWidget *parent = 0);
-    explicit ScenePropertiesWidget(SceneSettings *settings, QWidget *parent = 0);
-    ~ScenePropertiesWidget();
-
-  protected:
-    void propertiesChanged() override;
-  };
-
+    Q_DECLARE_PRIVATE(PropertiesDock)
+    QScopedPointer<PropertiesDockPrivate> d_ptr;
+	public:
+    explicit PropertiesDock(QWidget *parent = 0);
+    ~PropertiesDock();
+  public slots:
+    void selectionChanged();
+	};
 
 } // namespace Molsketch
-#endif // MOLSKETCH_SCENEPROPERTIESWIDGET_H
+
+#endif // PROPERTIESDOCK_H

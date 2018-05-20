@@ -16,36 +16,46 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
-#ifndef MOLSKETCH_SCENEPROPERTIESWIDGET_H
-#define MOLSKETCH_SCENEPROPERTIESWIDGET_H
-
-#include "scenesettings.h"
-#include "propertieswidget.h"
-
-class QUndoStack;
+#include "molscene.h"
+#include "propertiesdock.h"
+#include <QScrollArea>
+#include <graphicsitem.h>
 
 namespace Molsketch {
 
-  class MolScene;
-
-  namespace Ui {
-    class ScenePropertiesWidget;
-  }
-
-  class ScenePropertiesWidget : public PropertiesWidget {
-    Q_OBJECT
-  private:
-    class privateData;
-    privateData *d;
-  public:
-    ScenePropertiesWidget(SceneSettings *settings, QUndoStack *stack, QWidget *parent = 0);
-    explicit ScenePropertiesWidget(SceneSettings *settings, QWidget *parent = 0);
-    ~ScenePropertiesWidget();
-
-  protected:
-    void propertiesChanged() override;
+  struct PropertiesDockPrivate {
+    QScrollArea *scrollArea;
   };
 
+  PropertiesDock::PropertiesDock(QWidget *parent)
+    : QDockWidget(tr("Properties"), parent),
+      d_ptr(new PropertiesDockPrivate)
+  {
+    Q_D(PropertiesDock);
+    d->scrollArea = new QScrollArea(this);
+    d->scrollArea->setWidgetResizable(true);
+    setWidget(d->scrollArea);
+  }
+
+  PropertiesDock::~PropertiesDock() {}
+
+  graphicsItem *getCurrentItem(QList<QGraphicsItem*> items) {
+    if (1 != items.size()) return nullptr;
+    return dynamic_cast<graphicsItem*>(items.first());
+  }
+
+  void PropertiesDock::selectionChanged() {
+    Q_D(PropertiesDock);
+    // TODO ideally, the signal should probably send the selected items/current item directly
+    MolScene *scene = qobject_cast<MolScene*>(sender());
+    if (!scene) return;
+    auto selectedItems = scene->selectedItems();
+    // TODO there should be a better way of determining the "current item"
+
+    if (auto currentItem = getCurrentItem(selectedItems))
+      d->scrollArea->setWidget(currentItem->getPropertiesWidget());
+    else
+      d->scrollArea->setWidget(scene->getPropertiesWidget());
+  }
 
 } // namespace Molsketch
-#endif // MOLSKETCH_SCENEPROPERTIESWIDGET_H

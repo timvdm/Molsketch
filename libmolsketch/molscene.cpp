@@ -96,20 +96,7 @@ namespace Molsketch {
     MolScene *scene;
     QUndoStack *stack;
     SceneSettings *settings;
-    QDockWidget *propertiesDock;
-    QScrollArea *propertiesScrollArea;
-    ScenePropertiesWidget *scenePropertiesWidget;
     graphicsItem* dragItem;
-
-    void attachDockWidgetToMainWindow(MolScene* scene)
-    {
-      if (scene)
-      {
-        QMainWindow* mainWindow = qobject_cast<QMainWindow*>(scene->parent());
-        if (mainWindow)
-          mainWindow->addDockWidget(Qt::LeftDockWidgetArea, propertiesDock);
-      }
-    }
 
     privateData(MolScene* scene, SceneSettings* settings)
       : selectionRectangle(new QGraphicsRectItem),
@@ -118,9 +105,6 @@ namespace Molsketch {
         scene(scene),
         stack(new QUndoStack(scene)),
         settings(settings),
-        propertiesDock(new QDockWidget(tr("Properties"))),
-        propertiesScrollArea(new QScrollArea(propertiesDock)),
-        scenePropertiesWidget(new ScenePropertiesWidget(settings, stack)),
         dragItem(0)
     {
       selectionRectangle->setPen(QPen(Qt::blue,0,Qt::DashLine));
@@ -130,11 +114,6 @@ namespace Molsketch {
       connect(stack, SIGNAL(indexChanged(int)), scene, SIGNAL(documentChange()));
       connect(stack, SIGNAL(indexChanged(int)), scene, SLOT(update()));
       connect(stack, SIGNAL(indexChanged(int)), scene, SLOT(updateAll())) ;
-
-      propertiesScrollArea->setWidgetResizable(true);
-      propertiesDock->setWidget(propertiesScrollArea);
-      propertiesScrollArea->setWidget(scenePropertiesWidget);
-      attachDockWidgetToMainWindow(scene);
     }
 
     QMenu* contextSubMenu()
@@ -149,21 +128,11 @@ namespace Molsketch {
 //      if (inputItem && !inputItem->scene()) // TODO compare with this scene
 //        delete inputItem; // TODO should clean up this item...
 //      delete selectionRectangle; // TODO why?
-      if(propertiesScrollArea->widget() != scenePropertiesWidget) delete scenePropertiesWidget;
-      delete propertiesDock;
       if (!grid->scene()) delete grid;
       if (!selectionRectangle->scene()) delete selectionRectangle;
     }
 
     bool gridOn()const { return grid->scene(); }
-
-    void setPropertiesWidget(graphicsItem* item) {
-      if (propertiesScrollArea->widget() == scenePropertiesWidget)
-        propertiesScrollArea->takeWidget();
-      propertiesScrollArea->setWidget(item
-                                      ? item->getPropertiesWidget()
-                                      : scenePropertiesWidget);
-    }
 
     void moveDragItem(QGraphicsSceneDragDropEvent* event) {
       if (!dragItem) return;
@@ -225,6 +194,12 @@ namespace Molsketch {
 
   qreal MolScene::getLonePairLineWidth() const {
     return d->settings->lonePairLineWidth()->get(); // FIXME connect signal/slot
+  }
+
+  QWidget *MolScene::getPropertiesWidget() {
+    auto result = new ScenePropertiesWidget(d->settings, d->stack);
+    result->setEnabled(true);
+    return result;
   }
 
   QString MolScene::mimeType()
@@ -551,9 +526,6 @@ namespace Molsketch {
   {
     foreach(AbstractItemAction* itemAction, findChildren<AbstractItemAction*>())
       itemAction->setItems(selectedItems());
-    graphicsItem* currentItem = nullptr; // TODO check if focusItem is what we actually want here
-    if (selectedItems().size() == 1) currentItem = dynamic_cast<graphicsItem*>(selectedItems().first());
-    d->setPropertiesWidget(currentItem);
   }
 
   void MolScene::updateGrid(const QRectF& newSceneRect)
@@ -751,8 +723,7 @@ namespace Molsketch {
   QString MolScene::xmlClassName() { return "molscene" ; }
 
 
-  QUndoStack * MolScene::stack()
-  {
+  QUndoStack * MolScene::stack() const {
     return d->stack;
   }
 
