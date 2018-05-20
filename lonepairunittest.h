@@ -49,7 +49,7 @@ class LonePairUnitTest : public CxxTest::TestSuite {
   }
 
   QXmlStreamAttributes obtainLineAttributesFromSvg() {
-    LonePair *lp = new LonePair(ANGLE, LINE_WIDTH, LENGTH, BoundingBoxLinker::(), Qt::red);
+    LonePair *lp = new LonePair(ANGLE, LINE_WIDTH, LENGTH, BoundingBoxLinker::atTop(), Qt::red);
     lp->setParentItem(atom);
     QXmlStreamReader reader(scene->toSvg());
     return getAttributesOfParentElement(reader, "polyline");

@@ -90,6 +90,7 @@ public:
     delete scene;
   }
 
+  // TODO test widgets enabled on startup
   void testSettingAndUiSyncedInitially() {
     TS_ASSERT_EQUALS(bondLineWidthControl->value(), bondLineWidthSetting->get());
     TS_ASSERT_EQUALS(bondLineWidthSettingsControl->value(), bondLineWidthSetting->get());
