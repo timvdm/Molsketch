@@ -14,7 +14,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
 
 #include <cxxtest/TestSuite.h>
@@ -76,7 +76,7 @@ class AtomUnitTest : public CxxTest::TestSuite {
 public:
   void setUp() {
     atom = new Atom();
-    lonePair = new LonePair(LONE_PAIR_ANGLE, LONE_PAIR_LINE_WIDTH, LONE_PAIR_LENGTH, BoundingBoxLinker::atTopLeft);
+    lonePair = new LonePair(LONE_PAIR_ANGLE, LONE_PAIR_LINE_WIDTH, LONE_PAIR_LENGTH, BoundingBoxLinker::atTopLeft());
     radical = new RadicalElectron(RADICAL_DIAMETER);
   }
 

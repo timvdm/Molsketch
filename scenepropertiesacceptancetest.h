@@ -14,7 +14,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
 
 #include <QCoreApplication>
@@ -24,8 +24,12 @@
 #include <molscene.h>
 #include <cxxtest/TestSuite.h>
 
+#include "scenesettings.h"
+#include "settingsitem.h"
+
 using namespace Molsketch;
 
+// TODO move to settings test
 class ScenePropertiesAcceptanceTest : public CxxTest::TestSuite {
   MolScene *scene;
 public:
@@ -39,16 +43,16 @@ public:
 
   void testPropertyUnchangedOnEscapeKeyPress() {
     // TODO iterate over all properties
-    scene->setChargeVisible(true);
+    scene->settings()->chargeVisible()->set(true);
 
     QKeyEvent *event = new QKeyEvent(QKeyEvent::KeyPress, Qt::Key_Escape, Qt::NoModifier);
     QCoreApplication::sendEvent(scene, event);
     delete event;
-    TS_ASSERT(scene->chargeVisible());
+    TS_ASSERT(scene->settings()->chargeVisible()->get());
   }
 
   void testPropertyUnchangedOnDragEnterEvent() {
-    scene->setChargeVisible(true);
+    scene->settings()->chargeVisible()->set(true);
 
     QGraphicsSceneDragDropEvent *event = new QGraphicsSceneDragDropEvent(QEvent::GraphicsSceneDragEnter);
     QMimeData *data = new QMimeData;
@@ -57,6 +61,6 @@ public:
     event->setProposedAction(Qt::CopyAction);
     QCoreApplication::sendEvent(scene, event);
     delete event;
-    TS_ASSERT(scene->chargeVisible());
+    TS_ASSERT(scene->settings()->chargeVisible()->get());
   }
 };

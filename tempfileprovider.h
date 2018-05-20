@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2018 by Hendrik Vennekate, HVennekate@gmx.de            *
+ *   Copyright (C) 2017 by Hendrik Vennekate                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -16,17 +16,18 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
+#ifndef TEMPFILETEST_H
+#define TEMPFILETEST_H
 
-#include "qstringvaluetrait.h"
+#include <QFile>
+#include <QSet>
 
-
-CxxTest::ValueTraits<QString>::ValueTraits(const QString &str)
+// TODO having this class makes it possible to delete temp files even if an exception is thrown
+// during a test. It does not remove the file after SIGSEGV, however...
+class TempFileProvider : public QObject
 {
-  value = str;
-}
+protected:
+  QFile *createTemporaryFile();
+};
 
-
-const char *CxxTest::ValueTraits<QString>::asString() const
-{
-  return value.toStdString().c_str();
-}
+#endif // TEMPFILETEST_H

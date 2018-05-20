@@ -1,3 +1,22 @@
+/***************************************************************************
+ *   Copyright (C) 2018 by Hendrik Vennekate, HVennekate@gmx.de            *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
+ ***************************************************************************/
+
 #ifndef UTILITIES_H
 #define UTILITIES_H
 
@@ -5,6 +24,7 @@
 #include <QString>
 #include <cxxtest/TestSuite.h>
 #include <QTest>
+#include <functional>
 
 class QTableView;
 class QLineEdit;
@@ -12,9 +32,44 @@ class QCheckBox;
 class QXmlStreamReader;
 class QXmlStreamAttributes;
 
-#define QS_ASSERT_EQUALS(VAL1,VAL2) {QString __comparison("\n    "); QDebug __out(&__comparison); __out << VAL1; __comparison += "\n != "; __out << VAL2; TSM_ASSERT_EQUALS(__comparison.toStdString().data(), VAL1, VAL2)}
+#define QS_ASSERT_EQUALS(VAL1,VAL2) {_TS_TRY { \
+  if (!(VAL1 == VAL2)) CxxTest::tracker().failedTest(__FILE__, __LINE__, \
+  makeComparisonString(#VAL1, #VAL2, VAL1, VAL2, "!=", "    Expected:       ", "    to be equal to: ").toStdString().data()); \
+  } __TS_CATCH(__FILE__, __LINE__) }
+
+#define QS_ASSERT_NOT_EQUALS(VAL1,VAL2) {_TS_TRY { \
+  if (VAL1 == VAL2) CxxTest::tracker().failedTest(__FILE__, __LINE__, \
+  makeComparisonString(#VAL1, #VAL2, VAL1, VAL2, "==", "    Expected:           ", "    not to be equal to: ").toStdString().data()); \
+  } __TS_CATCH(__FILE__, __LINE__) }
+
+template<typename T, typename U>
+QString makeComparisonString(const char *first, const char *second, T expected, U actual, const char *op,
+                             const char *expectedIntro, const char *actualIntro) {
+  QString comparison;
+  QDebug out(&comparison);
+  out.setAutoInsertSpaces(false);
+  out << first << op << second
+      << "\n" << expectedIntro << expected
+      << "\n" << actualIntro << actual;
+  return comparison;
+}
 
 #define QSM_ASSERT_EQUALS(MESSAGE, VAL1, VAL2) {QString __comparison("\n    "); QDebug __out(&__comparison); __out << VAL1; __comparison += "\n != "; __out << VAL2; TSM_ASSERT_EQUALS((MESSAGE + __comparison).toStdString().data(), VAL1, VAL2)}
+
+#define QSO_ASSERT(ASSERTION, ...) {TSM_ASSERT(joinToString(__VA_ARGS__), ASSERTION)}
+#define QSO_ASSERT_EQUALS(VAL1, VAL2, ...) {TSM_ASSERT_EQUALS(joinToString(__VA_ARGS__), VAL1, VAL2)}
+
+template<typename T>
+QString joinToString(T t) {
+  QString result;
+  QDebug(&result) << t;
+  return result;
+}
+
+template<typename FirstType, typename... InputTypes>
+QString joinToString(FirstType firstInput, InputTypes... inputs) {
+  return joinToString(firstInput) + joinToString(inputs...);
+}
 
 #define QS_ASSERT_ON_POINTER(CAST_TYPE, POINTER, METHOD, VALUE) {\
   TSM_ASSERT(#POINTER " is null", POINTER);\
