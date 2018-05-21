@@ -16,7 +16,7 @@ void messageOutput(QtMsgType type, const QMessageLogContext &context, const QStr
       fprintf(stdout, "      Critical: (%s:%u, %s) %s\n", context.file, context.line, context.function, localMsg.constData());
       break;
     case QtFatalMsg:
-      fprintf(stdout, "      Fatal: (%s:%u, %s) %s\n", context.file, context.line, context.function, localMsg.constData());
+      fprintf(stderr, "      Fatal: (%s:%u, %s) %s\n", context.file, context.line, context.function, localMsg.constData());
       throw QString("Would have aborted here");
     case QtInfoMsg:
       fprintf(stdout, "      Info: (%s:%u, %s) %s\n", context.file, context.line, context.function, localMsg.constData());
@@ -71,12 +71,11 @@ int main( int argc, char *argv[] ) {
   QCoreApplication::setOrganizationDomain("sourceforge.net");
   QCoreApplication::setApplicationName("Molsetch");
   QApplication app(argcdummy, argdummy);
-  int status;
+
   std::ofstream ofstr("TEST-cxxtest.xml");
   MolsketchTestListener testPrinter(ofstr);
-  CxxTest::RealWorldDescription::_worldName = "cxxtest";
-  status = CxxTest::Main< MolsketchTestListener >( testPrinter, argc, argv );
-  app.exit(status);
+  CxxTest::RealWorldDescription::_worldName = "Molsketch";
+  app.exit(CxxTest::Main< MolsketchTestListener >( testPrinter, argc, argv ));
 }
 
 <CxxTest world>
