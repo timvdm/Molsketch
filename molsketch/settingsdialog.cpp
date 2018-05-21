@@ -43,7 +43,9 @@ void setupDrawingSettings(Molsketch::SceneSettings *settings, QWidget *drawingPa
     delete layoutItem->widget();
     delete layoutItem;
   }
-  drawingPageLayout->addWidget(new Molsketch::ScenePropertiesWidget(settings, drawingPage));
+  auto sceneProperties = new Molsketch::ScenePropertiesWidget(settings, drawingPage);
+  sceneProperties->setEnabled(true); // TODO this should be enabled by default
+  drawingPageLayout->addWidget(sceneProperties);
 }
 
 SettingsDialog::SettingsDialog(ApplicationSettings *settings, QWidget * parent, Qt::WindowFlags f )
