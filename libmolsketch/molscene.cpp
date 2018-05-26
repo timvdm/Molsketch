@@ -153,7 +153,8 @@ namespace Molsketch {
       d(new privateData(this, nullptr == settings ? new SceneSettings(SettingsFacade::transientSettings(), this) : settings))
   {
     setSceneRect(QRectF(-5000,-5000,10000,10000));
-    connect(this, SIGNAL(selectionChanged()), this, SLOT(selectionSlot()));
+    connect(this, &MolScene::selectionChanged, this, &MolScene::selectionSlot);
+    connect(QApplication::clipboard(), &QClipboard::dataChanged, this, &MolScene::clipboardChanged);
 
 
     // TODO - add text item
@@ -522,10 +523,15 @@ namespace Molsketch {
     return result;
   }
 
-  void MolScene::selectionSlot()
-  {
+  void MolScene::selectionSlot() {
     foreach(AbstractItemAction* itemAction, findChildren<AbstractItemAction*>())
       itemAction->setItems(selectedItems());
+    emit copyAvailable(!selectedItems().empty());
+  }
+
+  void MolScene::clipboardChanged() {
+    emit pasteAvailable(QApplication::clipboard()->mimeData()
+                        && QApplication::clipboard()->mimeData()->hasFormat(Molsketch::moleculeMimeType));
   }
 
   void MolScene::updateGrid(const QRectF& newSceneRect)
@@ -564,24 +570,6 @@ namespace Molsketch {
 
         return 0;
   }
-
-
-
-  // Event handlers
-
-  bool MolScene::event(QEvent* event)
-  {
-        // Execute default behaivior
-        bool accepted = QGraphicsScene::event(event);
-
-        // Check whether copying is available
-        if ((event->type() == QEvent::GraphicsSceneMouseRelease) || (event->type() == QEvent::KeyRelease))
-          emit copyAvailable(!selectedItems().isEmpty());
-
-        // Execute default behavior
-        return accepted;
-  }
-
 
   void MolScene::updateAll()
   {

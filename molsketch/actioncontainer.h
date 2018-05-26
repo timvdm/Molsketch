@@ -56,9 +56,6 @@ public:
     connect(action, &QAction::triggered, parent, slot);
     return action;
   }
-private slots:
-  void checkCopyAvailable();
-  void checkPasteAvailable();
 };
 
 #endif // ACTIONCONTAINER_H

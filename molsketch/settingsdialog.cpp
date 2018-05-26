@@ -67,7 +67,7 @@ SettingsDialog::SettingsDialog(ApplicationSettings *settings, QWidget * parent, 
   setInitialValues();
 }
 
-SettingsDialog::~SettingsDialog( ){}
+SettingsDialog::~SettingsDialog(){}
 
 void SettingsDialog::setInitialValues()
 {

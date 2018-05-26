@@ -123,17 +123,20 @@ struct ActionContainerPrivate {
     QObject::connect(alignAction, &QAction::toggled, scene, &Molsketch::MolScene::setGrid);
   }
 
-  ActionContainerPrivate(Molsketch::MolView *view, ActionContainer *container) : view(view) {
+  ActionContainerPrivate(Molsketch::MolView *view) : view(view) {
+    using namespace Molsketch;
     createZoomActions(view);
-    createEditActions(view->scene());
-    QObject::connect(view->scene(), &QGraphicsScene::selectionChanged, container, &ActionContainer::checkCopyAvailable);
-    QObject::connect(QApplication::clipboard(), &QClipboard::dataChanged, container, &ActionContainer::checkPasteAvailable);
+    MolScene *scene = view->scene();
+    createEditActions(scene);
+    QObject::connect(scene, &MolScene::copyAvailable, copyAction, &QAction::setEnabled);
+    QObject::connect(scene, &MolScene::copyAvailable, cutAction, &QAction::setEnabled);
+    QObject::connect(scene, &MolScene::pasteAvailable, pasteAction, &QAction::setEnabled);
   }
 };
 
 ActionContainer::ActionContainer(Molsketch::MolView *view, QObject *parent)
   : QObject(parent),
-    d_ptr(new ActionContainerPrivate(view, this))
+    d_ptr(new ActionContainerPrivate(view))
 {
   Q_D(ActionContainer);
 
@@ -251,16 +254,4 @@ QAction *ActionContainer::generateAction(const QString &themeIcon, const QString
   action->setShortcut(shortcut);
   action->setStatusTip(statusTip);
   return action;
-}
-
-void ActionContainer::checkCopyAvailable() { // TODO consider moving to scene
-  Q_D(const ActionContainer);
-  bool copyAvailable = d->view->scene()->selectedItems().empty();
-  d->copyAction->setEnabled(copyAvailable);
-  d->cutAction->setEnabled(copyAvailable);
-}
-
-void ActionContainer::checkPasteAvailable() {
-  Q_D(const ActionContainer);
-  d->pasteAction->setEnabled(QApplication::clipboard()->mimeData()->hasFormat(Molsketch::moleculeMimeType));
 }

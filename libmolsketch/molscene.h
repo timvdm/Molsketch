@@ -125,18 +125,10 @@ namespace Molsketch {
       QList<Atom*> atoms() const;
 
     signals:
-      /** Signal emitted if copy becomes available. */
       void copyAvailable(bool);
-      /** Signal emitted if the edit mode changes. */
+      void pasteAvailable(bool);
       void editModeChange(int);
-      /** Signal emitted if the contents of the scene change. */
       void documentChange( );
-      //  /** Signal emitted if a new molecule is added to the scene. */
-      //   void newMolecule(QPointF,QString);
-      /**
-       * Sets the number of hint points in the dynamic grid.
-       */
-      void setHintPointSize(int size);
 
     public slots:
       /** Slot to cut the current selection to the clipboard. */
@@ -151,9 +143,7 @@ namespace Molsketch {
       void setEditMode(int mode);
       /** Slot to select all contents of the scene. */
       void selectAll();
-      /** Slot to add a copy of molecule @p mol. */
       void addMolecule(Molecule* mol);
-      /** enable/disable grid */
       void setGrid(bool on = true);
 
 #ifdef QT_DEBUG
@@ -162,18 +152,10 @@ namespace Molsketch {
 
 
     protected:
-      /** Generic event handler. Reimplementation for sceneChanged signals. */
-      bool event (QEvent* event);
-
-      /** Event handler for keyboard interaction */
-      virtual void keyPressEvent(QKeyEvent* keyEvent);
-      /** Event handler to display context menu */
+      void keyPressEvent(QKeyEvent* keyEvent);
       void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
-      /** Event handler for mouse clicks */
       void mousePressEvent(QGraphicsSceneMouseEvent *event);
-      /** Event handler for mouse moves */
       void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-      /** event handler for mouse button releases */
       void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
       void dragEnterEvent(QGraphicsSceneDragDropEvent *event);
@@ -222,6 +204,7 @@ namespace Molsketch {
   private slots:
       void updateAll() ;
       void selectionSlot();
+      void clipboardChanged();
       void updateGrid(const QRectF &newSceneRect);
   };
 
