@@ -156,7 +156,6 @@ namespace Molsketch {
     connect(this, &MolScene::selectionChanged, this, &MolScene::selectionSlot);
     connect(QApplication::clipboard(), &QClipboard::dataChanged, this, &MolScene::clipboardChanged);
 
-
     // TODO - add text item
     // - subclass QGraphicsTextItem?
     // - make movable
@@ -530,8 +529,9 @@ namespace Molsketch {
   }
 
   void MolScene::clipboardChanged() {
-    emit pasteAvailable(QApplication::clipboard()->mimeData()
-                        && QApplication::clipboard()->mimeData()->hasFormat(Molsketch::moleculeMimeType));
+    const QMimeData *clipboardContent = QApplication::clipboard()->mimeData();
+    if (clipboardContent) qDebug() << "Clipboard types available:" << clipboardContent->formats();
+    emit pasteAvailable(clipboardContent && clipboardContent->hasFormat(Molsketch::moleculeMimeType));
   }
 
   void MolScene::updateGrid(const QRectF& newSceneRect)

@@ -131,6 +131,7 @@ struct ActionContainerPrivate {
     QObject::connect(scene, &MolScene::copyAvailable, copyAction, &QAction::setEnabled);
     QObject::connect(scene, &MolScene::copyAvailable, cutAction, &QAction::setEnabled);
     QObject::connect(scene, &MolScene::pasteAvailable, pasteAction, &QAction::setEnabled);
+    scene->clipboardChanged();
   }
 };
 

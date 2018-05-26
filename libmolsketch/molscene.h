@@ -145,6 +145,8 @@ namespace Molsketch {
       void selectAll();
       void addMolecule(Molecule* mol);
       void setGrid(bool on = true);
+      void clipboardChanged();
+
 
 #ifdef QT_DEBUG
   void debugScene();
@@ -204,7 +206,6 @@ namespace Molsketch {
   private slots:
       void updateAll() ;
       void selectionSlot();
-      void clipboardChanged();
       void updateGrid(const QRectF &newSceneRect);
   };
 
