@@ -82,7 +82,7 @@ public:
   }
 
   void testAngleAttribute() {
-    TS_ASSERT_EQUALS(obtainLineFromSvg().angle(), ANGLE);
+    TS_ASSERT_DELTA(obtainLineFromSvg().angle(), ANGLE, DELTA);
   }
 
   void testLinewidthAttribute() {
