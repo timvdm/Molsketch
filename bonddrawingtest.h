@@ -28,6 +28,8 @@
 #include <QXmlQuery>
 #include <QXmlResultItems>
 #include "xmlassertion.h"
+#include <scenesettings.h>
+#include <settingsitem.h>
 
 using namespace Molsketch;
 
@@ -50,6 +52,7 @@ public:
     b = new Bond(a1, a2);
     m = new Molecule(QSet<Atom*>{a1, a2}, QSet<Bond*>{b});
     scene = new MolScene;
+    scene->settings()->atomFont()->set(QFont("Noto Sans", 8));
     scene->addItem(m);
   }
 
