@@ -95,6 +95,8 @@ private slots:
   /** Prints the current document. */
   bool print();
 
+  void cleanChanged(bool clean);
+
   void setToolButtonStyle(QAction* styleAction);
 
         //used for print preview

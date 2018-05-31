@@ -50,7 +50,6 @@ namespace Molsketch {
     void zoomReset();
     void zoomFit();
     void scaleView(qreal scaleFactor);
-    void modificationStateChanged(const bool &clean);
   };
 
 } // namespace

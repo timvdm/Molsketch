@@ -50,9 +50,6 @@ namespace Molsketch {
     setStyleSheet("");
     setContextMenuPolicy(Qt::DefaultContextMenu);
 
-    // TODO this is essential in creating a new scene
-    connect(scene->stack(), &QUndoStack::cleanChanged, this, &MolView::modificationStateChanged);
-
 #if QT_VERSION >= 0x040300
     setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 #endif
@@ -92,9 +89,5 @@ namespace Molsketch {
 
   MolScene *MolView::scene() const {
     return dynamic_cast<MolScene*>(QGraphicsView::scene());
-  }
-
-  void MolView::modificationStateChanged(const bool &clean) {
-    setWindowModified(!clean);
   }
 }

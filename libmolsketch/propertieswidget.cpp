@@ -115,7 +115,9 @@ namespace Molsketch {
 
   void PropertiesWidget::sceneDeleted()
   {
-    setScene(0);
+    d->scene = nullptr;
+    propertiesChange();
+    setEnabled(false);
   }
 
 } // namespace Molsketch

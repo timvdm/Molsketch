@@ -90,6 +90,7 @@ MainWindow::MainWindow(ApplicationSettings *appSetttings)
 
   m_molView = MolView::createView(const_cast<const ApplicationSettings*>(settings)->settingsFacade().cloneTransiently());
   setCentralWidget(m_molView);
+  connect(m_molView->scene()->stack(), &QUndoStack::cleanChanged, this, &MainWindow::cleanChanged);
 
   actionContainer = new ActionContainer(m_molView, this);
   createFileMenuAndToolBar();
@@ -366,6 +367,10 @@ bool MainWindow::print()
 
   printPreview.exec ();
   return true;
+}
+
+void MainWindow::cleanChanged(bool clean) {
+  setWindowModified(!clean);
 }
 
 void MainWindow::setToolButtonStyle(QAction *styleAction)
