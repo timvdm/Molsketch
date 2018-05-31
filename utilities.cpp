@@ -21,8 +21,10 @@
 
 #include <QCheckBox>
 #include <QLineEdit>
+#include <QMainWindow>
 #include <QTableView>
 #include <QXmlStreamReader>
+#include <QMenuBar>
 
 void mouseMoveEvent(QWidget *widget, Qt::MouseButton button, Qt::KeyboardModifiers stateKey, QPoint pos, int delay) {
     QTEST_ASSERT(widget);
@@ -115,4 +117,25 @@ QXmlStreamAttributes getAttributesOfParentElement(QXmlStreamReader& reader, cons
     while (!reader.atEnd() && QXmlStreamReader::StartElement != reader.readNext());
   }
   return QXmlStreamAttributes();
+}
+
+template<typename T, QString (T::*FP)() const>
+T *findItem(const QList<T*> &items, const QString& text) {
+ for (auto item : items)
+   if ((item->*FP)().remove(QRegExp("&(?!&)")) == text)
+     return item;
+ TS_FAIL("Could not find item by the name of " + text);
+ return nullptr;
+}
+
+void clickMenuEntry(const QStringList &names, QMainWindow *mainWindow) {
+  auto menuBar = mainWindow->menuBar();
+  auto menu = findItem<QMenu, &QMenu::title>(menuBar->findChildren<QMenu*>(QString(), Qt::FindDirectChildrenOnly), names.first());
+  QTest::mouseClick(menuBar, Qt::LeftButton, Qt::KeyboardModifiers(), menuBar->actionGeometry(menu->menuAction()).center());
+
+  for (auto subMenuName : names.mid(1, names.size() -2)) {
+    qFatal("Clicking on submenus is not yet implemented!"); // TODO
+  }
+  auto action = findItem<QAction, &QAction::text>(menu->actions(), names.last());
+  QTest::mouseClick(menu, Qt::LeftButton, Qt::KeyboardModifiers(), menu->actionGeometry(action).center());
 }

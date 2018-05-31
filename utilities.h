@@ -31,6 +31,7 @@ class QLineEdit;
 class QCheckBox;
 class QXmlStreamReader;
 class QXmlStreamAttributes;
+class QMainWindow;
 
 #define QS_ASSERT_EQUALS(VAL1,VAL2) {_TS_TRY { \
   if (!(VAL1 == VAL2)) CxxTest::tracker().failedTest(__FILE__, __LINE__, \
@@ -117,5 +118,7 @@ int xmlElementCount(const QString& xml, const QString& element);
 QPolygonF getPointsFromXml(const QXmlStreamReader& reader, const QString& attribute);
 
 QXmlStreamAttributes getAttributesOfParentElement(QXmlStreamReader& reader, const QString &element);
+
+void clickMenuEntry(const QStringList& names, QMainWindow* mainWindow);
 
 #endif // UTILITIES_H
