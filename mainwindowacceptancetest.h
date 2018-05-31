@@ -23,6 +23,11 @@
 #include <QMenu>
 #include <QTest>
 #include <QMenuBar>
+#include <QTimer>
+#include <QToolButton>
+#include <QPushButton>
+#include <molview.h>
+#include <QDialogButtonBox>
 #include "noargsignalcounter.h"
 #include "utilities.h"
 
@@ -88,5 +93,23 @@ public:
     delete otherWindow;
     TS_ASSERT_EQUALS(mainWindowCount(), 1);
     TS_ASSERT_EQUALS(destroyedSignalCounter.count, 1);
+  }
+
+  void testWindowModificationStatus() {
+    QAction *drawAction = assertNotNull(window->findChild<QAction*>("draw-action"));
+    QToolButton *drawButton = assertNotNull(findByType<QToolButton>(drawAction->associatedWidgets()));
+    leftMouseClick(drawButton);
+    leftMouseClick(window->findChild<Molsketch::MolView*>()->viewport());
+
+    bool saveDialogShown = false;
+    QTimer::singleShot(0, [&] {
+      saveDialogShown = true;
+      QWidget *dialog = assertNotNull(QApplication::activeModalWidget());
+      QPushButton *discardButton = assertNotNull(dialog->findChild<QDialogButtonBox*>())->button(QDialogButtonBox::Discard);
+      assertNotNull(discardButton);
+      leftMouseClick(discardButton);
+    });
+    window->close();
+    TS_ASSERT(saveDialogShown);
   }
 };

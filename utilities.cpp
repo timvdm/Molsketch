@@ -139,3 +139,11 @@ void clickMenuEntry(const QStringList &names, QMainWindow *mainWindow) {
   auto action = findItem<QAction, &QAction::text>(menu->actions(), names.last());
   QTest::mouseClick(menu, Qt::LeftButton, Qt::KeyboardModifiers(), menu->actionGeometry(action).center());
 }
+
+void leftMouseClick(QWidget *w, QPoint p) {
+  QTest::mouseClick(w, Qt::LeftButton, Qt::KeyboardModifiers(), p);
+}
+
+void leftMouseClick(QWindow *w, QPoint p) {
+  QTest::mouseClick(w, Qt::LeftButton, Qt::KeyboardModifiers(), p);
+}
