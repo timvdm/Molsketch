@@ -20,13 +20,14 @@
 #include <cxxtest/TestSuite.h>
 #include <obabeliface.h>
 #include <molecule.h>
+#include "utilities.h"
 using namespace Molsketch;
 #include <QDebug>
 
 class OpenBabelUnitTest : public CxxTest::TestSuite {
 public:
   void testConversionFromSmilesString() {
-    Molecule* molecule = fromSmiles("CCCC");
+    Molecule* molecule = assertNotNull(fromSmiles("CCCC"));
     TS_ASSERT_EQUALS(molecule->atoms().size(), 4);
     for(Atom* atom : molecule->atoms())
       TS_ASSERT_EQUALS(atom->element(), "C");

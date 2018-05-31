@@ -27,11 +27,13 @@ class NoArgSignalCounter : public QObject
 {
   Q_OBJECT
 public:
-  explicit NoArgSignalCounter(QObject *parent = 0);
+  explicit NoArgSignalCounter(QObject *parent = 0); // TODO constructor with signal argument
   int count;
   std::function<void()> callback;
 public slots:
   void record();
 };
+
+// TODO output from QDebug; record senders
 
 #endif // NOARGSIGNALCOUNTER_H

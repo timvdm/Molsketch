@@ -1,7 +1,6 @@
 #include <cxxtest/XUnitPrinter.h>
 #include <QApplication>
 
-
 void messageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
   QByteArray localMsg = msg.toLocal8Bit();
