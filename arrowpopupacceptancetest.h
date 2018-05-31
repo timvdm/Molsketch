@@ -86,28 +86,28 @@ public:
 
   void testCheckBoxToTipLink() {
     popup->connectArrow(arrow);
-    QTest::mouseClick(beginningTop, Qt::LeftButton);
+    clickCheckBox(beginningTop);
     TS_ASSERT_EQUALS(arrow->getArrowType(), Arrow::UpperForward);
 
-    QTest::mouseClick(endTop, Qt::LeftButton);
+    clickCheckBox(endTop);
     TS_ASSERT_EQUALS(arrow->getArrowType(), Arrow::UpperForward | Arrow::UpperBackward);
 
-    QTest::mouseClick(beginningBottom, Qt::LeftButton);
+    clickCheckBox(beginningBottom);
     TS_ASSERT_EQUALS(arrow->getArrowType(), Arrow::UpperForward | Arrow::UpperBackward | Arrow::LowerForward);
 
-    QTest::mouseClick(endBottom, Qt::LeftButton);
+    clickCheckBox(endBottom);
     TS_ASSERT_EQUALS(arrow->getArrowType(), Arrow::UpperForward | Arrow::UpperBackward | Arrow::LowerForward | Arrow::LowerBackward);
 
-    QTest::mouseClick(endBottom, Qt::LeftButton);
+    clickCheckBox(endBottom);
     TS_ASSERT_EQUALS(arrow->getArrowType(), Arrow::UpperForward | Arrow::UpperBackward | Arrow::LowerForward);
 
-    QTest::mouseClick(beginningBottom, Qt::LeftButton);
+    clickCheckBox(beginningBottom);
     TS_ASSERT_EQUALS(arrow->getArrowType(), Arrow::UpperForward | Arrow::UpperBackward);
 
-    QTest::mouseClick(endTop, Qt::LeftButton);
+    clickCheckBox(endTop);
     TS_ASSERT_EQUALS(arrow->getArrowType(), Arrow::UpperForward);
 
-    QTest::mouseClick(beginningTop, Qt::LeftButton);
+    clickCheckBox(beginningTop);
     TS_ASSERT_EQUALS(arrow->getArrowType(), Arrow::NoArrow);
   }
 
