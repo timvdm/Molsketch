@@ -40,20 +40,23 @@ public:
     Atom *atom = new Atom(originalAtom, "C");
     Molecule *molecule = new Molecule(QSet<Atom*>() << atom, QSet<Bond*>());
     MolScene *scene = new MolScene;
-    MolView view(scene);
+    MolView *view = new MolView(scene);
     drawAction *action = new drawAction(scene);
     action->setChecked(true);
-    scene->addItem(molecule);
+    scene->addMolecule(molecule);
 
-    view.show();
+    view->show();
 
-    QTest::mousePress(view.viewport(), Qt::LeftButton, Qt::NoModifier, view.mapFromScene(drawingStart));
-    QTest::mouseMove(view.viewport(), view.mapFromScene(drawingStop));
-    QTest::mouseRelease(view.viewport(), Qt::LeftButton, Qt::NoModifier, view.mapFromScene(drawingStop));
+    QTest::mousePress(view->viewport(), Qt::LeftButton, Qt::NoModifier, view->mapFromScene(drawingStart));
+    QTest::mouseMove(view->viewport(), view->mapFromScene(drawingStop));
+    QTest::mouseRelease(view->viewport(), Qt::LeftButton, Qt::NoModifier, view->mapFromScene(drawingStop));
 
     QGraphicsItem* newAtom = scene->itemAt(targetPosition, QTransform());
     TS_ASSERT(newAtom); // TODO macro for assert present or return // TODO QSM_ASSERT with message as QString
     if (!newAtom) return;
     QS_ASSERT_EQUALS(newAtom->pos(), targetPosition);
+
+    delete view;
+    delete scene;
   }
 };

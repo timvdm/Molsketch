@@ -1,5 +1,6 @@
 #include <cxxtest/XUnitPrinter.h>
 #include <QApplication>
+#include <QDebug>
 
 void messageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
@@ -33,6 +34,8 @@ public:
       CxxTest::OutputStream::endl((*outputStream()) << "Skipped test:   " << description.testName());
     else if (!CxxTest::tracker().testFailed())
       CxxTest::OutputStream::endl((*outputStream()) << "Completed test: " << description.testName());
+    if (!qApp->topLevelWidgets().isEmpty())
+      qDebug() << "Warning: Top level widgets left: " << qApp->topLevelWidgets();
   }
   void trace(const char *file, int line, const char *message) override {
     (*outputStream()) << "  ";
