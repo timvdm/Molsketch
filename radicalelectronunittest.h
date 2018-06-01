@@ -21,6 +21,8 @@
 #include <molscene.h>
 #include <radicalelectron.h>
 #include "utilities.h"
+#include <scenesettings.h>
+#include <settingsitem.h>
 
 using namespace Molsketch;
 
@@ -45,7 +47,8 @@ class RadicalElectronUnitTest : public CxxTest::TestSuite {
 public:
   void setUp() {
     scene = new MolScene;
-    atom = new Atom(QPointF(0,0), "C");
+    scene->settings()->atomFont()->set(QFont("Noto Sans", 8));
+    atom = new Atom(QPointF(0,0), "C", false);
     scene->addItem(atom);
   }
 
