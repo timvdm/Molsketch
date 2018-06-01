@@ -737,35 +737,32 @@ namespace Molsketch {
   int Atom::numNonBondingElectrons() const
   {
     int boSum = bondOrderSum();
-    switch (elementGroup(Element::strings.indexOf(m_elementSymbol))) {
+    int group =  elementGroup(Element::strings.indexOf(m_elementSymbol));
+
+    // TODO check again and write test
+    if (group >= 3 && group <= 11)
+      return group - boSum + m_userElectrons;
+
+    switch (group) {
       case 1:
       case 2:
       case 13:
       case 14:
         return 0 + m_userElectrons;
       case 15:
-        if (boSum > 3)
-          return 0 + m_userElectrons;
-        else
-          return 2 + 3 - boSum + m_userElectrons;
+        if (boSum > 3) return 0 + m_userElectrons;
+        else return 5 - boSum + m_userElectrons;
       case 16:
         switch (boSum) {
-          case 0:
-            return 6 + m_userElectrons;
-          case 1:
-            return 5 + m_userElectrons;
-          case 2:
-            return 4 + m_userElectrons;
-          case 3:
-            return 2 + m_userElectrons;
-          default:
-            return 0 + m_userElectrons;
+          case 0: return 6 + m_userElectrons;
+          case 1: return 5 + m_userElectrons;
+          case 2: return 4 + m_userElectrons;
+          case 3: return 2 + m_userElectrons; // hm?
+          default: return 0 + m_userElectrons;
         }
       case 17:
-        if (boSum == 1)
-          return 6 + m_userElectrons;
-        else
-          return 8 + m_userElectrons;
+        if (boSum == 1) return 6 + m_userElectrons;
+        else return 8 + m_userElectrons;
       case 18:
         return 8 + m_userElectrons;
       default:

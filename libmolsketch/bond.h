@@ -61,7 +61,7 @@ namespace Molsketch {
       DoubleAsymmetric = 22,
       DoubleSymmetric = 23,
       Triple = 30,
-      TripleAsymmetric = 31,
+      TripleAsymmetric = 31, // TODO more?
     };
 
     static int orderFromType(const BondType& type);

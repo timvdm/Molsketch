@@ -87,7 +87,7 @@ namespace Molsketch {
     {
       return m_userElectrons;
     }
-    void setNumUnpairedElectrons(int n)
+    void setNumUnpairedElectrons(int n) // TODO this seems unused
     {
       m_userElectrons = n;
     }
