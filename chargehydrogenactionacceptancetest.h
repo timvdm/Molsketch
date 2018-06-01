@@ -62,6 +62,6 @@ public:
   }
 
   void testHydrogenCountIncreasedWithAction() {
-    performIncrementActionTest<chargeAction, &Atom::charge>(1);
+    performIncrementActionTest<chargeAction, &Atom::charge>(0);
   }
 };

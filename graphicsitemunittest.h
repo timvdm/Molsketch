@@ -31,7 +31,7 @@ const QByteArray ONE_ATOM_XML("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
 const QByteArray TWO_ATOMS_XML("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
                                "<molsketchItems>"
                                "<atom elementType=\"A\" hydrogenCount=\"0\" colorR=\"0\" colorG=\"0\" colorB=\"0\" scalingParameter=\"1\" coordinates=\"3,3\"/>"
-                               "<atom elementType=\"B\" hydrogenCount=\"0\" colorR=\"0\" colorG=\"0\" colorB=\"0\" scalingParameter=\"1\" coordinates=\"4,5\"/>"
+                               "<atom elementType=\"B\" hydrogenCount=\"3\" colorR=\"0\" colorG=\"0\" colorB=\"0\" scalingParameter=\"1\" coordinates=\"4,5\"/>"
                                "</molsketchItems>\n"
                                );
 const Atom atomA(QPointF(3,3), "A");
