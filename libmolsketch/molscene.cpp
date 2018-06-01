@@ -130,6 +130,7 @@ namespace Molsketch {
 //      delete selectionRectangle; // TODO why?
       if (!grid->scene()) delete grid;
       if (!selectionRectangle->scene()) delete selectionRectangle;
+      delete stack;
     }
 
     bool gridOn()const { return grid->scene(); }
