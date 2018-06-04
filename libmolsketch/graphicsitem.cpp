@@ -325,27 +325,17 @@ namespace Molsketch {
     return scene->settings()->bondWidth()->get();
   }
 
-  void graphicsItem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
-  {
+  void graphicsItem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
     QMenu contextMenu;
     prepareItemContextMenu(&contextMenu);
-    foreach(QAction* action, contextMenu.actions())
-    {
+    foreach(QAction* action, contextMenu.actions()) {
       AbstractItemAction *itemAction = dynamic_cast<AbstractItemAction*>(action);
       if (itemAction) itemAction->setItem(this);
     }
 
-    qDebug() << "looking for scene";
-    MolScene *sc = dynamic_cast<MolScene*>(scene());
-    if (sc) {
-      qDebug() << "adding scene context menu";
-      contextMenu.addMenu(sc->sceneMenu());
-    }
-
     contextMenu.exec(event->screenPos()) ;
     qDebug() << "removing item" ;
-    foreach(QAction* action, contextMenu.actions())
-    {
+    foreach(QAction* action, contextMenu.actions()) {
       AbstractItemAction *itemAction = dynamic_cast<AbstractItemAction*>(action);
       if (itemAction) itemAction->removeItem(this);
     }

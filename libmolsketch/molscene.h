@@ -121,7 +121,6 @@ namespace Molsketch {
 
       TextInputItem *inputItem() ;
 
-      QMenu* sceneMenu() const;
       QList<Atom*> atoms() const;
 
     signals:

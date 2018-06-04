@@ -116,13 +116,6 @@ namespace Molsketch {
       connect(stack, SIGNAL(indexChanged(int)), scene, SLOT(updateAll())) ;
     }
 
-    QMenu* contextSubMenu()
-    {
-      QMenu* menu = new QMenu(tr("Scene properties"));
-      // TODO
-      return menu;
-    }
-
     ~privateData()
     {
 //      if (inputItem && !inputItem->scene()) // TODO compare with this scene
@@ -507,11 +500,6 @@ namespace Molsketch {
     return d->inputItem;
   }
 
-  QMenu *MolScene::sceneMenu() const
-  {
-    return d->contextSubMenu();
-  }
-
   QList<Atom *> MolScene::atoms() const
   {
     QList<Atom*> result;
@@ -599,25 +587,14 @@ namespace Molsketch {
   {
         QMenu contextMenu;
         qDebug() << "context menu";
-//        sceneMenu->setParent(&contextMenu);
-//        contextMenu.addMenu(sceneMenu);
-        qDebug() << "Generated menu";
-        foreach(QGraphicsItem* qgItem, selectedItems())
-        {
+        foreach(QGraphicsItem* qgItem, selectedItems()) {
           graphicsItem *item = dynamic_cast<graphicsItem*>(qgItem);
           if (!item) continue;
           item->prepareContextMenu(&contextMenu);
         }
 
         qDebug() << "-------- context menu for no of items:" << selectedItems().size();
-        if (contextMenu.actions().empty())
-        {
-          d->contextSubMenu()->exec(event->screenPos());
-          event->accept();
-          return;
-        }
-        contextMenu.addMenu(d->contextSubMenu()); // TODO memory leak
-
+        if (contextMenu.actions().empty()) return;
         contextMenu.exec(event->screenPos());
         event->accept();
   }
