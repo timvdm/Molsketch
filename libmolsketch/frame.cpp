@@ -290,6 +290,13 @@ namespace Molsketch {
     Q_UNUSED(option)
     Q_UNUSED(widget)
 
+    if (isSelected()) {
+      painter->save();
+      painter->setPen(Qt::blue);
+      painter->drawRect(boundingRect());
+      painter->restore();
+    }
+
     painter->save();
 
     QPen pen; // TODO make function in graphicsItem for this
@@ -335,19 +342,20 @@ namespace Molsketch {
 
   void Frame::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
   {
-    d->isHovering = true;
     graphicsItem::hoverEnterEvent(event);
+    d->isHovering = event->isAccepted();
   }
 
   void Frame::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
   {
-    d->isHovering = false;
     graphicsItem::hoverLeaveEvent(event);
+    d->isHovering = false;
   }
 
   void Frame::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
   {
     graphicsItem::hoverMoveEvent(event);
+    d->isHovering = event->isAccepted();
   }
 
   int Frame::coordinateCount() const

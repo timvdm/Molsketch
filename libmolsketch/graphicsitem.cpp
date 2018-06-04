@@ -139,8 +139,7 @@ namespace Molsketch {
     return lineWidthScaling ;
   }
 
-  void graphicsItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
-  {
+  void graphicsItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
     hoverMoveEvent(event); // TODO highlighting
   }
 
@@ -165,8 +164,7 @@ namespace Molsketch {
     update() ;
   }
 
-  void graphicsItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
-  {
+  void graphicsItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event) {
     Q_UNUSED(event)
     d->selectedPoint = -1 ;
     update() ;
@@ -209,7 +207,7 @@ namespace Molsketch {
   void graphicsItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
   { // TODO this function seems weird
     QGraphicsItem::mousePressEvent(event);
-    event->accept(); // to prevent scene from clearing selection
+    if (!isSelected() && d->selectedPoint == -1) return;
     if (event->button() != Qt::LeftButton) return;
     if (event->modifiers()) return;
     event->accept();

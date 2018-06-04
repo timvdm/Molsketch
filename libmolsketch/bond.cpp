@@ -549,6 +549,10 @@ namespace Molsketch {
         << m_endAtom->coordinates() ;
   }
 
+  QPolygonF Bond::moveablePoints() const {
+    return QPolygonF() << (determineBondDrawingStart(m_beginAtom, m_endAtom) + determineBondDrawingStart(m_endAtom, m_beginAtom))/2.;
+  }
+
   QXmlStreamAttributes Bond::graphicAttributes() const
   {
     QXmlStreamAttributes attributes ;
