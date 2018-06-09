@@ -76,7 +76,7 @@ namespace Molsketch {
   Atom::Atom(const Atom &other GRAPHICSSCENESOURCE)
     : graphicsItem (other GRAPHICSSCENEINIT)
   {
-    initialize(other.scenePos(), other.element(), other.hasImplicitHydrogens());
+    initialize(other.scenePos(), other.element(), other.m_implicitHydrogens);
   }
 
   Atom::~Atom() {} // TODO sign off from bonds
@@ -231,7 +231,7 @@ namespace Molsketch {
     m_userElectrons = 0;
     m_userImplicitHydrogens =  0;
     m_newmanDiameter = 0;
-    enableImplicitHydrogens(implicitHydrogens);
+    m_implicitHydrogens = implicitHydrogens;
     m_shape = computeBoundingRect();
   }
 
@@ -785,6 +785,7 @@ namespace Molsketch {
   }
 
   int Atom::numImplicitHydrogens() const {
+    qDebug() << "number of implicit hydrogens called" << m_implicitHydrogens;
     if (!m_implicitHydrogens) return 0;
     int bosum = 0;
     foreach (Bond *bond, bonds())
@@ -854,11 +855,6 @@ namespace Molsketch {
     setParentItem(static_cast<QGraphicsItem*>(molecule));
   }
 
-  bool Atom::hasImplicitHydrogens() const
-  {
-    return m_implicitHydrogens;
-  }
-
   bool Atom::isDrawn() const
   {
     if (!m_hidden || isSelected() || !numBonds()) return true;
@@ -895,11 +891,6 @@ namespace Molsketch {
   QPolygonF Atom::coordinates() const
   {
     return QVector<QPointF>() << pos() ; // TODO change to coordinates relative to parent
-  }
-
-  void Atom::enableImplicitHydrogens(bool enabled)
-  {
-    m_implicitHydrogens = enabled;
   }
 
   QString Atom::xmlName() const { return Atom::xmlClassName() ; }

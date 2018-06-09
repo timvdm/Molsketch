@@ -105,7 +105,6 @@ namespace Molsketch {
     int bondOrderSum() const;
     /// Get the number of non-bonding electrons (e.g. 4 for O=, 2 for NH3, 1 for radicals).
     int numNonBondingElectrons() const;
-    bool hasImplicitHydrogens() const;
     int numImplicitHydrogens() const;
 
     void addBond(Bond *bond);
@@ -117,7 +116,6 @@ namespace Molsketch {
       * of free valency electrons and hence the charge of the atom.
       */
     void setNumImplicitHydrogens(const int &number);
-    void enableImplicitHydrogens(bool enabled);
 
     void hoverOut () {m_hidden = true;}
     QString xmlName() const;

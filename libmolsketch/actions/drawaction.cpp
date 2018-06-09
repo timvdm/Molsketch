@@ -119,7 +119,7 @@ namespace Molsketch {
       if (atom)
         parent->attemptUndoPush(new Commands::ChangeElement(atom, periodicTable->currentElement(), tr("change element")));
       else
-        Commands::ItemAction::addItemToScene(new Molecule(QSet<Atom*>() << new Atom(position, periodicTable->currentElement()), QSet<Bond*>()),
+        Commands::ItemAction::addItemToScene(new Molecule(QSet<Atom*>() << new Atom(position, periodicTable->currentElement(), parent->scene()->settings()->autoAddHydrogen()->get()), QSet<Bond*>()),
                                   parent->scene(), tr("add atom"));
     }
 
@@ -134,7 +134,7 @@ namespace Molsketch {
     {
       Atom* atom = parent->scene()->atomAt(pos);
       if (atom) return atom;
-      return new Atom(pos, periodicTable->currentElement());
+      return new Atom(pos, periodicTable->currentElement(), parent->scene()->settings()->autoAddHydrogen()->get());
     }
 
     void setOrReplaceBond(Atom* atomA, Atom* atomB)
