@@ -207,7 +207,7 @@ namespace Molsketch {
   void graphicsItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
   { // TODO this function seems weird
     QGraphicsItem::mousePressEvent(event);
-    if (!isSelected() && d->selectedPoint == -1) return;
+    event->accept();
     if (event->button() != Qt::LeftButton) return;
     if (event->modifiers()) return;
     event->accept();
