@@ -48,12 +48,10 @@ namespace Molsketch {
     QGraphicsPolygonItem hintMoleculeItems;
     QPolygonF hintRingPoints;
     ringAction *parent;
-    bool autoAddHydrogen;
 
     privateData(ringAction* p) :
       hintMoleculeItems(0),
-      parent(p),
-      autoAddHydrogen(false)
+      parent(p)
     {
       hintMoleculeItems.hide();
       hintMoleculeItems.setPen(QPen(Qt::lightGray));
@@ -231,7 +229,7 @@ namespace Molsketch {
       }
       else
       {
-        atom = new Atom(vertex, "C", d->autoAddHydrogen);
+        atom = new Atom(vertex, "C", scene()->settings()->autoAddHydrogen()->get());
         newMolecule->addAtom(atom);
       }
       ringAtoms << atom;

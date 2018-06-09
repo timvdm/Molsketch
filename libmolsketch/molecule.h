@@ -206,10 +206,6 @@ class Molecule : public graphicsItem
 
         /** Returns the molecule formula. */
         QString formula() const;
-        /** Returns the charge of the molecule. */
-        int charge() const;
-        /** Returns the charge as a string with an appropiate + or - sign. */
-        QString chargeID() const;
 
         /**
          * Invalidate the electron systems. To be called when Atom/Bond properties

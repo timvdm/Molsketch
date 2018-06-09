@@ -141,7 +141,7 @@ namespace Molsketch
     foreach(QGraphicsItem* item, scene->items()) // TODO remove this dependency on molscene
       if (item->type() == Molecule::Type)
         obmol += toOBMolecule(static_cast<Molecule*>(item), dim) ;
-    // Add hydrogens
+    // TODO this should really be done on a per-atom basis
     if (3 == dim // TODO also for 2D?
       && dynamic_cast<MolScene*>(scene)
       && dynamic_cast<MolScene*>(scene)->settings()->autoAddHydrogen()->get())

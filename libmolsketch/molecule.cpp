@@ -418,20 +418,6 @@ namespace Molsketch {
     return widget;
   }
 
-  int Molecule::charge() const
-  {
-    //pre: true
-    //ret: total charge of the atoms
-
-    Atom* atom;
-    int totalCharge = 0;
-    foreach(atom,m_atomList)
-      totalCharge += atom->charge();
-
-    /* TODO can be improved */
-    return totalCharge < 0 && scene()->settings()->autoAddHydrogen()->get() ? 0 : totalCharge;
-  }
-
   QString Molecule::formula( ) const
   {
     //pre: true
@@ -481,24 +467,6 @@ namespace Molsketch {
 
     // Return the formula
     return formula;
-  }
-
-  QString Molecule::chargeID( ) const
-  {
-    //pre: true
-    //ret: textual representation of the charge of the molecule
-
-    // Drawing text
-    int c = charge();
-    QString chargeId;
-    chargeId.setNum(c);
-    if (c < -1) chargeId =  chargeId.remove(0,1) + "-";
-    if (c == -1) chargeId = "-";
-    if (c == 0) chargeId = "";
-    if (c == 1) chargeId = "+";
-    if (c > 1) chargeId = chargeId + "+";
-
-    return chargeId;
   }
 
   bool Molecule::canSplit() const

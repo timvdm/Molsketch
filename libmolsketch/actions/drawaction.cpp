@@ -52,13 +52,11 @@ namespace Molsketch {
     periodicTableWidget *periodicTable;
     bondTypeWidget *bondType;
     QGraphicsLineItem hintLine;
-    bool autoAddHydrogen;
     QGraphicsItemGroup hintPointsGroup;
     drawAction *parent;
 
     privateData(drawAction* p)
       : hintLine(QLineF(0,0,0,0)),
-        autoAddHydrogen(false),
         parent(p)
     {
       hintLine.setAcceptedMouseButtons(Qt::NoButton);
@@ -362,7 +360,7 @@ namespace Molsketch {
       }
       if (new_atom_pos != downPos) {
         stack->beginMacro("Add Bond");
-        Atom* atom = new Atom(new_atom_pos,d->periodicTable->currentElement(),d->autoAddHydrogen);
+        Atom* atom = new Atom(new_atom_pos,d->periodicTable->currentElement(), scene()->settings()->autoAddHydrogen()->get());
         stack->push(new Commands::AddAtom(atom,at1 ->molecule()));
         if (d->bondType->backward()) qSwap(at1, atom);
         Bond* bond = new Bond(at1,atom);
