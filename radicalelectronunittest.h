@@ -14,13 +14,15 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
 
 #include <cxxtest/TestSuite.h>
 #include <molscene.h>
 #include <radicalelectron.h>
 #include "utilities.h"
+#include <scenesettings.h>
+#include <settingsitem.h>
 
 using namespace Molsketch;
 
@@ -30,7 +32,7 @@ CLASS_FOR_TESTING_WITH_FUNCTIONS(RadicalElectron, \
                                  : RadicalElectron(diameter, linker, color){})
 const int DIAMETER = 2;
 const QString RADICAL_ELECTRON_XML("<radicalElectron diameter=\"5\" colorR=\"255\" colorG=\"0\" colorB=\"0\"><bbLinker originAnchor=\"TopLeft\" targetAnchor=\"BottomRight\" xOffset=\"0\" yOffset=\"0\"/></radicalElectron>");
-const RadicalElectron SAMPLE_RADICAL_ELECTRON(5, BoundingBoxLinker::upperLeft, Qt::red);
+const RadicalElectron SAMPLE_RADICAL_ELECTRON(5, BoundingBoxLinker::upperLeft(), Qt::red);
 
 class RadicalElectronUnitTest : public CxxTest::TestSuite {
   MolScene *scene;
@@ -45,7 +47,8 @@ class RadicalElectronUnitTest : public CxxTest::TestSuite {
 public:
   void setUp() {
     scene = new MolScene;
-    atom = new Atom(QPointF(0,0), "C");
+    scene->settings()->atomFont()->set(QFont("Noto Sans", 8));
+    atom = new Atom(QPointF(0,0), "C", false);
     scene->addItem(atom);
   }
 

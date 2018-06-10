@@ -14,7 +14,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
 
 #include <cxxtest/TestSuite.h>
@@ -27,7 +27,7 @@
 using namespace Molsketch;
 
 const QString MIME_TYPE("molecule/molsketch");
-const QString CLIPBOARD_CONTENT("<?xml version=\"1.0\" encoding=\"UTF-8\"?><atom elementType=\"Ca\" hydrogenCount=\"0\" colorR=\"0\" colorG=\"0\" colorB=\"0\" scalingParameter=\"1\" coordinates=\"5,3\"/>\n");
+const QString CLIPBOARD_CONTENT("<?xml version=\"1.0\" encoding=\"UTF-8\"?><atom elementType=\"Ca\" hydrogenCount=\"2\" colorR=\"0\" colorG=\"0\" colorB=\"0\" scalingParameter=\"1\" coordinates=\"5,3\"/>\n");
 const QPointF ATOM_COORDS(5,3);
 const QString ELEMENT("Ca");
 

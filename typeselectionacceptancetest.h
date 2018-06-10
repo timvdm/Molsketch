@@ -14,7 +14,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
 
 #include <cxxtest/TestSuite.h>
@@ -70,7 +70,7 @@ class TypeSelectionAcceptanceTest : public CxxTest::TestSuite {
 
     QWidget* findOkButton() {
       for(QPushButton *child : findDialog()->findChildren<QPushButton*>())
-        if (child->text() == "&OK") return child;
+	if (child->text() == "&OK") return child;
       TSM_ASSERT("Could not find OK button!", false);
       throw nullptr;
     }

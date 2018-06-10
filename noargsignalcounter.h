@@ -14,7 +14,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
 
 #ifndef NOARGSIGNALCOUNTER_H
@@ -27,11 +27,13 @@ class NoArgSignalCounter : public QObject
 {
   Q_OBJECT
 public:
-  explicit NoArgSignalCounter(QObject *parent = 0);
+  explicit NoArgSignalCounter(QObject *parent = 0); // TODO constructor with signal argument
   int count;
   std::function<void()> callback;
 public slots:
   void record();
 };
+
+// TODO output from QDebug; record senders
 
 #endif // NOARGSIGNALCOUNTER_H

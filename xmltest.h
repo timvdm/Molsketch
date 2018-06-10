@@ -14,7 +14,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
 
 #include <frame.h>
@@ -22,6 +22,9 @@
 #include <molecule.h>
 #include <QSet>
 #include <cxxtest/TestSuite.h>
+
+#include "scenesettings.h"
+#include "settingsitem.h"
 
 using namespace Molsketch;
 
@@ -38,7 +41,7 @@ public:
       onlyOneTopLevelItem(loadedScene);
       QGraphicsItem* restoredItem = restoreOnlySceneItem(loadedScene);
       Q_ASSERT(restoredItem);
-      TSM_ASSERT_EQUALS("Bond width", loadedScene.bondWidth(), originalScene.bondWidth());
+      TSM_ASSERT_EQUALS("Bond width", loadedScene.settings()->bondWidth()->get(), originalScene.settings()->bondWidth()->get());
       TSM_ASSERT_EQUALS("Bounding rect", restoredItem->boundingRect(), item->boundingRect());
       TSM_ASSERT_EQUALS("SVG", loadedScene.toSvg(), originalScene.toSvg());
     }
