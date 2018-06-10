@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2018 by Hendrik Vennekate, HVennekate@gmx.de            *
+ *   Copyright (C) 2017 by Hendrik Vennekate                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -16,19 +16,18 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
+#ifndef TEMPFILETEST_H
+#define TEMPFILETEST_H
 
-#include "utilities.h"
-#include <QGraphicsItem>
-#include <radicalelectron.h>
-namespace Molsketch {
-  class Molecule;
-  class MoleculeModelItem;
-  class LibraryModel;
-  class PiElectrons;
-}
-template<> int ForTesting<Molsketch::Molecule>::instanceCounter = 0;
-template<> int ForTesting<Molsketch::MoleculeModelItem>::instanceCounter = 0;
-template<> int ForTesting<Molsketch::LibraryModel>::instanceCounter = 0;
-template<> int ForTesting<QGraphicsItem>::instanceCounter = 0;
-template<> int ForTesting<Molsketch::RadicalElectron>::instanceCounter = 0;
-template<> int ForTesting<Molsketch::PiElectrons>::instanceCounter = 0;
+#include <QFile>
+#include <QSet>
+
+// TODO having this class makes it possible to delete temp files even if an exception is thrown
+// during a test. It does not remove the file after SIGSEGV, however...
+class TempFileProvider : public QObject
+{
+protected:
+  QFile *createTemporaryFile();
+};
+
+#endif // TEMPFILETEST_H

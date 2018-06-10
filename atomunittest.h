@@ -14,7 +14,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
 
 #include <cxxtest/TestSuite.h>
@@ -76,7 +76,7 @@ class AtomUnitTest : public CxxTest::TestSuite {
 public:
   void setUp() {
     atom = new Atom();
-    lonePair = new LonePair(LONE_PAIR_ANGLE, LONE_PAIR_LINE_WIDTH, LONE_PAIR_LENGTH, BoundingBoxLinker::atTopLeft);
+    lonePair = new LonePair(LONE_PAIR_ANGLE, LONE_PAIR_LINE_WIDTH, LONE_PAIR_LENGTH, BoundingBoxLinker::atTopLeft());
     radical = new RadicalElectron(RADICAL_DIAMETER);
   }
 
@@ -128,7 +128,6 @@ public:
   void testAtomIsShownIfItHasChildren() {
     Atom otherAtom, thirdAtom;
     Bond firstBond(atom, &otherAtom), secondBond(atom, &thirdAtom); // need at least two bonds
-    atom->setCharge(-3); // neutralize charge
 
     atom->setElement("C");
     TS_ASSERT(!atom->isDrawn());
@@ -191,7 +190,15 @@ public:
 
   void testBondDrawingStart() {
     atom->setElement("A");
-    Atom a1(QPointF(10,15)); // TODO more test cases
-    QS_ASSERT_EQUALS(atom->bondDrawingStart(&a1, 0), QPointF(2.5,3.75));
+    auto otherAtomPosition = QPointF(10,15);
+    Atom otherAtom(otherAtomPosition); // TODO more test cases
+
+    auto atomBounds = atom->boundingRect();
+    auto rightEdge = QLineF(atomBounds.topRight(), atomBounds.bottomRight());
+    QPointF intersectionOfRightEdgeAndConnectingLine;
+    QS_ASSERT_EQUALS(rightEdge.intersect(QLineF(QPointF(0,0), otherAtomPosition), &intersectionOfRightEdgeAndConnectingLine),
+                     QLineF::BoundedIntersection);
+
+    QS_ASSERT_EQUALS(atom->bondDrawingStart(&otherAtom, 0), intersectionOfRightEdgeAndConnectingLine);
   }
 };

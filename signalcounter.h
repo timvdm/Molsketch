@@ -14,7 +14,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
 #ifndef SIGNALCOUNTER_H
 #define SIGNALCOUNTER_H
@@ -22,21 +22,104 @@
 #include <tuple>
 #include <functional>
 #include <QList>
+#include <utilities.h>
+#include <QDebug>
+#include <QObject>
+#include <QModelIndex>
 
 template<typename ... Types>
 class SignalCounter
 {
 private:
-  QList<std::tuple<Types...>> payloads;
+  using FirstType = typename std::tuple_element<0, std::tuple<Types...>>::type;
+  using Content = typename std::conditional<(sizeof...(Types) == 1), FirstType, std::tuple<Types...>>::type;
+  QList<Content> payloads;
 public:
   std::function<void(Types...)> callback;
-  std::tuple<Types...> getLatestPayload() const {Q_ASSERT(!payloads.empty()); return payloads.last();}
+  Content getLatestPayload() const {Q_ASSERT(!payloads.empty()); return payloads.last();}
   int count() const { return payloads.size(); }
-  std::tuple<Types...> getPayload(int index) { Q_ASSERT(index >= 0 && index < payloads.size()) ; return payloads[index]; }
-  void addPayload(Types... newPayload) {
+  Content getPayload(int index) { Q_ASSERT(index >= 0 && index < payloads.size()) ; return payloads[index]; }
+  template<typename T = Content>
+  typename std::enable_if<!std::is_same<T, FirstType>::value>::type addPayload(Types... newPayload) {
     payloads << std::make_tuple(newPayload...);
     if (callback) callback(newPayload...);
   }
+  template<typename T = Content>
+  typename std::enable_if<std::is_same<T, FirstType>::value>::type addPayload(Types... newPayload) {
+    payloads << std::get<0>(std::make_tuple(newPayload...));
+    if (callback) callback(newPayload...);
+  }
+
+  void assertPayloads(const QList<Content>& expected) { QS_ASSERT_EQUALS(expected, payloads); }
+};
+
+template<typename ... Types>
+QDebug operator<<(QDebug debug, const std::tuple<Types...>& tuple) {
+  debug << "Tuple [";
+  printTupel(tuple, debug);
+  return debug << "]";
+}
+
+template<std::size_t I = 0, typename... TupelTypes>
+typename std::enable_if<I == sizeof...(TupelTypes)>::type
+  printTupel(const std::tuple<TupelTypes...>&, QDebug&) {}
+
+template<std::size_t I = 0, typename... TupelTypes>
+typename std::enable_if<I < sizeof...(TupelTypes)>::type
+  printTupel(const std::tuple<TupelTypes...>& tupel, QDebug& debug)
+  {
+    debug << std::get<I>(tupel);
+    if (I + 1 < sizeof...(TupelTypes)) debug << ", ";
+    printTupel<I + 1, TupelTypes...>(tupel, debug);
+  }
+
+class QRealSignalCounter : public QObject, public SignalCounter<qreal> {
+  Q_OBJECT
+public:
+  explicit QRealSignalCounter(QObject *parent = 0);
+public slots:
+  void record(const qreal &value);
+};
+
+class BoolSignalCounter : public QObject, public SignalCounter<bool> {
+  Q_OBJECT
+public:
+  explicit BoolSignalCounter(QObject *parent = 0);
+public slots:
+  void record(const bool& value);
+};
+
+class ColorSignalCounter : public QObject, public SignalCounter<QColor> {
+  Q_OBJECT
+public:
+  explicit ColorSignalCounter(QObject *parent = 0);
+public slots:
+  void record(const QColor&value);
+};
+
+class FontSignalCounter : public QObject, public SignalCounter<QFont> {
+  Q_OBJECT
+public:
+  explicit FontSignalCounter(QObject *parent = 0);
+public slots:
+  void record(const QFont&value);
+};
+
+class StringListSignalCounter : public QObject, public SignalCounter<QStringList> {
+  Q_OBJECT
+public:
+  explicit StringListSignalCounter(QObject *parent = 0);
+public slots:
+  void record(const QStringList&value);
+};
+
+class ModelIndexSignalCounter : public QObject, public SignalCounter<QModelIndex, int, int>
+{
+  Q_OBJECT
+public:
+  explicit ModelIndexSignalCounter(QObject *parent = 0);
+public slots:
+  void record(const QModelIndex& index, int start, int end);
 };
 
 #endif // SIGNALCOUNTER_H

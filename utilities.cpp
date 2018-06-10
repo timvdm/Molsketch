@@ -1,9 +1,30 @@
+/***************************************************************************
+ *   Copyright (C) 2018 by Hendrik Vennekate, HVennekate@gmx.de            *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
+ ***************************************************************************/
+
 #include "utilities.h"
 
 #include <QCheckBox>
 #include <QLineEdit>
+#include <QMainWindow>
 #include <QTableView>
 #include <QXmlStreamReader>
+#include <QMenuBar>
 
 void mouseMoveEvent(QWidget *widget, Qt::MouseButton button, Qt::KeyboardModifiers stateKey, QPoint pos, int delay) {
     QTEST_ASSERT(widget);
@@ -96,4 +117,33 @@ QXmlStreamAttributes getAttributesOfParentElement(QXmlStreamReader& reader, cons
     while (!reader.atEnd() && QXmlStreamReader::StartElement != reader.readNext());
   }
   return QXmlStreamAttributes();
+}
+
+template<typename T, QString (T::*FP)() const>
+T *findItem(const QList<T*> &items, const QString& text) {
+ for (auto item : items)
+   if ((item->*FP)().remove(QRegExp("&(?!&)")) == text)
+     return item;
+ TS_FAIL("Could not find item by the name of " + text);
+ return nullptr;
+}
+
+void clickMenuEntry(const QStringList &names, QMainWindow *mainWindow) {
+  auto menuBar = mainWindow->menuBar();
+  auto menu = findItem<QMenu, &QMenu::title>(menuBar->findChildren<QMenu*>(QString(), Qt::FindDirectChildrenOnly), names.first());
+  QTest::mouseClick(menuBar, Qt::LeftButton, Qt::KeyboardModifiers(), menuBar->actionGeometry(menu->menuAction()).center());
+
+  for (auto subMenuName : names.mid(1, names.size() -2)) {
+    qFatal("Clicking on submenus is not yet implemented!"); // TODO
+  }
+  auto action = findItem<QAction, &QAction::text>(menu->actions(), names.last());
+  QTest::mouseClick(menu, Qt::LeftButton, Qt::KeyboardModifiers(), menu->actionGeometry(action).center());
+}
+
+void leftMouseClick(QWidget *w, QPoint p) {
+  QTest::mouseClick(w, Qt::LeftButton, Qt::KeyboardModifiers(), p);
+}
+
+void leftMouseClick(QWindow *w, QPoint p) {
+  QTest::mouseClick(w, Qt::LeftButton, Qt::KeyboardModifiers(), p);
 }

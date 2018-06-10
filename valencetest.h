@@ -14,11 +14,13 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
 #include <cxxtest/TestSuite.h>
 #include <atom.h>
+#include <bond.h>
 #include <element.h>
+#include <QDebug>
 
 using namespace Molsketch;
 
@@ -85,7 +87,7 @@ QVector<ElementData> testData() {
                    << ep("K", K)
                    << ep("Rb", Rb)
                    << ep("Cs", Cs)
-                   << ep("Fr", Fr), 1,1,1,0,1)
+                   << ep("Fr", Fr), 1, 1, 1, 1, 0)
       << el("He", He, 0, 18, 2, 0, 0)
       << groupData(epv()
                    << ep("Ne", Ne)
@@ -99,88 +101,88 @@ QVector<ElementData> testData() {
                    << ep("Ca", Ca)
                    << ep("Sr", Sr)
                    << ep("Ba", Ba)
-                   << ep("Ra", Ra), 2, 2, 2, 0, 2)
+                   << ep("Ra", Ra), 2, 2, 2, 2, 0)
       << groupData(epv()
                    << ep("B", B)
                    << ep("Al", Al)
                    << ep("Ga", Ga)
                    << ep("In", In)
                    << ep("Tl", Tl)
-                   << ep("Uut", Uut), 3, 13, 3, 0, 3)
+                   << ep("Uut", Uut), 3, 13, 3, 3, 0)
       << groupData(epv()
                    << ep("C", C)
                    << ep("Si", Si)
                    << ep("Ge", Ge)
                    << ep("Sn", Sn)
-                   << ep("Pb", Pb), 4, 14, 4, 0, 4)
+                   << ep("Pb", Pb), 4, 14, 4, 4, 0)
       << groupData(epv()
                    << ep("N", N)
                    << ep("P", P)
                    << ep("As", As)
                    << ep("Sb", Sb)
-                   << ep("Bi", Bi), 3, 15, 5, 0, 0) // TODO expected charge is weird!
+                   << ep("Bi", Bi), 3, 15, 5, 3, 0) // TODO expected charge is weird!
       << groupData(epv()
                    << ep("O", O)
                    << ep("S", S)
                    << ep("Se", Se)
                    << ep("Te", Te)
-                   << ep("Po", Po), 2, 16, 6, 0, 0)
+                   << ep("Po", Po), 2, 16, 6, 2, 0)
       << groupData(epv()
                    << ep("F", F)
                    << ep("Cl", Cl)
                    << ep("Br", Br)
                    << ep("I", I)
-                   << ep("At", At), 1, 17, 7, 0, -1)
+                   << ep("At", At), 1, 17, 7, 1, 0)
       << groupData(epv()
                    << ep("Sc", Sc)
                    << ep("Y", Y)
                    << ep("La", La)
-                   << ep("Ac", Ac), 0, 3, 1, 0, 1)
+                   << ep("Ac", Ac), 3, 3, 3, 3, 0)
       << groupData(epv()
                    << ep("Ti", Ti)
                    << ep("Zr", Zr)
                    << ep("Hf", Hf)
-                   << ep("Rf", Rf), 0, 4, 2, 0, 2)
+                   << ep("Rf", Rf), 4, 4, 4, 4, 0)
       << groupData(epv()
                    << ep("V", V)
                    << ep("Nb", Nb)
                    << ep("Ta", Ta)
-                   << ep("Db", Db), 0, 5, 3, 0, 3)
+                   << ep("Db", Db), 5, 5, 5, 5, 0)
       << groupData(epv()
                    << ep("Cr", Cr)
                    << ep("Mo", Mo)
                    << ep("W", W)
-                   << ep("Sg", Sg), 0, 6, 4, 0, 4)
+                   << ep("Sg", Sg), 3, 6, 6, 3, 0)
       << groupData(epv()
                    << ep("Mn", Mn)
                    << ep("Tc", Tc)
                    << ep("Re", Re)
-                   << ep("Bh", Bh), 0, 7, 5, 0, 5)
+                   << ep("Bh", Bh), 2, 7, 7, 2, 0)
       << groupData(epv()
                    << ep("Fe", Fe)
                    << ep("Ru", Ru)
                    << ep("Os", Os)
-                   << ep("Hs", Hs), 0, 8, 6, 0, 6)
+                   << ep("Hs", Hs), 2, 8, 8, 2, 0)
       << groupData(epv()
                    << ep("Co", Co)
                    << ep("Rh", Rh)
                    << ep("Ir", Ir)
-                   << ep("Mt", Mt), 0, 9, 7, 0, 7)
+                   << ep("Mt", Mt), 2, 9, 9, 2, 0)
       << groupData(epv()
                    << ep("Ni", Ni)
                    << ep("Pd", Pd)
                    << ep("Pt", Pt)
-                   << ep("Ds", Ds), 0, 10, 8, 0, 8)
+                   << ep("Ds", Ds), 2, 10, 10, 2, 0)
       << groupData(epv()
                    << ep("Cu", Cu)
                    << ep("Ag", Ag)
                    << ep("Au", Au)
-                   << ep("Rg", Rg), 0, 11, 9, 0, 9)
+                   << ep("Rg", Rg), 1, 11, 11, 1, 0)
       << groupData(epv()
                    << ep("Zn", Zn)
                    << ep("Cd", Cd)
                    << ep("Hg", Hg)
-                   << ep("Uub", Uub), 0, 12, 10, 0, 10)
+                   << ep("Uub", Uub), 2, 12, 2, 2, 0)
       << groupData(epv()
                    << ep("Ce", Ce)
                    << ep("Th", Th)
@@ -209,7 +211,7 @@ QVector<ElementData> testData() {
                    << ep("Yb", Yb)
                    << ep("No", No)
                    << ep("Lu", Lu)
-                   << ep("Lr", Lr), 0, 3, 1, 0, 1);
+                   << ep("Lr", Lr), 3, 3, 3, 3, 0);
 }
 
 const char* convert(const QString& string)
@@ -228,8 +230,8 @@ public:
       TSM_ASSERT_EQUALS(convert(d.symbol + " expected valence"), d.expectedValences, expectedValence(d.element));
       TSM_ASSERT_EQUALS(convert(d.symbol + " group"), d.elementGroup, elementGroup(d.element));
       TSM_ASSERT_EQUALS(convert(d.symbol + " valence electrons"), d.valenceElectrons, numValenceElectrons(d.element));
-      TSM_ASSERT_EQUALS(convert(d.symbol + " implicit hydrogens"), d.implicitHydrogens, atom.numImplicitHydrogens());
       atom.setElement(d.symbol);
+      TSM_ASSERT_EQUALS(convert(d.symbol + " implicit hydrogens"), d.implicitHydrogens, atom.numImplicitHydrogens());
       TSM_ASSERT_EQUALS(convert(d.symbol + " charge"), d.charge, atom.charge());
     }
   }

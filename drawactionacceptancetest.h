@@ -14,7 +14,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
 
 #include <QSet>
@@ -40,20 +40,23 @@ public:
     Atom *atom = new Atom(originalAtom, "C");
     Molecule *molecule = new Molecule(QSet<Atom*>() << atom, QSet<Bond*>());
     MolScene *scene = new MolScene;
-    MolView view(scene);
+    MolView *view = new MolView(scene);
     drawAction *action = new drawAction(scene);
     action->setChecked(true);
-    scene->addItem(molecule);
+    scene->addMolecule(molecule);
 
-    view.show();
+    view->show();
 
-    QTest::mousePress(view.viewport(), Qt::LeftButton, Qt::NoModifier, view.mapFromScene(drawingStart));
-    QTest::mouseMove(view.viewport(), view.mapFromScene(drawingStop));
-    QTest::mouseRelease(view.viewport(), Qt::LeftButton, Qt::NoModifier, view.mapFromScene(drawingStop));
+    QTest::mousePress(view->viewport(), Qt::LeftButton, Qt::NoModifier, view->mapFromScene(drawingStart));
+    QTest::mouseMove(view->viewport(), view->mapFromScene(drawingStop));
+    QTest::mouseRelease(view->viewport(), Qt::LeftButton, Qt::NoModifier, view->mapFromScene(drawingStop));
 
     QGraphicsItem* newAtom = scene->itemAt(targetPosition, QTransform());
     TS_ASSERT(newAtom); // TODO macro for assert present or return // TODO QSM_ASSERT with message as QString
     if (!newAtom) return;
     QS_ASSERT_EQUALS(newAtom->pos(), targetPosition);
+
+    delete view;
+    delete scene;
   }
 };

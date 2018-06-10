@@ -14,23 +14,21 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
+#include "signalcounter.h"
 
-#ifndef MODELINDEXSIGNALCOUNTER_H
-#define MODELINDEXSIGNALCOUNTER_H
+#define SIGNAL_COUNTER_DEF(NAME, TYPE) NAME::NAME(QObject *parent) : QObject(parent) {} \
+  void NAME::record(const TYPE& value) { addPayload(value); }
 
-#include <QObject>
-#include <QModelIndex>
-#include <signalcounter.h>
+SIGNAL_COUNTER_DEF(QRealSignalCounter, qreal)
+SIGNAL_COUNTER_DEF(BoolSignalCounter, bool)
+SIGNAL_COUNTER_DEF(ColorSignalCounter, QColor)
+SIGNAL_COUNTER_DEF(FontSignalCounter, QFont)
+SIGNAL_COUNTER_DEF(StringListSignalCounter, QStringList)
 
-class ModelIndexSignalCounter : public QObject, public SignalCounter<QModelIndex, int, int>
-{
-  Q_OBJECT
-public:
-  explicit ModelIndexSignalCounter(QObject *parent = 0);
-public slots:
-  void record(const QModelIndex& index, int start, int end);
-};
+ModelIndexSignalCounter::ModelIndexSignalCounter(QObject *parent) : QObject(parent) {}
 
-#endif // MODELINDEXSIGNALCOUNTER_H
+void ModelIndexSignalCounter::record(const QModelIndex &index, int start, int end) {
+  addPayload(index, start, end);
+}

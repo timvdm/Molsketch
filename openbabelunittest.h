@@ -14,19 +14,21 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
 
 #include <cxxtest/TestSuite.h>
 #include <obabeliface.h>
 #include <molecule.h>
+#include "utilities.h"
 using namespace Molsketch;
 #include <QDebug>
 
 class OpenBabelUnitTest : public CxxTest::TestSuite {
 public:
   void testConversionFromSmilesString() {
-    Molecule* molecule = fromSmiles("CCCC");
+    qputenv("BABEL_LIBDIR", "/usr/lib64/openbabel/2.4.1"); // TODO make configurable
+    Molecule* molecule = assertNotNull(fromSmiles("CCCC"));
     TS_ASSERT_EQUALS(molecule->atoms().size(), 4);
     for(Atom* atom : molecule->atoms())
       TS_ASSERT_EQUALS(atom->element(), "C");

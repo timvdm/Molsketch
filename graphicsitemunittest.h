@@ -14,7 +14,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
 
 #include <cxxtest/TestSuite.h>
@@ -31,7 +31,7 @@ const QByteArray ONE_ATOM_XML("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
 const QByteArray TWO_ATOMS_XML("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
                                "<molsketchItems>"
                                "<atom elementType=\"A\" hydrogenCount=\"0\" colorR=\"0\" colorG=\"0\" colorB=\"0\" scalingParameter=\"1\" coordinates=\"3,3\"/>"
-                               "<atom elementType=\"B\" hydrogenCount=\"0\" colorR=\"0\" colorG=\"0\" colorB=\"0\" scalingParameter=\"1\" coordinates=\"4,5\"/>"
+                               "<atom elementType=\"B\" hydrogenCount=\"3\" colorR=\"0\" colorG=\"0\" colorB=\"0\" scalingParameter=\"1\" coordinates=\"4,5\"/>"
                                "</molsketchItems>\n"
                                );
 const Atom atomA(QPointF(3,3), "A");

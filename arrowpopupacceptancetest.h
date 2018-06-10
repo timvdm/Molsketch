@@ -14,7 +14,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
 
 #include <cxxtest/TestSuite.h>
@@ -86,28 +86,28 @@ public:
 
   void testCheckBoxToTipLink() {
     popup->connectArrow(arrow);
-    QTest::mouseClick(beginningTop, Qt::LeftButton);
+    clickCheckBox(beginningTop);
     TS_ASSERT_EQUALS(arrow->getArrowType(), Arrow::UpperForward);
 
-    QTest::mouseClick(endTop, Qt::LeftButton);
+    clickCheckBox(endTop);
     TS_ASSERT_EQUALS(arrow->getArrowType(), Arrow::UpperForward | Arrow::UpperBackward);
 
-    QTest::mouseClick(beginningBottom, Qt::LeftButton);
+    clickCheckBox(beginningBottom);
     TS_ASSERT_EQUALS(arrow->getArrowType(), Arrow::UpperForward | Arrow::UpperBackward | Arrow::LowerForward);
 
-    QTest::mouseClick(endBottom, Qt::LeftButton);
+    clickCheckBox(endBottom);
     TS_ASSERT_EQUALS(arrow->getArrowType(), Arrow::UpperForward | Arrow::UpperBackward | Arrow::LowerForward | Arrow::LowerBackward);
 
-    QTest::mouseClick(endBottom, Qt::LeftButton);
+    clickCheckBox(endBottom);
     TS_ASSERT_EQUALS(arrow->getArrowType(), Arrow::UpperForward | Arrow::UpperBackward | Arrow::LowerForward);
 
-    QTest::mouseClick(beginningBottom, Qt::LeftButton);
+    clickCheckBox(beginningBottom);
     TS_ASSERT_EQUALS(arrow->getArrowType(), Arrow::UpperForward | Arrow::UpperBackward);
 
-    QTest::mouseClick(endTop, Qt::LeftButton);
+    clickCheckBox(endTop);
     TS_ASSERT_EQUALS(arrow->getArrowType(), Arrow::UpperForward);
 
-    QTest::mouseClick(beginningTop, Qt::LeftButton);
+    clickCheckBox(beginningTop);
     TS_ASSERT_EQUALS(arrow->getArrowType(), Arrow::NoArrow);
   }
 
