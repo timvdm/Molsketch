@@ -30,10 +30,11 @@
 
 //// code for parsing frame instructions TODO externalize
 ///
-/* Syntax for coordinates:
+/* Syntax for coordinates (r, f, l need to be in order after the unprefixed coordinate):
  * + - add to current coordinate
  * r - relative value (relative to bounding box)
  * f - relative value (relative to font size)
+ * l - relative value (line width)
  *
  * Postfix: (use coord stack)
  * - - line to
@@ -46,36 +47,31 @@ class CoordinateParser
 {
 private:
   QPointF currentCoordinate;
-  qreal relativeX, relativeY, fontX, fontY;
-  void applyScaling(const QString& rfStringX, const QString& rfStringY, QPointF& coordinate) const
-  {
-    if ("r" == rfStringX) coordinate.rx() *= relativeX;
-    if ("f" == rfStringX) coordinate.rx() *= fontX;
-    if ("r" == rfStringY) coordinate.ry() *= relativeY;
-    if ("f" == rfStringY) coordinate.ry() *= fontY;
-  }
+  qreal relativeX, relativeY, fontX, fontY, lineWidth;
 public:
   CoordinateParser(qreal relativeX = 0,
                    qreal relativeY = 0,
                    qreal fontX = 0,
-                   qreal fontY = 0)
+                   qreal fontY = 0,
+                   qreal lineWidth = 0)
     : relativeX(relativeX),
       relativeY(relativeY),
       fontX(fontX),
-      fontY(fontY)
+      fontY(fontY),
+      lineWidth(lineWidth)
   {}
   void reset() { setCurrentCoordinate(QPointF()); }
   QPointF getCurrentCoordinate() const { return currentCoordinate; }
   void setCurrentCoordinate(const QPointF &value) { currentCoordinate = value; }
   void parse(const QStringList& l)
   {
-    if (l.size() != 5)
+    if (l.size() != 9)
     {
       qDebug() << "coordinateParser: invalid number of strings to parse: " + QString::number(l.size());
       return;
     }
-    QPointF coord(l[2].toDouble(), l[4].toDouble());
-    applyScaling(l[1], l[3], coord);
+    QPointF coord(l[1].toDouble() + relativeX * l[2].toDouble() + fontX * l[3].toDouble() + lineWidth * l[4].toDouble(),
+        l[5].toDouble() + relativeY * l[6].toDouble() + fontY * l[7].toDouble() + lineWidth * l[8].toDouble());
     if ("+" == l[0]) currentCoordinate += coord;
     else currentCoordinate = coord;
   }
@@ -106,8 +102,9 @@ public:
   }
   static QString coordinateRegExp()
   {
-    QString numberRegExp("([rf]?)([+-]?[0-9]*.?[0-9]+(?:[eE][+-]?[0-9])?)");
-    return "(\\+?)\\(" + numberRegExp + "," + numberRegExp + "\\)";
+    QString numberRegExp("([+-]?[0-9]*.?[0-9]+(?:[eE][+-]?[0-9])?)");
+    QString compoundCoordinate(numberRegExp + "?(?:r" + numberRegExp + ")?(?:f" + numberRegExp + ")?(?:l" + numberRegExp + ")?");
+    return "(\\+?)\\(" + compoundCoordinate + "," + compoundCoordinate + "\\)";
   }
 };
 
@@ -131,20 +128,20 @@ class SilentMoveSegment : public PathSegmentParser
     parser.parse(regExp().capturedTexts().mid(1));
   }
 public:
-  SilentMoveSegment() : PathSegmentParser("$") {}
+  SilentMoveSegment() : PathSegmentParser("\\$" + coordinateRegExp()) {}
 };
 
 class QuadToSegment : public PathSegmentParser
 {
   void process(QPainterPath &path, CoordinateParser &parser)
   {
-    parser.parse(regExp().capturedTexts().mid(1,5));
+    parser.parse(regExp().capturedTexts().mid(1,9));
     QPointF point1(parser.getCurrentCoordinate());
-    parser.parse(regExp().capturedTexts().mid(6));
+    parser.parse(regExp().capturedTexts().mid(10));
     path.quadTo(point1, parser.getCurrentCoordinate());
   }
 public:
-  QuadToSegment() : PathSegmentParser("." + coordinateRegExp() + "." + coordinateRegExp()) {}
+  QuadToSegment() : PathSegmentParser("\\." + coordinateRegExp() + "\\." + coordinateRegExp()) {}
 };
 //// end code for parsing
 
@@ -189,7 +186,7 @@ namespace Molsketch {
       baseRect = frame->childrenBoundingRect();
     }
 
-    QPainterPath parseFramePath()
+    QPainterPath parseFramePath(qreal lineWidth)
     {
       refreshBaseRect();
 
@@ -197,7 +194,8 @@ namespace Molsketch {
             baseRect.width(), // relX
             baseRect.height(), // rely
             10, // fontX TODO
-            10); // fontY
+            10, // fontY
+            lineWidth);
 
       auto purePath = framePathCode;
       purePath.remove(QRegExp("\\s+"));
@@ -299,7 +297,7 @@ namespace Molsketch {
     pen.setColor(getColor());
     painter->setPen(pen);
 
-    QPainterPath painterPath = d->parseFramePath();
+    QPainterPath painterPath = d->parseFramePath(sceneLineWidth(qobject_cast<MolScene*>(scene())));
     painter->drawPath(painterPath);
     // TODO check path coordinates vs. bounding rect of parentItem()
     // TODO incorporate path size in boundingRect() (maybe
@@ -311,7 +309,7 @@ namespace Molsketch {
 
   QRectF Frame::boundingRect() const // TODO include selectable points if active/selected (hovered/clicked)
   {
-    QRectF br = d->parseFramePath().boundingRect();
+    QRectF br = d->parseFramePath(sceneLineWidth(qobject_cast<MolScene*>(scene()))).boundingRect();
     if (!d->isHovering) return br;
     br.setTopLeft(br.topLeft() - QPointF(5,5));
     br.setBottomRight(br.bottomRight() + QPointF(5,5));
@@ -410,7 +408,7 @@ namespace Molsketch {
   }
 
   qreal Frame::sceneLineWidth(MolScene *scene) const {
-    return scene->settings()->frameLineWidth()->get();
+    return scene ? scene->settings()->frameLineWidth()->get() : 0;
   }
 
 

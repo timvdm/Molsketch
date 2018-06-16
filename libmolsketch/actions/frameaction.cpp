@@ -40,12 +40,12 @@ namespace Molsketch {
 
   QString FrameAction::rightBracketFrame()
   {
-    return "(r .5,r.5)+(-10,0)-+( 10,0)-(r .5,r-.5)-+(-10,0)";
+    return "(-10r.5l1,r.5l1)-+( 10,0)-(r .5l1,r-.5l-1)-+(-10,0)";
   }
 
   QString FrameAction::leftBracketFrame()
   {
-    return "(r-.5,r.5)+( 10,0)-+(-10,0)-(r-.5,r-.5)-+( 10,0)";
+    return "(r-.5l-1,r.5l1)+( 10,0)-+(-10,0)-(r-.5l-1,r-.5l-1)-+( 10,0)";
   }
 
   QString FrameAction::bracketsFrame()
@@ -55,7 +55,7 @@ namespace Molsketch {
 
   QString FrameAction::angleFrame()
   {
-    return "(r.5,r-.5)+(-20,0)-+(20,0)-+(0,20)";
+    return "(-20r.5l1,r-.5l-1)-+(20,0)-+(0,20)";
   }
 
   QString FrameAction::curlyBracketsFrame()
@@ -65,32 +65,30 @@ namespace Molsketch {
 
   QString FrameAction::rectangleFrame()
   {
-    return "(r.5,r.5)-(r.5,r-.5)-(r-.5,r-.5)-(r-.5,r.5)-(r.5,r.5)";
+    return "(r.5l1,r.5l1)-(r.5l1,r-.5l-1)-(r-.5l-1,r-.5l-1)-(r-.5l-1,r.5l1)-(r.5l1,r.5l1)";
   }
 
   QString FrameAction::roundedCornerRectangleFrame()
   {
-    return "(r-.5,r.5)+(0,-10).+(0,10).+(10,0)"
-           "$(r.5,r.5)-+(-10,0).+(10,0).+(0,-10)"
-           "$(r.5,r-.5)-+(0,10).+(0,-10).+(-10,0)"
-           "$(r-.5,r-.5)-+(10,0).+(-10,0).+(0,10)"
-           "$(r-.5,r.5)-+(0,-10)";
+    return "(-2.5r-.5l-.5,-7.5r.5l0.5).+(0,10).+(10,0)"
+           "-(-7.5r.5l0.5,2.5r.5l0.5).+(10,0).+(0,-10)"
+           "-(2.5r.5l0.5,7.5r-.5l-.5).+(0,-10).+(-10,0)"
+           "-(7.5r-.5l-.5,-2.5r-.5l-.5).+(-10,0).+(0,10)"
+           "-(-2.5r-.5l-.5,-7.5r.5l0.5)";
   }
 
   QString FrameAction::leftCurlyBracketFrame()
   {
-    return "(r-.5,r-.5)+(10,0).+(-10,0).+(0,10)"
-           "$(r-.5,r0)-+(0,-10).+(0,10).+(-5,0)"
-           ".+(5,0).+(0,10)$(r-.5,r.5)-+(0,-10)"
-           ".+(0,10).+(10,0)";
+    return "(7.5r-.5l-.5,-2.5r-.5l-.5).+(-10,0).+(0,10)"
+           "-(-2.5r-.5l-.5,-10).+(0,10).+(-5,0).+(5,0).+(0,10)"
+           "-(-2.5r-.5l-.5,-7.5r.5l0.5).+(0,10).+(10,0)";
   }
 
   QString FrameAction::rightCurlyBracketFrame()
   {
-    return "(r.5,r-.5)+(-10,0).+(10,0).+(0,10)"
-           "$(r.5,r0)-+(0,-10).+(0,10).+(5,0)"
-           ".+(-5,0).+(0,10)$(r.5,r.5)-+(0,-10)"
-           ".+(0,10).+(-10,0)";
+    return "(-7.5r.5l.5,-2.5r-.5l-.5).+(10,0).+(0,10)"
+           "-(2.5r.5l0.5,-10).+(0,10).+(5,0).+(-5,0).+(0,10)"
+           "-(2.5r.5l0.5,-7.5r.5l0.5).+(0,10).+(-10,0)";
   }
 
   FrameAction::FrameAction(MolScene *scene)
