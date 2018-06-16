@@ -99,8 +99,6 @@ namespace Molsketch {
       /** Renders the @p rect on the scene in a image. */
       QImage renderImage(const QRectF &rect);
 
-      QImage renderMolToImage (Molecule *mol);
-
       QByteArray toSvg();
 
 

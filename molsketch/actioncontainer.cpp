@@ -30,7 +30,6 @@
 #include <QMimeData>
 
 #include <actions/coloraction.h>
-#include <actions/connectaction.h>
 #include <actions/deleteaction.h>
 #include <actions/drawaction.h>
 #include <actions/flipbondaction.h>
@@ -218,7 +217,6 @@ QToolBar *ActionContainer::createModifyToolBar(Molsketch::MolScene *scene, QWidg
   modifyToolBar->addAction(new lineWidthAction(scene));
   modifyToolBar->addAction(new chargeAction(scene));
   modifyToolBar->addAction(new hydrogenAction(scene));
-  modifyToolBar->addAction(new connectAction(scene));
   modifyToolBar->addAction(new deleteAction(scene));
   modifyToolBar->addAction(new flipBondAction(scene));
   modifyToolBar->addAction(new flipStereoBondsAction(scene));

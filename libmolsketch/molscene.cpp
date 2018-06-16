@@ -283,21 +283,6 @@ namespace Molsketch {
     d = new privateData(this, settings);
   }
 
-  QImage MolScene::renderMolToImage (Molecule *mol)
-  {
-                QRectF rect = mol ->boundingRect();
-                QImage image(int(rect.width()),int(rect.height()),QImage::Format_RGB32);
-                image.fill(QColor("white").rgb());
-
-                // Creating and setting the painter
-                QPainter painter(&image);
-                painter.setRenderHint(QPainter::Antialiasing);
-
-                // Rendering in the image and saving to file
-                render(&painter,QRectF(0,0,rect.width(),rect.height()),QRectF (mol ->mapToScene (rect.topLeft ()), mol ->mapToScene (rect.bottomRight ())));
-                return image;
-  }
-
   QByteArray MolScene::toSvg()
   {
     QList<QGraphicsItem*> selection(selectedItems());
