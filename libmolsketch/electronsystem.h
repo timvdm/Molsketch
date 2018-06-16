@@ -30,7 +30,7 @@ namespace Molsketch {
    * Base class for electron systems.
    *
    * The ElectronSystem class and it's subclasses are an alternative way to
-   * store how electrons are distributed in a molecule. It overcomes many 
+   * store how electrons are distributed in a molecule. It overcomes many
    * problems associated with connection tables and can be used to represent
    * a wide variety molecules.
    */
@@ -44,8 +44,8 @@ namespace Molsketch {
         DeficientSigmaType,
       };
 
-      explicit ElectronSystem();
-      virtual ~ElectronSystem();
+      explicit ElectronSystem(const QList<Atom*>& atoms = QList<Atom*>(), int numElectrons = 0);
+      virtual ~ElectronSystem() {}
 
       /**
        * Get the type for this electron system
@@ -56,6 +56,7 @@ namespace Molsketch {
       int numAtoms() const;
       QList<Atom*> atoms() const;
       void setAtoms(const QList<Atom*> &atoms);
+      void setAtoms(const QPair<Atom*, Atom*> &atoms);
 
       int numElectrons() const;
       void setNumElectrons(int numElectrons);
@@ -75,7 +76,7 @@ namespace Molsketch {
         Bridged, //!< bridged sigma electron system (e.g. B-H-B in B5H11, transition states, ...)
         Closed //!< closed sigma electron system (e.g. BBB in B5H11)
       };
-      
+
       SigmaElectrons(Geometry geometry = TwoCenter) : ElectronSystem(), m_geometry(geometry) {}
       virtual ~SigmaElectrons() {}
 
@@ -93,6 +94,8 @@ namespace Molsketch {
     public:
       PiElectrons() : ElectronSystem() {}
       virtual ~PiElectrons() {}
+      PiElectrons(QList<Atom*> atoms, int numElectrons);
+      PiElectrons(const QPair<Atom*, Atom*>& atoms, int numElectrons);
 
       Type type() const { return PiType; }
   };

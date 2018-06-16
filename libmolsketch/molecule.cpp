@@ -516,117 +516,118 @@ namespace Molsketch {
     return bondList;
   }
 
-  void Molecule::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
-  {
-    Q_UNUSED(option)
-        Q_UNUSED(widget)
+void Molecule::paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget)
+{
+  Q_UNUSED(option)
+  Q_UNUSED(widget)
 
-        // draw a blue rectangle if this molecule is selected
-        if(isSelected()) {
-      painter->setPen(Qt::blue);
-      painter->drawRect(boundingRect()); // TODO simply draw rectangle around own and children!
-    } // TODO move this somewhere else, so that it can have a different Z value
+  // draw a blue rectangle if this molecule is selected
+  if(isSelected()) {
+    painter->setPen(Qt::blue);
+    painter->drawRect(boundingRect()); // TODO simply draw rectangle around own and children!
+  } // TODO move this somewhere else, so that it can have a different Z value
 
-    // draw the electron systems
+  // draw the electron systems
 
-    if (scene()) {
-      if (!scene()->settings()->electronSystemsVisible()->get())
-        return;
+  if (!scene()) return;
+  if (!scene()->settings()->electronSystemsVisible()->get()) return;
 
-      updateElectronSystems();
-      QPen pen = painter->pen();
-      pen.setWidth(10);
-      pen.setCapStyle(Qt::RoundCap);
-      pen.setColor(QColor(255, 200, 0));
-      painter->setPen(pen);
-      //  painter->setOpacity(0.3);
+  updateElectronSystems();
+  paintElectronSystems(painter);
+}
 
-      QList<Atom*> doneList;
+void Molecule::paintElectronSystems(QPainter *painter) const {
+  QPen pen = painter->pen();
+  pen.setWidth(10);
+  pen.setCapStyle(Qt::RoundCap);
+  pen.setColor(QColor(255, 200, 0));
+  painter->setPen(pen);
+  //  painter->setOpacity(0.3);
 
-      foreach (ElectronSystem *es, m_electronSystems) {
-        QPointF midPoint(0.0, 0.0);
+  QList<Atom*> doneList;
 
-        if (es->atoms().size() == 1) {
-          QPointF dir(0.0, 0.0), orthogonal;
-          Atom *atom = es->atoms().at(0);
-          doneList.append(atom);
-          foreach (Atom *nbr, atom->neighbours())
-            dir += normalized(nbr->pos() - atom->pos());
-          dir /= atom->numBonds();
-          dir = normalized(dir);
-          if (!atom->numBonds()) {
-            dir = QPointF(0.0, 1.0);
-            orthogonal = QPointF(1.0, 0.0);
-          } else {
-            orthogonal = QPointF(dir.y(), -dir.x());
-          }
-          switch (doneList.count(atom)) {
+  foreach (ElectronSystem *es, m_electronSystems) {
+    QPointF midPoint(0.0, 0.0);
+
+    if (es->atoms().size() == 1) {
+      QPointF dir(0.0, 0.0), orthogonal;
+      Atom *atom = es->atoms().at(0);
+      doneList.append(atom);
+      foreach (Atom *nbr, atom->neighbours())
+        dir += normalized(nbr->pos() - atom->pos());
+      dir /= atom->numBonds();
+      dir = normalized(dir);
+      if (!atom->numBonds()) {
+        dir = QPointF(0.0, 1.0);
+        orthogonal = QPointF(1.0, 0.0);
+      } else {
+        orthogonal = QPointF(dir.y(), -dir.x());
+      }
+      switch (doneList.count(atom)) {
+        case 1:
+          switch (atom->numBonds()) {
             case 1:
-              switch (atom->numBonds()) {
-                case 1:
-                  painter->drawEllipse(atom->scenePos() - 15 * orthogonal, 5, 5);
-                  break;
-                default:
-                  painter->drawEllipse(atom->scenePos() - 15 * dir, 5, 5);
-                  break;
-              }
-              break;
-            case 2:
-              switch (atom->numBonds()) {
-                case 1:
-                  painter->drawEllipse(atom->scenePos() + 15 * orthogonal, 5, 5);
-                  break;
-                default:
-                  painter->drawEllipse(atom->scenePos() + 15 * dir, 5, 5);
-                  break;
-              }
-              break;
-            case 3:
-              switch (atom->numBonds()) {
-                case 1:
-                  painter->drawEllipse(atom->scenePos() - 15 * dir, 5, 5);
-                  break;
-                default:
-                  painter->drawEllipse(atom->scenePos() - 15 * orthogonal, 5, 5);
-                  break;
-              }
-              break;
-            case 4:
               painter->drawEllipse(atom->scenePos() - 15 * orthogonal, 5, 5);
               break;
             default:
-              painter->drawEllipse(atom->scenePos(), 5, 5);
+              painter->drawEllipse(atom->scenePos() - 15 * dir, 5, 5);
               break;
-
           }
-
-        } else {
-          foreach (Atom *a, es->atoms()) {
-            foreach (Atom *b, es->atoms()) {
-              if (bondBetween(a, b))
-                painter->drawLine(a->scenePos(), b->scenePos());
-              //          painter->drawEllipse(atom->scenePos(), 5, 5);
-            }
-
-            midPoint += mapToParent(a->scenePos());
+          break;
+        case 2:
+          switch (atom->numBonds()) {
+            case 1:
+              painter->drawEllipse(atom->scenePos() + 15 * orthogonal, 5, 5);
+              break;
+            default:
+              painter->drawEllipse(atom->scenePos() + 15 * dir, 5, 5);
+              break;
           }
+          break;
+        case 3:
+          switch (atom->numBonds()) {
+            case 1:
+              painter->drawEllipse(atom->scenePos() - 15 * dir, 5, 5);
+              break;
+            default:
+              painter->drawEllipse(atom->scenePos() - 15 * orthogonal, 5, 5);
+              break;
+          }
+          break;
+        case 4:
+          painter->drawEllipse(atom->scenePos() - 15 * orthogonal, 5, 5);
+          break;
+        default:
+          painter->drawEllipse(atom->scenePos(), 5, 5);
+          break;
+
+      }
+
+    } else {
+      foreach (Atom *a, es->atoms()) {
+        foreach (Atom *b, es->atoms()) {
+          if (bondBetween(a, b))
+            painter->drawLine(a->scenePos(), b->scenePos());
+          //          painter->drawEllipse(atom->scenePos(), 5, 5);
         }
 
-        if (es->numAtoms() < 2)
-          continue;
-        midPoint /= es->numAtoms();
-
-        painter->save();
-        painter->setPen(Qt::black);
-        QPointF offset(20.0, 20.0);
-        painter->drawText(QRectF(midPoint - offset, midPoint + offset), Qt::AlignCenter, QString("%1pi").arg(es->numElectrons()));
-        painter->restore();
-
-
+        midPoint += mapToParent(a->scenePos());
       }
     }
 
+    if (es->numAtoms() < 2)
+      continue;
+    midPoint /= es->numAtoms();
+
+    painter->save();
+    painter->setPen(Qt::black);
+    QPointF offset(20.0, 20.0);
+    painter->drawText(QRectF(midPoint - offset, midPoint + offset), Qt::AlignCenter, QString("%1pi").arg(es->numElectrons()));
+    painter->restore();
+
+
   }
+}
 
   QPolygonF Molecule::coordinates() const
   {
@@ -653,138 +654,102 @@ namespace Molsketch {
     return static_cast<MolScene*>(QGraphicsItem::scene());
   }
 
-  bool NumAtomsLessThan(const ElectronSystem *es1, const ElectronSystem *es2)
+  bool NumAtomsMoreThan(const ElectronSystem *es1, const ElectronSystem *es2)
   {
-    return es1->numAtoms() < es2->numAtoms();
+    return es1->numAtoms() > es2->numAtoms();
   }
 
-  bool canMerge(const Molecule *mol, const ElectronSystem *es1, const ElectronSystem *es2)
+bool canMerge(const ElectronSystem *es1, const ElectronSystem *es2)
+{
+  auto firstSetOfAtoms = es1->atoms().toSet();
+  auto secondSetOfAtoms = es2->atoms().toSet();
+  // may not share an atom
+  if (!(firstSetOfAtoms & secondSetOfAtoms).empty()) return false;
+
+  QSet<Atom*> neighborsOfFirstSet;
+  std::for_each(firstSetOfAtoms.begin(), firstSetOfAtoms.end(),
+                [&] (Atom* a) { neighborsOfFirstSet += a->neighbours().toSet();});
+  return !(neighborsOfFirstSet & secondSetOfAtoms).empty();
+}
+
+void merge(QList<ElectronSystem*> &electronSystems, ElectronSystem *es1, ElectronSystem *es2)
+{
+  es1->setAtoms(es1->atoms() + es2->atoms());
+  es1->setNumElectrons(es1->numElectrons() + es2->numElectrons());
+  electronSystems.removeAll(es2);
+  delete es2;
+}
+
+void Molecule::invalidateElectronSystems()
+{
+  m_electronSystemsUpdate = true;
+}
+
+QString Molecule::xmlName() const { return xmlClassName(); }
+
+QString Molecule::xmlClassName() { return "molecule" ; }
+
+// TODO make default function that calls this one instead
+void Molecule::prepareContextMenu(QMenu *contextMenu)
+{
+  MolScene *sc = qobject_cast<MolScene*>(scene());
+  if (sc)
   {
-    bool result = false;
-
-    foreach (Atom *a1, es1->atoms()) {
-      foreach (Atom *a2, es2->atoms()) {
-        if (a1 == a2)
-          return false; // may not share an atom
-        if (mol->bondBetween(a1, a2)) {
-          result = true; // can be merged if two atoms in the electron system are next to each other
-        }
-      }
-    }
-
-    return result;
-  }
-
-  void merge(QList<ElectronSystem*> &electronSystems, ElectronSystem *es1, ElectronSystem *es2)
-  {
-    es1->setAtoms(es1->atoms() + es2->atoms());
-    es1->setNumElectrons(es1->numElectrons() + es2->numElectrons());
-    electronSystems.removeAll(es2);
-    delete es2;
-  }
-
-  void Molecule::invalidateElectronSystems()
-  {
-    m_electronSystemsUpdate = true;
-  }
-
-  QString Molecule::xmlName() const { return xmlClassName(); }
-
-  QString Molecule::xmlClassName() { return "molecule" ; }
-
-  // TODO make default function that calls this one instead
-  void Molecule::prepareContextMenu(QMenu *contextMenu)
-  {
-    MolScene *sc = qobject_cast<MolScene*>(scene());
-    if (sc)
+    auto action = sc->findChild<FrameTypeAction*>();
+    if (action)
     {
-      auto action = sc->findChild<FrameTypeAction*>();
-      if (action)
-      {
-        contextMenu->addAction(action);
-        QObject::connect(action, SIGNAL(triggered()), contextMenu, SLOT(close()));
-      }
-      flipStereoBondsAction* flipStereo = sc->findChild<flipStereoBondsAction*>();
-      if (flipStereo)
-      {
-        contextMenu->addAction(flipStereo); // TODO test with bond AND molecule selected simultaneously
-        QObject::connect(flipStereo, SIGNAL(triggered()), contextMenu, SLOT(close()));
-      }
+      contextMenu->addAction(action);
+      QObject::connect(action, SIGNAL(triggered()), contextMenu, SLOT(close()));
     }
-    graphicsItem::prepareContextMenu(contextMenu);
+    flipStereoBondsAction* flipStereo = sc->findChild<flipStereoBondsAction*>();
+    if (flipStereo)
+    {
+      contextMenu->addAction(flipStereo); // TODO test with bond AND molecule selected simultaneously
+      QObject::connect(flipStereo, SIGNAL(triggered()), contextMenu, SLOT(close()));
+    }
+  }
+  graphicsItem::prepareContextMenu(contextMenu);
+}
+
+void Molecule::updateElectronSystems()
+{
+  if (!m_electronSystemsUpdate)
+    return;
+  m_electronSystemsUpdate = false;
+
+  foreach (ElectronSystem *es, m_electronSystems)
+    delete es;
+  m_electronSystems.clear();
+
+  foreach (Bond *bond, m_bondList) {
+    int piOrder = bond->bondOrder() - 1;
+    while (piOrder--) m_electronSystems << new PiElectrons(bond->atoms(), 2);
   }
 
-  void Molecule::updateElectronSystems()
-  {
-    if (!m_electronSystemsUpdate)
-      return;
-    m_electronSystemsUpdate = false;
+  foreach (Atom *atom, m_atomList) {
+    int unboundElectronPairs = atom->numNonBondingElectrons() / 2;
+    while (unboundElectronPairs--) m_electronSystems << new PiElectrons({atom}, 2);
+    if (atom->numNonBondingElectrons() % 2) m_electronSystems << new PiElectrons({atom}, 1);
+  }
 
-    foreach (ElectronSystem *es, m_electronSystems)
-      delete es;
-    m_electronSystems.clear();
+  qSort(m_electronSystems.begin(), m_electronSystems.end(), NumAtomsMoreThan);
 
-    foreach (Bond *bond, m_bondList) {
-      int order = bond->bondOrder();
-      QList<Atom*> atoms;
-      atoms.append(bond->beginAtom());
-      atoms.append(bond->endAtom());
-
-      if (order >= 2) {
-        PiElectrons *piEle = new PiElectrons;
-        piEle->setAtoms(atoms);
-        piEle->setNumElectrons(2);
-        m_electronSystems.append(piEle);
-      }
-
-      if (order == 3) {
-        PiElectrons *piEle = new PiElectrons;
-        piEle->setAtoms(atoms);
-        piEle->setNumElectrons(2);
-        m_electronSystems.append(piEle);
-      }
-    }
-
-    foreach (Atom *atom, m_atomList) {
-      int unboundElectrons = atom->numNonBondingElectrons();
-      QList<Atom*> atoms;
-      atoms.append(atom);
-
-      for (int i = 2; i <= unboundElectrons; i+=2) {
-        PiElectrons *piEle = new PiElectrons;
-        piEle->setAtoms(atoms);
-        piEle->setNumElectrons(2);
-        m_electronSystems.append(piEle);
-//        qDebug() << "adding lone pair";
-      }
-
-      if (unboundElectrons % 2 == 1) {
-        PiElectrons *piEle = new PiElectrons;
-        piEle->setAtoms(atoms);
-        piEle->setNumElectrons(1);
-        m_electronSystems.append(piEle);
-        qDebug() << "adding radical";
-      }
-    }
-
-    qSort(m_electronSystems.begin(), m_electronSystems.end(), NumAtomsLessThan);
-
-    for (int i = 0; i < 1000; ++i) {
-      bool restart = false;
-      foreach (ElectronSystem *es1, m_electronSystems) {
-        foreach (ElectronSystem *es2, m_electronSystems) {
-          if (canMerge(this, es1, es2)) {
-            merge(m_electronSystems, es1, es2);
-            restart = true;
-            break;
-          }
-        }
-
-        if (restart)
+  for (int i = 0; i < 1000; ++i) {
+    bool restart = false;
+    foreach (ElectronSystem *es1, m_electronSystems) {
+      foreach (ElectronSystem *es2, m_electronSystems) {
+        if (canMerge(es1, es2)) {
+          merge(m_electronSystems, es1, es2);
+          restart = true;
           break;
+        }
       }
+
+      if (restart)
+        break;
     }
   }
+}
 
   QList<const XmlObjectInterface *> Molecule::children() const
   {
