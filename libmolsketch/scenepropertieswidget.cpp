@@ -44,6 +44,7 @@ namespace Molsketch {
     void setup() {
       SettingsConnector::connect(ui->bondLineWidth, settings->bondWidth(), stack, tr("Change bond line width"));
       SettingsConnector::connect(ui->arrowLineWidth, settings->arrowWidth(), stack, tr("Change arrow line width"));
+      SettingsConnector::connect(ui->arrowTipWidth, settings->arrowTipWidth(), stack, tr("Change arrow tip width"));
       SettingsConnector::connect(ui->frameLineWidth, settings->frameLineWidth(), stack, tr("Change frame line width"));
 
       SettingsConnector::connect(ui->bondLength, settings->bondLength(), stack, tr("Change default bond length"));

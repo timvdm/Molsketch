@@ -63,6 +63,7 @@ namespace Molsketch {
   DoubleSettingsItem* NAME();
 
     REAL_PROPERTY_DECL(arrowWidth)
+    REAL_PROPERTY_DECL(arrowTipWidth)
     REAL_PROPERTY_DECL(bondAngle)
     REAL_PROPERTY_DECL(gridLineWidth)
     REAL_PROPERTY_DECL(verticalGridSpacing)

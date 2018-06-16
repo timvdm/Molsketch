@@ -30,6 +30,7 @@ namespace Molsketch {
 
   static const char ATOM_FONT[] = "atom-font";
   static const char ARROW_WIDTH[] = "arrow-width";
+  static const char ARROW_TIP_WIDTH[] = "arrow-tip-width";
   static const char AUTO_ADD_HYDROGEN[] = "auto-add-hydrogen";
   static const char BOND_ANGLE[] = "bond-angle";
   static const char BOND_LENGTH[] = "bond-length";
@@ -64,6 +65,7 @@ namespace Molsketch {
     *bondWidth,
     *bondLength,
     *arrowWidth,
+    *arrowTipWidth,
     *frameLineWidth;
 
     BoolSettingsItem *carbonVisible,
@@ -101,6 +103,7 @@ namespace Molsketch {
     {
       atomFont = initializeSetting<FontSettingsItem, QFont>(ATOM_FONT, QFont());
       arrowWidth = initializeDoubleSetting(ARROW_WIDTH, 1.5);
+      arrowTipWidth = initializeDoubleSetting(ARROW_TIP_WIDTH, 10);
       autoAddHydrogen = initializeBoolSetting(AUTO_ADD_HYDROGEN, true);
       bondAngle = initializeDoubleSetting(BOND_ANGLE, 30);
       bondLength = initializeDoubleSetting(BOND_LENGTH, 40);
@@ -200,6 +203,7 @@ namespace Molsketch {
   REAL_PROPERTY_DEF(bondWidth)
   REAL_PROPERTY_DEF(bondLength)
   REAL_PROPERTY_DEF(arrowWidth)
+  REAL_PROPERTY_DEF(arrowTipWidth)
   REAL_PROPERTY_DEF(frameLineWidth)
 
   SettingsFacade &SceneSettings::settingsFacade() {

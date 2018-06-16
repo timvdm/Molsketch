@@ -100,7 +100,7 @@ namespace Molsketch {
                                        qreal scaling)
   {
     QPainterPath path ;
-    QPointF line(normalized(target - origin) * scaling) ;
+    QPointF line(normalized(target - origin) / 10. * scaling) ; // TODO 10 is 5+5 here, the orthogonal vector. Extract!
     QPointF orthogonal(line.y(), -line.x()) ;
     path.moveTo(target) ;
     if (up) path.lineTo(target - 15*line + 5*orthogonal);
@@ -169,13 +169,16 @@ namespace Molsketch {
 
     // draw arrow tips
     painter->setBrush(pen.color());
+    qreal tipScaling = relativeWidth();
+    if (MolScene *sc = qobject_cast<MolScene*>(scene()))
+      tipScaling *= sc->settings()->arrowTipWidth()->get();
     if ((UpperBackward | LowerBackward) & d->arrowType)
       painter->drawPath(generateArrowTip(d->points.last(),
                                          d->points[d->points.size()-2],
                         pos(),
                         UpperBackward & d->arrowType,
                         LowerBackward & d->arrowType,
-                        relativeWidth()
+                        tipScaling
                         ));
     if ((UpperForward | LowerForward) & d->arrowType)
       painter->drawPath(generateArrowTip(d->points.first(),
@@ -183,7 +186,7 @@ namespace Molsketch {
                         pos(),
                         LowerForward & d->arrowType,
                         UpperForward & d->arrowType,
-                        relativeWidth()
+                        tipScaling
                         )) ;
 
     // draw red circles when hovering above one of the points
