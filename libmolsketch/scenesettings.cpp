@@ -33,6 +33,8 @@ namespace Molsketch {
   static const char ARROW_TIP_WIDTH[] = "arrow-tip-width";
   static const char AUTO_ADD_HYDROGEN[] = "auto-add-hydrogen";
   static const char BOND_ANGLE[] = "bond-angle";
+  static const char BOND_SEPARATION[] = "bond-separation";
+  static const char BOND_WEDGE_WIDTH[] = "bond-wedge-width";
   static const char BOND_LENGTH[] = "bond-length";
   static const char BOND_WIDTH[] = "bond-width";
   static const char CARBON_VISIBLE[] = "carbon-visible";
@@ -63,6 +65,8 @@ namespace Molsketch {
     *lonePairLength,
     *lonePairLineWidth,
     *bondWidth,
+    *bondSeparation,
+    *bondWedgeWidth,
     *bondLength,
     *arrowWidth,
     *arrowTipWidth,
@@ -106,6 +110,8 @@ namespace Molsketch {
       arrowTipWidth = initializeDoubleSetting(ARROW_TIP_WIDTH, 10);
       autoAddHydrogen = initializeBoolSetting(AUTO_ADD_HYDROGEN, true);
       bondAngle = initializeDoubleSetting(BOND_ANGLE, 30);
+      bondSeparation = initializeDoubleSetting(BOND_SEPARATION, 4);
+      bondWedgeWidth = initializeDoubleSetting(BOND_WEDGE_WIDTH, 4);
       bondLength = initializeDoubleSetting(BOND_LENGTH, 40);
       bondWidth = initializeDoubleSetting(BOND_WIDTH, 2);
       carbonVisible = initializeBoolSetting(CARBON_VISIBLE, false);
@@ -194,6 +200,8 @@ namespace Molsketch {
   DoubleSettingsItem* SceneSettings::NAME() { return d_ptr->NAME; }
 
   REAL_PROPERTY_DEF(bondAngle)
+  REAL_PROPERTY_DEF(bondSeparation)
+  REAL_PROPERTY_DEF(bondWedgeWidth)
   REAL_PROPERTY_DEF(gridLineWidth)
   REAL_PROPERTY_DEF(verticalGridSpacing)
   REAL_PROPERTY_DEF(horizontalGridSpacing)

@@ -136,7 +136,6 @@ namespace Molsketch {
 
   void Bond::drawWedgeBond(QPainter *painter)
   {
-    qreal m_bondSpacing = 4.0;
 
     QPointF begin = mapFromParent(m_beginAtom->pos());
     QPointF end = mapFromParent(m_endAtom->pos());
@@ -144,7 +143,8 @@ namespace Molsketch {
 
     QPointF uvb = vb / sqrt(vb.x()*vb.x() + vb.y()*vb.y());
     QPointF orthogonal(uvb.y(), -uvb.x());
-    orthogonal *= m_bondSpacing;
+    if (MolScene* s = qobject_cast<MolScene*>(scene()))
+      orthogonal *= s->settings()->bondWedgeWidth()->get();
 
     int i = 0;
     QPointF points[4];
@@ -290,10 +290,9 @@ namespace Molsketch {
     QPointF begin = mapFromParent(m_beginAtom->pos());
     QPointF end = mapFromParent(m_endAtom->pos());
     QPointF vb = end - begin;
-    QPointF nvb = vb / sqrt(vb.x()*vb.x() + vb.y()*vb.y());
-    QPointF uvb = nvb;
+    QPointF uvb = vb / sqrt(vb.x()*vb.x() + vb.y()*vb.y());
     if (MolScene* s = qobject_cast<MolScene*>(scene()))
-      uvb *= s->settings()->bondLength()->get()*lineWidth()/20.;
+      uvb *= s->settings()->bondSeparation()->get();
     QPointF normalVector(uvb.y(), -uvb.x());
 
     // clip for broken bond

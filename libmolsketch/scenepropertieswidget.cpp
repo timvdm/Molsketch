@@ -49,6 +49,8 @@ namespace Molsketch {
 
       SettingsConnector::connect(ui->bondLength, settings->bondLength(), stack, tr("Change default bond length"));
       SettingsConnector::connect(ui->bondAngle, settings->bondAngle(), stack, tr("Change default bond angle"));
+      SettingsConnector::connect(ui->bondSeparation, settings->bondSeparation(), stack, tr("Change default double bond separation"));
+      SettingsConnector::connect(ui->bondWedgeWidth, settings->bondWedgeWidth(), stack, tr("Change default stereo bond wedge width"));
 
 
       SettingsConnector::connect(ui->autoHydrogensVisible, settings->autoAddHydrogen(), stack, tr("Toggle automatic hydrogens for new atoms"));

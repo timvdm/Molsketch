@@ -65,6 +65,8 @@ namespace Molsketch {
     REAL_PROPERTY_DECL(arrowWidth)
     REAL_PROPERTY_DECL(arrowTipWidth)
     REAL_PROPERTY_DECL(bondAngle)
+    REAL_PROPERTY_DECL(bondSeparation)
+    REAL_PROPERTY_DECL(bondWedgeWidth)
     REAL_PROPERTY_DECL(gridLineWidth)
     REAL_PROPERTY_DECL(verticalGridSpacing)
     REAL_PROPERTY_DECL(horizontalGridSpacing)
