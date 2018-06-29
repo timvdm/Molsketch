@@ -288,6 +288,13 @@ namespace Molsketch {
     Q_UNUSED(option)
     Q_UNUSED(widget)
 
+    if (isSelected()) {
+      painter->save();
+      painter->setPen(Qt::blue);
+      painter->drawRect(boundingRect());
+      painter->restore();
+    }
+
     painter->save();
 
     QPen pen; // TODO make function in graphicsItem for this
