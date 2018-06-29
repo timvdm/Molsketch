@@ -143,24 +143,22 @@ namespace Molsketch {
     hoverMoveEvent(event); // TODO highlighting
   }
 
+  int closestPoint(const QPointF &position, const QVector<QPointF> &points, qreal maxDistance = INFINITY) {
+    int result = -1;
+    for (int i = 0; i < points.size(); ++i) {
+      qreal distance = QLineF(position, points[i]).length();
+      if (distance < maxDistance) {
+        maxDistance = distance;
+        result = i;
+      }
+    }
+    return result;
+  }
+
   void graphicsItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
   { // TODO highlighting
-    d->selectedPoint = -1 ;
-    QPointF eventPosition = event->scenePos() ;
-    int i = 0 ;
-    double minDistance = pointSelectionDistance() ;
-
-    foreach(const QPointF& p, moveablePoints())
-    {
-      qreal currentDistance = QLineF(eventPosition, p).length() ;
-      if (currentDistance < minDistance)
-      {
-        minDistance = currentDistance ;
-        d->selectedPoint = i ;
-      }
-      ++i ;
-    }
-    event->setAccepted(-1 != d->selectedPoint);
+    d->selectedPoint = closestPoint(event->scenePos(), moveablePoints(), pointSelectionDistance());
+    event->setAccepted(d->selectedPoint >= 0);
     update() ;
   }
 
@@ -205,17 +203,26 @@ namespace Molsketch {
   }
 
   void graphicsItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
-  { // TODO this function seems weird
+  { // TODO write test for selecting arrow within frame (also: move individual points; move entire items)
+    if (!scene()) return;
+    event->ignore();
+    d->selectedPoint = -1;
+    qreal minDistance = distanceToClosestMoveablePoint(event->scenePos());
+    QList<QGraphicsItem*> itemsAtEvent = scene()->items(event->scenePos());
+    for (auto item : itemsAtEvent) {
+      auto gItem = dynamic_cast<graphicsItem*>(item);
+      if (!gItem) continue;
+      if (gItem->distanceToClosestMoveablePoint(event->scenePos()) < minDistance) return;
+    }
+    event->accept();
+    d->selectedPoint = closestPoint(event->scenePos(), moveablePoints(), pointSelectionDistance());
     QGraphicsItem::mousePressEvent(event);
-    event->accept();
-    if (event->button() != Qt::LeftButton) return;
-    if (event->modifiers()) return;
-    event->accept();
   }
 
   void graphicsItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
   {
     QGraphicsItem::mouseReleaseEvent(event);
+    d->selectedPoint = -1;
     event->accept();
   }
 
@@ -338,6 +345,12 @@ namespace Molsketch {
       if (itemAction) itemAction->removeItem(this);
     }
     event->accept();
+  }
+
+  qreal graphicsItem::distanceToClosestMoveablePoint(const QPointF &position) const {
+    QPolygonF points = moveablePoints();
+    int closestPointIndex = closestPoint(position, points);
+    return closestPointIndex < 0 ? INFINITY : QLineF(points[closestPointIndex], position).length();
   }
 
   QVariant graphicsItem::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant &value)

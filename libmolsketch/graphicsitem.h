@@ -111,6 +111,7 @@ namespace Molsketch {
     privateData *d;
     virtual qreal sceneLineWidth(MolScene* scene) const ;
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event) ;
+    qreal distanceToClosestMoveablePoint(const QPointF &position) const;
     // TODO automatically return item children from graphicsitem as xmlitem
   };
 
