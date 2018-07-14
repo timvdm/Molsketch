@@ -287,6 +287,13 @@
          </property>
         </widget>
        </item>
+       <item row="2" column="0">
+        <widget class="QCheckBox" name="showTerminalMethyls">
+         <property name="text">
+          <string>Terminal methyl groups</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="gridSettings">

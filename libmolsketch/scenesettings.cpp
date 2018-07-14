@@ -51,6 +51,7 @@ namespace Molsketch {
   static const char DEFAULT_COLOR[] = "default-color";
   static const char FRAME_LINE_WIDTH[] = "frame-line-width";
   static const char LONE_PAIRS_VISIBLE[] = "lone-pairs-visible";
+  static const char SHOW_TERMINAL_METHYLS[] = "show-terminal-methyls";
 
   class SceneSettingsPrivate {
     Q_DISABLE_COPY(SceneSettingsPrivate)
@@ -76,7 +77,8 @@ namespace Molsketch {
     *electronSystemsVisible,
     *chargeVisible,
     *autoAddHydrogen,
-    *lonePairsVisible;
+    *lonePairsVisible,
+    *showTerminalMethyls;
 
     ColorSettingsItem *gridColor,
     *defaultColor;
@@ -125,6 +127,7 @@ namespace Molsketch {
       lonePairLength = initializeDoubleSetting(LONE_PAIR_LENGTH, 7);
       lonePairLineWidth = initializeDoubleSetting(LONE_PAIR_LINE_WIDTH, 1);
       lonePairsVisible = initializeBoolSetting(LONE_PAIRS_VISIBLE, false);
+      showTerminalMethyls = initializeBoolSetting(SHOW_TERMINAL_METHYLS, true);
       radicalDiameter = initializeDoubleSetting(RADICAL_DIAMETER, 3);
       verticalGridSpacing = initializeDoubleSetting(VERTICAL_GRID_SPACING, 10);
     }
@@ -194,6 +197,7 @@ namespace Molsketch {
   BOOL_PROPERTY_DEF(chargeVisible)
   BOOL_PROPERTY_DEF(autoAddHydrogen)
   BOOL_PROPERTY_DEF(lonePairsVisible)
+  BOOL_PROPERTY_DEF(showTerminalMethyls)
 
 #define REAL_PROPERTY_DEF(NAME) \
   const DoubleSettingsItem* SceneSettings::NAME() const { return d_ptr->NAME; } \

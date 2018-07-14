@@ -242,13 +242,13 @@ namespace Molsketch {
   }
 
   bool Atom::hasLabel() const
-  {
+  { // TODO what is the difference between this and isDrawn() ?
     MolScene* molScene = dynamic_cast<MolScene*>(scene());
     if (!molScene) return true ;
 
     if ((m_elementSymbol == "C")
         && !molScene->settings()->carbonVisible()->get()
-        && (numBonds() > 1)
+        && (numBonds() > 1 || (numBonds() == 1 && !molScene->settings()->showTerminalMethyls()->get()))
         && ((charge() == 0) || !molScene->settings()->chargeVisible()->get()))
       return false;
 
@@ -854,16 +854,18 @@ namespace Molsketch {
     if (!m_hidden || isSelected() || !numBonds()) return true;
     bool carbonVisible = false;
     bool chargeVisible = true;
+    bool terminalMethylShown = true;
     MolScene* molScene = dynamic_cast<MolScene*>(scene());
     if (molScene)
     {
       carbonVisible = molScene->settings()->carbonVisible()->get();
       chargeVisible = molScene->settings()->chargeVisible()->get();
+      terminalMethylShown = molScene->settings()->showTerminalMethyls()->get();
     }
 
     if ((m_elementSymbol == "C")
         && !carbonVisible
-        && (numBonds() > 1)
+        && (numBonds() > 1 || (numBonds() == 1 && !terminalMethylShown))
         && ((charge() == 0) || !chargeVisible)
         && childItems().empty()
         && 0 == m_newmanDiameter)

@@ -57,6 +57,7 @@ namespace Molsketch {
     BOOL_PROPERTY_DECL(chargeVisible)
     BOOL_PROPERTY_DECL(autoAddHydrogen)
     BOOL_PROPERTY_DECL(lonePairsVisible)
+    BOOL_PROPERTY_DECL(showTerminalMethyls)
 
 #define REAL_PROPERTY_DECL(NAME) \
   const DoubleSettingsItem* NAME() const; \
