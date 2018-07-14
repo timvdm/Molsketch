@@ -118,6 +118,8 @@ namespace Molsketch {
 
     if (d->points.size() < 2) return ;
 
+    graphicsItem::paint(painter, option, widget);
+
     // draw the bounding rect if the arrow is selected
     if (isSelected() /* && !m_hoverBegin && !m_hoverEnd */) {
       painter->save();

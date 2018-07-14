@@ -288,6 +288,8 @@ namespace Molsketch {
     Q_UNUSED(option)
     Q_UNUSED(widget)
 
+    graphicsItem::paint(painter, option, widget);
+
     if (isSelected()) {
       painter->save();
       painter->setPen(Qt::blue);
@@ -338,22 +340,14 @@ namespace Molsketch {
     event->ignore();
   }
 
-  void Frame::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
-  {
-    graphicsItem::hoverEnterEvent(event);
+  void Frame::handleHoverEnter(QGraphicsSceneHoverEvent *event) {
+    graphicsItem::handleHoverEnter(event);
     d->isHovering = event->isAccepted();
   }
 
-  void Frame::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
-  {
-    graphicsItem::hoverLeaveEvent(event);
+  void Frame::handleHoverLeave(QGraphicsSceneHoverEvent *event) {
+    graphicsItem::handleHoverLeave(event);
     d->isHovering = false;
-  }
-
-  void Frame::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
-  {
-    graphicsItem::hoverMoveEvent(event);
-    d->isHovering = event->isAccepted();
   }
 
   int Frame::coordinateCount() const
@@ -418,5 +412,9 @@ namespace Molsketch {
     return scene ? scene->settings()->frameLineWidth()->get() : 0;
   }
 
+  void Frame::handleHoverEvent(QGraphicsSceneHoverEvent *event) {
+    d->isHovering = true;
+    graphicsItem::handleHoverEvent(event);
+  }
 
 } // namespace Molsketch

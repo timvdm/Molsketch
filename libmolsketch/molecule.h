@@ -159,8 +159,8 @@ namespace Molsketch {
 
     //   void normalize();
     //   void setAtomSize(qreal pt);
-    void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
-    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
+    void handleHoverEvent(QGraphicsSceneHoverEvent *event) override;
+    void handleHoverLeave(QGraphicsSceneHoverEvent *event) override;
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
     // Query methods

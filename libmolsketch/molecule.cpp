@@ -154,21 +154,23 @@ namespace Molsketch {
     return result;
   }
 
-  void Molecule::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
-  {
+  void Molecule::handleHoverEvent(QGraphicsSceneHoverEvent *event) {
     foreach (Atom* atom, atoms())
       atom->setHidden(QLineF(event->scenePos(), atom->scenePos()).length() > 10);
-    graphicsItem::hoverMoveEvent(event);
+    graphicsItem::handleHoverEvent(event);
   }
 
-  void Molecule::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
-  {
+  void Molecule::handleHoverLeave(QGraphicsSceneHoverEvent *event) {
     hideAllAtoms();
-    graphicsItem::hoverLeaveEvent(event);
+    graphicsItem::handleHoverLeave(event);
   }
 
   void Molecule::mousePressEvent(QGraphicsSceneMouseEvent *event)
   {
+    event->ignore();
+    for (auto item : scene()->items(event->scenePos()))
+      if (dynamic_cast<Atom*>(item) || dynamic_cast<Bond*>(item)) return;
+
     hideAllAtoms();
     graphicsItem::mousePressEvent(event);
   }
@@ -521,10 +523,14 @@ void Molecule::paint(QPainter * painter, const QStyleOptionGraphicsItem * option
   Q_UNUSED(option)
   Q_UNUSED(widget)
 
+  graphicsItem::paint(painter, option, widget);
+
   // draw a blue rectangle if this molecule is selected
   if(isSelected()) {
+    painter->save();
     painter->setPen(Qt::blue);
     painter->drawRect(boundingRect()); // TODO simply draw rectangle around own and children!
+    painter->restore();
   } // TODO move this somewhere else, so that it can have a different Z value
 
   // draw the electron systems
@@ -798,6 +804,7 @@ void Molecule::updateElectronSystems()
 #else
     setAcceptHoverEvents(true) ;
 #endif
+    setZValue(-50);
   }
 
   Molecule &Molecule::operator+=(const Molecule &other)

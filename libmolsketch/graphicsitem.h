@@ -59,12 +59,16 @@ namespace Molsketch {
     qreal relativeWidth() const ;
 
     /** Event handlers */
-    void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
-    void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
-    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
+    void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override final;
+    void hoverMoveEvent(QGraphicsSceneHoverEvent *event) override final;
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) override final;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+
+    void enterHover(QGraphicsSceneHoverEvent *event);
+    void leaveHover(QGraphicsSceneHoverEvent *event);
+    void doHover(QGraphicsSceneHoverEvent *event);
 
     /** coordinate functions */
     virtual QPolygonF coordinates() const = 0;
@@ -77,6 +81,7 @@ namespace Molsketch {
     virtual int coordinateCount() const;
     virtual void swapPoint(const int& index, QPointF& p);
     virtual QPolygonF moveablePoints() const;
+    qreal distanceToClosestMoveablePoint(const QPointF &position) const;
     virtual void movePointBy(const QPointF& offset, int pointIndex = -1);
     virtual void moveItemBy(const QPointF& offset);
 
@@ -88,6 +93,7 @@ namespace Molsketch {
     static QByteArray serialize(const QList<const graphicsItem*> items);
     static QList<graphicsItem*> deserialize(const QByteArray& input);
 
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
   protected:
     qreal pointSelectionDistance() const;
     void readAttributes(const QXmlStreamAttributes &attributes) ;
@@ -103,6 +109,9 @@ namespace Molsketch {
     int selectedPoint() const;
     virtual void prepareItemContextMenu(QMenu* contextMenu);
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+    virtual void handleHoverEvent(QGraphicsSceneHoverEvent *event);
+    virtual void handleHoverEnter(QGraphicsSceneHoverEvent *event);
+    virtual void handleHoverLeave(QGraphicsSceneHoverEvent *event);
 
   private:
     QColor m_color ;
@@ -111,7 +120,6 @@ namespace Molsketch {
     privateData *d;
     virtual qreal sceneLineWidth(MolScene* scene) const ;
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event) ;
-    qreal distanceToClosestMoveablePoint(const QPointF &position) const;
     // TODO automatically return item children from graphicsitem as xmlitem
   };
 

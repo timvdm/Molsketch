@@ -130,11 +130,9 @@ namespace Molsketch {
   protected:
     // Event handlers
     /** Event handler to show hidden atoms when the mouse hovers over them. */
-    void hoverEnterEvent(QGraphicsSceneHoverEvent* event);
+    void handleHoverEnter(QGraphicsSceneHoverEvent* event) override;
     /** Event handler to hide hidden atoms again after a mouse hovering event. */
-    void hoverLeaveEvent(QGraphicsSceneHoverEvent* event);
-    /** Event handler to handle atom clicks. */
-    void mousePressEvent(QGraphicsSceneMouseEvent* event);
+    void handleHoverLeave(QGraphicsSceneHoverEvent *event) override;
     /** Event handler to handle element changes. */
     QVariant itemChange(GraphicsItemChange change, const QVariant & value);
     /** Event handler to edit element (double click) */

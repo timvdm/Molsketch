@@ -43,9 +43,6 @@ namespace Molsketch {
     QRectF boundingRect() const;
 //    QRectF boundingRect() const;
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-    void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
-    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
-    void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
     int coordinateCount() const;
 
     void setFrameString(const QString& frameString);
@@ -62,6 +59,9 @@ namespace Molsketch {
     QList<const XmlObjectInterface *> children() const;
   private:
     qreal sceneLineWidth(MolScene *scene) const;
+    void handleHoverEvent(QGraphicsSceneHoverEvent *event) override;
+    void handleHoverEnter(QGraphicsSceneHoverEvent *event) override;
+    void handleHoverLeave(QGraphicsSceneHoverEvent *event) override;
   }; // TODO let classes start with capital letters.
 
 } // namespace Molsketch

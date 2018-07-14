@@ -279,6 +279,8 @@ namespace Molsketch {
     Q_UNUSED(widget);
     CHECKFORATOMS return ;
 
+    graphicsItem::paint(painter, option, widget);
+
     if (m_bondType == DoubleLegacy) determineDoubleBondOrientation();
 
     QRectF startRect = m_beginAtom->mapRectToItem(this, m_beginAtom->boundingRect()),
@@ -549,7 +551,7 @@ namespace Molsketch {
   }
 
   QPolygonF Bond::moveablePoints() const {
-    return QPolygonF() << (determineBondDrawingStart(m_beginAtom, m_endAtom) + determineBondDrawingStart(m_endAtom, m_beginAtom))/2.;
+    return QPolygonF() << mapToScene((determineBondDrawingStart(m_beginAtom, m_endAtom) + determineBondDrawingStart(m_endAtom, m_beginAtom))/2.);
   }
 
   QXmlStreamAttributes Bond::graphicAttributes() const

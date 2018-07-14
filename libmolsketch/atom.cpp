@@ -563,6 +563,8 @@ namespace Molsketch {
     Q_UNUSED(option)
     Q_UNUSED(widget)
 
+    graphicsItem::paint(painter, option, widget);
+
     MolScene* molScene = dynamic_cast<MolScene*>(scene());
     if (!molScene) return ;
     Q_CHECK_PTR(molScene);
@@ -673,21 +675,14 @@ namespace Molsketch {
     return attributes ;
   }
 
-  void Atom::mousePressEvent( QGraphicsSceneMouseEvent* event )
-  {
-    graphicsItem::mousePressEvent( event );
-  }
-
-  void Atom::hoverEnterEvent( QGraphicsSceneHoverEvent * event )
-  {
+  void Atom::handleHoverEnter(QGraphicsSceneHoverEvent * event) {
     m_hidden = false;
-    graphicsItem::hoverEnterEvent( event );
+    graphicsItem::handleHoverEnter( event );
   }
 
-  void Atom::hoverLeaveEvent( QGraphicsSceneHoverEvent * event )
-  {
+  void Atom::handleHoverLeave(QGraphicsSceneHoverEvent * event) {
     m_hidden = true;
-    graphicsItem::hoverLeaveEvent( event );
+    graphicsItem::handleHoverLeave(event);
   }
 
   void Atom::setElement(const QString &element)
@@ -785,7 +780,6 @@ namespace Molsketch {
   }
 
   int Atom::numImplicitHydrogens() const {
-    qDebug() << "number of implicit hydrogens called" << m_implicitHydrogens;
     if (!m_implicitHydrogens) return 0;
     int bosum = 0;
     foreach (Bond *bond, bonds())
@@ -956,7 +950,7 @@ namespace Molsketch {
   }
 
   QPolygonF Atom::moveablePoints() const {
-    return QPolygonF();
+    return coordinates();
   }
 
   QPointF Atom::getBondDrawingStartFromBoundingBox(const QLineF& connection, qreal bondLineWidth) const {
