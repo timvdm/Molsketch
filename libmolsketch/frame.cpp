@@ -277,8 +277,6 @@ namespace Molsketch {
     Q_UNUSED(option)
     Q_UNUSED(widget)
 
-    graphicsItem::paint(painter, option, widget);
-
     if (isSelected()) {
       painter->save();
       painter->setPen(Qt::blue);
@@ -301,6 +299,8 @@ namespace Molsketch {
     // TODO incorporate path size in boundingRect() (maybe
 
     painter->restore();
+
+    graphicsItem::paint(painter, option, widget);
   }
 
   QRectF Frame::boundingRect() const // TODO include selectable points if active/selected (hovered/clicked)

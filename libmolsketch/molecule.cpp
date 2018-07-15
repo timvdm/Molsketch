@@ -505,8 +505,6 @@ void Molecule::paint(QPainter * painter, const QStyleOptionGraphicsItem * option
   Q_UNUSED(option)
   Q_UNUSED(widget)
 
-  graphicsItem::paint(painter, option, widget);
-
   // draw a blue rectangle if this molecule is selected
   if(isSelected()) {
     painter->save();
@@ -518,10 +516,12 @@ void Molecule::paint(QPainter * painter, const QStyleOptionGraphicsItem * option
   // draw the electron systems
 
   if (!scene()) return;
-  if (!scene()->settings()->electronSystemsVisible()->get()) return;
+  if (scene()->settings()->electronSystemsVisible()->get()) {
+    updateElectronSystems();
+    paintElectronSystems(painter);
+  }
 
-  updateElectronSystems();
-  paintElectronSystems(painter);
+  graphicsItem::paint(painter, option, widget);
 }
 
 void Molecule::paintElectronSystems(QPainter *painter) const {

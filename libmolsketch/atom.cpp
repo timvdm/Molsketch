@@ -565,7 +565,6 @@ namespace Molsketch {
     Q_UNUSED(option)
     Q_UNUSED(widget)
 
-    graphicsItem::paint(painter, option, widget);
 
     MolScene* molScene = dynamic_cast<MolScene*>(scene());
     if (!molScene) return ;
@@ -587,6 +586,7 @@ namespace Molsketch {
 
     if (m_newmanDiameter > 0) {
       drawNewman(painter);
+      graphicsItem::paint(painter, option, widget);
       return;
     }
     if (!isDrawn()) return;
@@ -599,6 +599,8 @@ namespace Molsketch {
       drawCharge(painter); // TODO unite with subscript drawing and align appropriately
     if (molScene->settings()->lonePairsVisible()->get()) drawElectrons(painter);
     painter->restore();
+
+    graphicsItem::paint(painter, option, widget);
   }
 
   void Atom::drawNewman(QPainter* painter) {

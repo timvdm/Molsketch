@@ -282,8 +282,6 @@ namespace Molsketch {
     Q_UNUSED(widget);
     CHECKFORATOMS return ;
 
-    graphicsItem::paint(painter, option, widget);
-
     if (m_bondType == DoubleLegacy) determineDoubleBondOrientation();
 
     QRectF startRect = m_beginAtom->mapRectToItem(this, m_beginAtom->boundingRect()),
@@ -428,6 +426,8 @@ namespace Molsketch {
       painter->drawPath(shape());
     }
     painter->restore();
+
+    graphicsItem::paint(painter, option, widget);
   }
 
   QVariant Bond::itemChange(GraphicsItemChange change, const QVariant &value)
