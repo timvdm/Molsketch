@@ -225,7 +225,6 @@ namespace Molsketch {
 
     // Setting private fields
     m_elementSymbol = element;
-    m_hidden = true;
 
     m_userCharge = 0; // The initial additional charge is zero
     m_userElectrons = 0;
@@ -237,7 +236,10 @@ namespace Molsketch {
 
   QRectF Atom::boundingRect() const
   {
-    if (!isDrawn()) return QRect();
+    if (!isDrawn()) {
+      auto centeringDistance = QPointF(pointSelectionDistance(), pointSelectionDistance());
+      return QRectF(-centeringDistance, centeringDistance);
+    }
     return m_shape;
   }
 
@@ -675,16 +677,6 @@ namespace Molsketch {
     return attributes ;
   }
 
-  void Atom::handleHoverEnter(QGraphicsSceneHoverEvent * event) {
-    m_hidden = false;
-    graphicsItem::handleHoverEnter( event );
-  }
-
-  void Atom::handleHoverLeave(QGraphicsSceneHoverEvent * event) {
-    m_hidden = true;
-    graphicsItem::handleHoverLeave(event);
-  }
-
   void Atom::setElement(const QString &element)
   {
     m_elementSymbol = element;
@@ -813,11 +805,6 @@ namespace Molsketch {
     m_userCharge = requiredCharge - computedCharge;
   }
 
-  void Atom::setHidden(bool hidden)
-  {
-    m_hidden = hidden;
-  }
-
   QString Atom::chargeString() const
   {
     int c = charge();
@@ -851,7 +838,7 @@ namespace Molsketch {
 
   bool Atom::isDrawn() const
   {
-    if (!m_hidden || isSelected() || !numBonds()) return true;
+    if (isHovering() || isSelected() || !numBonds()) return true;
     bool carbonVisible = false;
     bool chargeVisible = true;
     bool terminalMethylShown = true;
@@ -871,11 +858,6 @@ namespace Molsketch {
         && 0 == m_newmanDiameter)
       return false;
     return true;
-  }
-
-  bool Atom::isHidden() const
-  {
-    return m_hidden;
   }
 
   void Atom::setCoordinates(const QVector<QPointF> &c)
@@ -933,7 +915,7 @@ namespace Molsketch {
 
   QPointF Atom::bondDrawingStart(const Atom *other, qreal bondLineWidth) const
   {
-    if (!boundingRect().isValid()) return pos();
+    if (!isDrawn()) return pos();
 
     QLineF connection(pos(), other->pos());
 

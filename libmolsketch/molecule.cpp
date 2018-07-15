@@ -154,31 +154,13 @@ namespace Molsketch {
     return result;
   }
 
-  void Molecule::handleHoverEvent(QGraphicsSceneHoverEvent *event) {
-    foreach (Atom* atom, atoms())
-      atom->setHidden(QLineF(event->scenePos(), atom->scenePos()).length() > 10);
-    graphicsItem::handleHoverEvent(event);
-  }
-
-  void Molecule::handleHoverLeave(QGraphicsSceneHoverEvent *event) {
-    hideAllAtoms();
-    graphicsItem::handleHoverLeave(event);
-  }
-
   void Molecule::mousePressEvent(QGraphicsSceneMouseEvent *event)
   {
     event->ignore();
     for (auto item : scene()->items(event->scenePos()))
       if (dynamic_cast<Atom*>(item) || dynamic_cast<Bond*>(item)) return;
 
-    hideAllAtoms();
     graphicsItem::mousePressEvent(event);
-  }
-
-  void Molecule::hideAllAtoms()
-  {
-    foreach (Atom* atom, atoms())
-      atom->setHidden(true);
   }
 
   // Manipulation methods

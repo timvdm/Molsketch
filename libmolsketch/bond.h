@@ -138,6 +138,7 @@ namespace Molsketch {
     void drawWedgeBond(QPainter *painter);
     void determineDoubleBondOrientation();
     QPointF determineBondDrawingStart(Atom* start, Atom* end) const;
+    bool showHoverBox() const { return false; }
 
     // Internal representation
     Bond::BondType m_bondType;

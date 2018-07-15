@@ -285,7 +285,7 @@ namespace Molsketch {
 
     QRectF startRect = m_beginAtom->mapRectToItem(this, m_beginAtom->boundingRect()),
         endRect = m_endAtom->mapRectToItem(this, m_endAtom->boundingRect());
-    if (startRect.intersects(endRect)) return; // TODO should not be necessary anymore
+    if (startRect.intersects(endRect) && m_beginAtom->isDrawn() && m_endAtom->isDrawn()) return; // TODO should not be necessary anymore
 
 
     // Get beginning and end

@@ -159,8 +159,6 @@ namespace Molsketch {
 
     //   void normalize();
     //   void setAtomSize(qreal pt);
-    void handleHoverEvent(QGraphicsSceneHoverEvent *event) override;
-    void handleHoverLeave(QGraphicsSceneHoverEvent *event) override;
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
     // Query methods
@@ -235,7 +233,6 @@ namespace Molsketch {
   private:
     void setDefaults();
     void clone(QSet<Atom*> atoms);
-    void hideAllAtoms();
     template<class T>
     class moleculeItemListClass : public QList<T*>, public abstractXmlObject // Crash bei foreach
     {

@@ -97,6 +97,7 @@ namespace Molsketch {
     QUndoStack *stack;
     SceneSettings *settings;
     graphicsItem* dragItem;
+    graphicsItem* hoverItem;
 
     privateData(MolScene* scene, SceneSettings* settings)
       : selectionRectangle(new QGraphicsRectItem),
@@ -105,7 +106,8 @@ namespace Molsketch {
         scene(scene),
         stack(new QUndoStack(scene)),
         settings(settings),
-        dragItem(0)
+        dragItem(0),
+        hoverItem(0)
     {
       selectionRectangle->setPen(QPen(Qt::blue,0,Qt::DashLine));
       selectionRectangle->setZValue(INFINITY);
@@ -131,6 +133,40 @@ namespace Molsketch {
     void moveDragItem(QGraphicsSceneDragDropEvent* event) {
       if (!dragItem) return;
       dragItem->moveItemBy(event->scenePos() - dragItem->boundingRect().center());
+    }
+
+    graphicsItem *findHoverItem(const QPointF& position) {
+      qreal minDistance = INFINITY;
+      graphicsItem *result = nullptr;
+      for (auto item : scene->items(position)) {
+        auto gItem = dynamic_cast<graphicsItem*>(item);
+        if (!gItem) continue;
+        auto distance = gItem->distanceToClosestMoveablePoint(position);
+        if (distance < minDistance) {
+          minDistance = distance;
+          result = gItem;
+        }
+      }
+      return result;
+    }
+
+    void updateHoverItem(graphicsItem *newHoverItem) {
+      if (hoverItem) {
+        hoverItem->setHovering(false);
+        hoverItem->unselectHoverPoint();
+        hoverItem->update();
+      }
+      hoverItem = newHoverItem;
+    }
+
+    void highlightHoverItem(QGraphicsSceneMouseEvent *hoverEvent) {
+      graphicsItem *newHoverItem = findHoverItem(hoverEvent->scenePos());
+      if (newHoverItem != hoverItem) updateHoverItem(newHoverItem);
+      if (hoverItem) {
+        hoverItem->setHovering(true);
+        hoverItem->selectHoverPoint(hoverEvent->scenePos());
+        hoverItem->update();
+      }
     }
   };
 
@@ -285,13 +321,14 @@ namespace Molsketch {
 
   QByteArray MolScene::toSvg()
   {
-    QList<QGraphicsItem*> selection(selectedItems());
+    QList<QGraphicsItem*> selection(selectedItems()); // TODO unused?
     clearSelection();
     QByteArray ba;
     QBuffer buffer(&ba);
     buffer.open(QBuffer::WriteOnly);
     QSvgGenerator svgGenerator;
     svgGenerator.setTitle(tr("MolsKetch Drawing"));
+    // TODO svgGenerator.setDescription();
     QRectF bounds(itemsBoundingRect());
     svgGenerator.setSize(bounds.size().toSize()); // TODO round up
     svgGenerator.setViewBox(bounds);
@@ -600,6 +637,7 @@ namespace Molsketch {
   {
     event->ignore();
     QGraphicsScene::mouseMoveEvent(event);
+    if (event->buttons() == Qt::NoButton) d->highlightHoverItem(event);
     if (event->isAccepted()) return;
     if (!d->selectionRectangle->scene()) return;
     if (!(event->buttons() & Qt::LeftButton)) return;

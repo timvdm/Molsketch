@@ -78,63 +78,12 @@ namespace Molsketch {
     int id() const { return 5000; } // TODO define command IDs in central place
   };
 
-  class HoverRedirector {
-    QGraphicsScene *scene;
-    graphicsItem *currentItem;
-
-    graphicsItem *findClosestGraphicsItem(const QPointF& position) const{
-      qreal minDistance = INFINITY;
-      graphicsItem *result = nullptr;
-      for (auto item : scene->items(position)) {
-        auto gItem = dynamic_cast<graphicsItem*>(item);
-        if (!gItem) continue;
-        auto distance = gItem->distanceToClosestMoveablePoint(position);
-        if (distance < minDistance) {
-          minDistance = distance;
-          result = gItem;
-        }
-      }
-      return result;
-    }
-  public:
-    explicit HoverRedirector(QGraphicsScene *scene, QGraphicsSceneHoverEvent *event)
-      : scene(scene) {
-      currentItem = findClosestGraphicsItem(event->scenePos());
-      if (currentItem) currentItem->enterHover(event);
-    }
-
-    void update(QGraphicsSceneHoverEvent *event){
-      auto newItem = findClosestGraphicsItem(event->scenePos());
-      if (newItem != currentItem){
-        terminate(event);
-        currentItem = newItem;
-        if (currentItem) currentItem->enterHover(event);
-      } else if (currentItem) {
-        currentItem->doHover(event);
-      }
-    }
-
-    void terminate(QGraphicsSceneHoverEvent *event) {
-      if (currentItem) currentItem->leaveHover(event);
-      currentItem = nullptr;
-    }
-
-    ~HoverRedirector() {
-      if (!currentItem) return;
-      auto event = new QGraphicsSceneHoverEvent;
-      currentItem->leaveHover(event);
-      delete event;
-    }
-  };
-
   class graphicsItem::privateData
   {
   public:
     int selectedPoint;
-    HoverRedirector *hoverRedirector;
     bool hovering;
-    privateData() : selectedPoint(-1), hoverRedirector(0), hovering(false) {}
-    ~privateData() { delete hoverRedirector; }
+    privateData() : selectedPoint(-1), hovering(false) {}
   };
 
   graphicsItem::graphicsItem(QGraphicsItem *parent GRAPHICSSCENESOURCE)
@@ -192,27 +141,6 @@ namespace Molsketch {
     return lineWidthScaling ;
   }
 
-  void graphicsItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
-    if (d->hoverRedirector) delete d->hoverRedirector;
-    d->hoverRedirector = new HoverRedirector(scene(), event);
-  }
-
-  void graphicsItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event) {
-    if (!d->hoverRedirector) return;
-    d->hoverRedirector->update(event);
-  }
-
-  void graphicsItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event) {
-    if (!d->hoverRedirector) return;
-    d->hoverRedirector->terminate(event);
-    delete d->hoverRedirector;
-    d->hoverRedirector = nullptr;
-  }
-
-  void graphicsItem::handleHoverEnter(QGraphicsSceneHoverEvent *event) {
-    handleHoverEvent(event); // TODO highlighting
-  }
-
   int closestPoint(const QPointF &position, const QVector<QPointF> &points, qreal maxDistance = INFINITY) {
     int result = -1;
     for (int i = 0; i < points.size(); ++i) {
@@ -223,19 +151,6 @@ namespace Molsketch {
       }
     }
     return result;
-  }
-
-  void graphicsItem::handleHoverEvent(QGraphicsSceneHoverEvent *event)
-  { // TODO highlighting
-    event->accept();
-    d->selectedPoint = closestPoint(event->scenePos(), moveablePoints(), pointSelectionDistance());
-    update() ;
-  }
-
-  void graphicsItem::handleHoverLeave(QGraphicsSceneHoverEvent *event) {
-    Q_UNUSED(event)
-    d->selectedPoint = -1 ;
-    update() ;
   }
 
   void graphicsItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
@@ -295,22 +210,6 @@ namespace Molsketch {
     QGraphicsItem::mouseReleaseEvent(event);
     d->selectedPoint = -1;
     event->accept();
-  }
-
-  void graphicsItem::enterHover(QGraphicsSceneHoverEvent *event) {
-    d->hovering = true;
-    qDebug() << "entering hover" << this << this->type();
-    handleHoverEnter(event);
-  }
-
-  void graphicsItem::leaveHover(QGraphicsSceneHoverEvent *event) {
-    d->hovering = false;
-    handleHoverLeave(event);
-  }
-
-  void graphicsItem::doHover(QGraphicsSceneHoverEvent *event) {
-    d->hovering = true;
-    handleHoverEvent(event);
   }
 
   void graphicsItem::setCoordinates(const QPolygonF &c) {
@@ -401,11 +300,6 @@ namespace Molsketch {
     MolScene *molscene = dynamic_cast<MolScene*>(scene());
     if (!molscene || !molscene->stack()) return;
     molscene->stack()->endMacro();
-  }
-
-  int graphicsItem::selectedPoint() const
-  {
-    return d->selectedPoint;
   }
 
   void graphicsItem::prepareItemContextMenu(QMenu *contextMenu)
@@ -573,13 +467,36 @@ namespace Molsketch {
   void graphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
     Q_UNUSED(widget)
     Q_UNUSED(option)
-    if (!d->hovering) return;
-    painter->save();
-    painter->setPen(QPen(Qt::blue, 1, Qt::DotLine));
-    painter->drawRect(boundingRect());
-    painter->restore();
-
+    if (showHoverBox() && d->hovering) {
+      painter->save();
+      painter->setPen(QPen(Qt::blue, 1, Qt::DotLine));
+      painter->drawRect(boundingRect());
+      painter->restore();
+    }
+    QPolygonF points(moveablePoints());
+    if (showHoverPoint() && d->selectedPoint >= 0 && d->selectedPoint < points.size()) {
+      painter->save();
+      painter->setPen(Qt::red);
+      painter->drawEllipse(mapFromScene(points[d->selectedPoint]), 5, 5);
+      painter->restore();
+    }
     // TODO also handle selection
+  }
+
+  void graphicsItem::setHovering(bool hovering) {
+    d->hovering = hovering;
+  }
+
+  bool graphicsItem::isHovering() const {
+    return d->hovering;
+  }
+
+  void graphicsItem::selectHoverPoint(const QPointF &position) {
+    d->selectedPoint = closestPoint(position, moveablePoints(), pointSelectionDistance());
+  }
+
+  void graphicsItem::unselectHoverPoint() {
+    d->selectedPoint = -1;
   }
 
   qreal graphicsItem::pointSelectionDistance() const

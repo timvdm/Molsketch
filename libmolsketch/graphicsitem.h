@@ -59,16 +59,9 @@ namespace Molsketch {
     qreal relativeWidth() const ;
 
     /** Event handlers */
-    void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override final;
-    void hoverMoveEvent(QGraphicsSceneHoverEvent *event) override final;
-    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) override final;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-
-    void enterHover(QGraphicsSceneHoverEvent *event);
-    void leaveHover(QGraphicsSceneHoverEvent *event);
-    void doHover(QGraphicsSceneHoverEvent *event);
 
     /** coordinate functions */
     virtual QPolygonF coordinates() const = 0;
@@ -94,8 +87,14 @@ namespace Molsketch {
     static QList<graphicsItem*> deserialize(const QByteArray& input);
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    void setHovering(bool);
+    void selectHoverPoint(const QPointF& position);
+    void unselectHoverPoint();
   protected:
+    bool isHovering() const;
     qreal pointSelectionDistance() const;
+    virtual bool showHoverBox() const { return true; }
+    virtual bool showHoverPoint() const { return true; }
     void readAttributes(const QXmlStreamAttributes &attributes) ;
     QXmlStreamAttributes xmlAttributes() const ;
     virtual void readGraphicAttributes(const QXmlStreamAttributes& attributes) { Q_UNUSED(attributes)}
@@ -106,12 +105,8 @@ namespace Molsketch {
     void attemptUndoPush(QUndoCommand* command) ;
     void attemptBeginMacro(const QString& text);
     void attemptEndEndMacro();
-    int selectedPoint() const;
     virtual void prepareItemContextMenu(QMenu* contextMenu);
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);
-    virtual void handleHoverEvent(QGraphicsSceneHoverEvent *event);
-    virtual void handleHoverEnter(QGraphicsSceneHoverEvent *event);
-    virtual void handleHoverLeave(QGraphicsSceneHoverEvent *event);
 
   private:
     QColor m_color ;

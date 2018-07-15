@@ -2,7 +2,7 @@ isEmpty(CXXTEST_PATH) : error("Pass CXXTEST_PATH on command line")
 include(../findOpenBabel.pri)
 include(../settings.pri)
 
-TESTS = *test.h
+TESTS = $$files(*test.h, true)
 
 SOURCES += $$files($$PWD/../*.cpp, true)
 SOURCES -= $$PWD/../molsketch/main.cpp

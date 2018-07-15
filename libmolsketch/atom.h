@@ -62,7 +62,6 @@ namespace Molsketch {
     qreal annotationDirection() const ;
 
     bool isDrawn() const;
-    bool isHidden() const;
     void setCoordinates(const QVector<QPointF> &c) ;
     QPolygonF coordinates() const ;
     virtual Molecule* molecule() const;
@@ -92,7 +91,6 @@ namespace Molsketch {
       m_userElectrons = n;
     }
 
-    void setHidden(bool hidden);
     /// Returns the string for the superscript charge (e.g. "3-", "2-", "-", "", "+", "2+", ...).
     QString chargeString() const;
 
@@ -117,7 +115,6 @@ namespace Molsketch {
       */
     void setNumImplicitHydrogens(const int &number);
 
-    void hoverOut () {m_hidden = true;}
     QString xmlName() const;
     static QString xmlClassName();
     Molsketch::Alignment labelAlignment() const;
@@ -129,10 +126,6 @@ namespace Molsketch {
     QPolygonF moveablePoints() const override;
   protected:
     // Event handlers
-    /** Event handler to show hidden atoms when the mouse hovers over them. */
-    void handleHoverEnter(QGraphicsSceneHoverEvent* event) override;
-    /** Event handler to hide hidden atoms again after a mouse hovering event. */
-    void handleHoverLeave(QGraphicsSceneHoverEvent *event) override;
     /** Event handler to handle element changes. */
     QVariant itemChange(GraphicsItemChange change, const QVariant & value);
     /** Event handler to edit element (double click) */
@@ -152,7 +145,6 @@ namespace Molsketch {
                     bool implicitHydrogens);
 
     QString m_elementSymbol;
-    bool m_hidden;
     int m_userCharge;
     int m_userElectrons;
     qreal m_newmanDiameter;
@@ -176,6 +168,7 @@ namespace Molsketch {
     QString getLabelWithHydrogens();
     void drawNewman(QPainter *painter);
     QPointF getBondDrawingStartFromBoundingBox(const QLineF &connection, qreal bondLineWidth) const;
+    bool showHoverPoint() const { return false; }
   };
 
 } // namespace

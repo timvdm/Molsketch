@@ -59,9 +59,6 @@ namespace Molsketch {
     QList<const XmlObjectInterface *> children() const;
   private:
     qreal sceneLineWidth(MolScene *scene) const;
-    void handleHoverEvent(QGraphicsSceneHoverEvent *event) override;
-    void handleHoverEnter(QGraphicsSceneHoverEvent *event) override;
-    void handleHoverLeave(QGraphicsSceneHoverEvent *event) override;
   }; // TODO let classes start with capital letters.
 
 } // namespace Molsketch

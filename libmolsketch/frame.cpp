@@ -155,8 +155,7 @@ namespace Molsketch {
     Frame *frame;
   public:
     privateData(Frame *frame)
-      : frame(frame),
-        isHovering(false)
+      : frame(frame)
     {
       segmentParsers << new SinglePointSegment<&QPainterPath::moveTo>("")
                      << new SinglePointSegment<&QPainterPath::lineTo>("-")
@@ -167,18 +166,6 @@ namespace Molsketch {
 
     QRectF baseRect;
     QString framePathCode;
-    bool isHovering;
-
-    void highlightPoints(QPainter* painter)
-    {// TODO move this to graphicsItem; highlight selected point
-      if (!isHovering || !frame->childItems().isEmpty()) return;
-      painter->save();
-      painter->setPen(Qt::red);
-      painter->setBrush(Qt::NoBrush);
-      foreach(QPointF point, frame->moveablePoints())
-        painter->drawEllipse(point, 5, 5);
-      painter->restore();
-    }
 
     void refreshBaseRect()
     {
@@ -220,6 +207,7 @@ namespace Molsketch {
     : graphicsItem(parent),
       d(new privateData(this))
   {
+    // TODO is this even necessary?
 #if QT_VERSION < 0x050000
     setAcceptsHoverEvents(true);
 #else
@@ -312,17 +300,11 @@ namespace Molsketch {
     // TODO incorporate path size in boundingRect() (maybe
 
     painter->restore();
-
-    d->highlightPoints(painter);
   }
 
   QRectF Frame::boundingRect() const // TODO include selectable points if active/selected (hovered/clicked)
   {
-    QRectF br = d->parseFramePath(sceneLineWidth(qobject_cast<MolScene*>(scene()))).boundingRect();
-    if (!d->isHovering) return br;
-    br.setTopLeft(br.topLeft() - QPointF(5,5));
-    br.setBottomRight(br.bottomRight() + QPointF(5,5));
-    return  br;
+    return d->parseFramePath(sceneLineWidth(qobject_cast<MolScene*>(scene()))).boundingRect();
   }
 
 //  QRectF Frame::boundingRect() const
@@ -338,16 +320,6 @@ namespace Molsketch {
   void Frame::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
   {
     event->ignore();
-  }
-
-  void Frame::handleHoverEnter(QGraphicsSceneHoverEvent *event) {
-    graphicsItem::handleHoverEnter(event);
-    d->isHovering = event->isAccepted();
-  }
-
-  void Frame::handleHoverLeave(QGraphicsSceneHoverEvent *event) {
-    graphicsItem::handleHoverLeave(event);
-    d->isHovering = false;
   }
 
   int Frame::coordinateCount() const
@@ -411,10 +383,4 @@ namespace Molsketch {
   qreal Frame::sceneLineWidth(MolScene *scene) const {
     return scene ? scene->settings()->frameLineWidth()->get() : 0;
   }
-
-  void Frame::handleHoverEvent(QGraphicsSceneHoverEvent *event) {
-    d->isHovering = true;
-    graphicsItem::handleHoverEvent(event);
-  }
-
 } // namespace Molsketch

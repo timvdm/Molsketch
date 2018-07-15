@@ -56,7 +56,7 @@ namespace Molsketch {
   {
     if (_atom)
     {
-      _atom->hoverOut();
+//      _atom->hoverOut();
       _atom->show();
     }
     _atom = 0;

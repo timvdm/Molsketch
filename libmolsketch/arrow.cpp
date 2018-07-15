@@ -190,13 +190,6 @@ namespace Molsketch {
                         UpperForward & d->arrowType,
                         tipScaling
                         )) ;
-
-    // draw red circles when hovering above one of the points
-    painter->setPen(Qt::red);
-    painter->setBrush(QBrush());
-    if (selectedPoint() >= 0 && selectedPoint() < d->points.size())
-        painter->drawEllipse(d->points[selectedPoint()], 5,5) ;
-    painter->restore();
   }
 
   QRectF Arrow::boundingRect() const
