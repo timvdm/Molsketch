@@ -90,7 +90,10 @@ namespace Molsketch {
     setAtoms(atomA, atomB);
   }
 
-  Bond::~Bond() {}
+  Bond::~Bond() {
+    if (m_beginAtom) beginAtom()->removeBond(this);
+    if (m_endAtom) endAtom()->removeBond(this);
+  }
 
   QRectF Bond::boundingRect() const
   {

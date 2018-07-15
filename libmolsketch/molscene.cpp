@@ -200,6 +200,8 @@ namespace Molsketch {
   }
 
   MolScene::~MolScene() {
+    disconnect(this, 0, 0, 0);
+    disconnect(this->stack(), 0, 0, 0);
     for(QObject *child : QObject::children())
       if (QAction *action = dynamic_cast<QAction*>(child))
         action->setChecked(false);
