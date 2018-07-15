@@ -421,20 +421,8 @@ namespace Molsketch {
     painter->setClipping(false);
 
     if (isSelected()) {
-      // draw square at the midpoint of the bond when selected
       painter->setPen(Qt::blue);
-      QPointF begin = mapFromParent(m_beginAtom->pos());
-      QPointF end = mapFromParent(m_endAtom->pos());
-      QPointF vb = end - begin;
-      QPointF midPoint = begin + vb / 2;
-      QPointF uvb = vb / sqrt(vb.x()*vb.x() + vb.y()*vb.y());
-      QPointF orthogonal(uvb.y(), -uvb.x());
-
-      painter->drawLine(QLineF(midPoint + 5.0 * orthogonal - 5.0 * uvb, midPoint - 5.0 * orthogonal - 5.0 * uvb));
-      painter->drawLine(QLineF(midPoint + 5.0 * orthogonal + 5.0 * uvb, midPoint - 5.0 * orthogonal + 5.0 * uvb));
-
-      painter->drawLine(QLineF(midPoint + 5.0 * orthogonal + 5.0 * uvb, midPoint + 5.0 * orthogonal - 5.0 * uvb));
-      painter->drawLine(QLineF(midPoint - 5.0 * orthogonal + 5.0 * uvb, midPoint - 5.0 * orthogonal - 5.0 * uvb));
+      painter->drawPath(shape());
     }
     painter->restore();
   }
