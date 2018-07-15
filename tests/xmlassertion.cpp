@@ -138,6 +138,20 @@ XmlAssertion *XmlAssertion::exactlyOnceWithContent(const QString &expected) {
   return this;
 }
 
+XmlAssertion *XmlAssertion::exactlyOnce() {
+  Q_D(XmlAssertion);
+  QXmlResultItems results;
+  d->query.evaluateTo(&results);
+  if (results.hasError())
+    d->printStackTraceAndThrow("Error in query!");
+  QXmlItem item = results.next();
+  if (item.isNull())
+    d->printStackTraceAndThrow("Expected exactly one result from query");
+  if (!results.next().isNull())
+    d->printStackTraceAndThrow("More than one match to query found!");
+  return this;
+}
+
 XmlAssertion *XmlAssertion::never() {
   Q_D(XmlAssertion);
   QXmlResultItems results;

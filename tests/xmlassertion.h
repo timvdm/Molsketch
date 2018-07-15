@@ -37,6 +37,7 @@ public:
   static QString formatXml(const QString&xml);
   XmlAssertion* contains(const QString& xQuery);
   XmlAssertion* exactlyOnceWithContent(const QString& expected);
+  XmlAssertion *exactlyOnce();
   XmlAssertion *never();
   XmlAssertion *inAnyOrderWithValues(const QStringList &expectedValues);
 private:
