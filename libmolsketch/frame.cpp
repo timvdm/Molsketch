@@ -236,6 +236,7 @@ namespace Molsketch {
 
   QPolygonF Frame::moveablePoints() const
   {
+    if (!childItems().empty()) return QPolygonF();
     QPolygonF mps;
     mps
         << d->baseRect.topLeft()
