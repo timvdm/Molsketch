@@ -470,7 +470,7 @@ namespace Molsketch {
     if (showHoverBox() && d->hovering) {
       painter->save();
       painter->setPen(QPen(Qt::blue, 1, Qt::DotLine));
-      painter->drawRect(boundingRect());
+      painter->drawPath(shape());
       painter->restore();
     }
     QPolygonF points(moveablePoints());

@@ -124,7 +124,6 @@ namespace Molsketch {
     void setCoordinates(const QVector<QPointF> &c) ;
     /** get the coordinates of the two atoms */
     QPolygonF coordinates() const ;
-    QPolygonF moveablePoints() const;
 
   protected:
     QXmlStreamAttributes graphicAttributes() const ;
@@ -138,7 +137,6 @@ namespace Molsketch {
     void drawWedgeBond(QPainter *painter);
     void determineDoubleBondOrientation();
     QPointF determineBondDrawingStart(Atom* start, Atom* end) const;
-    bool showHoverBox() const { return false; }
 
     // Internal representation
     Bond::BondType m_bondType;
