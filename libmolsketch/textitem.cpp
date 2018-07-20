@@ -43,6 +43,7 @@ namespace Molsketch {
              | ItemIsSelectable);
     setAcceptedMouseButtons(Qt::LeftButton);
     setTextInteractionFlags(Qt::TextEditorInteraction);
+    setZValue(50);
   }
 
   QXmlStreamReader &TextItem::readXml(QXmlStreamReader &in)
