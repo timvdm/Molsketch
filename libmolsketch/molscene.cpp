@@ -136,9 +136,13 @@ namespace Molsketch {
     }
 
     graphicsItem *findHoverItem(const QPointF& position) {
+      auto itemsAtPosition = scene->items(position);
+      if (itemsAtPosition.isEmpty()) return nullptr;
+      if (!dynamic_cast<graphicsItem*>(itemsAtPosition.first())) return nullptr;
+
       qreal minDistance = INFINITY;
       graphicsItem *result = nullptr;
-      for (auto item : scene->items(position)) {
+      for (auto item : itemsAtPosition) {
         auto gItem = dynamic_cast<graphicsItem*>(item);
         if (!gItem) continue;
         auto distance = gItem->distanceToClosestMoveablePoint(position);

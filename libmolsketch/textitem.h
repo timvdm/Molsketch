@@ -30,12 +30,14 @@ namespace Molsketch {
   {
   public:
     explicit TextItem(GRAPHICSSCENEHEADER);
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
-    // QGraphicsItem interface
   protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
     void focusInEvent(QFocusEvent *event);
+    void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) override;
 
     // XmlObjectInterface interface
   public:

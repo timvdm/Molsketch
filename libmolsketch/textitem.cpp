@@ -24,11 +24,13 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QTextDocument>
 #include <QFocusEvent>
+#include <QPainter>
 
 namespace Molsketch {
 
   struct TextItem::privateData {
     bool initialFill;
+    bool hovering;
   };
 
   TextItem::TextItem(GRAPHICSSCENESOURCE)
@@ -36,6 +38,7 @@ namespace Molsketch {
       d(new privateData)
   {
     d->initialFill = true;
+    d->hovering = false;
     setFlags(flags()
              | ItemAcceptsInputMethod
              | ItemIsFocusable
@@ -107,7 +110,30 @@ namespace Molsketch {
     if (!d->initialFill)
       (new TextEditingUndoCommand(this, tr("Edit text")))->execute();
     d->initialFill = false;
+    d->hovering = false;
     QGraphicsTextItem::focusInEvent(event);
     event->accept();
+  }
+
+  void TextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
+    QGraphicsTextItem::paint(painter, option, widget);
+    if (d->hovering) {
+      painter->save();
+      painter->setPen(QPen(Qt::blue, 1, Qt::DotLine));
+      painter->drawPath(shape());
+      painter->restore();
+    }
+  }
+
+  void TextItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
+    d->hovering = !hasFocus();
+    QGraphicsTextItem::hoverEnterEvent(event);
+    update();
+  }
+
+  void TextItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event) {
+    d->hovering = false;
+    QGraphicsTextItem::hoverLeaveEvent(event);
+    update();
   }
 } // namespace Molsketch
