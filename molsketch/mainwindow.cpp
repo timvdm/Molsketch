@@ -51,6 +51,10 @@
 #include "settingsitem.h"
 #include "actioncontainer.h"
 
+#ifdef THIRD_PARTY_LICENSES
+#include "licensedialog.h"
+#endif
+
 
 #define PROGRAM_NAME "Molsketch"
 
@@ -435,6 +439,12 @@ void MainWindow::createHelpMenu() {
   auto aboutQtAction = ActionContainer::generateAction("", "", tr("About &Qt..."), "", tr("Show the Qt library's About box"), this);
   connect(aboutQtAction, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
   helpMenu->addAction(aboutQtAction);
+#ifdef THIRD_PARTY_LICENSES
+  auto thirdPartyLicensesAction = ActionContainer::generateAction("", "", tr("Thirdparty licenses..."), "", tr("Show licenses of included libraries"), this);
+  auto licenseDialog = new LicenseDialog(this);
+  connect(thirdPartyLicensesAction, SIGNAL(triggered()), licenseDialog, SLOT(exec()));
+  helpMenu->addAction(thirdPartyLicensesAction);
+#endif
 }
 
 void MainWindow::createFileMenuAndToolBar() {
