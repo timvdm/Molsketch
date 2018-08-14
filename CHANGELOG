@@ -6,6 +6,13 @@
     </ul>
 </b>
 
+<h2>0.5.2 Boron-11</h2>
+<ul>
+    <li>(Drawing) properties of scene</li>
+    <li>Reworked selecting of items/hovering over items</li>
+    <li>Some remodeling of brackets</li>
+</ul>
+
 <h2>0.5.1 Boron-10</h2>
 <ul>
     <li>Newman radius of atom to draw Newman-type projections</li>
