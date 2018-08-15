@@ -69,16 +69,6 @@ namespace Molsketch {
     return d->scene;
   }
 
-  QSet<graphicsItem *> PropertiesWidget::items() const
-  {
-    if (!d->scene) return QSet<graphicsItem*>();
-    QSet<graphicsItem*> items;
-    for (QGraphicsItem* item : d->scene->selectedItems())
-      items << dynamic_cast<graphicsItem*>(item);
-    items.remove(0);
-    return items;
-  }
-
   bool PropertiesWidget::blocked() const
   {
     return d->lock;
