@@ -59,20 +59,14 @@ namespace Molsketch {
     molscene->stack()->endMacro();
   }
 
+  bool PropertiesWidget::itemValid(graphicsItem *item) const {
+    return scene() && scene()->items().contains(item);
+  }
+
 
   MolScene* PropertiesWidget::scene() const
   {
     return d->scene;
-  }
-
-  QSet<graphicsItem *> PropertiesWidget::items() const
-  {
-    if (!d->scene) return QSet<graphicsItem*>();
-    QSet<graphicsItem*> items;
-    for (QGraphicsItem* item : d->scene->selectedItems())
-      items << dynamic_cast<graphicsItem*>(item);
-    items.remove(0);
-    return items;
   }
 
   bool PropertiesWidget::blocked() const

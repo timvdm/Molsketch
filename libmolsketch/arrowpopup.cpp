@@ -100,7 +100,7 @@ namespace Molsketch {
   void ArrowPopup::propertiesChanged()
   {
     if (!scene()) return; // TODO reset GUI
-    d->transferPropertiesToUi(ui, d->arrow->getProperties());
+    if (itemValid(d->arrow)) d->transferPropertiesToUi(ui, d->arrow->getProperties());
   }
 
   void ArrowPopup::applyPropertiesToArrow()

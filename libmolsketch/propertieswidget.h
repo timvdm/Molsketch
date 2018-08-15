@@ -38,10 +38,10 @@ namespace Molsketch {
     virtual void propertiesChanged() = 0;
     void attemptToPushUndoCommand(QUndoCommand*cmd);
     MolScene *scene() const;
-    QSet<graphicsItem*> items() const;
     bool blocked() const;
     void attemptBeginMacro(const QString &text) const;
     void attemptEndMacro() const;
+    bool itemValid(graphicsItem *item) const;
   public:
     explicit PropertiesWidget(QWidget *parent = 0);
     virtual ~PropertiesWidget();

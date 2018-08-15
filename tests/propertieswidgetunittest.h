@@ -34,7 +34,6 @@ public:
   PropertiesWidgetForTesting() : timesPropertyChanged(0) {}
   void push(QUndoCommand* cmd) { attemptToPushUndoCommand(cmd); }
   MolScene* getScene() { return scene(); }
-  QSet<graphicsItem*> getItems() { return items(); }
 };
 
 class PropertiesWidgetForBlockingTest : public PropertiesWidget{
@@ -252,30 +251,6 @@ public:
     delete scene;
     assertPushedCommandGetsExecuted();
     TS_ASSERT_EQUALS(UndoCommandForTesting::destroyed, 1);
-  }
-
-  void testSelectedItemsCanBeObtainedFromScene() {
-    MolSceneForTesting scene;
-    widget->setScene(&scene);
-    TS_ASSERT(widget->getItems().empty());
-    GraphicsItemForTesting *item = new GraphicsItemForTesting;
-    scene.addItem(item);
-    TS_ASSERT(widget->getItems().empty());
-    item->setSelected(true);
-    TS_ASSERT_EQUALS(widget->getItems().size(), 1);
-    TS_ASSERT(widget->getItems().contains(item));
-  }
-
-  void testGettingItemsFromDeletedScene() {
-    MolSceneForTesting *scene = new MolSceneForTesting;
-    widget->setScene(scene);
-    GraphicsItemForTesting *item = new GraphicsItemForTesting;
-    scene->addItem(item);
-    item->setSelected(true);
-    TS_ASSERT_EQUALS(widget->getItems().size(), 1);
-    TS_ASSERT(widget->getItems().contains(item));
-    delete scene;
-    TS_ASSERT(widget->getItems().empty());
   }
 
   void testDuringPropertiesChangeBlockedIsTrue() {
