@@ -183,7 +183,7 @@ namespace Molsketch {
   void AtomPopup::propertiesChanged()
   {
     if (!scene()) return; // TODO reset GUI
-    d->getFromAtom();
+    if (itemValid(d->atom)) d->getFromAtom();
   }
 
   void AtomPopup::addRadical(const QCheckBox* checkBox, const BoundingBoxLinker &linker) {

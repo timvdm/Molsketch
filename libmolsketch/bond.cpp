@@ -90,7 +90,10 @@ namespace Molsketch {
     setAtoms(atomA, atomB);
   }
 
-  Bond::~Bond() {}
+  Bond::~Bond() {
+    if (m_beginAtom) m_beginAtom->removeBond(this);
+    if (m_endAtom) m_endAtom->removeBond(this);
+  }
 
   QRectF Bond::boundingRect() const
   {
@@ -102,12 +105,13 @@ namespace Molsketch {
 
   qreal Bond::bondAngle(const Atom *origin) const
   {
-    if (!m_endAtom || !m_beginAtom) return 0 ;
+    CHECKFORATOMS return 0 ;
     return Molecule::toDegrees(bondAxis().angle() + (origin == endAtom()) * 180.) ;
   }
 
   QLineF Bond::bondAxis() const
   {
+    CHECKFORATOMS return QLineF();
     return QLineF(mapFromParent(m_beginAtom->pos()),
                   mapFromParent(m_endAtom->pos())) ;
   }
@@ -511,6 +515,11 @@ namespace Molsketch {
     return dynamic_cast<Molecule*>(this->parentItem());
   }
 
+  void Bond::removeAtom(Atom *atom) {
+    if (m_beginAtom == atom) m_beginAtom = nullptr;
+    if (m_endAtom == atom) m_endAtom = nullptr;
+  }
+
   QLineF Bond::shiftVector(const QLineF &vector, qreal shift) // Shifts a vector on the perpendicular axis
   {
     qreal rx1 = vector.x1() + shift*(vector.unitVector().y2()-vector.unitVector().y1());
@@ -527,12 +536,14 @@ namespace Molsketch {
   void Bond::setCoordinates(const QVector<QPointF> &c)
   {
     if (c.size() != 2) return ;
+    CHECKFORATOMS return;
     m_beginAtom->setCoordinates(c.mid(0,1)) ;
     m_endAtom->setCoordinates(c.mid(1,1));
   }
 
   QPolygonF Bond::coordinates() const
   {
+   CHECKFORATOMS return QVector<QPointF>();
     return QVector<QPointF>()
         << m_beginAtom->coordinates()
         << m_endAtom->coordinates() ;

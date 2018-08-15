@@ -106,6 +106,7 @@ namespace Molsketch {
     QPair<Atom*, Atom*> atoms() const;
 
     Molecule* molecule() const;
+    void removeAtom(Atom *);
 
     /**
          * Auxillary method for shifting a bond perpendicular to the original bond.

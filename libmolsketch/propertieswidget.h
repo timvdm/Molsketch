@@ -42,6 +42,7 @@ namespace Molsketch {
     bool blocked() const;
     void attemptBeginMacro(const QString &text) const;
     void attemptEndMacro() const;
+    bool itemValid(graphicsItem *item) const;
   public:
     explicit PropertiesWidget(QWidget *parent = 0);
     virtual ~PropertiesWidget();

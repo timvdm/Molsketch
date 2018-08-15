@@ -59,6 +59,10 @@ namespace Molsketch {
     molscene->stack()->endMacro();
   }
 
+  bool PropertiesWidget::itemValid(graphicsItem *item) const {
+    return scene() && scene()->items().contains(item);
+  }
+
 
   MolScene* PropertiesWidget::scene() const
   {

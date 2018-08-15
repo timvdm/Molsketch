@@ -79,7 +79,9 @@ namespace Molsketch {
     initialize(other.scenePos(), other.element(), other.m_implicitHydrogens);
   }
 
-  Atom::~Atom() {} // TODO sign off from bonds
+  Atom::~Atom() {
+    for (auto bond : m_bonds) bond->removeAtom(this);
+  }
 
   qreal Atom::computeTotalWdith(const int& alignment,
                                 const QString& lbl,
