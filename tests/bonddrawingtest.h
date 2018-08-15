@@ -100,9 +100,10 @@ public:
     assertLineCoords("4.33333,6.5 15.6667,23.5 ");
   }
 
-  void testDrawingFromEmptyAtoms() {
-    a1->setElement("");
-    a2->setElement("");
+  void testDrawingFromUndrawnAtoms() {
+    a1->setElement("C");
+    a2->setElement("C");
+    scene->settings()->showTerminalMethyls()->set(false);
     a2->setCoordinates(QPolygonF() << QPointF(20,30));
     assertLineCoords("0,0 20,30 ");
   }
