@@ -109,6 +109,7 @@ namespace Molsketch {
         dragItem(0),
         hoverItem(0)
     {
+      inputItem->setFlags(inputItem->flags() & ~QGraphicsItem::ItemIsSelectable);
       selectionRectangle->setPen(QPen(Qt::blue,0,Qt::DashLine));
       selectionRectangle->setZValue(INFINITY);
       connect(scene, SIGNAL(sceneRectChanged(QRectF)), scene, SLOT(updateGrid(QRectF)));
@@ -182,7 +183,6 @@ namespace Molsketch {
 
   MolScene::MolScene(SceneSettings* settings, QObject *parent)
     : QGraphicsScene(parent),
-      m_editMode(MolScene::DrawMode),
       m_renderMode(RenderLabels),
       d(new privateData(this, nullptr == settings ? new SceneSettings(SettingsFacade::transientSettings(), this) : settings))
   {
@@ -239,14 +239,6 @@ namespace Molsketch {
   QString MolScene::mimeType()
   {
     return moleculeMimeType;
-  }
-
-  void MolScene::setEditMode(int mode)
-  {
-    // TODO
-        // Set the new edit mode and signal other components
-        m_editMode = mode;
-        emit editModeChange( mode );
   }
 
   void MolScene::cut() {
@@ -379,23 +371,9 @@ namespace Molsketch {
 
   void MolScene::selectAll()
   {
-        // Switch to move mode to make selection posible
-        setEditMode(MolScene::MoveMode);
-
-        // Clear any previous selection
         clearSelection();
-
-        // Mark all atoms as selected
         foreach (QGraphicsItem* item, items())
-        {
-          if (item->type() == Molecule::Type || item->type() == Arrow::Type)
-                item->setSelected(true);
-        }
-  }
-
-  int MolScene::editMode() const
-  {
-    return m_editMode;
+          if (!item->parentItem()) item->setSelected(true);
   }
 
   qreal MolScene::bondAngle() const {

@@ -50,20 +50,6 @@ namespace Molsketch {
 
     public:
     static const QString mouseWheelForCyclingTools;
-      enum EditMode {
-        MoveMode,     //!< Atoms and molecules are movable.
-        DrawMode,     //!< Mode to add atoms and bonds.
-        RotateMode,   //!< Mode to rotate molecules.
-        ChargeMode,   //!< Increase/decrease charges
-        HydrogenMode, //!< increase/decrease implicit hydrogen count
-        LassoMode,    //!< lasso selection tool
-        TextMode,     //!< add / edit text
-        MinimiseMode, //!< gemoetry optimise
-        ConnectMode,  //!< mode to drag/drop items
-        ReactionMode, //! mode to insert reaction arrows
-        MechanismMode, //!< mode for inserting mechanism arrows
-      };
-
       enum RenderMode
       {
         RenderLabels,
@@ -82,7 +68,6 @@ namespace Molsketch {
       QFont getAtomFont() const;
 
       static QString mimeType();
-      int editMode() const; // TODO obsolete?
 
       qreal bondAngle() const;
 
@@ -124,7 +109,6 @@ namespace Molsketch {
     signals:
       void copyAvailable(bool);
       void pasteAvailable(bool);
-      void editModeChange(int);
       void documentChange( );
 
     public slots:
@@ -136,8 +120,6 @@ namespace Molsketch {
       void paste();
       /** Slot to clear the scene. */
       void clear();
-      /** Slot to set the edit mode to @p mode. */
-      void setEditMode(int mode);
       /** Slot to select all contents of the scene. */
       void selectAll();
       void addMolecule(Molecule* mol);
@@ -185,8 +167,6 @@ namespace Molsketch {
 
   private:
 
-      /** Stores the edit mode of the scene as an integer. */
-      int m_editMode;
       RenderMode m_renderMode;
       class privateData;
       privateData *d;
