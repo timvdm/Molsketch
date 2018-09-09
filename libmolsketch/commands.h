@@ -51,7 +51,6 @@ namespace Molsketch {
   class Atom;
   class Molecule;
   class MolScene;
-  class Residue;
 
   namespace Commands { // TODO make null safe and rework
 

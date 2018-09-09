@@ -26,7 +26,7 @@ namespace Molsketch {
   class Arrow : public graphicsItem // TODO introduce dependent coordinates
   {
   public:
-    enum {Type = GeneralArrowType} ;
+    enum {Type = ArrowType} ;
     int type() const {return Type;}
 
     enum ArrowTypeParts {

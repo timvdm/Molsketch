@@ -393,19 +393,6 @@ namespace Molsketch {
         }
   }
 
-
-  void MolScene::setHoverRect( QGraphicsItem* item )
-  {
-        if (item)
-        {
-          m_hoverRect->setPath(item->shape());
-          m_hoverRect->setPos(item->scenePos());
-          addItem(m_hoverRect);
-        }
-        else
-          removeItem(m_hoverRect);
-  }
-
   int MolScene::editMode() const
   {
     return m_editMode;
@@ -510,15 +497,10 @@ namespace Molsketch {
     return attributes;
   }
 
-  Molecule* MolScene::moleculeAt(const QPointF &pos)
-  {
-        // Check if there is a molecule at this position
+  Molecule* MolScene::moleculeAt(const QPointF &pos) {
         foreach(QGraphicsItem* item,items(pos))
-          if (item->type() == Molecule::Type) return dynamic_cast<Molecule*>(item);
-
-        // Else return NULL
-        return 0;
-
+          if (auto molecule = dynamic_cast<Molecule*>(item)) return molecule;
+        return nullptr;
   }
 
   TextInputItem *MolScene::inputItem()

@@ -185,20 +185,11 @@ namespace Molsketch {
 
   private:
 
-      // Hinting methods and properties
-      /** Shows a highlight rectangle around @p item. */
-      void setHoverRect( QGraphicsItem* item );
-
       /** Stores the edit mode of the scene as an integer. */
       int m_editMode;
       RenderMode m_renderMode;
-
       class privateData;
       privateData *d;
-
-      // Auxillary feedback items
-      /** The highlight rectangle. */
-      QGraphicsPathItem* m_hoverRect;
 
   private slots:
       void updateAll() ;

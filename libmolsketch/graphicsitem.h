@@ -34,15 +34,12 @@ namespace Molsketch {
   {
   public:
 
-    enum Types {
+    enum Types { // TODO do we really need this?
       MoleculeType = QGraphicsItem::UserType + 1,
       AtomType = QGraphicsItem::UserType + 2,
       BondType = QGraphicsItem::UserType + 3,
-      ResidueType = QGraphicsItem::UserType + 4, // TODO deprecated
       TextInputType = QGraphicsItem::UserType + 5,
-      ReactionArrowType = QGraphicsItem::UserType + 6, // TODO deprecated
-      MechanismArrowType = QGraphicsItem::UserType + 7, // TODO deprecated
-      GeneralArrowType = QGraphicsItem::UserType + 8,
+      ArrowType = QGraphicsItem::UserType + 8,
       FrameType = QGraphicsItem::UserType + 9,
       LonePairType = QGraphicsItem::UserType + 10,
       RadicalType = QGraphicsItem::UserType + 11
