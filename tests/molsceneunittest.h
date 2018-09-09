@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2017 by Hendrik Vennekate                               *
+ *   Copyright (C) 2017 - 2018 by Hendrik Vennekate                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
