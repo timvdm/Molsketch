@@ -429,18 +429,16 @@ namespace Molsketch {
   XmlObjectInterface *MolScene::produceChild(const QString &childName, const QString &type)
   {
     XmlObjectInterface *object = 0 ;
-    if ("frame" == childName) object = new Frame;
-    if (childName == "molecule") // TODO move those names to their classes.
-      object = new Molecule;
-    if (childName == "arrow")
-      object = new Arrow;
+    if (Frame::xmlClassName() == childName) object = new Frame;
+    if (Molecule::xmlClassName() == childName)  object = new Molecule;
+    if (Arrow::xmlClassName() == childName) object = new Arrow;
+    if (TextItem::xmlClassName() == childName) object = new TextItem;
+    if (d->settings->xmlName() == childName) object = d->settings;
     if (childName == "object")
     {
       if (type == "ReactionArrow") object = new Arrow ;
       if (type == "MechanismArrow") object = new Arrow ;
     }
-    if ("textItem" == childName) object = new TextItem;
-    if (d->settings->xmlName() == childName) object = d->settings;
     if (QGraphicsItem* item = dynamic_cast<QGraphicsItem*>(object)) // TODO w/o dynamic_cast
       addItem(item) ;
     return object ;
