@@ -45,38 +45,26 @@ namespace Molsketch {
     if (selectedItems.isEmpty()) return;
     attemptBeginMacro(tr("Delete items"));
     QSet<Molecule*> molecules;
-    Atom *atom = 0;
-    Bond *bond = 0;
-    foreach(QGraphicsItem* item, selectedItems)
-    {
-      if (!item->scene()) continue;
-      switch(item->type())
-      {
-        case Atom::Type:
-          atom = dynamic_cast<Atom*>(item);
-          if (atom)
-            molecules << atom->molecule();
-          attemptUndoPush(new Commands::DelAtom(atom));
-          break;
-        case Bond::Type:
-          bond = dynamic_cast<Bond*>(item);
-          if (bond)
-            molecules << bond->molecule();
-          attemptUndoPush(new Commands::DelBond(bond));
-          break;
-        default:
-          Commands::ItemAction::removeItemFromScene(item);
-      }
-    }
-    molecules.remove(0);
 
-    foreach(Molecule* molecule, molecules)
-    {
-      if (!molecule->scene()) continue;
-      if (!molecule->canSplit()) continue;
-      foreach(Molecule* subMolecule, molecule->split())
-        Commands::ItemAction::addItemToScene(subMolecule, scene());
-      Commands::ItemAction::removeItemFromScene(molecule);
+    for(auto item : selectedItems)
+      if (Bond *bond = dynamic_cast<Bond*>(item))
+        attemptUndoPush(new Commands::DelBond(bond));
+
+    for (auto item : selectedItems)
+      if (Atom *atom = dynamic_cast<Atom*>(item))
+        attemptUndoPush(new Commands::DelAtom(atom));
+
+    for (auto item : selectedItems)
+      if (!dynamic_cast<Atom*>(item) && !dynamic_cast<Bond*>(item))
+        Commands::ItemAction::removeItemFromScene(item);
+
+    for (auto item : scene()->items()) {
+      if (Molecule *molecule = dynamic_cast<Molecule*>(item)) {
+        if (!molecule->canSplit()) continue;
+        foreach(Molecule* subMolecule, molecule->split())
+          Commands::ItemAction::addItemToScene(subMolecule, scene());
+        Commands::ItemAction::removeItemFromScene(molecule);
+      }
     }
     attemptEndMacro();
   }
