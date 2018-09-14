@@ -121,14 +121,21 @@ void AddBond::redo()
 }
 
 
-DelBond::DelBond(Bond* delBond, const QString & text) : QUndoCommand(text), m_bond(delBond), m_mol(delBond->molecule())
+DelBond::DelBond(Bond* delBond, const QString & text)
+  : QUndoCommand(text),
+    m_bond(delBond),
+    m_mol(delBond->molecule()),
+    m_begin(delBond->beginAtom()),
+    m_end(delBond->endAtom())
 {}
+
 DelBond::~DelBond()
 {
   if(!m_undone) delete m_bond;
 }
 void DelBond::undo()
 {
+  m_bond->setAtoms(m_begin, m_end);
   m_mol->addBond(m_bond);
   m_undone = true;
 }

@@ -882,6 +882,7 @@ namespace Molsketch {
   void Atom::addBond(Bond *bond)
   {
     if (!bond) return;
+    if (bond->atoms().first != this && bond->atoms().second != this) return;
 
     if (!m_bonds.contains(bond))
       m_bonds.append(bond);
@@ -892,6 +893,9 @@ namespace Molsketch {
 
   void Atom::removeBond(Bond *bond)
   {
+    if (!bond) return;
+    if (!m_bonds.contains(bond)) return;
+    bond->removeAtom(this);
     m_bonds.removeAll(bond);
     prepareGeometryChange();
     m_shape = computeBoundingRect();
