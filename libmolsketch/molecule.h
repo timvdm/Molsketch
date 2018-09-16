@@ -184,24 +184,8 @@ namespace Molsketch {
     void redoIndexes();
     void setDefaults();
     void clone(QSet<Atom*> atoms);
-    template<class T>
-    class moleculeItemListClass : public QList<T*>, public abstractXmlObject // Crash bei foreach
-    {
-    private:
-      Molecule* p ;
-    public:
-      explicit moleculeItemListClass(Molecule* parent) : p(parent) {}
-      QString xmlName() const ;
-      QList<const XmlObjectInterface *> children() const ;
-      abstractXmlObject *produceChild(const QString &name, const QString &type) ;
-    }; // TODO implement filter function for childItems() (by ID and by type) and move this to QGraphicsItem
-
     QList<Atom*> smallestRing(QList<Atom*> atomList) const ;
-
-    moleculeItemListClass<Bond> m_bondList;
-
     QString name;
-
     void paintElectronSystems(QPainter *painter) const;
   public:
     bool m_electronSystemsUpdate; // TODO remove

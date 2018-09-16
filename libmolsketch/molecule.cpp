@@ -59,22 +59,29 @@ namespace Molsketch {
     }
   };
 
-  struct MoleculePrivate {
-    AtomProxyList atomList;
-    explicit MoleculePrivate(Molecule* m) : atomList(m) {}
+  class BondProxyList : public abstractXmlObject {
+    Molecule* p ;
+  public:
+    explicit BondProxyList(Molecule* parent) : p(parent) {}
+    QString xmlName() const { return "bondArray"; }
+    QList<const XmlObjectInterface *> children() const {
+      QList<const XmlObjectInterface*> result;
+      for (auto bond :  p->bonds()) result << bond;
+      return result;
+    }
+    abstractXmlObject *produceChild(const QString &name, const QString &type) {
+      if (name != Bond::xmlClassName()) return nullptr;
+      auto bond = new Bond();
+      bond->setParentItem(p);
+      return bond;
+    }
   };
 
-  template <>
-  QString Molecule::moleculeItemListClass<Atom>::xmlName() const
-  {
-    return "atomArray" ;
-  }
-
-  template <>
-  QString Molecule::moleculeItemListClass<Bond>::xmlName() const
-  {
-    return "bondArray" ;
-  }
+  struct MoleculePrivate {
+    AtomProxyList atomList;
+    BondProxyList bondList;
+    explicit MoleculePrivate(Molecule* m) : atomList(m), bondList(m) {}
+  };
 
   // Constructors
 
@@ -84,7 +91,7 @@ namespace Molsketch {
     return temp < 0 ? 360 + temp : temp ;
   }
 
-#define DEFAULTINITIALIZER d_ptr(new MoleculePrivate(this)), m_bondList(this), m_electronSystemsUpdate(true)
+#define DEFAULTINITIALIZER d_ptr(new MoleculePrivate(this)), m_electronSystemsUpdate(true)
 
   Molecule::Molecule(QGraphicsItem* parent GRAPHICSSCENESOURCE )
     : graphicsItem(parent GRAPHICSSCENEINIT ),
@@ -226,7 +233,6 @@ namespace Molsketch {
     }
 
     // Adding the bond the the molecule
-    m_bondList.append(bond);
     bond->setParentItem(this);
 
     bond->setAtoms(bond->beginAtom(), bond->endAtom()); // TODO huh?
@@ -239,12 +245,8 @@ namespace Molsketch {
   {
     QList<Bond*> delList = bonds(atom);
     foreach(Bond* bond, delList) {
-      //delBond(bond);
-      Q_ASSERT(m_bondList.contains(bond));
-      m_bondList.removeAll(bond);
       bond->setParentItem(0);
-      if (scene())
-        scene()->removeItem(bond);
+      if (scene()) scene()->removeItem(bond);
     }
 
     atom->setParentItem(0);
@@ -252,7 +254,7 @@ namespace Molsketch {
 
     m_electronSystemsUpdate = true;
     redoIndexes();
-    // Return the list of bonds that were connected for undo
+
     return delList;
   }
 
@@ -267,17 +269,10 @@ namespace Molsketch {
 
   void Molecule::delBond(Bond* bond)
   {
-    Q_CHECK_PTR(bond);
-    //pre: bond is an existing bond in the molecule
-    Q_ASSERT(m_bondList.contains(bond));
+    if (!bond || bond->parentItem() != this) return;
 
-    //post: bond has been removed from the molecule
-
-    // Removing the bond
-    m_bondList.removeAll(bond);
     bond->setParentItem(0);
-    if (scene())
-      scene()->removeItem(bond);
+    if (scene()) scene()->removeItem(bond);
 
     m_electronSystemsUpdate = true;
   }
@@ -410,7 +405,7 @@ namespace Molsketch {
   Bond* Molecule::bondBetween(const Atom* atomA, const Atom* atomB) const
   {
     //     for (int i = 0; i < countBonds(); i++)
-    foreach(Bond* bond, m_bondList)
+    foreach(Bond* bond, bonds())
       if (((bond->beginAtom() == atomA) || (bond->beginAtom() == atomB )) && ((bond->endAtom() == atomA) || (bond->endAtom() == atomB )))
         return bond;
 
@@ -421,7 +416,7 @@ namespace Molsketch {
   {
     QList<Bond*> bondList;
 
-    foreach(Bond* bond, m_bondList)
+    foreach(Bond* bond, bonds())
       if (bond->hasAtom(atom))
         bondList << bond;
 
@@ -637,7 +632,7 @@ void Molecule::updateElectronSystems()
     delete es;
   m_electronSystems.clear();
 
-  foreach (Bond *bond, m_bondList) {
+  foreach (Bond *bond, bonds()) {
     int piOrder = bond->bondOrder() - 1;
     while (piOrder--) m_electronSystems << new PiElectrons(bond->atoms(), 2);
   }
@@ -670,22 +665,15 @@ void Molecule::updateElectronSystems()
   QList<const XmlObjectInterface *> Molecule::children() const
   {
     Q_D(const Molecule);
-    return QList<const XmlObjectInterface*>() << &d->atomList << &m_bondList ;
+    return QList<const XmlObjectInterface*>() << &d->atomList << &d->bondList ;
   }
 
-  XmlObjectInterface *Molecule::produceChild(const QString &name, const QString &type)
-  {
+  XmlObjectInterface *Molecule::produceChild(const QString &name, const QString &type) {
     Q_UNUSED(type)
     Q_D(Molecule);
     if (d->atomList.xmlName() == name) return &d->atomList;
-
-    if (m_bondList.xmlName() == name)
-    {
-      m_bondList.clear();
-      return &m_bondList ;
-    }
-
-    return 0 ;
+    if (d->bondList.xmlName() == name) return &d->bondList;
+    return nullptr;
   }
 
   void Molecule::afterReadFinalization()
@@ -721,40 +709,6 @@ void Molecule::updateElectronSystems()
 #endif
     setZValue(-50);
   }
-
-  template <class T>
-  abstractXmlObject *Molecule::moleculeItemListClass<T>::produceChild(const QString &name, const QString &type)
-  {
-     Q_UNUSED(type)
-    if (name == "bond") return new Bond ; // TODO hum?
-    return 0 ;
-  }
-
-  template <class T>
-  QList<const XmlObjectInterface *> Molecule::moleculeItemListClass<T>::children() const
-  {
-    QList<const XmlObjectInterface*> childrenList ;
-    foreach (T* item, *this)
-      childrenList << item ;
-    return childrenList ;
-  }
-
-#define PRODUCECHILDTEMPLATEMACRO(ITEMTYPE, ITEMTYPENAME) \
-  template<> \
-  abstractXmlObject *Molecule::moleculeItemListClass<ITEMTYPE>::produceChild(const QString &name, const QString &type) \
-  { \
-    Q_UNUSED(type) \
-    if (name == ITEMTYPENAME) \
-    {\
-      ITEMTYPE *item = new ITEMTYPE ;\
-      item->setParentItem(p) ;\
-      append(item) ;\
-      return item ;\
-    }\
-    return 0 ;\
-  }
-  PRODUCECHILDTEMPLATEMACRO(Atom, "atom")
-  PRODUCECHILDTEMPLATEMACRO(Bond, "bond")
 
   QList<Atom*> Molecule::smallestRing(QList<Atom*> atomList) const // TODO test
   { // TODO JAVA-style iterators for clarity
