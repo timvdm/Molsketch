@@ -21,6 +21,7 @@
 
 #include <bond.h>
 #include <lonepair.h>
+#include <molecule.h>
 
 #include <atom.h>
 #include <radicalelectron.h>
@@ -126,8 +127,9 @@ public:
   }
 
   void testAtomIsShownIfItHasChildren() {
-    Atom otherAtom, thirdAtom;
-    Bond firstBond(atom, &otherAtom), secondBond(atom, &thirdAtom); // need at least two bonds
+    auto otherAtom = new Atom, thirdAtom = new Atom;
+    auto firstBond = new Bond(atom, otherAtom), secondBond = new Bond(atom, thirdAtom); // need at least two bonds
+    Molecule molecule(QSet<Atom*>{atom, otherAtom, thirdAtom}, QSet<Bond*>{firstBond, secondBond});
 
     atom->setElement("C");
     TS_ASSERT(!atom->isDrawn());
@@ -135,8 +137,9 @@ public:
     lonePair->setParentItem(atom);
     TS_ASSERT(atom->isDrawn());
 
-    firstBond.setAtoms(nullptr, nullptr);
-    secondBond.setAtoms(nullptr, nullptr);
+    molecule.delAtom(atom);
+    delete firstBond;
+    delete secondBond;
   }
 
   void testNormalAtomHasNoNewmanDiameter() {

@@ -1,6 +1,7 @@
 /***************************************************************************
  *   Copyright (C) 2007 by Harm van Eersel                                 *
  *   Copyright (C) 2009 by Tim Vandermeersch                               *
+ *   Copyright (C) 2018 by Hendrik Vennekate                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -58,19 +59,12 @@ namespace Molsketch {
   class Molecule : public graphicsItem
   {
   public:
-    // Enabling typecasting
     enum { Type = graphicsItem::MoleculeType };
-    /**
-         * @return The QGraphicsItem type of the class. Needed for Qt typecasting.
-         */
-    int type() const { return Type; }
+    int type() const override { return Type; }
 
     static qreal toDegrees(const qreal& angle) ;
 
-    // Constructors and destructor
-    /** Creates a molecule with @p parent on MolScene @p scene. */
     Molecule(QGraphicsItem* parent = 0 GRAPHICSSCENEHEADER ) ;
-    /** Creates a molecule from the atoms and bonds of the sets with @p parent on MolScene @p scene. */
     Molecule(QSet<Atom*>, QSet<Bond*>, QGraphicsItem* parent = 0 GRAPHICSSCENEHEADER ) ;
     // TODO get bonds from atoms or atoms from bonds, but don't take both
     /** Creates a copy of molecule @p mol with @p parent on MolScene @p scene. */
@@ -93,26 +87,8 @@ namespace Molsketch {
     QPolygonF coordinates() const ;
     /** Set coordinates */
     void setCoordinates(const QVector<QPointF> &c) ;
-    // Manipulation methods
 
-    /**
-        * This method add an atom to the molecule with @p element as element at position @p position.
-        *
-        * @param element element of the atom to be added to the molecule
-        * @param position the position where the atom should be added to the molecules in scene coordinates
-        *
-        * @return return a pointer to the new atom which has been added to the molecule
-        */
-    Atom* addAtom(const QString &element, const QPointF &position, bool implicitHydrogen, QColor c = QColor (0, 0, 0));
-
-    /**
-        * This method adds an existing atom to the molecule.
-        *
-        * @param atom a pointer to the atom that should be added to the molecule.
-        *
-        * @return return a pointer to the atom just added to the molecule.
-        */
-    Atom* addAtom(Atom* atom);
+    Atom* addAtom(Atom* atom); // TODO remove
 
     /**
         * This method removes an atom from the molecule. The bonds connected to this atom will be removed as well.
@@ -181,7 +157,7 @@ namespace Molsketch {
     /** Returns a list of the bonds connected to @p atom. */
     QList<Bond*> bonds(const Atom* atom);
     /** Returns a pointer to the bond between @p atomA and @p atomB, or a NULL if none. */
-    Bond* bondBetween(Atom* atomA, Atom* atomB) const;
+    Bond* bondBetween(const Atom *atomA, const Atom *atomB) const;
 
     /**
          * @return @c true if the molecule exists of two seperate submolecules, and @c false otherwise.

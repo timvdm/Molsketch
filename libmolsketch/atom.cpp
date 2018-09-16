@@ -1,6 +1,7 @@
 /***************************************************************************
  *   Copyright (C) 2007-2008 by Harm van Eersel                            *
  *   Copyright (C) 2009 Tim Vandermeersch                                  *
+ *   Copyright (C) 2018 Hendrik Vennekate                                  *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -44,6 +45,8 @@
 #include "scenesettings.h"
 #include "settingsitem.h"
 
+#define REQ_MOLECULE auto m_molecule = molecule(); if (!m_molecule) return
+
 namespace Molsketch {
   //                                        //
   //     /    \      \   /      H           //
@@ -79,9 +82,7 @@ namespace Molsketch {
     initialize(other.scenePos(), other.element(), other.m_implicitHydrogens);
   }
 
-  Atom::~Atom() {
-    for (auto bond : m_bonds) bond->removeAtom(this);
-  }
+  Atom::~Atom() {}
 
   qreal Atom::computeTotalWdith(const int& alignment,
                                 const QString& lbl,
@@ -233,7 +234,7 @@ namespace Molsketch {
     m_userImplicitHydrogens =  0;
     m_newmanDiameter = 0;
     m_implicitHydrogens = implicitHydrogens;
-    m_shape = computeBoundingRect();
+    updateShape();
   }
 
   QRectF Atom::boundingRect() const
@@ -387,7 +388,8 @@ namespace Molsketch {
     int unboundElectrons = numNonBondingElectrons();
     QList<QRectF> layoutList;
 
-    if (m_bonds.size() == 0) {
+    auto m_bonds = bonds();
+    if (m_bonds.empty()) {
       //  ..   ..   ..     ..
       //  NH2  OH2  CH3    N .
       //       ''          ''
@@ -619,6 +621,7 @@ namespace Molsketch {
   qreal Atom::annotationDirection() const
   {
     // Determine optimum direction if angleDirection negative
+    auto m_bonds = bonds();
     //   No preference & no bonds => downward
     if (m_bonds.isEmpty())
       return 270 ;
@@ -649,8 +652,7 @@ namespace Molsketch {
       parentItem()->update();
       dynamic_cast<Molecule*>(parentItem())->rebuild();
     };
-    prepareGeometryChange();
-    m_shape = computeBoundingRect();
+    updateShape();
     return graphicsItem::itemChange(change, value);
   }
 
@@ -684,14 +686,13 @@ namespace Molsketch {
   void Atom::setElement(const QString &element)
   {
     m_elementSymbol = element;
-    prepareGeometryChange();
-    m_shape = computeBoundingRect();
+    updateShape();
     if (Molecule *m = molecule()) m->invalidateElectronSystems();
   }
 
   void Atom::setNewmanDiameter(const qreal &diameter) {
     m_newmanDiameter = diameter;
-    m_shape = computeBoundingRect();
+    updateShape();
   }
 
   qreal Atom::getNewmanDiameter() const {
@@ -712,9 +713,8 @@ namespace Molsketch {
     m_userImplicitHydrogens = deltaH;
   }
 
-  int Atom::numBonds() const
-  {
-    return m_bonds.size();
+  int Atom::numBonds() const {
+    return bonds().size();
   }
 
   int Atom::bondOrderSum() const
@@ -879,39 +879,14 @@ namespace Molsketch {
 
   QString Atom::xmlClassName() { return "atom" ; }
 
-  void Atom::addBond(Bond *bond)
-  {
-    if (!bond) return;
-    if (bond->atoms().first != this && bond->atoms().second != this) return;
-
-    if (!m_bonds.contains(bond))
-      m_bonds.append(bond);
-
-    prepareGeometryChange();
-    m_shape = computeBoundingRect();
+  QList<Bond*> Atom::bonds() const {
+    REQ_MOLECULE {};
+    return m_molecule->bonds(this);
   }
 
-  void Atom::removeBond(Bond *bond)
-  {
-    if (!bond) return;
-    if (!m_bonds.contains(bond)) return;
-    bond->removeAtom(this);
-    m_bonds.removeAll(bond);
-    prepareGeometryChange();
-    m_shape = computeBoundingRect();
-  }
-
-  QList<Bond*> Atom::bonds() const
-  {
-    return m_bonds;
-  }
-
-  Bond* Atom::bondTo(Atom* other) const
-  {
-    foreach(Bond *bond, m_bonds)
-      if (bond->otherAtom(this) == other)
-        return bond;
-    return 0;
+  Bond* Atom::bondTo(Atom* other) const {
+    REQ_MOLECULE nullptr;
+    return m_molecule->bondBetween(this, other);
   }
 
   QWidget *Atom::getPropertiesWidget()
@@ -945,6 +920,11 @@ namespace Molsketch {
     return coordinates();
   }
 
+  void Atom::updateShape() {
+    prepareGeometryChange();
+    m_shape = computeBoundingRect();
+  }
+
   QPointF Atom::getBondDrawingStartFromBoundingBox(const QLineF& connection, qreal bondLineWidth) const {
     QRectF bounds = mapRectToScene(boundingRect());
     QVector<QPointF> corners;
@@ -966,7 +946,7 @@ namespace Molsketch {
   QList<Atom*> Atom::neighbours() const
   {
     QList<Atom*> nbrs;
-    foreach (Bond *bond, m_bonds)
+    foreach (Bond *bond, bonds())
       nbrs.append(bond->otherAtom(this));
     return nbrs;
   }

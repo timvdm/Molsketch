@@ -169,10 +169,11 @@ namespace Molsketch
     qDebug() << "Number of atoms" <<obmol.NumAtoms();
     QHash<OBAtom*, Atom*> atomHash ;
     // Add atoms one-by-ons
-    FOR_ATOMS_OF_MOL(obatom, obmol)
-      atomHash[&(*obatom)] =
-        mol->addAtom(Molsketch::number2symbol(obatom->GetAtomicNum()),
-                     QPointF(obatom->x()*40,obatom->y()*40), false); // TODO this had to be done by MSK setting!
+    FOR_ATOMS_OF_MOL(obatom, obmol) {
+      auto atom = new Atom(QPointF(obatom->x(), obatom->y()) * 40, Molsketch::number2symbol(obatom->GetAtomicNum()), false); // TODO this had to be done by MSK setting!
+      atomHash[&(*obatom)] = atom;
+      mol->addAtom(atom);
+    }
 
     // Add bonds one-by-one
     /// Mind the numbering!

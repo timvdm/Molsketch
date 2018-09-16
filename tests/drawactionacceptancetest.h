@@ -30,7 +30,35 @@ using namespace Molsketch;
 
 class DrawActionAcceptanceTest : public CxxTest::TestSuite {
 
+  MolScene *scene;
+  MolView *view;
+  drawAction *action;
+
+  template<typename T>
+  QList<T> sceneItems() {
+    QList<T> result;
+    for (auto item : scene->items())
+      if (T t = dynamic_cast<T>(item))
+        result << t;
+    return result;
+  }
+
+  template<typename T>
+  QSet<T> toSet(const QPair<T, T>& pair) {
+    return QSet<T>{pair.first, pair.second};
+  }
 public:
+  void setUp() {
+    scene = new MolScene;
+    view = new MolView(scene);
+    action = new drawAction(scene);
+  }
+
+  void tearDown() {
+    delete view;
+    delete scene;
+  }
+
   void testHintPoints() {
     QPointF originalAtom(20,10),
         drawingStart(19,10),
@@ -39,9 +67,6 @@ public:
 
     Atom *atom = new Atom(originalAtom, "C");
     Molecule *molecule = new Molecule(QSet<Atom*>() << atom, QSet<Bond*>());
-    MolScene *scene = new MolScene;
-    MolView *view = new MolView(scene);
-    drawAction *action = new drawAction(scene);
     action->setChecked(true);
     scene->addMolecule(molecule);
 
@@ -55,8 +80,28 @@ public:
     TS_ASSERT(newAtom); // TODO macro for assert present or return // TODO QSM_ASSERT with message as QString
     if (!newAtom) return;
     QS_ASSERT_EQUALS(newAtom->pos(), targetPosition);
+  }
 
-    delete view;
-    delete scene;
+  void testUndoing() {
+    action->setChecked(true);
+    view->show();
+
+    QPointF drawingStart(19,10), drawingStop(-19,10);
+
+    QTest::mousePress(view->viewport(), Qt::LeftButton, Qt::NoModifier, view->mapFromScene(drawingStart));
+    QTest::mouseMove(view->viewport(), view->mapFromScene(drawingStop));
+    QTest::mouseRelease(view->viewport(), Qt::LeftButton, Qt::NoModifier, view->mapFromScene(drawingStop));
+
+    QS_ASSERT_EQUALS(sceneItems<Bond*>().size(), 1);
+    QS_ASSERT_EQUALS(sceneItems<Atom*>().size(), 2);
+    QS_ASSERT_EQUALS(toSet(sceneItems<Bond*>().first()->atoms()), sceneItems<Atom*>().toSet());
+
+    scene->stack()->undo();
+    QS_ASSERT_EQUALS(sceneItems<graphicsItem*>().size(), 0);
+
+    scene->stack()->redo();
+    QS_ASSERT_EQUALS(sceneItems<Bond*>().size(), 1);
+    QS_ASSERT_EQUALS(sceneItems<Atom*>().size(), 2);
+    QS_ASSERT_EQUALS(toSet(sceneItems<Bond*>().first()->atoms()), sceneItems<Atom*>().toSet());
   }
 };

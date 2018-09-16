@@ -66,6 +66,12 @@ public:
   void tearDown() {
     if (scene->stack()->canUndo()) scene->stack()->undo();
     QS_ASSERT_EQUALS(scene->items().toSet(), originalItems.toSet());
+    QS_ASSERT_EQUALS(molecule->atoms().toSet(), QSet<Atom*>() << atomA << atomB << atomC);
+    QS_ASSERT_EQUALS(molecule->bonds().toSet(), QSet<Bond*>() << bondA << bondB);
+    QS_ASSERT_EQUALS(bondA->beginAtom(), atomA);
+    QS_ASSERT_EQUALS(bondA->endAtom(), atomB);
+    QS_ASSERT_EQUALS(bondB->beginAtom(), atomB);
+    QS_ASSERT_EQUALS(bondB->endAtom(), atomC);
     delete scene;
   }
 
@@ -124,5 +130,4 @@ public:
     TS_ASSERT_EQUALS(scene->items().size(), originalItems.size() - 1);
     TS_ASSERT(!scene->items().contains(frame));
   }
-
 };

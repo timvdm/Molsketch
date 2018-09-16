@@ -90,10 +90,7 @@ namespace Molsketch {
     setAtoms(atomA, atomB);
   }
 
-  Bond::~Bond() {
-    if (m_beginAtom) m_beginAtom->removeBond(this);
-    if (m_endAtom) m_endAtom->removeBond(this);
-  }
+  Bond::~Bond() {}
 
   QRectF Bond::boundingRect() const
   {
@@ -490,16 +487,13 @@ namespace Molsketch {
 
   void Bond::setAtoms(Atom *A, Atom *B)
   {
-    if (m_beginAtom) m_beginAtom->removeBond(this) ;
-    if (m_endAtom)   m_endAtom  ->removeBond(this);
     m_beginAtom = A ;
     m_endAtom = B ;
-    if (m_beginAtom)
-    {
-      m_beginAtom->addBond(this) ;
+    if (m_beginAtom) {
+      m_beginAtom->updateShape();
       setPos(m_beginAtom->scenePos()) ;
     }
-    if (m_endAtom)  m_endAtom->addBond(this);
+    if (m_endAtom) m_endAtom->updateShape();
   }
 
   void Bond::setAtoms(const QPair<Atom *, Atom *> &atoms) {
@@ -513,11 +507,6 @@ namespace Molsketch {
   Molecule* Bond::molecule() const
   {
     return dynamic_cast<Molecule*>(this->parentItem());
-  }
-
-  void Bond::removeAtom(Atom *atom) {
-    if (m_beginAtom == atom) m_beginAtom = nullptr;
-    if (m_endAtom == atom) m_endAtom = nullptr;
   }
 
   QLineF Bond::shiftVector(const QLineF &vector, qreal shift) // Shifts a vector on the perpendicular axis

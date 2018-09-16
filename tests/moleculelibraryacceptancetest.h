@@ -46,6 +46,7 @@ class MoleculeLibraryAcceptanceTest : public CxxTest::TestSuite {
     xmlWriter.writeStartDocument();
     xmlWriter << molecule;
     xmlWriter.writeEndDocument();
+    qDebug() << data;
     return data;
   }
 

@@ -1,6 +1,7 @@
 /***************************************************************************
  *   Copyright (C) 2007-2008 by Harm van Eersel                            *
  *   Copyright (C) 2009 Tim Vandermeersch                                  *
+ *   Copyright (C) 2018 by Hendrik Vennekate                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -163,18 +164,6 @@ namespace Molsketch {
     graphicsItem::mousePressEvent(event);
   }
 
-  // Manipulation methods
-
-  Atom* Molecule::addAtom(const QString &element, const QPointF &point, bool implicitHydrogen, QColor c)
-  {
-    //pre: element is a non-empty string and point is a valid position on the canvas in scene coordinates
-    Q_ASSERT(!element.isEmpty());
-    //post: an atom of element has been added to the molecule
-    Atom* atom = new Atom(point,element,implicitHydrogen, this);
-    atom ->setColor (c);
-    return addAtom(atom);
-  }
-
   Atom* Molecule::addAtom(Atom* atom)
   {
     // pre: atom is a valid pointer to a atom
@@ -183,10 +172,6 @@ namespace Molsketch {
     // Add the atom to the molecule
     m_atomList.append(atom);
     atom->setParentItem(this);
-    if (scene ()) {
-      atom ->setColor (dynamic_cast<MolScene *> (scene ())->settings() ->defaultColor()->get());
-    }
-
     m_electronSystemsUpdate = true;
 
     return atom;
@@ -252,12 +237,6 @@ namespace Molsketch {
       Q_ASSERT(m_bondList.contains(bond));
       m_bondList.removeAll(bond);
       bond->setParentItem(0);
-      Atom *begin = bond->beginAtom();
-      Atom *end = bond->endAtom();
-      if (begin)
-        begin->removeBond(bond);
-      if (end)
-        end->removeBond(bond);
       if (scene())
         scene()->removeItem(bond);
     }
@@ -288,13 +267,6 @@ namespace Molsketch {
     Q_ASSERT(m_bondList.contains(bond));
 
     //post: bond has been removed from the molecule
-
-    Atom *begin = bond->beginAtom();
-    Atom *end = bond->endAtom();
-    if (begin)
-      begin->removeBond(bond);
-    if (end)
-      end->removeBond(bond);
 
     // Removing the bond
     m_bondList.removeAll(bond);
@@ -479,7 +451,7 @@ namespace Molsketch {
   }
 
 
-  Bond* Molecule::bondBetween(Atom* atomA, Atom* atomB) const
+  Bond* Molecule::bondBetween(const Atom* atomA, const Atom* atomB) const
   {
     //     for (int i = 0; i < countBonds(); i++)
     foreach(Bond* bond, m_bondList)

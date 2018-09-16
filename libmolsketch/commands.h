@@ -215,6 +215,8 @@ namespace Molsketch {
       bool m_undone;
       Bond* m_bond;
       Molecule* m_mol;
+      Atom *m_begin;
+      Atom *m_end;
     };
 
     class DelBond : public  QUndoCommand

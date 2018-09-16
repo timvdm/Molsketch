@@ -1,6 +1,7 @@
 /***************************************************************************
  *   Copyright (C) 2007-2008 by Harm van Eersel                            *
  *   Copyright (C) 2009 by Tim Vandermeersch                               *
+ *   Copyright (C) 2018 Hendrik Vennekate                                  *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -105,8 +106,6 @@ namespace Molsketch {
     int numNonBondingElectrons() const;
     int numImplicitHydrogens() const;
 
-    void addBond(Bond *bond);
-    void removeBond(Bond *bond);
     QList<Bond*> bonds() const;
     QList<Atom*> neighbours() const;
     /** Sets the number of implicit hydrogens of the current atom to @p number.
@@ -124,6 +123,8 @@ namespace Molsketch {
     QPointF bondDrawingStart(const Atom *other, qreal bondLineWidth) const;
     bool contains(const QPointF &point) const;
     QPolygonF moveablePoints() const override;
+
+    void updateShape();
   protected:
     // Event handlers
     /** Event handler to handle element changes. */
@@ -149,7 +150,6 @@ namespace Molsketch {
     int m_userElectrons;
     qreal m_newmanDiameter;
 
-    QList<Bond*> m_bonds;
     int m_userImplicitHydrogens;
     bool m_implicitHydrogens;
     QRectF m_shape;

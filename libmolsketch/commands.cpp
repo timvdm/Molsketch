@@ -79,13 +79,19 @@ void DelAtom::undo()
 
 void DelAtom::redo()
 {
+  // add sub command for bonds! Test! (Delete atom between two others; undo, redo, undo insertion of entire propane molecule
   m_bondList = m_molecule->delAtom(m_atom);
   m_undone = false;
 }
 
 // Bond commands
 
-AddBond::AddBond(Bond* newBond, const QString & text) : QUndoCommand(text), m_bond(newBond), m_mol(newBond->beginAtom()->molecule())
+AddBond::AddBond(Bond* newBond, const QString & text)
+  : QUndoCommand(text),
+    m_bond(newBond),
+    m_mol(newBond->beginAtom()->molecule()),
+    m_begin(m_bond->beginAtom()),
+    m_end(m_bond->endAtom())
 {}
 
 AddBond::~AddBond()
@@ -94,29 +100,16 @@ AddBond::~AddBond()
     delete m_bond;
 }
 
-void AddBond::undo() // TODO this seems wildly dangerous
+void AddBond::undo()
 {
   m_mol->delBond(m_bond);
-  Atom *begin = m_bond->beginAtom();
-  Atom *end = m_bond->endAtom();
-  if (begin)
-    begin->removeBond(m_bond);
-  if (end)
-    end->removeBond(m_bond);
   m_undone = true;
 }
 
 void AddBond::redo()
 {
+  m_bond->setAtoms(m_begin, m_end);
   m_mol->addBond(m_bond);
-  Atom *begin = m_bond->beginAtom();
-  Atom *end = m_bond->endAtom();
-  if (begin)
-    if (!begin->neighbours().contains(end))
-      begin->addBond(m_bond);
-  if (end)
-    if (!end->neighbours().contains(begin))
-      end->addBond(m_bond);
   m_undone = false;
 }
 
