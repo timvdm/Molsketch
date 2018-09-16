@@ -27,7 +27,7 @@
 using namespace Molsketch;
 
 const QString MIME_TYPE("molecule/molsketch");
-const QString CLIPBOARD_CONTENT("<?xml version=\"1.0\" encoding=\"UTF-8\"?><atom elementType=\"Ca\" hydrogenCount=\"2\" colorR=\"0\" colorG=\"0\" colorB=\"0\" scalingParameter=\"1\" coordinates=\"5,3\"/>\n");
+const QString CLIPBOARD_CONTENT("<?xml version=\"1.0\" encoding=\"UTF-8\"?><atom id=\"\" elementType=\"Ca\" hydrogenCount=\"2\" colorR=\"0\" colorG=\"0\" colorB=\"0\" scalingParameter=\"1\" coordinates=\"5,3\"/>\n");
 const QPointF ATOM_COORDS(5,3);
 const QString ELEMENT("Ca");
 

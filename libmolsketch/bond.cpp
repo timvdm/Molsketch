@@ -541,13 +541,8 @@ namespace Molsketch {
   QXmlStreamAttributes Bond::graphicAttributes() const
   {
     QXmlStreamAttributes attributes ;
-
-    QString atomOne = molecule()->atomId(m_beginAtom),
-        atomTwo = molecule()->atomId(m_endAtom) ;
-
-    attributes.append("atomRefs2", atomOne + " " + atomTwo) ;
+    attributes.append("atomRefs2", m_beginAtom->index() + " " + m_endAtom->index()) ;
     attributes.append("type", QString::number(m_bondType));
-
     return attributes ;
   }
 

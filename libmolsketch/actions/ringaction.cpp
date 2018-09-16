@@ -221,9 +221,12 @@ namespace Molsketch {
         Molecule* otherMolecule = atom->molecule();
         if (otherMolecule != newMolecule) // merge other molecule
         {
-          int index = newMolecule->atoms().size() + otherMolecule->atomIndex(atom);
-          *newMolecule += *otherMolecule;
-          atom = newMolecule->atom(index); // TODO dangerous as this relies on indexes
+          QMap<const Atom*, Atom*> atomMapping;
+          foreach(const Atom* atom, otherMolecule->atoms())
+            atomMapping[atom] = newMolecule->addAtom(new Atom(*atom));
+          foreach(const Bond* bond, otherMolecule->bonds())
+            newMolecule->addBond(atomMapping[bond->beginAtom()], atomMapping[bond->endAtom()], bond->bondType(), bond->getColor());
+          atom = atomMapping[atom];
           Commands::ItemAction::removeItemFromScene(otherMolecule);
         }
       }

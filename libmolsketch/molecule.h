@@ -46,6 +46,7 @@ namespace Molsketch {
   class Atom;
   class MolScene;
   class ElectronSystem; // under construction
+  class MoleculePrivate;
 
   QPixmap renderMolecule(const Molecule &molecule);
 
@@ -58,6 +59,8 @@ namespace Molsketch {
  */
   class Molecule : public graphicsItem
   {
+    Q_DECLARE_PRIVATE (Molecule)
+    QScopedPointer<MoleculePrivate> d_ptr;
   public:
     enum { Type = graphicsItem::MoleculeType };
     int type() const override { return Type; }
@@ -74,6 +77,8 @@ namespace Molsketch {
          * atoms, and any bonds where both atoms  are in @p atoms. */
     Molecule(const Molecule& mol, const QSet<Atom*>& atoms, QGraphicsItem* parent = 0 GRAPHICSSCENEHEADER);
     // TODO constructor with initializer block
+
+    ~Molecule();
 
     static Molecule *combineMolecules(const QSet<Molecule *> &molecules, QMap<Atom*, Atom*>*atomMap, QMap<Bond *, Bond *> *bondMap);
 
@@ -114,9 +119,6 @@ namespace Molsketch {
     /** Deletes @p bond from the molecule. */
     void delBond(Bond* bond);
 
-    //    /** Automaticly adds an atom with a bond to @p startAtom at a convenient position. */
-    //   void addAutoAtom(Atom* startAtom);
-
     /**
           * Splits the molecule up in different seperate molecules. Used to clean up the molecule after removing the connection
         * between two or more parts of the molecule.
@@ -133,45 +135,21 @@ namespace Molsketch {
         */
     void rebuild();
 
-    //   void normalize();
-    //   void setAtomSize(qreal pt);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
-    // Query methods
-    /** Returns a pointer to the atom at position @p pos, or NULL id none. */
-    Atom* atomAt(const QPointF &pos) const;
-    //    /** Returns a pointer to the atom with @p id. */
-    //     Atom* atom(int id) const;
-    /** Returns the number of the atom pointed to by @p atomPointer */
-    int atomIndex(const Atom *atomPointer) const ;
-    /** Returns the atom identifier for xml */
-    QString atomId(const Atom *atomPointer) const ;
-    /** Returns the pointer from ID */
+    /// Returns the pointer from ID
     Atom* atom(const QString& atomID) const ;
-    Atom* atom(const int n) const;
 
-    /** Returns a pointer to the bond at position @p pos or NULL id none. */
-    Bond* bondAt(const QPointF &pos) const;
-    //    /** Returns a pointer to bond with @p id. */
-    //     Bond* bond(int id) const;
-    /** Returns a list of the bonds connected to @p atom. */
+    /// Returns a list of the bonds connected to @p atom.
     QList<Bond*> bonds(const Atom* atom);
-    /** Returns a pointer to the bond between @p atomA and @p atomB, or a NULL if none. */
+    /// Returns a pointer to the bond between @p atomA and @p atomB, or a NULL if none.
     Bond* bondBetween(const Atom *atomA, const Atom *atomB) const;
 
-    /**
-         * @return @c true if the molecule exists of two seperate submolecules, and @c false otherwise.
-         */
+    /// @return @c true if the molecule exists of two seperate submolecules, and @c false otherwise.
     bool canSplit() const;
 
-    /**
-         * Get a list of the atoms in the molecule.
-         */
-    const QList<Atom*>& atoms() const;
-    /**
-         * Get a list of the bonds in the molecule
-         */
-    const QList<Bond*>& bonds() const;
+    QList<Atom*> atoms() const;
+    QList<Bond*> bonds() const;
 
     QWidget *getPropertiesWidget();
 
@@ -194,10 +172,6 @@ namespace Molsketch {
 
     void prepareContextMenu(QMenu *contextMenu);
 
-    //    /** Event handler for mouse press events on the molecule. */
-    //     virtual void mousePressEvent(QGraphicsSceneMouseEvent* event);
-    //    /** Event handler for mouse release events on the molecule.*/
-    //    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent* event);
     /** Event handler for changes of the molecule. Needed for rotation handling.*/
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
@@ -207,6 +181,7 @@ namespace Molsketch {
     void readAttributes(const QXmlStreamAttributes& attributes);
     QXmlStreamAttributes xmlAttributes() const;
   private:
+    void redoIndexes();
     void setDefaults();
     void clone(QSet<Atom*> atoms);
     template<class T>
@@ -223,11 +198,7 @@ namespace Molsketch {
 
     QList<Atom*> smallestRing(QList<Atom*> atomList) const ;
 
-    moleculeItemListClass<Atom> m_atomList;
-
-    /** A list of pointers to the bonds of the molecule. Used as internal representation. */
     moleculeItemListClass<Bond> m_bondList;
-
 
     QString name;
 
@@ -236,9 +207,6 @@ namespace Molsketch {
     bool m_electronSystemsUpdate; // TODO remove
     QList<ElectronSystem*> m_electronSystems;
     void updateElectronSystems();
-
-    Molecule& operator+=(const Molecule& other);
-    Molecule operator+(const Molecule& other) const;
 
     QString getName() const;
     void setName(const QString &value);

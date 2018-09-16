@@ -41,6 +41,29 @@
 
 namespace Molsketch {
 
+  class AtomProxyList : public abstractXmlObject {
+    Molecule* p ;
+  public:
+    explicit AtomProxyList(Molecule* parent) : p(parent) {}
+    QString xmlName() const { return "atomArray"; }
+    QList<const XmlObjectInterface *> children() const {
+      QList<const XmlObjectInterface*> result;
+      for (auto atom :  p->atoms()) result << atom;
+      return result;
+    }
+    abstractXmlObject *produceChild(const QString &name, const QString &type) {
+      if (name != Atom::xmlClassName()) return nullptr;
+      auto atom = new Atom();
+      atom->setParentItem(p);
+      return atom;
+    }
+  };
+
+  struct MoleculePrivate {
+    AtomProxyList atomList;
+    explicit MoleculePrivate(Molecule* m) : atomList(m) {}
+  };
+
   template <>
   QString Molecule::moleculeItemListClass<Atom>::xmlName() const
   {
@@ -61,7 +84,7 @@ namespace Molsketch {
     return temp < 0 ? 360 + temp : temp ;
   }
 
-#define DEFAULTINITIALIZER m_atomList(this), m_bondList(this), m_electronSystemsUpdate(true)
+#define DEFAULTINITIALIZER d_ptr(new MoleculePrivate(this)), m_bondList(this), m_electronSystemsUpdate(true)
 
   Molecule::Molecule(QGraphicsItem* parent GRAPHICSSCENESOURCE )
     : graphicsItem(parent GRAPHICSSCENEINIT ),
@@ -106,7 +129,9 @@ namespace Molsketch {
     setDefaults();
     clone(atoms);
     setPos(mol.pos()); // TODO check this
-  }
+    }
+
+    Molecule::~Molecule() {}
 
   void Molecule::clone(QSet<Atom *> atoms)
   {
@@ -166,29 +191,17 @@ namespace Molsketch {
 
   Atom* Molecule::addAtom(Atom* atom)
   {
-    // pre: atom is a valid pointer to a atom
-    Q_CHECK_PTR(atom);
-
-    // Add the atom to the molecule
-    m_atomList.append(atom);
+    if (!atom) return atom;
     atom->setParentItem(this);
     m_electronSystemsUpdate = true;
-
+    redoIndexes();
     return atom;
   }
 
-  Bond* Molecule::addBond(Atom* atomA, Atom* atomB, Bond::BondType type, QColor c)
+  Bond* Molecule::addBond(Atom* atomA, Atom* atomB, Bond::BondType type, QColor c) // TODO remove
   {
-    //pre: atomA and atomB are existing different atoms in the molecule
-    Q_ASSERT (m_atomList.contains(atomA));
-    Q_ASSERT (m_atomList.contains(atomB));
-    //Q_ASSERT (atomA != atomB);
-    if (atomA == atomB)
-      return 0;
+    if (atomA == atomB) return 0;
 
-    //post: a bond of type has been added between atomA and atomB
-
-    // Creating a new bond
     Bond* bond = new Bond(atomA,atomB,static_cast<Bond::BondType>(type));
     bond ->setColor(c);
     return addBond(bond);
@@ -224,13 +237,6 @@ namespace Molsketch {
 
   QList<Bond*> Molecule::delAtom(Atom* atom)
   {
-    //pre: atom is an existing atom in the molecule
-    Q_ASSERT(m_atomList.contains(atom));
-
-    //post: atom has been removed from the molecule and all bonds to this atom have been removed
-    //ret: the former bonds of this atom
-
-    // Remove all connected bonds from the molecule
     QList<Bond*> delList = bonds(atom);
     foreach(Bond* bond, delList) {
       //delBond(bond);
@@ -241,13 +247,11 @@ namespace Molsketch {
         scene()->removeItem(bond);
     }
 
-    // Remove the atom
-    m_atomList.removeAll(atom);
     atom->setParentItem(0);
-    if (scene())
-      scene()->removeItem(atom);
+    if (scene()) scene()->removeItem(atom);
 
     m_electronSystemsUpdate = true;
+    redoIndexes();
     // Return the list of bonds that were connected for undo
     return delList;
   }
@@ -255,9 +259,10 @@ namespace Molsketch {
   QPointF Molecule::graphicalCenterOfMass() const
   {
     QPointF com ;
-    foreach(Atom* atom, m_atomList)
+    auto atomList = atoms();
+    foreach(Atom* atom, atomList)
       com += atom->pos() ;
-    return com / m_atomList.size() ;
+    return com / atomList.size() ;
   }
 
   void Molecule::delBond(Bond* bond)
@@ -294,77 +299,28 @@ namespace Molsketch {
   {
     QList<Molecule*> molList;
 
-    QSet<Atom*> atoms = m_atomList.toSet();
-    while (!atoms.empty())
+    QSet<Atom*> atomSet = atoms().toSet();
+    while (!atomSet.empty())
     {
-      QSet<Atom*> subgroup = getConnectedAtoms(*(atoms.begin()));
+      QSet<Atom*> subgroup = getConnectedAtoms(*(atomSet.begin()));
       molList << new Molecule(*this, subgroup);
-      atoms -= subgroup;
+      atomSet -= subgroup;
     }
 
     return molList;
   }
 
-
-
-  // Query methods
-
-
-  Atom* Molecule::atom (const int n) const
-  { // TODO start with 0
-    if (n>= 1 && n <= m_atomList.size ()) {
-      return m_atomList[n - 1];
-    }
-    return NULL;
+  Atom *Molecule::atom(const QString &atomID) const {
+    for (auto atom : atoms()) if (atom->index() == atomID) return atom;
+    return nullptr;
   }
 
-  int Molecule::atomIndex(const Atom *atomPointer) const
-  {
-    return m_atomList.indexOf(const_cast<Atom*>(atomPointer))+1 ;
+  QList<Atom*> Molecule::atoms() const {
+    return childrenByType<Atom*>();
   }
 
-  QString Molecule::atomId(const Atom *atomPointer) const
-  {
-    return "a" + QString::number(atomIndex(atomPointer)) ;
-  }
-
-  Atom *Molecule::atom(const QString &atomID) const
-  {
-    return atom(atomID.mid(1).toInt()) ;
-  }
-
-  Atom* Molecule::atomAt(const QPointF &pos) const
-  {
-    //pre: pos is a valid position on the canvas in scene coordinates
-    //post: return the atom op position pos or nil
-
-    foreach(Atom* atom, m_atomList)
-    {
-      if (atom->contains(atom->mapFromScene(pos))) return atom;
-    }
-
-    return 0;
-  }
-
-  Bond* Molecule::bondAt(const QPointF &pos) const
-  {
-    //pre: pos is a valid position on the canvas in scene coordinates
-    //post: return the first bond on position pos
-    foreach(Bond* bond, m_bondList)
-    {
-      if (bond->contains(bond->mapFromScene(pos))) return bond;
-    }
-    return 0;
-  }
-
-  const QList<Atom*>& Molecule::atoms() const
-  {
-    return m_atomList;
-  }
-
-  const QList<Bond*>& Molecule::bonds() const
-  {
-    return m_bondList;
+  QList<Bond*> Molecule::bonds() const {
+    return childrenByType<Bond*>();
   }
 
   QWidget *Molecule::getPropertiesWidget()
@@ -386,7 +342,7 @@ namespace Molsketch {
     QHash<QString,int> hash;
 
     //     for (int i = 0; i < countAtoms(); i++)
-    foreach(Atom* atom, m_atomList)
+    foreach(Atom* atom, atoms())
     {
       QString element = atom->element();
       hash.insert(element, hash.value(element,0) + 1 );
@@ -427,8 +383,8 @@ namespace Molsketch {
 
   bool Molecule::canSplit() const
   {
-    if (m_atomList.isEmpty()) return false;
-    return getConnectedAtoms(m_atomList.first()) != m_atomList.toSet();
+    if (atoms().isEmpty()) return false;
+    return getConnectedAtoms(atoms().first()) != atoms().toSet();
   }
 
   QVariant Molecule::itemChange(GraphicsItemChange change, const QVariant &value)
@@ -589,19 +545,19 @@ void Molecule::paintElectronSystems(QPainter *painter) const {
   }
 }
 
-  QPolygonF Molecule::coordinates() const
+  QPolygonF Molecule::coordinates() const // TODO this should be removed when introducing relative coords
   {
     QVector<QPointF> result ;
-    foreach (Atom* atom, m_atomList)
+    foreach (Atom* atom, atoms())
       result << atom->coordinates() ;
     return result ;
   }
 
   void Molecule::setCoordinates(const QVector<QPointF> &c)
   {
-    if (c.size() != m_atomList.size()) return ;
+    if (c.size() != atoms().size()) return ;
     for (int i = 0 ; i < c.size() ; ++i)
-      m_atomList[i]->setCoordinates(c.mid(i,1)) ;
+      atoms()[i]->setCoordinates(c.mid(i,1)) ;
   }
 
   QRectF Molecule::boundingRect() const
@@ -686,7 +642,7 @@ void Molecule::updateElectronSystems()
     while (piOrder--) m_electronSystems << new PiElectrons(bond->atoms(), 2);
   }
 
-  foreach (Atom *atom, m_atomList) {
+  foreach (Atom *atom, atoms()) {
     int unboundElectronPairs = atom->numNonBondingElectrons() / 2;
     while (unboundElectronPairs--) m_electronSystems << new PiElectrons({atom}, 2);
     if (atom->numNonBondingElectrons() % 2) m_electronSystems << new PiElectrons({atom}, 1);
@@ -713,16 +669,15 @@ void Molecule::updateElectronSystems()
 
   QList<const XmlObjectInterface *> Molecule::children() const
   {
-    return QList<const XmlObjectInterface*>() << &m_atomList << &m_bondList ;
+    Q_D(const Molecule);
+    return QList<const XmlObjectInterface*>() << &d->atomList << &m_bondList ;
   }
 
   XmlObjectInterface *Molecule::produceChild(const QString &name, const QString &type)
   {
     Q_UNUSED(type)
-    if (m_atomList.xmlName() == name){
-      m_atomList.clear();
-      return &m_atomList ;
-    }
+    Q_D(Molecule);
+    if (d->atomList.xmlName() == name) return &d->atomList;
 
     if (m_bondList.xmlName() == name)
     {
@@ -750,6 +705,12 @@ void Molecule::updateElectronSystems()
     return attributes;
   }
 
+  void Molecule::redoIndexes() {
+    int i = 0;
+    for (auto atom : atoms())
+      atom->setIndex(QString("a") + QString::number(++i));
+  }
+
   void Molecule::setDefaults()
   {
     setHandlesChildEvents(false);
@@ -759,27 +720,6 @@ void Molecule::updateElectronSystems()
     setAcceptHoverEvents(true) ;
 #endif
     setZValue(-50);
-  }
-
-  Molecule &Molecule::operator+=(const Molecule &other)
-  {
-    if (&other == this) return *this;
-    int offset = m_atomList.size();
-    foreach(const Atom* atom, other.m_atomList)
-      addAtom(new Atom(*atom));
-    foreach(const Bond* bond, other.m_bondList)
-      addBond(m_atomList[offset+other.m_atomList.indexOf(bond->beginAtom())],
-          m_atomList[offset+other.m_atomList.indexOf(bond->endAtom())],
-          bond->bondType(), bond->getColor());
-    return *this;
-  }
-
-  Molecule Molecule::operator+(const Molecule &other) const
-  {
-    Molecule result ;
-    result += *this;
-    result += other;
-    return result;
   }
 
   template <class T>

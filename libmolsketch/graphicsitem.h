@@ -104,6 +104,14 @@ namespace Molsketch {
     void attemptEndEndMacro();
     virtual void prepareItemContextMenu(QMenu* contextMenu);
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+    template<typename T>
+    QList<T> childrenByType() const {
+      QList<T> result;
+      for (auto childItem : childItems())
+        if (T child = dynamic_cast<T>(childItem))
+          result << child;
+      return result;
+    }
 
   private:
     QColor m_color ;

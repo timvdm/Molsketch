@@ -670,13 +670,14 @@ namespace Molsketch {
   void Atom::readGraphicAttributes(const QXmlStreamAttributes &attributes)
   {
     setElement(attributes.value("elementType").toString()) ;
+    setIndex(attributes.value("id").toString());
     m_newmanDiameter = qAbs(attributes.value("newmanDiameter").toDouble());
   }
 
   QXmlStreamAttributes Atom::graphicAttributes() const
   {
     QXmlStreamAttributes attributes ;
-    if (molecule()) attributes.append("id", molecule()->atomId(this)) ; // TODO is this really necessary?
+    attributes.append("id", index()) ;
     attributes.append("elementType", element()) ;
     attributes.append("hydrogenCount", QString::number(numImplicitHydrogens())) ;
     if (m_newmanDiameter > 0) attributes.append("newmanDiameter", QString::number(m_newmanDiameter));
@@ -923,6 +924,14 @@ namespace Molsketch {
   void Atom::updateShape() {
     prepareGeometryChange();
     m_shape = computeBoundingRect();
+  }
+
+  void Atom::setIndex(const QString &index) {
+    m_index = index;
+  }
+
+  QString Atom::index() const {
+    return m_index;
   }
 
   QPointF Atom::getBondDrawingStartFromBoundingBox(const QLineF& connection, qreal bondLineWidth) const {

@@ -125,6 +125,8 @@ namespace Molsketch {
     QPolygonF moveablePoints() const override;
 
     void updateShape();
+    void setIndex(const QString& index);
+    QString index() const;
   protected:
     // Event handlers
     /** Event handler to handle element changes. */
@@ -149,6 +151,7 @@ namespace Molsketch {
     int m_userCharge;
     int m_userElectrons;
     qreal m_newmanDiameter;
+    QString m_index;
 
     int m_userImplicitHydrogens;
     bool m_implicitHydrogens;

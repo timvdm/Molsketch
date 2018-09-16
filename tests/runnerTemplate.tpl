@@ -26,14 +26,14 @@ void messageOutput(QtMsgType type, const QMessageLogContext &context, const QStr
 class MolsketchErrorPrinter : public CxxTest::ErrorPrinter {
 public:
   void enterTest(const CxxTest::TestDescription &description) override {
-    CxxTest::OutputStream::endl((*outputStream()) << "Starting test:  " << description.testName());
+    CxxTest::OutputStream::endl((*outputStream()) << "Starting test:  " << description.suiteName() << "::" << description.testName());
     ErrorPrinter::enterTest(description);
   }
   void leaveTest(const CxxTest::TestDescription &description) override {
     if (CxxTest::tracker().testSkipped())
-      CxxTest::OutputStream::endl((*outputStream()) << "Skipped test:   " << description.testName());
+      CxxTest::OutputStream::endl((*outputStream()) << "Skipped test:   " << description.suiteName() << "::" << description.testName());
     else if (!CxxTest::tracker().testFailed())
-      CxxTest::OutputStream::endl((*outputStream()) << "Completed test: " << description.testName());
+      CxxTest::OutputStream::endl((*outputStream()) << "Completed test: " << description.suiteName() << "::" << description.testName());
     if (!qApp->topLevelWidgets().isEmpty())
       qDebug() << "Warning: Top level widgets left: " << qApp->topLevelWidgets();
   }
