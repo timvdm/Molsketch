@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2017 by Hendrik Vennekate                               *
+ *   Copyright (C) 2017 - 2018 by Hendrik Vennekate                        *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -27,26 +27,41 @@
 #include <textitem.h>
 #include <QDebug>
 #include <scenesettings.h>
+#include <QGraphicsSceneMouseEvent>
 
 using namespace Molsketch;
 
 const qreal BOND_ANGLE_FROM_SETTINGS = 4.5;
 const QString SCENE_XML_WITH_ATTRIBUTE("<molscene MolsceneBondAngle=\"" + QString::number(BOND_ANGLE_FROM_SETTINGS) + "\"/>");
 
-struct MolSceneForTest : public MolScene {
+struct MolSceneForTesting : public MolScene {
   XmlObjectInterface* produceChild(const QString &childName, const QString &type) {
     return MolScene::produceChild(childName, type);
   }
   QList<const XmlObjectInterface*> children() const {
     return MolScene::children();
   }
+  void sendMousePressEvent() {
+    auto event = new QGraphicsSceneMouseEvent(QGraphicsSceneMouseEvent::MouseButtonPress);
+    event->setButton(Qt::LeftButton);
+    mousePressEvent(event);
+  }
+};
+
+class AtomForTesting : public Atom {
+public:
+  void sendMouseDoubleClickEvent() {
+    auto event = new QGraphicsSceneMouseEvent(QGraphicsSceneMouseEvent::MouseButtonDblClick);
+    event->setButton(Qt::LeftButton);
+    mouseDoubleClickEvent(event);
+  }
 };
 
 class MolSceneUnitTest : public CxxTest::TestSuite {
-  MolSceneForTest *scene;
+  MolSceneForTesting *scene;
 public:
   void setUp() {
-    scene = new MolSceneForTest;
+    scene = new MolSceneForTesting;
   }
 
   void tearDown() {
@@ -54,7 +69,7 @@ public:
   }
 
   void testDefaultProduceChild() {
-    TS_ASSERT_EQUALS(scene->produceChild("Somestring", ""), nullptr);
+    QS_ASSERT_EQUALS(scene->produceChild("Somestring", ""), nullptr);
     TS_ASSERT(scene->items().isEmpty());
   }
 
@@ -92,5 +107,61 @@ public:
     reader.readNextStartElement();
     scene->readXml(reader);
     TS_ASSERT_EQUALS(scene->bondAngle(), BOND_ANGLE_FROM_SETTINGS);
+  }
+
+  void testSelectingAllItems() {
+    auto arrow = new Arrow;
+    auto atomA = new AtomForTesting;
+    auto atomB = new Atom;
+    auto bond = new Bond(atomA, atomB);
+    auto molecule = new Molecule({atomA, atomB}, {bond});
+    (new Frame)->setParentItem(molecule);
+    auto frame = new Frame;
+    auto textItem = new TextItem;
+
+    QList<QGraphicsItem*> items { arrow, molecule, frame, textItem };
+    for (auto item : items) scene->addItem(item);
+
+    scene->selectAll();
+    QS_ASSERT_EQUALS(scene->selectedItems().toSet(),
+                     QSet<QGraphicsItem*>() << arrow << molecule << frame << textItem); // TODO improve output
+  }
+
+  void testSelectingAllItemsDoesNotSelectGrid() {
+    auto originalItems = scene->items().toSet();
+    scene->setGrid(true);
+
+    scene->selectAll();
+    auto gridItemSet = scene->items().toSet() - originalItems;
+    QS_ASSERT_EQUALS(gridItemSet.size(), 1);
+    TSM_ASSERT("Grid item should not be contained in selected items",
+               (scene->selectedItems().toSet() & gridItemSet).isEmpty());
+  }
+
+  void testSelectingAllItemsDoesNotSelectInputItem() {
+    auto atom = new AtomForTesting;
+    auto molecule = new Molecule({atom});
+    scene->addItem(molecule);
+    scene->addItem(atom);
+
+    auto originalItems = scene->items().toSet();
+    atom->sendMouseDoubleClickEvent();
+
+    scene->selectAll();
+    auto inputItemSet = scene->items().toSet() - originalItems;
+    TS_ASSERT_EQUALS(inputItemSet.size(), 1);
+    TSM_ASSERT("Input item should not be contained in selected items",
+               (scene->selectedItems().toSet() & inputItemSet).isEmpty());
+  }
+
+  void testSelectingAllItemsDoesNotSelectSelectionRectangle() {
+    auto originalItems = scene->items().toSet();
+    scene->sendMousePressEvent();
+
+    scene->selectAll();
+    auto selectionRectangleSet = scene->items().toSet() - originalItems;
+    TS_ASSERT_EQUALS(selectionRectangleSet.size(), 1);
+    TSM_ASSERT("Selection rectangle should not be contained in selected items",
+               (scene->selectedItems().toSet() & selectionRectangleSet).isEmpty());
   }
 };
