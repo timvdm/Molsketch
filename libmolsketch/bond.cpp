@@ -39,7 +39,7 @@
 #include "scenesettings.h"
 #include "settingsitem.h"
 
-#define CHECKFORATOMS if (!m_beginAtom || !m_endAtom)
+#define CHECKFORATOMS if (!m_beginAtom || !m_endAtom || !molecule())
 
 namespace Molsketch {
 
