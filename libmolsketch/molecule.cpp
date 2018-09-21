@@ -52,6 +52,7 @@ namespace Molsketch {
       return result;
     }
     abstractXmlObject *produceChild(const QString &name, const QString &type) {
+      Q_UNUSED(type)
       if (name != Atom::xmlClassName()) return nullptr;
       auto atom = new Atom();
       atom->setParentItem(p);
@@ -70,6 +71,7 @@ namespace Molsketch {
       return result;
     }
     abstractXmlObject *produceChild(const QString &name, const QString &type) {
+      Q_UNUSED(type)
       if (name != Bond::xmlClassName()) return nullptr;
       auto bond = new Bond();
       bond->setParentItem(p);
