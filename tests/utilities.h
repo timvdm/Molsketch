@@ -38,6 +38,11 @@ class QMainWindow;
   makeComparisonString(#VAL1, #VAL2, VAL1, VAL2, "!=", "    Expected:       ", "    to be equal to: ").toStdString().data()); \
   } __TS_CATCH(__FILE__, __LINE__) }
 
+#define QS_ASSERT_EQUALS_OR_EQUALS(VAL1,VAL2,VAL3) {_TS_TRY { \
+  if (!(VAL1 == VAL2) && !(VAL1 == VAL3)) CxxTest::tracker().failedTest(__FILE__, __LINE__, \
+  (makeComparisonString(#VAL1, #VAL2, VAL1, VAL2, "!=", "    Expected:       ", "    to be equal to: ") + "\n" + "    or equal to:    " + VAL3).toStdString().data()); \
+  } __TS_CATCH(__FILE__, __LINE__) }
+
 #define QS_ASSERT_NOT_EQUALS(VAL1,VAL2) {_TS_TRY { \
   if (VAL1 == VAL2) CxxTest::tracker().failedTest(__FILE__, __LINE__, \
   makeComparisonString(#VAL1, #VAL2, VAL1, VAL2, "==", "    Expected:           ", "    not to be equal to: ").toStdString().data()); \

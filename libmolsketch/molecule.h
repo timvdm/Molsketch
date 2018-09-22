@@ -187,6 +187,8 @@ namespace Molsketch {
     QList<Atom*> smallestRing(QList<Atom*> atomList) const ;
     QString name;
     void paintElectronSystems(QPainter *painter) const;
+    void collectElectronSystems();
+    void mergeElectronSystems();
   public:
     bool m_electronSystemsUpdate; // TODO remove
     QList<ElectronSystem*> m_electronSystems;
