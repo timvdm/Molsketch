@@ -28,11 +28,33 @@
 #include <QDebug>
 #include <scenesettings.h>
 #include <QGraphicsSceneMouseEvent>
+#include <QClipboard>
+#include <QMimeData>
 
 using namespace Molsketch;
 
 const qreal BOND_ANGLE_FROM_SETTINGS = 4.5;
 const QString SCENE_XML_WITH_ATTRIBUTE("<molscene MolsceneBondAngle=\"" + QString::number(BOND_ANGLE_FROM_SETTINGS) + "\"/>");
+const QString MOLECULE_XML("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                           "<molecule name=\"\">"
+                           "<atomArray>"
+                           "<atom id=\"a1\" elementType=\"\" hydrogenCount=\"0\" colorR=\"0\" colorG=\"0\" colorB=\"0\" scalingParameter=\"1\" coordinates=\"5,5\"/>"
+                           "<atom id=\"a2\" elementType=\"\" hydrogenCount=\"0\" colorR=\"0\" colorG=\"0\" colorB=\"0\" scalingParameter=\"1\" coordinates=\"0,0\"/>"
+                           "</atomArray>"
+                           "<bondArray"
+                           "><bond atomRefs2=\"a2 a1\" type=\"10\" colorR=\"0\" colorG=\"0\" colorB=\"0\" scalingParameter=\"1\" coordinates=\"0,0;5,5\"/>"
+                           "</bondArray>"
+                           "</molecule>\n");
+const QString ALTERNATIVE_MOLECULE_XML("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                                       "<molecule name=\"\">"
+                                       "<atomArray>"
+                                       "<atom id=\"a1\" elementType=\"\" hydrogenCount=\"0\" colorR=\"0\" colorG=\"0\" colorB=\"0\" scalingParameter=\"1\" coordinates=\"0,0\"/>"
+                                       "<atom id=\"a2\" elementType=\"\" hydrogenCount=\"0\" colorR=\"0\" colorG=\"0\" colorB=\"0\" scalingParameter=\"1\" coordinates=\"5,5\"/>"
+                                       "</atomArray>"
+                                       "<bondArray"
+                                       "><bond atomRefs2=\"a1 a2\" type=\"10\" colorR=\"0\" colorG=\"0\" colorB=\"0\" scalingParameter=\"1\" coordinates=\"0,0;5,5\"/>"
+                                       "</bondArray>"
+                                       "</molecule>\n");
 
 struct MolSceneForTesting : public MolScene {
   XmlObjectInterface* produceChild(const QString &childName, const QString &type) {
@@ -59,6 +81,13 @@ public:
 
 class MolSceneUnitTest : public CxxTest::TestSuite {
   MolSceneForTesting *scene;
+
+  Molecule *produceMolecule() {
+    auto atomA = new AtomForTesting;
+    auto atomB = new Atom(QPointF(5,5));
+    auto bond = new Bond(atomA, atomB);
+    return new Molecule({atomA, atomB}, {bond});
+  }
 public:
   void setUp() {
     scene = new MolSceneForTesting;
@@ -111,10 +140,7 @@ public:
 
   void testSelectingAllItems() {
     auto arrow = new Arrow;
-    auto atomA = new AtomForTesting;
-    auto atomB = new Atom;
-    auto bond = new Bond(atomA, atomB);
-    auto molecule = new Molecule({atomA, atomB}, {bond});
+    auto molecule = produceMolecule();
     (new Frame)->setParentItem(molecule);
     auto frame = new Frame;
     auto textItem = new TextItem;
@@ -163,5 +189,22 @@ public:
     TS_ASSERT_EQUALS(selectionRectangleSet.size(), 1);
     TSM_ASSERT("Selection rectangle should not be contained in selected items",
                (scene->selectedItems().toSet() & selectionRectangleSet).isEmpty());
+  }
+
+  void testCopyingMolecules() {
+    scene->addItem(produceMolecule());
+    scene->selectAll();
+    scene->copy();
+    auto mimeData = QApplication::clipboard()->mimeData();
+    QS_ASSERT_EQUALS(mimeData->formats(), QStringList() << "application/x-qt-image" << "molecule/molsketch");
+    QS_ASSERT_EQUALS_OR_EQUALS(mimeData->data("molecule/molsketch"), MOLECULE_XML, ALTERNATIVE_MOLECULE_XML);
+  }
+
+  void testPastingMolecules() {
+    auto mimeData = new QMimeData;
+    mimeData->setData("molecule/molsketch", MOLECULE_XML.toUtf8());
+    QApplication::clipboard()->setMimeData(mimeData);
+    scene->paste();
+    QS_ASSERT_EQUALS(scene->items().size(), 4);
   }
 };

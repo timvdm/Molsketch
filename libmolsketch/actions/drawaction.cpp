@@ -167,12 +167,12 @@ namespace Molsketch {
       }
       if (!molA)
       {
-        parent->attemptUndoPush(new Commands::AddAtom(atomA, molB, tr("add atom")));
+        Commands::addItemToMolecule(atomA, molB, parent->scene(), tr("Add atom"));
         return;
       }
       if (!molB)
       {
-        parent->attemptUndoPush(new Commands::AddAtom(atomB, molA, tr("add atom")));
+        Commands::addItemToMolecule(atomB, molA, parent->scene(), tr("add atom"));
         return;
       }
       mergeMolecules(molA, molB, atomA, atomB);
@@ -193,7 +193,8 @@ namespace Molsketch {
     void addBond(Atom* atomA, Atom* atomB)
     {
       if (bondType->backward()) qSwap(atomA, atomB);
-      parent->attemptUndoPush(new Commands::AddBond(new Bond(atomA, atomB, bondType->bondType())));
+      Commands::addItemToMolecule(new Bond(atomA, atomB, bondType->bondType()), atomA->molecule(), parent->scene());
+      // TODO test
     }
   };
 
@@ -361,11 +362,10 @@ namespace Molsketch {
       if (new_atom_pos != downPos) {
         stack->beginMacro("Add Bond");
         Atom* atom = new Atom(new_atom_pos,d->periodicTable->currentElement(), scene()->settings()->autoAddHydrogen()->get());
-        stack->push(new Commands::AddAtom(atom,at1 ->molecule()));
+        Commands::addItemToMolecule(atom, at1->molecule(), scene());
         if (d->bondType->backward()) qSwap(at1, atom);
-        Bond* bond = new Bond(at1,atom);
-        stack->push(new Commands::AddBond(bond));
-        stack->push(new Commands::SetBondType(bond, d->bondType->bondType()));
+        Bond* bond = new Bond(at1, atom, d->bondType->bondType());
+        Commands::addItemToMolecule(bond, at1->molecule(), scene());
         stack->endMacro();
       }
     }

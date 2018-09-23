@@ -32,7 +32,6 @@
 #include <radicalelectron.h>
 #include <textitem.h>
 #include "mocks.h"
-#include "utilities.h"
 
 using namespace Molsketch;
 

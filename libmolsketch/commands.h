@@ -167,17 +167,7 @@ namespace Molsketch {
       }
     };
 
-    class AddAtom : public ItemCommand<Molecule, AddAtom> {
-    public:
-      AddAtom(Atom* newAtom, Molecule* molecule, const QString & text = "");
-      ~AddAtom();
-      virtual void undo() override;
-      virtual void redo() override;
-    private:
-      Atom* atom;
-      Molecule* molecule;
-    };
-
+    // TODO replace with SetParent
     class ChildItemCommand : public ItemCommand<QGraphicsItem, ChildItemCommand> {
     public:
       ChildItemCommand(QGraphicsItem* parent, QGraphicsItem* child, const QString& text = "");
@@ -190,50 +180,6 @@ namespace Molsketch {
       bool owning;
     };
 
-    class DelAtom : public QUndoCommand
-    {
-    public:
-      DelAtom(Atom* delAtom, const QString & text = "");
-      virtual ~DelAtom();
-      virtual void undo() override;
-      virtual void redo() override;
-    private:
-      bool m_undone;
-      Atom* m_atom;
-      Molecule* m_molecule;
-      QList<Bond*> m_bondList;
-    };
-
-    class AddBond : public QUndoCommand
-    {
-    public:
-      AddBond(Bond* newBond, const QString & text = "");
-      ~AddBond();
-      virtual void undo() override;
-      virtual void redo() override;
-    private:
-      bool m_undone;
-      Bond* m_bond;
-      Molecule* m_mol;
-      Atom *m_begin;
-      Atom *m_end;
-    };
-
-    class DelBond : public  QUndoCommand
-    {
-    public:
-      DelBond(Bond* delBond, const QString & text = "");
-      virtual ~DelBond();
-      virtual void undo() override;
-      virtual void redo() override;
-    private:
-      bool m_undone;
-      Bond* m_bond;
-      Molecule* m_mol;
-      Atom* m_begin;
-      Atom* m_end;
-    };
-
     typedef setItemPropertiesCommand<Bond, Bond::BondType, &Bond::setType, &Bond::bondType, BondTypeId> SetBondType;
     typedef setItemPropertiesCommand<Arrow, Arrow::ArrowType, &Arrow::setArrowType, &Arrow::getArrowType, ArrowTypeId> SetArrowType;
     typedef setItemPropertiesCommand<Arrow, Arrow::Properties, &Arrow::setProperties, &Arrow::getProperties, ArrowPropertiesId> setArrowProperties;
@@ -241,13 +187,23 @@ namespace Molsketch {
     typedef setItemPropertiesCommand<Arrow, bool, &Arrow::setSpline, &Arrow::getSpline, ArrowSplineId> setArrowSplineCommand;
     typedef setItemPropertiesCommand<Atom, int, &Atom::setCharge, &Atom::charge, AtomChargeId> setAtomChargeCommand;
     typedef setItemPropertiesCommand<Atom, int, &Atom::setNumImplicitHydrogens, &Atom::numImplicitHydrogens, AtomImplicitHydrogensId> setImplicitHydrogensCommand;
-    typedef SetItemProperty<QGraphicsItem, QGraphicsItem*, &QGraphicsItem::setParentItem, &QGraphicsItem::parentItem> SetParentItem;
     typedef setItemPropertiesCommand<Atom, QString, &Atom::setElement, &Atom::element> ChangeElement;
     typedef setItemPropertiesCommand<Molecule, QString, &Molecule::setName, &Molecule::getName, MoleculeNameId> ChangeMoleculeName;
     typedef setItemPropertiesCommand<graphicsItem, qreal, &graphicsItem::setRelativeWidth, &graphicsItem::relativeWidth> changeRelativeWidth;
     typedef setItemPropertiesCommand<graphicsItem, QColor, &graphicsItem::setColor, &graphicsItem::getColor> changeColor;
     typedef setItemPropertiesCommand<Atom, qreal, &Atom::setNewmanDiameter, &Atom::getNewmanDiameter> SetNewmanDiameter;
     typedef setItemPropertiesCommand<graphicsItem, QPolygonF, &graphicsItem::setCoordinates, &graphicsItem::coordinates, CoordinateId> SetCoordinateCommand;
+    typedef SetItemProperty<QGraphicsItem, QGraphicsItem*, &QGraphicsItem::setParentItem, &QGraphicsItem::parentItem> SetParentItem;
+
+    class ToggleScene : public SceneCommand<QGraphicsItem, ToggleScene> {
+    private:
+      void redo() override;
+      MolScene *getScene() const override;
+      QGraphicsScene *otherScene;
+    public:
+      ToggleScene(QGraphicsItem *item, QGraphicsScene *scene, const QString &text = "", QUndoCommand *parent = 0);
+      ~ToggleScene();
+    };
 
     class SwapBondAtoms : public setItemPropertiesCommand<Bond, QPair<Atom*, Atom*>, &Bond::setAtoms, &Bond::atoms> {
     public:
@@ -282,6 +238,9 @@ namespace Molsketch {
     private:
       MoveItem(QGraphicsItem* item, const QPointF& newPosition, const QString& text = "", QUndoCommand *parent = 0);
     };
+
+    void addItemToMolecule(graphicsItem *item, Molecule *molecule, MolScene *scene, const QString &text = "");
+    void removeItemFromMolecule(graphicsItem *item, MolScene *scene, const QString &text="");
 
   } // namespace Commands
 

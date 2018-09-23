@@ -44,15 +44,18 @@ namespace Molsketch {
     QList<QGraphicsItem*> selectedItems(scene()->selectedItems());
     if (selectedItems.isEmpty()) return;
     attemptBeginMacro(tr("Delete items"));
-    QSet<Molecule*> molecules;
 
     for(auto item : selectedItems)
       if (Bond *bond = dynamic_cast<Bond*>(item))
-        attemptUndoPush(new Commands::DelBond(bond));
+        Commands::removeItemFromMolecule(bond, scene());
 
-    for (auto item : selectedItems)
-      if (Atom *atom = dynamic_cast<Atom*>(item))
-        attemptUndoPush(new Commands::DelAtom(atom));
+    for (auto item : selectedItems) {
+      if (Atom *atom = dynamic_cast<Atom*>(item)) {
+        for (auto bond : atom->bonds())
+          Commands::removeItemFromMolecule(bond, scene());
+        Commands::removeItemFromMolecule(atom, scene());
+      }
+    }
 
     for (auto item : selectedItems)
       if (!dynamic_cast<Atom*>(item) && !dynamic_cast<Bond*>(item))

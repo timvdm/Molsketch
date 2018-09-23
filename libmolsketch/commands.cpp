@@ -34,110 +34,6 @@ using Molsketch::Bond;
 using Molsketch::Molecule;
 using namespace Molsketch::Commands;
 
-AddAtom::AddAtom(Atom * newAtom, Molecule * newMol, const QString & text)
-  : ItemCommand(newMol, text), atom(newAtom), molecule(newMol)
-{}
-
-AddAtom::~AddAtom()
-{
-  if (atom && !atom->scene() && !atom->parentItem())
-    delete atom;
-}
-
-void AddAtom::undo()
-{
-  if (!atom || !getItem()) return;
-  getItem()->delAtom(atom);
-}
-
-void AddAtom::redo()
-{
-  if (!atom || !getItem()) return;
-  getItem()->addAtom(atom);
-}
-
-DelAtom::DelAtom(Atom* delAtom, const QString & text) : QUndoCommand(text), m_atom(delAtom), m_molecule(delAtom->molecule())
-{
-}
-
-DelAtom::~DelAtom()
-{
-  if (!m_undone)
-  {
-    foreach(Bond* bond, m_bondList)
-      delete bond;
-    delete m_atom;
-  }
-}
-
-void DelAtom::undo()
-{
-  m_molecule->addAtom(m_atom);
-  for (int i = 0; i < m_bondList.size(); i++) m_molecule->addBond(m_bondList.at(i));
-  m_undone = true;
-}
-
-void DelAtom::redo()
-{
-  // add sub command for bonds! Test! (Delete atom between two others; undo, redo, undo insertion of entire propane molecule
-  m_bondList = m_molecule->delAtom(m_atom);
-  m_undone = false;
-}
-
-// Bond commands
-
-AddBond::AddBond(Bond* newBond, const QString & text)
-  : QUndoCommand(text),
-    m_bond(newBond),
-    m_mol(newBond->beginAtom()->molecule()),
-    m_begin(m_bond->beginAtom()),
-    m_end(m_bond->endAtom())
-{}
-
-AddBond::~AddBond()
-{
-  if (m_undone)
-    delete m_bond;
-}
-
-void AddBond::undo()
-{
-  m_mol->delBond(m_bond);
-  m_undone = true;
-}
-
-void AddBond::redo()
-{
-  m_bond->setAtoms(m_begin, m_end);
-  m_mol->addBond(m_bond);
-  m_undone = false;
-}
-
-
-DelBond::DelBond(Bond* delBond, const QString & text)
-  : QUndoCommand(text),
-    m_bond(delBond),
-    m_mol(delBond->molecule()),
-    m_begin(delBond->beginAtom()),
-    m_end(delBond->endAtom())
-{}
-
-DelBond::~DelBond()
-{
-  if(!m_undone) delete m_bond;
-}
-void DelBond::undo()
-{
-  m_bond->setAtoms(m_begin, m_end);
-  m_mol->addBond(m_bond);
-  m_undone = true;
-}
-void DelBond::redo()
-{
-  m_mol->delBond(m_bond);
-  m_undone = false;
-}
-
 ItemAction::ItemAction(QGraphicsItem* newItem, MolScene* addScene, const QString & text)
   : ItemCommand(newItem, text), m_scene(addScene), owning(!newItem->scene())
 {}
@@ -213,4 +109,39 @@ void ChildItemCommand::redo() {
     if (child->scene()) child->scene()->removeItem(child);
   } else child->setParentItem(getItem());
   owning = !owning;
+}
+
+
+void ToggleScene::redo() {
+  if (getItem()->scene()) getItem()->scene()->removeItem(getItem());
+  else otherScene->addItem(getItem());
+}
+
+Molsketch::MolScene *Molsketch::Commands::ToggleScene::getScene() const {
+  if (otherScene) return qobject_cast<MolScene*>(otherScene);
+  return qobject_cast<MolScene*>(getItem()->scene());
+}
+
+ToggleScene::ToggleScene(QGraphicsItem *item, QGraphicsScene *scene, const QString &text, QUndoCommand *parent)
+  : SceneCommand(item, text, parent),
+    otherScene(scene)
+{}
+
+ToggleScene::~ToggleScene() {
+  if (!getItem()->scene()) delete getItem();
+}
+
+void Molsketch::Commands::addItemToMolecule(Molsketch::graphicsItem *item, Molsketch::Molecule *molecule, Molsketch::MolScene *scene, const QString &text) {
+  auto command = new QUndoCommand(text);
+  new ToggleScene(item, scene, "", command);
+  new SetParentItem(item, molecule, "", command);
+  scene->stack()->push(command);
+}
+
+void Molsketch::Commands::removeItemFromMolecule(Molsketch::graphicsItem *item, Molsketch::MolScene *scene, const QString &text)
+{
+  auto command = new QUndoCommand(text);
+  new SetParentItem(item, nullptr, "", command);
+  new ToggleScene(item, scene, "", command);
+  scene->stack()->push(command);
 }

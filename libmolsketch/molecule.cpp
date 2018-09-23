@@ -52,6 +52,7 @@ namespace Molsketch {
       return result;
     }
     abstractXmlObject *produceChild(const QString &name, const QString &type) {
+      Q_UNUSED(type)
       if (name != Atom::xmlClassName()) return nullptr;
       auto atom = new Atom();
       atom->setParentItem(p);
@@ -70,6 +71,7 @@ namespace Molsketch {
       return result;
     }
     abstractXmlObject *produceChild(const QString &name, const QString &type) {
+      Q_UNUSED(type)
       if (name != Bond::xmlClassName()) return nullptr;
       auto bond = new Bond();
       bond->setParentItem(p);
@@ -577,10 +579,11 @@ bool canMerge(const ElectronSystem *es1, const ElectronSystem *es2)
   // may not share an atom
   if (!(firstSetOfAtoms & secondSetOfAtoms).empty()) return false;
 
-  QSet<Atom*> neighborsOfFirstSet;
-  std::for_each(firstSetOfAtoms.begin(), firstSetOfAtoms.end(),
-                [&] (Atom* a) { neighborsOfFirstSet += a->neighbours().toSet();});
-  return !(neighborsOfFirstSet & secondSetOfAtoms).empty();
+  for (auto atomFromFirstSet : firstSetOfAtoms)
+    for (auto neighborOfAtomFromFirstSet : atomFromFirstSet->neighbours())
+      if (secondSetOfAtoms.contains(neighborOfAtomFromFirstSet))
+        return true;
+  return false;
 }
 
 void merge(QList<ElectronSystem*> &electronSystems, ElectronSystem *es1, ElectronSystem *es2)
@@ -622,12 +625,7 @@ void Molecule::prepareContextMenu(QMenu *contextMenu)
   graphicsItem::prepareContextMenu(contextMenu);
 }
 
-void Molecule::updateElectronSystems()
-{
-  if (!m_electronSystemsUpdate)
-    return;
-  m_electronSystemsUpdate = false;
-
+void Molecule::collectElectronSystems() {
   foreach (ElectronSystem *es, m_electronSystems)
     delete es;
   m_electronSystems.clear();
@@ -642,11 +640,13 @@ void Molecule::updateElectronSystems()
     while (unboundElectronPairs--) m_electronSystems << new PiElectrons({atom}, 2);
     if (atom->numNonBondingElectrons() % 2) m_electronSystems << new PiElectrons({atom}, 1);
   }
+  qSort(m_electronSystems.begin(), m_electronSystems.end(), NumAtomsMoreThan); // TODO this should be redundant
+}
 
-  qSort(m_electronSystems.begin(), m_electronSystems.end(), NumAtomsMoreThan);
-
-  for (int i = 0; i < 1000; ++i) {
-    bool restart = false;
+void Molecule::mergeElectronSystems() {
+  bool restart = true;
+  while (restart) {
+    restart = false;
     foreach (ElectronSystem *es1, m_electronSystems) {
       foreach (ElectronSystem *es2, m_electronSystems) {
         if (canMerge(es1, es2)) {
@@ -660,6 +660,16 @@ void Molecule::updateElectronSystems()
         break;
     }
   }
+}
+
+void Molecule::updateElectronSystems()
+{
+  if (!m_electronSystemsUpdate)
+    return;
+  m_electronSystemsUpdate = false;
+
+  collectElectronSystems();
+  mergeElectronSystems();
 }
 
   QList<const XmlObjectInterface *> Molecule::children() const
