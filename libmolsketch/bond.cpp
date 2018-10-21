@@ -153,12 +153,13 @@ namespace Molsketch {
     QLineF outer2Begin{mapToItem(beginAtom(), outer2.p1()), mapToItem(beginAtom(), outer2.p2())};
     qreal beginExtent = beginAtom()->getBondExtent(outer1Begin, outer2Begin, lineWidth());
 
-    QLineF outer1End{mapToItem(endAtom(), outer1.p1()), mapToItem(endAtom(), outer1.p2())};
-    QLineF outer2End{mapToItem(endAtom(), outer2.p1()), mapToItem(endAtom(), outer2.p2())};
-    qreal endExtent = endAtom()->getBondExtent(outer1End, outer2End, lineWidth());
+    QLineF outer1End{mapToItem(endAtom(), outer1.p2()), mapToItem(endAtom(), outer1.p1())};
+    QLineF outer2End{mapToItem(endAtom(), outer2.p2()), mapToItem(endAtom(), outer2.p1())};
+    qreal endExtent = 1 - endAtom()->getBondExtent(outer1End, outer2End, lineWidth());
 
     QPainterPath path;
     path.moveTo(outer1.pointAt(beginExtent));
+    qDebug() << outer1.pointAt(endExtent) << outer2.pointAt(endExtent) << endExtent << axis;
     path.lineTo(outer1.pointAt(endExtent));
     path.lineTo(outer2.pointAt(endExtent));
     path.lineTo(outer2.pointAt(beginExtent));

@@ -913,37 +913,16 @@ namespace Molsketch {
   }
 
   class Atom::IntersectionData {
-    const Qt::Edge edge;
     const QPointF intersection;
+    const QLineF edge;
   public:
-    IntersectionData(Qt::Edge edge, const QPointF &intersection)
-      : edge(edge), intersection(intersection) {}
-    bool isSameEdge(const IntersectionData &other) const {
-      return edge == other.edge;
-    }
-    Qt::Corner getSharedCorner(const IntersectionData &other) const {
-      if ((other.edge == Qt::TopEdge && edge == Qt::LeftEdge) || (other.edge == Qt::LeftEdge && edge == Qt::TopEdge)) return Qt::TopLeftCorner;
-      if ((other.edge == Qt::TopEdge && edge == Qt::RightEdge) || (other.edge == Qt::RightEdge && edge == Qt::TopEdge)) return Qt::TopRightCorner;
-      if ((other.edge == Qt::BottomEdge && edge == Qt::LeftEdge) || (other.edge == Qt::LeftEdge && edge == Qt::BottomEdge)) return Qt::BottomLeftCorner;
-      if ((other.edge == Qt::BottomEdge && edge == Qt::RightEdge) || (other.edge == Qt::RightEdge && edge == Qt::BottomEdge)) return Qt::BottomRightCorner;
-      qCritical() << "Could not determine shared corner of intersections: " << edge << intersection << other.edge << other.intersection;
-      return Qt::TopLeftCorner;
-    }
+    IntersectionData(const QPointF &intersection, const QLineF &edge)
+      : intersection(intersection), edge(edge) {}
     QPointF getIntersectionPoint() const {
       return intersection;
     }
-    Qt::Edge getEdge() const {
+    QLineF getEdge() const {
       return edge;
-    }
-    static QPointF getCorner(const QRectF &rect, Qt::Corner corner) {
-      switch (corner) {
-        case Qt::TopLeftCorner: return rect.topLeft();
-        case Qt::TopRightCorner: return rect.topRight();
-        case Qt::BottomLeftCorner: return rect.bottomLeft();
-        case Qt::BottomRightCorner: return rect.bottomRight();
-      }
-      qCritical() << "Unknown corner requested: " << corner << " for rectangle " << rect;
-      return rect.center();
     }
   };
 
@@ -951,45 +930,85 @@ namespace Molsketch {
     QRectF bounds = boundingRect().adjusted(-.5*lineWidth, -.5*lineWidth, .5*lineWidth, .5*lineWidth);
     QPointF intersection;
     qDebug() << "looking for intersection:" << line << bounds;
-    if (QLineF(bounds.topLeft(), bounds.topRight()).intersect(line, &intersection) == QLineF::BoundedIntersection)
-      return IntersectionData(Qt::TopEdge, intersection);
-    if (QLineF(bounds.bottomLeft(), bounds.bottomRight()).intersect(line, &intersection) == QLineF::BoundedIntersection)
-      return IntersectionData(Qt::BottomEdge, intersection);
-    if (QLineF(bounds.topLeft(), bounds.bottomLeft()).intersect(line, &intersection) == QLineF::BoundedIntersection)
-      return IntersectionData(Qt::LeftEdge, intersection);
-    if (QLineF(bounds.topRight(), bounds.bottomRight()).intersect(line, &intersection) == QLineF::BoundedIntersection)
-      return IntersectionData(Qt::RightEdge, intersection);
+
+    QLineF topEdge{bounds.topLeft(), bounds.topRight()};
+    if (topEdge.intersect(line, &intersection) == QLineF::BoundedIntersection)
+      return IntersectionData(intersection, topEdge);
+
+    QLineF bottomEdge{bounds.bottomLeft(), bounds.bottomRight()};
+    if (bottomEdge.intersect(line, &intersection) == QLineF::BoundedIntersection)
+      return IntersectionData(intersection, bottomEdge);
+
+    QLineF leftEdge{bounds.topLeft(), bounds.bottomLeft()};
+    if (leftEdge.intersect(line, &intersection) == QLineF::BoundedIntersection)
+      return IntersectionData(intersection, leftEdge);
+
+    QLineF rightEdge{bounds.topRight(), bounds.bottomRight()};
+    if (rightEdge.intersect(line, &intersection) == QLineF::BoundedIntersection)
+      return IntersectionData(intersection, rightEdge);
     // TODO pick the edge it intersects with first (i.e. closest to the middle)
-    return IntersectionData(Qt::TopEdge, QPointF());
+    return IntersectionData(QPointF(), QLineF());
+  }
+
+  QPointF closestPointTo(const QPointF& position, const QList<QPointF>& points) {
+    qreal shortestDistance = INFINITY;
+    QPointF closestPoint;
+    for (auto point : points) {
+      qreal distance = QLineF(position, point).length();
+      if (distance < shortestDistance) {
+        shortestDistance = distance;
+        closestPoint = point;
+      }
+    }
+    return closestPoint;
+  }
+
+  qreal extentForEndOnCorner(const QLineF& middleLine, const QPointF& corner) {
+    QLineF unitVector{middleLine.unitVector()};
+    QLineF toCorner{middleLine.p1(), corner};
+    qreal extent = toCorner.dx() * unitVector.dx() + toCorner.dy() * unitVector.dy();
+    qDebug() << "Getting extent for corner: " << middleLine << corner << extent / middleLine.length();
+    return extent / middleLine.length();
   }
 
   qreal Atom::getBondExtent(const QLineF& outer1, const QLineF& outer2, qreal lineWidth) const { // Cave: atom has to be bond start
+    qDebug() << "getting bond extent for atom:" << element();
     if (!isDrawn()) return 1;
-    IntersectionData intersection1{intersectedEdge(outer1, lineWidth)}, intersection2{intersectedEdge(outer2, lineWidth)};
-    if (intersection1.isSameEdge(intersection2)) {
-      qreal extent1 = QLineF(outer1.p1(), intersection1.getIntersectionPoint()).length() / outer1.length();
-      qreal extent2 = QLineF(outer2.p1(), intersection2.getIntersectionPoint()).length() / outer2.length();
-      qDebug() << "******** edge: " << intersection1.getEdge()
-               << " extents:" << extent1 << extent2
-               << " intersections:" << intersection1.getIntersectionPoint() << intersection2.getIntersectionPoint()
-               << "atom symbol" << element();
-      return qAbs(0.5 - extent1) < qAbs(0.5 - extent2) ? extent1 : extent2;
+
+    // Assumption: p1 is the point closes to the atom; returned value is measured starting from atom accordingly
+    QLineF middleLine{0.5 * (outer1.p1() + outer2.p1()), 0.5 * (outer1.p2() + outer2.p2())};
+    qDebug() << "middleLine" << outer1 << outer2 << middleLine;
+    IntersectionData edgeIntersection{intersectedEdge(middleLine, lineWidth)};
+    if (!remainder(middleLine.angleTo(edgeIntersection.getEdge()), 90)) {
+      qDebug() << "right angle intersection: " << edgeIntersection.getEdge() << edgeIntersection.getIntersectionPoint();
+      return QLineF(middleLine.p1(), edgeIntersection.getIntersectionPoint()).length() / middleLine.length();
     }
 
-    // Shift "wavefront" of outer delimiting lines to corner
-    QLineF connection{outer1.pointAt(0.5), outer2.pointAt(0.5)}; // Cave: lines may not intersect at 0.5
-    QPointF corner{IntersectionData::getCorner(boundingRect().adjusted(-.5*lineWidth, -.5*lineWidth, .5*lineWidth, .5*lineWidth), intersection1.getSharedCorner(intersection2))};
-    QLineF normalVector{connection.normalVector().unitVector()};
-    QPointF cornerToConnection{corner - connection.p1()};
-    qreal offset = normalVector.dx() * cornerToConnection.x() + normalVector.dy() * cornerToConnection.y();
-    connection.translate(offset * normalVector.dx(), offset * normalVector.dy());
+    qDebug() << "Intersection: " << edgeIntersection.getEdge() << edgeIntersection.getIntersectionPoint();
 
-    QPointF intersect1, intersect2;
-    outer1.intersect(connection, &intersect1);
-    outer2.intersect(connection, &intersect2);
-    qreal extent1 = QLineF(outer1.p1(), intersect1).length() / outer1.length();
-    qreal extent2 = QLineF(outer2.p1(), intersect2).length() / outer2.length();
-    return qAbs(0.5 - extent1) < qAbs(0.5 - extent2) ? extent1 : extent2;
+    QList<qreal> possibleExtents;
+
+    QPolygonF fullBondPolygon({outer1.p1(), outer1.p2(), outer2.p2(), outer2.p1(), outer1.p1()});
+    if (fullBondPolygon.containsPoint(edgeIntersection.getEdge().p1(), Qt::OddEvenFill))
+      possibleExtents << extentForEndOnCorner(middleLine, edgeIntersection.getEdge().p1());
+    if (fullBondPolygon.containsPoint(edgeIntersection.getEdge().p2(), Qt::OddEvenFill))
+      possibleExtents << extentForEndOnCorner(middleLine, edgeIntersection.getEdge().p2());
+
+    qDebug() << "Extents for corners: " << possibleExtents << fullBondPolygon;
+
+    QPointF intersectionOfOuterAndEdge;
+    if (edgeIntersection.getEdge().intersect(outer1, &intersectionOfOuterAndEdge) == QLineF::BoundedIntersection)
+      possibleExtents << QLineF(intersectionOfOuterAndEdge, outer1.p1()).length() / outer1.length();
+    if (edgeIntersection.getEdge().intersect(outer2, &intersectionOfOuterAndEdge) == QLineF::BoundedIntersection)
+      possibleExtents << QLineF(intersectionOfOuterAndEdge, outer2.p1()).length() / outer2.length();
+
+    if (!possibleExtents.empty()) {
+      qSort(possibleExtents);
+      qDebug() << "Extents for edge intersections: " << possibleExtents;
+      return possibleExtents.last();
+    }
+
+    return 0;
   }
 
   bool Atom::contains(const QPointF &point) const {
