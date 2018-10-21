@@ -38,6 +38,7 @@
 #include <actions/flipstereobondsaction.h>
 #include "scenesettings.h"
 #include "settingsitem.h"
+#include <QDebug>
 
 #define CHECKFORATOMS if (!m_beginAtom || !m_endAtom || !molecule())
 
@@ -113,12 +114,12 @@ namespace Molsketch {
                   mapFromParent(m_endAtom->pos())) ;
   }
 
-  void Bond::drawHashBond(QPainter *painter)
+  QPainterPath Bond::drawHashBond(const QPointF &begin, const QPointF &end) const
   {
     qreal m_bondSpacing = 4.0;
 
-    QPointF begin = mapFromParent(m_beginAtom->pos());
-    QPointF end = mapFromParent(m_endAtom->pos());
+//    QPointF begin = mapFromParent(m_beginAtom->pos());
+//    QPointF end = mapFromParent(m_endAtom->pos());
     QPointF vb = end - begin;
 
     QPointF uvb = vb / sqrt(vb.x()*vb.x() + vb.y()*vb.y());
@@ -129,42 +130,76 @@ namespace Molsketch {
 
     int last = (m_endAtom->hasLabel()) ? 4 : 5;
 
+    QPainterPath result;
     for (int i = 0; i < last; ++i) {
       qreal w = lines[i];
-      painter->drawLine( QLineF(begin + w * (vb + orthogonal), begin + w * (vb - orthogonal)) );
+      result.moveTo(begin + w * (vb + orthogonal));
+      result.lineTo(begin + w * (vb - orthogonal));
     }
+    return result;
   }
 
-  void Bond::drawWedgeBond(QPainter *painter)
+  QPainterPath Bond::drawWedgeBond(const QPointF &begin, const QPointF &end) const
   {
-
-    QPointF begin = mapFromParent(m_beginAtom->pos());
-    QPointF end = mapFromParent(m_endAtom->pos());
-    QPointF vb = end - begin;
-
-    QPointF uvb = vb / sqrt(vb.x()*vb.x() + vb.y()*vb.y());
-    QPointF orthogonal(uvb.y(), -uvb.x());
+    auto axis = bondAxis();
+    auto normalVector = axis.normalVector().unitVector();
     if (MolScene* s = qobject_cast<MolScene*>(scene()))
-      orthogonal *= s->settings()->bondWedgeWidth()->get();
+      normalVector.setLength(s->settings()->bondWedgeWidth()->get()/2.);
+    normalVector.translate(axis.dx(), axis.dy());
 
-    int i = 0;
-    QPointF points[4];
-    if (m_beginAtom->hasLabel()) {
-      points[i++] = begin + 0.25 * (vb - orthogonal);
-      points[i++] = begin + 0.25 * (vb + orthogonal);
-    } else {
-      points[i++] = begin;
-    }
-    if (m_endAtom->hasLabel()) {
-      points[i++] = end - 0.25 * vb + 0.75 * orthogonal;
-      points[i++] = end - 0.25 * vb - 0.75 * orthogonal;
-    } else {
-      points[i++] = end + orthogonal;
-      points[i++] = end - orthogonal;
-    }
+    QLineF outer1{axis.p1(), normalVector.p2()},
+           outer2{axis.p1(), normalVector.pointAt(-1)};
+    QLineF outer1Begin{mapToItem(beginAtom(), outer1.p1()), mapToItem(beginAtom(), outer1.p2())};
+    QLineF outer2Begin{mapToItem(beginAtom(), outer2.p1()), mapToItem(beginAtom(), outer2.p2())};
+    qreal beginExtent = beginAtom()->getBondExtent(outer1Begin, outer2Begin, lineWidth());
 
-    painter->setBrush( QBrush(getColor()) );
-    painter->drawConvexPolygon( points, i);
+    QLineF outer1End{mapToItem(endAtom(), outer1.p1()), mapToItem(endAtom(), outer1.p2())};
+    QLineF outer2End{mapToItem(endAtom(), outer2.p1()), mapToItem(endAtom(), outer2.p2())};
+    qreal endExtent = endAtom()->getBondExtent(outer1End, outer2End, lineWidth());
+
+    QPainterPath path;
+    path.moveTo(outer1.pointAt(beginExtent));
+    path.lineTo(outer1.pointAt(endExtent));
+    path.lineTo(outer2.pointAt(endExtent));
+    path.lineTo(outer2.pointAt(beginExtent));
+    path.closeSubpath();
+    return path;
+  }
+
+  QPainterPath Bond::getWedgeBondShape() const {
+//    QPointF begin = mapFromParent(m_beginAtom->pos());
+//    QPointF end = mapFromParent(m_endAtom->pos());
+//    QPointF vb = end - begin;
+
+//    QPointF uvb = vb / sqrt(vb.x()*vb.x() + vb.y()*vb.y());
+//    QPointF orthogonal(uvb.y(), -uvb.x());
+//    QPointF bondUnitVector(uvb);
+//    QPointF bondNormalVector(orthogonal);
+//    if (MolScene* s = qobject_cast<MolScene*>(scene()))
+//      orthogonal *= s->settings()->bondWedgeWidth()->get();
+//    qreal gap = 2;
+
+//    QPainterPath path;
+//    if (m_beginAtom->hasLabel()) {
+//      path.moveTo(begin + 0.25 * (vb - orthogonal) + gap * (-bondUnitVector - bondNormalVector));
+//      path.lineTo(begin + 0.25 * (vb + orthogonal) + gap * (-bondUnitVector + bondNormalVector));
+//    } else {
+//      path.moveTo(begin + gap * (-bondUnitVector - bondNormalVector));
+//      path.lineTo(begin + gap * (-bondUnitVector + bondNormalVector));
+//    }
+//    if (m_endAtom->hasLabel()) {
+//      path.lineTo(end - 0.25 * vb + 0.75 * orthogonal + gap * (bondUnitVector + bondNormalVector));
+//      path.lineTo(end - 0.25 * vb - 0.75 * orthogonal + gap * (bondUnitVector - bondNormalVector));
+//    } else {
+//      path.lineTo(end + orthogonal + gap * (bondUnitVector + bondNormalVector));
+//      path.lineTo(end - orthogonal + gap * (bondUnitVector - bondNormalVector));
+//    }
+//    path.closeSubpath();
+//    return path;
+
+    QPainterPath path;
+    path.addRect(-1000, -1000, 2000, 2000);
+    return path;
   }
 
   double minimumAngle(const Bond* reference, const QSet<Bond*>& others, const Atom* origin, bool clockwise)
@@ -201,6 +236,124 @@ namespace Molsketch {
     m_bondType = DoubleAsymmetric;
     // consider swapping atoms
     if (sumUpperAngles > sumLowerAngles) qSwap(m_beginAtom, m_endAtom);
+  }
+
+  QLineF effectiveBondLine(const Bond* b, const Atom* a)
+  {
+    QLineF bl(b->bondAxis());
+    if (b->beginAtom() != a)
+      return QLineF(bl.p2(), bl.p1());
+    return bl;
+  }
+
+  qreal findIdealAngle(const Atom* atom, const Bond* bond, bool inverted)
+  {
+    qreal angle = 120; // normal angle (e.g. in benzene)
+    QLineF bondLine(effectiveBondLine(bond, atom));
+    // TODO skip if we have a displayed label for the beginAtom
+    foreach (const Bond* otherBond, atom->bonds())
+    {
+      if (otherBond == bond) continue;
+      QLineF otherBondAxis(effectiveBondLine(otherBond, atom));
+      angle = qMin(angle, (inverted
+                           ? otherBondAxis.angleTo(bondLine)
+                           : bondLine.angleTo(otherBondAxis)));
+    }
+    return angle*M_PI/360.; // includes division by 2
+  }
+
+  QPainterPath Bond::bondPath() const {
+    // Get beginning and end
+    QPointF begin = determineBondDrawingStart(m_beginAtom, m_endAtom);
+    QPointF end = determineBondDrawingStart(m_endAtom, m_beginAtom);
+    QPointF vb = end - begin;
+    QPointF uvb = vb / sqrt(vb.x()*vb.x() + vb.y()*vb.y());
+    if (MolScene* s = qobject_cast<MolScene*>(scene()))
+      uvb *= s->settings()->bondSeparation()->get();
+    QPointF normalVector(uvb.y(), -uvb.x());
+
+    QPainterPath result;
+    switch ( m_bondType ) // TODO beautify
+    {
+      case Bond::Single:
+      case Bond::DativeDot:
+      case Bond::DativeDash:
+      case Bond::WedgeOrHash:
+        result.moveTo(begin);
+        result.lineTo(end);
+        break;
+      case Bond::Wedge:
+        return drawWedgeBond(mapFromParent(m_beginAtom->pos()), mapFromParent(m_endAtom->pos()));
+      case Bond::Hash:
+        return drawHashBond(mapFromParent(m_beginAtom->pos()), mapFromParent(m_endAtom->pos()));
+      case Bond::DoubleSymmetric:
+        {
+          QPointF offset = .5*normalVector;
+          result.moveTo(begin + offset);
+          result.lineTo(end + offset);
+          result.moveTo(begin - offset);
+          result.lineTo(end - offset);
+          break;
+        }
+      case Bond::CisOrTrans:
+        {
+          QPointF offset = .5*normalVector;
+          result.moveTo(begin + offset);
+          result.lineTo(end - offset);
+          result.moveTo(begin - offset);
+          result.lineTo(end + offset);
+          break;
+        }
+      case Bond::DoubleAsymmetric:
+        {
+          result.moveTo(begin);
+          result.lineTo(end);
+          // now the double part
+          QPointF offset = normalVector;
+          qreal beginAngle = findIdealAngle(beginAtom(), this, false),
+              endAngle = findIdealAngle(endAtom(), this, true),
+              limitAngle = atan(2*QLineF(QPointF(0,0),uvb).length()/QLineF(begin, end).length());
+          beginAngle = qMax(beginAngle, limitAngle);
+          endAngle = qMax(endAngle, limitAngle);
+          result.moveTo(begin + uvb/tan(beginAngle) + offset);
+          result.lineTo(end - uvb/tan(endAngle) + offset);
+          break;
+        }
+      case Bond::Triple:
+        {
+          result.moveTo(begin);
+          result.lineTo(end);
+          QPointF offset = normalVector;
+          result.moveTo(begin + offset);
+          result.lineTo(end + offset);
+          result.moveTo(begin - offset);
+          result.lineTo(end - offset);
+          break;
+        }
+      case TripleAsymmetric:
+        {
+          result.moveTo(begin);
+          result.lineTo(end);
+          // now the double part
+          QPointF offset = normalVector;
+          qreal beginAngle = findIdealAngle(beginAtom(), this, false),
+              endAngle = findIdealAngle(endAtom(), this, true),
+              limitAngle = atan(2*QLineF(QPointF(0,0),uvb).length()/QLineF(begin, end).length());
+          beginAngle = qMax(beginAngle, limitAngle);
+          endAngle = qMax(endAngle, limitAngle);
+          result.moveTo(begin + uvb/tan(beginAngle) + offset);
+          result.lineTo(end - uvb/tan(endAngle) + offset);
+          beginAngle = findIdealAngle(beginAtom(), this, true);
+          endAngle = findIdealAngle(endAtom(), this, false);
+          beginAngle = qMax(beginAngle, limitAngle);
+          endAngle = qMax(endAngle, limitAngle);
+          result.moveTo(begin + uvb/tan(beginAngle) - offset);
+          result.lineTo(end - uvb/tan(endAngle) - offset);
+          break;
+        }
+      default: ;
+    }
+    return result;
   }
 
   QPointF Bond::determineBondDrawingStart(Atom *start, Atom *end) const {
@@ -248,30 +401,6 @@ namespace Molsketch {
     painter->setPen(subPen);
     painter->drawPath(path);
     painter->restore();
-  }
-
-  QLineF effectiveBondLine(const Bond* b, const Atom* a)
-  {
-    QLineF bl(b->bondAxis());
-    if (b->beginAtom() != a)
-      return QLineF(bl.p2(), bl.p1());
-    return bl;
-  }
-
-  qreal findIdealAngle(const Atom* atom, const Bond* bond, bool inverted)
-  {
-    qreal angle = 120; // normal angle (e.g. in benzene)
-    QLineF bondLine(effectiveBondLine(bond, atom));
-    // TODO skip if we have a displayed label for the beginAtom
-    foreach (const Bond* otherBond, atom->bonds())
-    {
-      if (otherBond == bond) continue;
-      QLineF otherBondAxis(effectiveBondLine(otherBond, atom));
-      angle = qMin(angle, (inverted
-                           ? otherBondAxis.angleTo(bondLine)
-                           : bondLine.angleTo(otherBondAxis)));
-    }
-    return angle*M_PI/360.; // includes division by 2
   }
 
   void Bond::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
@@ -323,99 +452,40 @@ namespace Molsketch {
       return;
 
 
-    // Set painter defaults
-    painter->save();
     QPen pen;
+
+    painter->save();
     pen.setWidthF(lineWidth());
     pen.setCapStyle(Qt::RoundCap);
+    pen.setJoinStyle(Qt::RoundJoin);
     pen.setColor (getColor());
-    painter->setPen(pen);
-
     switch ( m_bondType ) // TODO beautify
     {
       case Bond::DativeDot:
         pen.setStyle(Qt::DotLine);
-        painter->setPen(pen);
-        painter->drawLine(begin, end);
         break;
       case Bond::DativeDash:
         pen.setStyle(Qt::DashLine);
-        painter->setPen(pen);
-        painter->drawLine(begin, end);
-        break;
-      case Bond::Single:
-        painter->drawLine(begin, end);
-        break;
-      case Bond::Wedge:
-        drawWedgeBond(painter);
-        break;
-      case Bond::Hash:
-        drawHashBond(painter);
         break;
       case Bond::WedgeOrHash:
         pen.setDashPattern(QVector<qreal>() << 2 << 5);
-        painter->setPen(pen);
-        painter->drawLine(begin, end);
         break;
-      case Bond::DoubleSymmetric:
-        {
-          QPointF offset = .5*normalVector;
-          painter->drawLine(QLineF(begin + offset, end + offset));
-          painter->drawLine(QLineF(begin - offset, end - offset));
-          break;
-        }
-      case Bond::CisOrTrans:
-        {
-          QPointF offset = .5*normalVector;
-          painter->drawLine(QLineF(begin + offset, end - offset));
-          painter->drawLine(QLineF(begin - offset, end + offset));
-          break;
-        }
-      case Bond::DoubleAsymmetric:
-        {
-          painter->drawLine(begin, end);
-          // now the double part
-          QPointF offset = normalVector;
-          qreal beginAngle = findIdealAngle(beginAtom(), this, false),
-              endAngle = findIdealAngle(endAtom(), this, true),
-              limitAngle = atan(2*QLineF(QPointF(0,0),uvb).length()/QLineF(begin, end).length());
-          beginAngle = qMax(beginAngle, limitAngle);
-          endAngle = qMax(endAngle, limitAngle);
-          painter->drawLine(begin + uvb/tan(beginAngle) + offset,
-                            end - uvb/tan(endAngle) + offset);
-          break;
-        }
-      case Bond::Triple:
-        {
-          QPointF offset = normalVector;
-          painter->drawLine(QLineF(begin, end));
-          painter->drawLine(QLineF(begin + offset, end + offset));
-          painter->drawLine(QLineF(begin - offset, end - offset));
-          break;
-        }
-      case TripleAsymmetric:
-        {
-          painter->drawLine(begin, end);
-          // now the double part
-          QPointF offset = normalVector;
-          qreal beginAngle = findIdealAngle(beginAtom(), this, false),
-              endAngle = findIdealAngle(endAtom(), this, true),
-              limitAngle = atan(2*QLineF(QPointF(0,0),uvb).length()/QLineF(begin, end).length());
-          beginAngle = qMax(beginAngle, limitAngle);
-          endAngle = qMax(endAngle, limitAngle);
-          painter->drawLine(begin + uvb/tan(beginAngle) + offset,
-                            end - uvb/tan(endAngle) + offset);
-          beginAngle = findIdealAngle(beginAtom(), this, true);
-          endAngle = findIdealAngle(endAtom(), this, false);
-          beginAngle = qMax(beginAngle, limitAngle);
-          endAngle = qMax(endAngle, limitAngle);
-          painter->drawLine(begin + uvb/tan(beginAngle) - offset,
-                            end - uvb/tan(endAngle) - offset);
-          break;
-        }
-      default:
-        ;
+      case Bond::Wedge:
+          painter->setBrush( QBrush(getColor()) );
+      default: ;
     }
+    painter->setPen(pen);
+
+    QPainterPath coveringShapes;
+    for (auto coveringItem : collidingItems())
+      if (coveringItem->zValue() > zValue())
+        if (auto coveringBond = dynamic_cast<Bond*>(coveringItem))
+          coveringShapes = coveringShapes.united(mapFromItem(coveringBond, coveringBond->shape()));
+
+    painter->setClipPath(shape().subtracted(coveringShapes));
+
+    QPainterPath path = bondPath();
+    painter->drawPath(path);
 
     painter->setClipping(false);
 
@@ -437,16 +507,7 @@ namespace Molsketch {
   QPainterPath Bond::shape() const
   {
     CHECKFORATOMS return QPainterPath() ;
-    QPolygonF polygon;
-    polygon << shiftVector(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())),10).p1()
-            << shiftVector(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())),10).p2()
-            << shiftVector(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())),-10).p2() << shiftVector(QLineF(mapFromParent(m_beginAtom->pos()),mapFromParent(m_endAtom->pos())),-10).p1();
-
-    QPainterPath path(mapFromParent(m_beginAtom->pos()));
-    path.addPolygon( polygon );
-    path.closeSubpath();
-
-    return path;
+    return outline();
   }
 
   void Bond::setType(const BondType &t)
@@ -605,5 +666,110 @@ namespace Molsketch {
   {
     for (auto helper : helpers) delete helper;
     helpers.clear();
+  }
+
+  QPainterPath Bond::outline() const {
+    // Get beginning and end (taken from bondPath()
+    QPointF begin = determineBondDrawingStart(m_beginAtom, m_endAtom);
+    QPointF end = determineBondDrawingStart(m_endAtom, m_beginAtom);
+    QPointF vb = end - begin;
+    QPointF uvb = vb / sqrt(vb.x()*vb.x() + vb.y()*vb.y());
+    QPointF bondUnitVector(uvb);
+    QPointF bondNormalVector(uvb.y(), -uvb.x());
+    if (MolScene* s = qobject_cast<MolScene*>(scene()))
+      uvb *= s->settings()->bondSeparation()->get();
+    QPointF normalVector(uvb.y(), -uvb.x());
+
+    QPainterPath result;
+
+    qreal gap = 2;
+
+    switch (m_bondType) {
+      case Bond::Single:
+      case Bond::DativeDot:
+      case Bond::DativeDash:
+      case WedgeOrHash:
+        result.moveTo(begin + gap * (-bondUnitVector + bondNormalVector));
+        result.lineTo(begin + gap * (-bondUnitVector - bondNormalVector));
+        result.lineTo(end + gap * (bondUnitVector - bondNormalVector));
+        result.lineTo(end + gap * (bondUnitVector + bondNormalVector));
+        result.closeSubpath();
+        break;
+      case Bond::Wedge:
+      case Bond::Hash:
+        return getWedgeBondShape();
+      case DoubleSymmetric:
+        {
+          QPointF offset = .5*normalVector;
+          result.moveTo(begin + offset + gap * (-bondUnitVector + bondNormalVector));
+          result.lineTo(end + offset + gap * (bondUnitVector + bondNormalVector));
+          result.lineTo(end - offset + gap * (bondUnitVector - bondNormalVector));
+          result.lineTo(begin - offset + gap * (-bondUnitVector - bondNormalVector));
+          result.closeSubpath();
+          break;
+        }
+      case DoubleAsymmetric:
+        {
+          result.moveTo(begin + gap * (-bondUnitVector - bondNormalVector));
+          result.lineTo(end + gap * (bondUnitVector - bondNormalVector));
+          // now the double part
+          QPointF offset = normalVector;
+          qreal beginAngle = findIdealAngle(beginAtom(), this, false),
+              endAngle = findIdealAngle(endAtom(), this, true),
+              limitAngle = atan(2*QLineF(QPointF(0,0),uvb).length()/QLineF(begin, end).length());
+          beginAngle = qMax(beginAngle, limitAngle);
+          endAngle = qMax(endAngle, limitAngle);
+          result.lineTo(end - uvb/tan(endAngle) + offset + gap * (bondUnitVector + bondNormalVector));
+          result.lineTo(begin + uvb/tan(beginAngle) + offset + gap * (-bondUnitVector + bondNormalVector));
+          result.closeSubpath();
+          break;
+        }
+      case CisOrTrans:
+        {
+          QPointF offset = .5*normalVector;
+          result.moveTo(begin + offset + gap * (-bondUnitVector + bondNormalVector));
+          result.lineTo((begin + end)/2 + gap * bondNormalVector);
+          result.lineTo(end + offset + gap * (bondUnitVector + bondNormalVector));
+          result.lineTo(end - offset + gap * (bondUnitVector - bondNormalVector));
+          result.lineTo((begin + end)/2 + gap * -bondNormalVector);
+          result.lineTo(begin - offset + gap * (-bondUnitVector - bondNormalVector));
+          result.closeSubpath();
+          break;
+        }
+      case Bond::Triple:
+        {
+          QPointF offset = normalVector;
+          result.moveTo(begin + offset + gap * (-bondUnitVector + bondNormalVector));
+          result.lineTo(end + offset + gap * (bondUnitVector + bondNormalVector));
+          result.lineTo(end - offset + gap * (bondUnitVector - bondNormalVector));
+          result.lineTo(begin - offset + gap * (-bondUnitVector - bondNormalVector));
+          result.closeSubpath();
+          break;
+        }
+      case Bond::TripleAsymmetric:
+        {
+          result.moveTo(begin + gap * -bondUnitVector);
+          // now the double part
+          QPointF offset = normalVector;
+          qreal beginAngle = findIdealAngle(beginAtom(), this, false),
+              endAngle = findIdealAngle(endAtom(), this, true),
+              limitAngle = atan(2*QLineF(QPointF(0,0),uvb).length()/QLineF(begin, end).length());
+          beginAngle = qMax(beginAngle, limitAngle);
+          endAngle = qMax(endAngle, limitAngle);
+          result.lineTo(begin + uvb/tan(beginAngle) + offset + gap * (-bondUnitVector + bondNormalVector));
+          result.lineTo(end - uvb/tan(endAngle) + offset + gap * (bondUnitVector + bondNormalVector));
+          result.lineTo(end + gap * bondUnitVector);
+          beginAngle = findIdealAngle(beginAtom(), this, true);
+          endAngle = findIdealAngle(endAtom(), this, false);
+          beginAngle = qMax(beginAngle, limitAngle);
+          endAngle = qMax(endAngle, limitAngle);
+          result.lineTo(end - uvb/tan(endAngle) - offset + gap * (bondUnitVector - bondNormalVector));
+          result.lineTo(begin + uvb/tan(beginAngle) - offset + gap * (-bondUnitVector - bondNormalVector));
+          result.closeSubpath();
+          break;
+        }
+      default: ;
+    }
+    return result;
   }
 } // namespace

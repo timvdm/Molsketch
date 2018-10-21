@@ -131,11 +131,14 @@ namespace Molsketch {
     void prepareContextMenu(QMenu *contextMenu);
     XmlObjectInterface* produceChild(const QString &name, const QString &type);
     void afterReadFinalization();
+    virtual QPainterPath outline() const;
 
   private:
-    void drawHashBond(QPainter *painter);
-    void drawWedgeBond(QPainter *painter);
+    QPainterPath drawHashBond(const QPointF &begin, const QPointF &end) const;
+    QPainterPath drawWedgeBond(const QPointF &begin, const QPointF &end) const;
+    QPainterPath getWedgeBondShape() const;
     void determineDoubleBondOrientation();
+    QPainterPath bondPath() const;
     QPointF determineBondDrawingStart(Atom* start, Atom* end) const;
 
     // Internal representation

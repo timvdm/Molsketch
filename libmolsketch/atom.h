@@ -127,6 +127,7 @@ namespace Molsketch {
     void updateShape();
     void setIndex(const QString& index);
     QString index() const;
+    qreal getBondExtent(const QLineF &outer1, const QLineF &outer2, qreal lineWidth) const;
   protected:
     // Event handlers
     /** Event handler to handle element changes. */
@@ -172,6 +173,8 @@ namespace Molsketch {
     void drawNewman(QPainter *painter);
     QPointF getBondDrawingStartFromBoundingBox(const QLineF &connection, qreal bondLineWidth) const;
     bool showHoverPoint() const { return false; }
+    class IntersectionData;
+    IntersectionData intersectedEdge(const QLineF &line, qreal lineWidth) const;
   };
 
 } // namespace
