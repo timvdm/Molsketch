@@ -154,7 +154,7 @@ namespace Molsketch {
       bool cyclingByMouseWheelEnaled() const;
       Atom *atomNear(const QPointF &pos, qreal tolerance = 10.0);
       template <class T>
-      T *itemNear(const QPointF &pos, qreal tolerance);
+      T *itemNear(const QPointF &pos, qreal tolerance = 10.0);
       qreal getRadicalDiameter() const;
       qreal getLonePairLength() const;
       qreal getLonePairLineWidth() const;

@@ -92,8 +92,8 @@ namespace Molsketch {
     qreal pointSelectionDistance() const;
     virtual bool showHoverBox() const { return true; }
     virtual bool showHoverPoint() const { return true; }
-    void readAttributes(const QXmlStreamAttributes &attributes) ;
-    QXmlStreamAttributes xmlAttributes() const ;
+    void readAttributes(const QXmlStreamAttributes &attributes);
+    QXmlStreamAttributes xmlAttributes() const;
     virtual void readGraphicAttributes(const QXmlStreamAttributes& attributes) { Q_UNUSED(attributes)}
     virtual QXmlStreamAttributes graphicAttributes() const { return QXmlStreamAttributes() ; }
     /**
@@ -105,14 +105,19 @@ namespace Molsketch {
     virtual void prepareItemContextMenu(QMenu* contextMenu);
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);
     template<typename T>
-    QList<T> childrenByType() const {
+
+    static QList<T> itemsByType(QList<QGraphicsItem*> input) {
       QList<T> result;
-      for (auto childItem : childItems())
-        if (T child = dynamic_cast<T>(childItem))
-          result << child;
+      for (auto item : input)
+        if (T typedItem = dynamic_cast<T>(item))
+          result << typedItem;
       return result;
     }
 
+    template<typename T>
+    QList<T> childrenByType() const {
+      return itemsByType<T>(childItems());
+    }
   private:
     QColor m_color ;
     qreal lineWidthScaling ;

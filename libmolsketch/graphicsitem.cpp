@@ -34,6 +34,8 @@
 #include "scenesettings.h"
 #include "settingsitem.h"
 
+#include <actions/zlevelaction.h>
+
 namespace Molsketch {
 
   class movePointCommand : public QUndoCommand // TODO eliminate transformcommand or merge
@@ -224,6 +226,10 @@ namespace Molsketch {
       lineWidthScaling = attributes.value("scalingParameter").toString().toFloat() ;
     else
       lineWidthScaling = 1.0 ;
+
+    if (attributes.hasAttribute("zLevel"))
+      setZValue(attributes.value("zLevel").toString().toFloat());
+
     if (attributes.hasAttribute("coordinates"))
     {
       QPolygonF coords;
@@ -268,6 +274,7 @@ namespace Molsketch {
     QXmlStreamAttributes attributes = graphicAttributes() ;
     addColor(attributes, getColor());
     attributes.append("scalingParameter", QString::number(lineWidthScaling));
+    attributes.append("zLevel", QString::number(zValue()));
     QStringList coords;
     foreach(const QPointF& coordinate, coordinates())
       coords << QString::number(coordinate.x()) + "," + QString::number(coordinate.y());
@@ -417,10 +424,12 @@ namespace Molsketch {
   {
     colorAction *caction = scene()->findChild<colorAction*>();
     lineWidthAction *lwaction = scene()->findChild<lineWidthAction*>();
+    ZLevelAction *zLevelAction = scene()->findChild<ZLevelAction*>();
     rotateAction *raction = scene()->findChild<rotateAction*>();
     if (caction)  contextMenu->addAction(caction);
     if (lwaction) contextMenu->addAction(lwaction);
     if (raction)  contextMenu->addAction(raction);
+    if (zLevelAction) contextMenu->addAction(zLevelAction);
   }
 
   QWidget* graphicsItem::getPropertiesWidget()
