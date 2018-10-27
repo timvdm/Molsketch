@@ -175,6 +175,8 @@ namespace Molsketch {
     bool showHoverPoint() const { return false; }
     class IntersectionData;
     IntersectionData intersectedEdge(const QLineF &line, qreal lineWidth) const;
+    qreal getExtentForIntersectionOfOuterLineAndEdge(const Atom::IntersectionData &edgeIntersection, const QLineF &outer) const;
+    qreal getExtentForEndOnCorner(const QPolygonF &fullBondPolygon, const QLineF &middleLine, const QPointF &corner) const;
   };
 
 } // namespace
