@@ -929,7 +929,6 @@ namespace Molsketch {
   Atom::IntersectionData Atom::intersectedEdge(const QLineF& line, qreal lineWidth) const { // Cave: atom has to be bond start
     QRectF bounds = boundingRect().adjusted(-.5*lineWidth, -.5*lineWidth, .5*lineWidth, .5*lineWidth);
     QPointF intersection;
-    qDebug() << "looking for intersection:" << line << bounds;
 
     QLineF topEdge{bounds.topLeft(), bounds.topRight()};
     if (topEdge.intersect(line, &intersection) == QLineF::BoundedIntersection)

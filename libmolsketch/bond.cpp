@@ -159,7 +159,6 @@ namespace Molsketch {
 
     QPainterPath path;
     path.moveTo(outer1.pointAt(beginExtent));
-    qDebug() << outer1.pointAt(endExtent) << outer2.pointAt(endExtent) << endExtent << axis;
     path.lineTo(outer1.pointAt(endExtent));
     path.lineTo(outer2.pointAt(endExtent));
     path.lineTo(outer2.pointAt(beginExtent));
