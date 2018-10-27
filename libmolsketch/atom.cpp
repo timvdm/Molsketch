@@ -977,6 +977,14 @@ namespace Molsketch {
 
     // Assumption: p1 is the point closes to the atom; returned value is measured starting from atom accordingly
     QLineF middleLine{0.5 * (outer1.p1() + outer2.p1()), 0.5 * (outer1.p2() + outer2.p2())};
+
+    if (m_newmanDiameter > 0) {
+      qreal f = pow(middleLine.dx(), 2) + pow(middleLine.dy(), 2);
+      qreal p = 2*(middleLine.p1().x() * middleLine.dx() + middleLine.p1().y() * middleLine.dy()) / f / 2.;
+      qreal q = (pow(middleLine.p1().x(), 2) + pow(middleLine.p1().y(), 2) - pow((m_newmanDiameter + lineWidth)/2., 2))/f;
+      return qMax(-p + sqrt(p*p - q), -p - sqrt(p*p - q));
+    }
+
     qDebug() << "middleLine" << outer1 << outer2 << middleLine;
     IntersectionData edgeIntersection{intersectedEdge(middleLine, lineWidth)};
     if (!remainder(middleLine.angleTo(edgeIntersection.getEdge()), 90)) {
