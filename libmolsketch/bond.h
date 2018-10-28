@@ -135,7 +135,7 @@ namespace Molsketch {
 
   private:
     QPainterPath drawHashBond(const QPointF &begin, const QPointF &end) const;
-    QPainterPath drawWedgeBond(const QPointF &begin, const QPointF &end) const;
+    QPainterPath drawWedgeBond() const;
     QPainterPath getWedgeBondShape() const;
     void determineDoubleBondOrientation();
     QPainterPath bondPath() const;
@@ -146,6 +146,9 @@ namespace Molsketch {
     Atom* m_beginAtom;
     Atom* m_endAtom;
     QList<XmlObjectInterface*> helpers;
+    QLineF mapOuterLineToAtom(const Atom *atom, const QLineF &line, bool reverse) const;
+    qreal getExtentForStereoBond(const Atom *atom, const QPair<QLineF, QLineF> &outerLines, bool reverse) const;
+    QPair<QLineF, QLineF> getOuterLimitsOfStereoBond() const;
   };
 
 } // namespace

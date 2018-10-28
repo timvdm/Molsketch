@@ -139,31 +139,49 @@ namespace Molsketch {
     return result;
   }
 
-  QPainterPath Bond::drawWedgeBond(const QPointF &begin, const QPointF &end) const
-  {
+  QPair<QLineF, QLineF> Bond::getOuterLimitsOfStereoBond() const {
     auto axis = bondAxis();
     auto normalVector = axis.normalVector().unitVector();
     if (MolScene* s = qobject_cast<MolScene*>(scene()))
       normalVector.setLength(s->settings()->bondWedgeWidth()->get()/2.);
     normalVector.translate(axis.dx(), axis.dy());
 
-    QLineF outer1{axis.p1(), normalVector.p2()},
-           outer2{axis.p1(), normalVector.pointAt(-1)};
-    QLineF outer1Begin{mapToItem(beginAtom(), outer1.p1()), mapToItem(beginAtom(), outer1.p2())};
-    QLineF outer2Begin{mapToItem(beginAtom(), outer2.p1()), mapToItem(beginAtom(), outer2.p2())};
-    qreal beginExtent = beginAtom()->getBondExtent(outer1Begin, outer2Begin, lineWidth());
+    return qMakePair(QLineF{axis.p1(), normalVector.p2()},
+                     QLineF{axis.p1(), normalVector.pointAt(-1)});
+  }
 
-    QLineF outer1End{mapToItem(endAtom(), outer1.p2()), mapToItem(endAtom(), outer1.p1())};
-    QLineF outer2End{mapToItem(endAtom(), outer2.p2()), mapToItem(endAtom(), outer2.p1())};
-    qreal endExtent = 1 - endAtom()->getBondExtent(outer1End, outer2End, lineWidth());
+  QLineF Bond::mapOuterLineToAtom(const Atom *atom, const QLineF& line, bool reverse) const {
+   return QLineF(mapToItem(atom, reverse ? line.p2() : line.p1()),
+                 mapToItem(atom, reverse ? line.p1() : line.p2()));
+  }
 
+  qreal Bond::getExtentForStereoBond(const Atom *atom, const QPair<QLineF, QLineF> &outerLines, bool reverse) const {
+    if (reverse) return 1 - atom->getBondExtent(mapOuterLineToAtom(atom, outerLines.first, reverse),
+                                                mapOuterLineToAtom(atom, outerLines.second, reverse),
+                                                lineWidth());
+    return atom->getBondExtent(mapOuterLineToAtom(atom, outerLines.first, reverse),
+                               mapOuterLineToAtom(atom, outerLines.second, reverse),
+                               lineWidth());
+  }
+
+  QPainterPath getWedgeBondPath(const QPair<QLineF, QLineF> &outerLines, qreal beginExtent, qreal endExtent) {
     QPainterPath path;
-    path.moveTo(outer1.pointAt(beginExtent));
-    path.lineTo(outer1.pointAt(endExtent));
-    path.lineTo(outer2.pointAt(endExtent));
-    path.lineTo(outer2.pointAt(beginExtent));
+    path.moveTo(outerLines.first.pointAt(beginExtent));
+    path.lineTo(outerLines.first.pointAt(endExtent));
+    path.lineTo(outerLines.second.pointAt(endExtent));
+    path.lineTo(outerLines.second.pointAt(beginExtent));
     path.closeSubpath();
     return path;
+  }
+
+  QPainterPath Bond::drawWedgeBond() const
+  {
+    auto outerLines = getOuterLimitsOfStereoBond();
+
+    auto beginExtent = getExtentForStereoBond(beginAtom(), outerLines, false),
+        endExtent = getExtentForStereoBond(endAtom(), outerLines, true);
+
+    return getWedgeBondPath(outerLines, beginExtent, endExtent);
   }
 
   QPainterPath Bond::getWedgeBondShape() const {
@@ -283,7 +301,7 @@ namespace Molsketch {
         result.lineTo(end);
         break;
       case Bond::Wedge:
-        return drawWedgeBond(mapFromParent(m_beginAtom->pos()), mapFromParent(m_endAtom->pos()));
+        return drawWedgeBond();
       case Bond::Hash:
         return drawHashBond(mapFromParent(m_beginAtom->pos()), mapFromParent(m_endAtom->pos()));
       case Bond::DoubleSymmetric:
@@ -682,7 +700,8 @@ namespace Molsketch {
 
     QPainterPath result;
 
-    qreal gap = 2;
+    qreal gap = lineWidth(); // TODO make this configurable!
+
 
     switch (m_bondType) {
       case Bond::Single:
@@ -709,7 +728,7 @@ namespace Molsketch {
           break;
         }
       case DoubleAsymmetric:
-        {
+        { // TODO add more gap
           result.moveTo(begin + gap * (-bondUnitVector - bondNormalVector));
           result.lineTo(end + gap * (bondUnitVector - bondNormalVector));
           // now the double part
@@ -747,7 +766,7 @@ namespace Molsketch {
           break;
         }
       case Bond::TripleAsymmetric:
-        {
+        { // TODO add more gap to central line
           result.moveTo(begin + gap * -bondUnitVector);
           // now the double part
           QPointF offset = normalVector;
