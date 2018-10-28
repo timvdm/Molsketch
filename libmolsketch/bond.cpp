@@ -185,39 +185,24 @@ namespace Molsketch {
   }
 
   QPainterPath Bond::getWedgeBondShape() const {
-//    QPointF begin = mapFromParent(m_beginAtom->pos());
-//    QPointF end = mapFromParent(m_endAtom->pos());
-//    QPointF vb = end - begin;
+    auto outerLines = getOuterLimitsOfStereoBond();
+    auto beginExtent = getExtentForStereoBond(beginAtom(), outerLines, false),
+        endExtent = getExtentForStereoBond(endAtom(), outerLines, true);
 
-//    QPointF uvb = vb / sqrt(vb.x()*vb.x() + vb.y()*vb.y());
-//    QPointF orthogonal(uvb.y(), -uvb.x());
-//    QPointF bondUnitVector(uvb);
-//    QPointF bondNormalVector(orthogonal);
-//    if (MolScene* s = qobject_cast<MolScene*>(scene()))
-//      orthogonal *= s->settings()->bondWedgeWidth()->get();
-//    qreal gap = 2;
+    qreal gap = bondShapeGap();
+    auto axis = bondAxis();
+    axis.setLength(gap);
+    auto normalVector = axis.normalVector();
 
-//    QPainterPath path;
-//    if (m_beginAtom->hasLabel()) {
-//      path.moveTo(begin + 0.25 * (vb - orthogonal) + gap * (-bondUnitVector - bondNormalVector));
-//      path.lineTo(begin + 0.25 * (vb + orthogonal) + gap * (-bondUnitVector + bondNormalVector));
-//    } else {
-//      path.moveTo(begin + gap * (-bondUnitVector - bondNormalVector));
-//      path.lineTo(begin + gap * (-bondUnitVector + bondNormalVector));
-//    }
-//    if (m_endAtom->hasLabel()) {
-//      path.lineTo(end - 0.25 * vb + 0.75 * orthogonal + gap * (bondUnitVector + bondNormalVector));
-//      path.lineTo(end - 0.25 * vb - 0.75 * orthogonal + gap * (bondUnitVector - bondNormalVector));
-//    } else {
-//      path.lineTo(end + orthogonal + gap * (bondUnitVector + bondNormalVector));
-//      path.lineTo(end - orthogonal + gap * (bondUnitVector - bondNormalVector));
-//    }
-//    path.closeSubpath();
-//    return path;
+    QPointF offsetA{axis.dx() + normalVector.dx(), axis.dy() + normalVector.dy()};
+    QPointF offsetB{axis.dx() - normalVector.dx(), axis.dy() - normalVector.dy()};
 
-    QPainterPath path;
-    path.addRect(-1000, -1000, 2000, 2000);
-    return path;
+    QPainterPath shape(outerLines.first.pointAt(beginExtent) - offsetB);
+    shape.lineTo(outerLines.first.pointAt(endExtent) + offsetA);
+    shape.lineTo(outerLines.second.pointAt(endExtent) + offsetB);
+    shape.lineTo(outerLines.second.pointAt(beginExtent) - offsetA);
+    shape.closeSubpath();
+    return shape;
   }
 
   double minimumAngle(const Bond* reference, const QSet<Bond*>& others, const Atom* origin, bool clockwise)
@@ -686,6 +671,10 @@ namespace Molsketch {
     helpers.clear();
   }
 
+  qreal Bond::bondShapeGap() const {
+    return lineWidth(); // TODO make this configurable!
+  }
+
   QPainterPath Bond::outline() const {
     // Get beginning and end (taken from bondPath()
     QPointF begin = determineBondDrawingStart(m_beginAtom, m_endAtom);
@@ -700,8 +689,7 @@ namespace Molsketch {
 
     QPainterPath result;
 
-    qreal gap = lineWidth(); // TODO make this configurable!
-
+    qreal gap = bondShapeGap();
 
     switch (m_bondType) {
       case Bond::Single:

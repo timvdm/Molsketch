@@ -149,6 +149,7 @@ namespace Molsketch {
     QLineF mapOuterLineToAtom(const Atom *atom, const QLineF &line, bool reverse) const;
     qreal getExtentForStereoBond(const Atom *atom, const QPair<QLineF, QLineF> &outerLines, bool reverse) const;
     QPair<QLineF, QLineF> getOuterLimitsOfStereoBond() const;
+    qreal bondShapeGap() const;
   };
 
 } // namespace
