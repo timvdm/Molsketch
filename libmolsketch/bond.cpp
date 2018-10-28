@@ -114,29 +114,45 @@ namespace Molsketch {
                   mapFromParent(m_endAtom->pos())) ;
   }
 
-  QPainterPath Bond::drawHashBond(const QPointF &begin, const QPointF &end) const
+  QLineF limitLineToExtents(const QLineF& line, qreal beginExtent, qreal endExtent) {
+    return QLineF{line.pointAt(beginExtent), line.pointAt(endExtent)};
+  }
+
+  QPair<QLineF, QLineF> limitLinesToExtents(const QPair<QLineF, QLineF> &lines, qreal beginExtent, qreal endExtent) {
+    return qMakePair(limitLineToExtents(lines.first, beginExtent, endExtent),
+                     limitLineToExtents(lines.second, beginExtent, endExtent));
+  }
+
+  QPainterPath getWedgeBondPath(const QPair<QLineF, QLineF> &outerLines) {
+    QPainterPath path(outerLines.first.p1());
+    path.lineTo(outerLines.first.p2());
+    path.lineTo(outerLines.second.p2());
+    path.lineTo(outerLines.second.p1());
+    path.closeSubpath();
+    return path;
+  }
+
+  QPainterPath Bond::drawHashBond() const
   {
-    qreal m_bondSpacing = 4.0;
+    auto outerLines = getOuterLimitsOfStereoBond();
+    auto beginExtent = getExtentForStereoBond(beginAtom(), outerLines, false),
+        endExtent = getExtentForStereoBond(endAtom(), outerLines, true);
 
-//    QPointF begin = mapFromParent(m_beginAtom->pos());
-//    QPointF end = mapFromParent(m_endAtom->pos());
-    QPointF vb = end - begin;
+    auto outerLinesToDraw = limitLinesToExtents(outerLines, beginExtent, endExtent);
 
-    QPointF uvb = vb / sqrt(vb.x()*vb.x() + vb.y()*vb.y());
-    QPointF orthogonal(uvb.y(), -uvb.x());
-    orthogonal *= m_bondSpacing;
+    QVector<QPair<qreal, qreal> > sections {
+      {0., .08},
+      {.23, .31},
+      {.46, .54},
+      {.69, .77},
+      {.92, 1.}
+    };
 
-    qreal lines[5] = { 0.25, 0.40, 0.55, 0.70, 0.90 };
+    QPainterPath path;
+    for (auto range : sections)
+      path.addPath(getWedgeBondPath(limitLinesToExtents(outerLinesToDraw, range.first, range.second)));
 
-    int last = (m_endAtom->hasLabel()) ? 4 : 5;
-
-    QPainterPath result;
-    for (int i = 0; i < last; ++i) {
-      qreal w = lines[i];
-      result.moveTo(begin + w * (vb + orthogonal));
-      result.lineTo(begin + w * (vb - orthogonal));
-    }
-    return result;
+    return path;
   }
 
   QPair<QLineF, QLineF> Bond::getOuterLimitsOfStereoBond() const {
@@ -164,24 +180,19 @@ namespace Molsketch {
                                lineWidth());
   }
 
-  QPainterPath getWedgeBondPath(const QPair<QLineF, QLineF> &outerLines, qreal beginExtent, qreal endExtent) {
-    QPainterPath path;
-    path.moveTo(outerLines.first.pointAt(beginExtent));
-    path.lineTo(outerLines.first.pointAt(endExtent));
-    path.lineTo(outerLines.second.pointAt(endExtent));
-    path.lineTo(outerLines.second.pointAt(beginExtent));
-    path.closeSubpath();
-    return path;
-  }
-
   QPainterPath Bond::drawWedgeBond() const
   {
     auto outerLines = getOuterLimitsOfStereoBond();
-
     auto beginExtent = getExtentForStereoBond(beginAtom(), outerLines, false),
         endExtent = getExtentForStereoBond(endAtom(), outerLines, true);
+    auto outerLinesToDraw = limitLinesToExtents(outerLines, beginExtent, endExtent);
+    return getWedgeBondPath(outerLinesToDraw);
+  }
 
-    return getWedgeBondPath(outerLines, beginExtent, endExtent);
+  QLineF shiftAndElongate(const QLineF &line, const QPointF &shift, const QPointF &elongation) {
+    auto newLine = line.translated(shift);
+    newLine.setPoints(newLine.p1() - elongation, newLine.p2() + elongation);
+    return newLine;
   }
 
   QPainterPath Bond::getWedgeBondShape() const {
@@ -189,20 +200,17 @@ namespace Molsketch {
     auto beginExtent = getExtentForStereoBond(beginAtom(), outerLines, false),
         endExtent = getExtentForStereoBond(endAtom(), outerLines, true);
 
-    qreal gap = bondShapeGap();
+    auto outerLinesToDraw = limitLinesToExtents(outerLines, beginExtent, endExtent);
+
     auto axis = bondAxis();
-    axis.setLength(gap);
-    auto normalVector = axis.normalVector();
+    axis.setLength(bondShapeGap());
+    QPointF bondShift{axis.dx(), axis.dy()};
+    QPointF normalShift{axis.dy(), -axis.dx()};
 
-    QPointF offsetA{axis.dx() + normalVector.dx(), axis.dy() + normalVector.dy()};
-    QPointF offsetB{axis.dx() - normalVector.dx(), axis.dy() - normalVector.dy()};
+    auto shiftedOuterLines = qMakePair(shiftAndElongate(outerLinesToDraw.first, normalShift, bondShift),
+              shiftAndElongate(outerLinesToDraw.second, -normalShift, bondShift));
 
-    QPainterPath shape(outerLines.first.pointAt(beginExtent) - offsetB);
-    shape.lineTo(outerLines.first.pointAt(endExtent) + offsetA);
-    shape.lineTo(outerLines.second.pointAt(endExtent) + offsetB);
-    shape.lineTo(outerLines.second.pointAt(beginExtent) - offsetA);
-    shape.closeSubpath();
-    return shape;
+    return getWedgeBondPath(shiftedOuterLines);
   }
 
   double minimumAngle(const Bond* reference, const QSet<Bond*>& others, const Atom* origin, bool clockwise)
@@ -288,7 +296,7 @@ namespace Molsketch {
       case Bond::Wedge:
         return drawWedgeBond();
       case Bond::Hash:
-        return drawHashBond(mapFromParent(m_beginAtom->pos()), mapFromParent(m_endAtom->pos()));
+        return drawHashBond();
       case Bond::DoubleSymmetric:
         {
           QPointF offset = .5*normalVector;
@@ -474,6 +482,7 @@ namespace Molsketch {
         pen.setDashPattern(QVector<qreal>() << 2 << 5);
         break;
       case Bond::Wedge:
+      case Bond::Hash:
           painter->setBrush( QBrush(getColor()) );
       default: ;
     }
@@ -491,6 +500,7 @@ namespace Molsketch {
     painter->drawPath(path);
 
     painter->setClipping(false);
+    painter->setBrush(Qt::NoBrush);
 
     if (isSelected()) {
       painter->setPen(Qt::blue);

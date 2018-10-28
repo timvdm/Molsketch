@@ -134,7 +134,7 @@ namespace Molsketch {
     virtual QPainterPath outline() const;
 
   private:
-    QPainterPath drawHashBond(const QPointF &begin, const QPointF &end) const;
+    QPainterPath drawHashBond() const;
     QPainterPath drawWedgeBond() const;
     QPainterPath getWedgeBondShape() const;
     void determineDoubleBondOrientation();
