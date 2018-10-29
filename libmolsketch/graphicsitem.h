@@ -87,6 +87,8 @@ namespace Molsketch {
     void setHovering(bool);
     void selectHoverPoint(const QPointF& position);
     void unselectHoverPoint();
+    int roundedZValue() const;
+    void setZValue(const int &newZ);
   protected:
     bool isHovering() const;
     qreal pointSelectionDistance() const;

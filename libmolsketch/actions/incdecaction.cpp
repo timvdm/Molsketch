@@ -96,6 +96,7 @@ namespace Molsketch {
   void incDecAction<T>::mousePressEvent(QGraphicsSceneMouseEvent *event)
   {
     if (event->button() != Qt::LeftButton || event->modifiers()) return;
+    event->accept();
     // Check possible targets
     T* t = getItem(event->buttonDownScenePos(event->button()));
     if (!t) return;
@@ -130,6 +131,11 @@ namespace Molsketch {
   Atom *incDecAction<Atom>::getItem(const QPointF &p)
   {
     return scene()->atomNear(p) ;
+  }
+
+  template<>
+  Bond *incDecAction<Bond>::getItem(const QPointF &p) {
+    return scene()->bondAt(p);
   }
 
   template <class T>
@@ -175,6 +181,20 @@ namespace Molsketch {
     return d->plusAction;
   }
 
+  ZLevelStepAction::ZLevelStepAction(MolScene *scene)
+    : incDecAction(scene)
+  {
+    setText(tr("Drawing Level"));
+    initialize(QIcon(":images/incDrawingLevel.svg"),
+               QIcon(":images/decDrawingLevel.svg"),
+               tr("Move up"),
+               tr("Move down"),
+               &Bond::roundedZValue,
+               &Bond::setZValue);
+  }
+
   // instantiation
-  template class incDecAction<Atom> ;
+  template class incDecAction<Atom>;
+  template class incDecAction<Bond>;
+
 } // namespace

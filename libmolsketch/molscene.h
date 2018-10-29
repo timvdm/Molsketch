@@ -154,7 +154,20 @@ namespace Molsketch {
       bool cyclingByMouseWheelEnaled() const;
       Atom *atomNear(const QPointF &pos, qreal tolerance = 10.0);
       template <class T>
-      T *itemNear(const QPointF &pos, qreal tolerance = 10.0);
+      T *itemNear(const QPointF &pos, qreal tolerance = 10.0) { // TODO unit test
+        qreal minDistance = tolerance;
+        T *result = nullptr;
+        for(QGraphicsItem* item : items(QRectF(pos.x()-tolerance, pos.y()-tolerance, tolerance, tolerance))) {
+          qreal distance = QLineF(item->boundingRect().center(), pos).length();
+          if (T *itemPointer = dynamic_cast<T*>(item)) {
+            if (distance < minDistance) {
+              result = itemPointer;
+              minDistance = distance;
+            }
+          }
+        }
+        return result;
+      }
       qreal getRadicalDiameter() const;
       qreal getLonePairLength() const;
       qreal getLonePairLineWidth() const;

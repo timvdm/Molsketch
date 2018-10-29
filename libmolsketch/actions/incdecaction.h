@@ -23,6 +23,7 @@
 
 namespace Molsketch {
   class Atom ;
+  class Bond;
 
   template <class T>
   class incDecAction : public multiAction
@@ -57,6 +58,11 @@ namespace Molsketch {
   public:
     explicit hydrogenAction(MolScene *scene) ;
   } ;
+
+  class ZLevelStepAction : public incDecAction<Bond> {
+  public:
+    explicit ZLevelStepAction(MolScene *scene);
+  };
 } //namespace
 
 #endif // INCDECACTION_H

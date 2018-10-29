@@ -48,6 +48,7 @@
 #include <actions/bondtypeaction.h>
 #include <actions/flipbondaction.h>
 #include <actions/frametypeaction.h>
+#include <actions/zlevelaction.h>
 #include <constants.h>
 #include <lineupaction.h>
 
@@ -216,6 +217,7 @@ QToolBar *ActionContainer::createModifyToolBar(Molsketch::MolScene *scene, QWidg
   modifyToolBar->addAction(new colorAction(scene));
   modifyToolBar->addAction(new lineWidthAction(scene));
   modifyToolBar->addAction(new ZLevelAction(scene));
+  modifyToolBar->addAction(new ZLevelStepAction(scene));
   modifyToolBar->addAction(new chargeAction(scene));
   modifyToolBar->addAction(new hydrogenAction(scene));
   modifyToolBar->addAction(new deleteAction(scene));

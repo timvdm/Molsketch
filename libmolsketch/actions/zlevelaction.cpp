@@ -30,6 +30,7 @@ ZLevelAction::ZLevelAction(MolScene *parent)
   setToolTip(tr("Set the level at which the item will be drawn\n(higher values above lower values)"));
   setWhatsThis(tr("Set the level at which the item will be drawn\n(higher values above lower values)"));
   setCheckable(false);
+  setMinimumItemCount(1);
 }
 
 void ZLevelAction::execute() {

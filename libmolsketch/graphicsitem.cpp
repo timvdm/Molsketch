@@ -508,6 +508,14 @@ namespace Molsketch {
     d->selectedPoint = -1;
   }
 
+  int graphicsItem::roundedZValue() const {
+    return qRound(zValue());
+  }
+
+  void graphicsItem::setZValue(const int &newZ) {
+    QGraphicsItem::setZValue(newZ);
+  }
+
   qreal graphicsItem::pointSelectionDistance() const
   {
     return 5.;

@@ -691,16 +691,4 @@ namespace Molsketch {
 
         return actions;
   }
-
-  template <class T>
-  T *MolScene::itemNear(const QPointF &pos, qreal tolerance) { // TODO unit test
-    qreal minDistance = tolerance;
-    T *result = nullptr;
-    for(QGraphicsItem* item : items(QRectF(pos.x()-tolerance, pos.y()-tolerance, tolerance, tolerance))) {
-      if (!(QLineF(item->scenePos(), pos).length() < minDistance)) continue;
-      if (T *itemPointer = dynamic_cast<T*>(item)) result = itemPointer;
-    }
-    return result;
-  }
-
 } // namespace
