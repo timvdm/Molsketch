@@ -20,21 +20,21 @@
 #include "programversion.h"
 
 struct ProgramVersion::ProgramVersionPrivate {
-  unsigned int major, minor, patch, build;
+  unsigned int version, subversion, patch, build;
 };
 
 ProgramVersion::ProgramVersion(const QString &version)
   : d(new ProgramVersionPrivate) {
-  d->major = version.section('.', 0,0).toInt();
-  d->minor = version.section('.', 1,1).toInt();
+  d->version = version.section('.', 0,0).toInt();
+  d->subversion = version.section('.', 1,1).toInt();
   d->patch = version.section('.', 2,2).toInt();
   d->build = version.section('.', 3,3).toInt();
 }
 
-ProgramVersion::ProgramVersion(int major, int minor, int patch, int build)
+ProgramVersion::ProgramVersion(int version, int subversion, int patch, int build)
   : d(new ProgramVersionPrivate) {
-  d->major = major;
-  d->minor = minor;
+  d->version = version;
+  d->subversion = subversion;
   d->patch = patch;
   d->build = build;
 }
@@ -52,8 +52,8 @@ unsigned int ProgramVersion::build() const {
 }
 
 bool ProgramVersion::operator ==(const ProgramVersion &other) const {
-  return d->major == other.d->major
-      && d->minor == other.d->minor
+  return d->version == other.d->version
+      && d->subversion == other.d->subversion
       && d->patch == other.d->patch
       && d->build == other.d->build;
 }
@@ -63,10 +63,10 @@ bool ProgramVersion::operator !=(const ProgramVersion &other) const {
 }
 
 bool ProgramVersion::operator <(const ProgramVersion &other) const {
-  return d->major < other.d->major
-      || (d->major == other.d->major && (
-        d->minor < other.d->minor
-        || (d->minor == other.d->minor && (
+  return d->version < other.d->version
+      || (d->version == other.d->version && (
+        d->subversion < other.d->subversion
+        || (d->subversion == other.d->subversion && (
           d->patch < other.d->patch
           || (d->patch == other.d->patch && d->build < other.d->build)))));
 }
@@ -85,13 +85,13 @@ bool ProgramVersion::operator >=(const ProgramVersion &other) const {
 
 QString ProgramVersion::toString() const
 {
-  return QString("%1.%2.%3.%4").arg(d->major).arg(d->minor).arg(d->patch).arg(d->build);
+  return QString("%1.%2.%3.%4").arg(d->version).arg(d->subversion).arg(d->patch).arg(d->build);
 }
 
-unsigned int ProgramVersion::minor() const {
-  return d->minor;
+unsigned int ProgramVersion::subversion() const {
+  return d->subversion;
 }
 
-unsigned int ProgramVersion::major() const {
-  return d->major;
+unsigned int ProgramVersion::version() const {
+  return d->version;
 }

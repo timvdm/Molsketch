@@ -28,10 +28,10 @@ class ProgramVersion
 {
 public:
   ProgramVersion(const QString& version = "");
-  ProgramVersion(int major, int minor = 0, int patch = 0, int build = 0);
+  ProgramVersion(int version, int subversion = 0, int patch = 0, int build = 0);
   ~ProgramVersion();
-  unsigned int major() const;
-  unsigned int minor() const;
+  unsigned int version() const;
+  unsigned int subversion() const;
   unsigned int patch() const;
   unsigned int build() const;
   bool operator ==(const ProgramVersion& other) const;

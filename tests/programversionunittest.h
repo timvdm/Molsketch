@@ -23,10 +23,10 @@
 
 class ProgramVersionUnitTest : public CxxTest::TestSuite {
 private:
-  void assertVersion(const QString& input, int major, int minor, int patch, int build) {
+  void assertVersion(const QString& input, int version, int subversion, int patch, int build) {
     ProgramVersion version(input);
-    TS_ASSERT_EQUALS(major, version.major());
-    TS_ASSERT_EQUALS(minor, version.minor());
+    TS_ASSERT_EQUALS(version, version.version());
+    TS_ASSERT_EQUALS(subversion, version.subversion());
     TS_ASSERT_EQUALS(patch, version.patch());
     TS_ASSERT_EQUALS(build, version.build());
   }
