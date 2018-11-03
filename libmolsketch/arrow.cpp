@@ -280,7 +280,7 @@ namespace Molsketch {
     // Check for legacy arrow type
     auto legacyArrowType = attributes.value("type").toString();
     // if not legacy type, read arrow tip type and return
-    if ("ReactionArrow" != legacyArrowType
+    if ("ReactionArrow" != legacyArrowType // TODO make these names constants (see MolScene::produceChild())
         && "MechanismArrow" != legacyArrowType)
     {
       d->arrowType = (ArrowType) (attributes.value("arrowType").toString().toInt()) ;

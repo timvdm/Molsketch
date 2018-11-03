@@ -91,7 +91,7 @@ namespace Molsketch {
   struct MolScene::privateData
   {
     QGraphicsRectItem *selectionRectangle;
-    TextInputItem *inputItem;
+    TextInputItem *inputItem; // TODO this should be handled differently!
     Grid *grid;
     MolScene *scene;
     QUndoStack *stack;

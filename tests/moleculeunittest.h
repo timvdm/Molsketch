@@ -69,7 +69,7 @@ class MoleculeUnitTest : public CxxTest::TestSuite {
     TS_ASSERT_EQUALS(electronSystem->type(), ElectronSystem::PiType);
   }
 
-public:
+public: // TODO serialization tests
   void setUp() {
     molecule = new Molecule;
   }
