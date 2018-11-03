@@ -451,8 +451,6 @@ namespace Molsketch {
       drawBrokenIndicator(painter, brokenBondIndicator(end, -vb, normalVector));
       clipPath.addPath(clipBond(end, begin, normalVector));
     }
-    if (!clipPath.isEmpty())
-      painter->setClipPath(clipPath);
 
     begin = determineBondDrawingStart(m_beginAtom, m_endAtom);
     end = determineBondDrawingStart(m_endAtom, m_beginAtom);
@@ -462,7 +460,6 @@ namespace Molsketch {
         || m_endAtom->contains(mapToItem(m_endAtom, begin
                                          + 0.75* lineWidth() * QLineF(QPointF(), m_endAtom->pos() - m_beginAtom->pos()).unitVector().p2())))
       return;
-
 
     QPen pen;
 
