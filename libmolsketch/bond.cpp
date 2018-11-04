@@ -415,6 +415,23 @@ namespace Molsketch {
     painter->restore();
   }
 
+  QPainterPath Bond::paintBrokenBondIndicators(QPainter *painter, const QPointF &begin, const QPointF &end, const QPointF &vb, const QPointF &normalVector) {
+    const bool beginBroken = m_beginAtom->element().isEmpty();
+    const bool endBroken = m_endAtom->element().isEmpty();
+    QPainterPath clipPath;
+    if (beginBroken) // TODO move this to after where the bond clipping has been computed
+    {
+      drawBrokenIndicator(painter, brokenBondIndicator(begin, vb, normalVector));
+      clipPath.addPath(clipBond(begin, end, normalVector));
+    }
+    if (endBroken)
+    {
+      drawBrokenIndicator(painter, brokenBondIndicator(end, -vb, normalVector));
+      clipPath.addPath(clipBond(end, begin, normalVector));
+    }
+    return clipPath;
+  }
+
   void Bond::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
   {
     Q_UNUSED(option);
@@ -437,21 +454,6 @@ namespace Molsketch {
       uvb *= s->settings()->bondSeparation()->get();
     QPointF normalVector(uvb.y(), -uvb.x());
 
-    // clip for broken bond
-    const bool beginBroken = m_beginAtom->element().isEmpty();
-    const bool endBroken = m_endAtom->element().isEmpty();
-    QPainterPath clipPath;
-    if (beginBroken) // TODO move this to after where the bond clipping has been computed
-    {
-      drawBrokenIndicator(painter, brokenBondIndicator(begin, vb, normalVector));
-      clipPath.addPath(clipBond(begin, end, normalVector));
-    }
-    if (endBroken)
-    {
-      drawBrokenIndicator(painter, brokenBondIndicator(end, -vb, normalVector));
-      clipPath.addPath(clipBond(end, begin, normalVector));
-    }
-
     begin = determineBondDrawingStart(m_beginAtom, m_endAtom);
     end = determineBondDrawingStart(m_endAtom, m_beginAtom);
     // TODO this collision detection rests on the factor used in Atom for the determination of the starting point. Improve!
@@ -467,7 +469,28 @@ namespace Molsketch {
     pen.setWidthF(lineWidth());
     pen.setCapStyle(Qt::RoundCap);
     pen.setJoinStyle(Qt::RoundJoin);
-    pen.setColor (getColor());
+    pen.setColor(getColor());
+    painter->setPen(pen);
+
+    QPainterPath coveringShapes;
+    for (auto coveringItem : collidingItems())
+      if (coveringItem->zValue() > zValue())
+        if (auto coveringBond = dynamic_cast<Bond*>(coveringItem))
+          coveringShapes = coveringShapes.united(mapFromItem(coveringBond, coveringBond->shape()));
+
+    begin = mapFromParent(m_beginAtom->pos());
+    end = mapFromParent(m_endAtom->pos());
+    qreal factor = 1.4 + lineWidth();
+    auto bondRectangle = QPainterPath(begin + factor * normalVector);
+    bondRectangle.lineTo(begin - factor * normalVector);
+    bondRectangle.lineTo(end - factor * normalVector);
+    bondRectangle.lineTo(end + factor * normalVector);
+    bondRectangle.closeSubpath();
+    auto clippingFromOverlappingBonds(bondRectangle.subtracted(coveringShapes));
+    painter->setClipPath(clippingFromOverlappingBonds);
+    auto clipPath = paintBrokenBondIndicators(painter, begin, end, vb, normalVector);
+    painter->setClipPath(clippingFromOverlappingBonds.subtracted(clipPath));
+
     switch ( m_bondType ) // TODO beautify
     {
       case Bond::DativeDot:
@@ -485,15 +508,6 @@ namespace Molsketch {
       default: ;
     }
     painter->setPen(pen);
-
-    QPainterPath coveringShapes;
-    for (auto coveringItem : collidingItems())
-      if (coveringItem->zValue() > zValue())
-        if (auto coveringBond = dynamic_cast<Bond*>(coveringItem))
-          coveringShapes = coveringShapes.united(mapFromItem(coveringBond, coveringBond->shape()));
-
-    painter->setClipPath(shape().subtracted(coveringShapes).subtracted(clipPath));
-
     QPainterPath path = bondPath();
     painter->drawPath(path);
 
