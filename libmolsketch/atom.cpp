@@ -240,7 +240,7 @@ namespace Molsketch {
 
   QRectF Atom::boundingRect() const
   {
-    if (!isDrawn()) {
+    if (!isDrawn() || m_elementSymbol.isEmpty()) {
       auto centeringDistance = QPointF(pointSelectionDistance(), pointSelectionDistance());
       return QRectF(-centeringDistance, centeringDistance);
     }
@@ -600,7 +600,7 @@ namespace Molsketch {
 
     drawAtomLabel(painter, getLabelWithHydrogens(), labelAlignment());
     drawSelectionHighlight(painter);
-    if (molScene->settings()->chargeVisible()->get())
+    if (molScene->settings()->chargeVisible()->get() && !m_elementSymbol.isEmpty())
       drawCharge(painter); // TODO unite with subscript drawing and align appropriately
     if (molScene->settings()->lonePairsVisible()->get()) drawElectrons(painter);
     painter->restore();

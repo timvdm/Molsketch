@@ -441,7 +441,7 @@ namespace Molsketch {
     const bool beginBroken = m_beginAtom->element().isEmpty();
     const bool endBroken = m_endAtom->element().isEmpty();
     QPainterPath clipPath;
-    if (beginBroken)
+    if (beginBroken) // TODO move this to after where the bond clipping has been computed
     {
       drawBrokenIndicator(painter, brokenBondIndicator(begin, vb, normalVector));
       clipPath.addPath(clipBond(begin, end, normalVector));
