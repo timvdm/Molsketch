@@ -189,18 +189,6 @@ namespace Molsketch {
     setSceneRect(QRectF(-5000,-5000,10000,10000));
     connect(this, &MolScene::selectionChanged, this, &MolScene::selectionSlot);
     connect(QApplication::clipboard(), &QClipboard::dataChanged, this, &MolScene::clipboardChanged);
-
-    // TODO - add text item
-    // - subclass QGraphicsTextItem?
-    // - make movable
-    // - make serializable
-    // - make readable
-    // - create action
-    // (- extract parent item from graphicsItem)
-//    QGraphicsTextItem *textItem = new QGraphicsTextItem();
-//    textItem->setHtml("some <b>text</b> example");
-//    textItem->setTextInteractionFlags(Qt::TextEditorInteraction);
-//    addItem(textItem);
   }
 
   MolScene::~MolScene() {
