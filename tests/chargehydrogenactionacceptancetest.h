@@ -29,12 +29,8 @@ using namespace Molsketch;
 
 class ChargeHydrogenActionAcceptanceTest : public CxxTest::TestSuite {
 
-  template<class T, int (Atom::*getter)() const>
-  void performIncrementActionTest(int initialCount) {
-    const QPoint clickOffset(2,2);
-
-    Atom *atom = new Atom;
-    Molecule *molecule = new Molecule(QSet<Atom*>() << atom, QSet<Bond*>());
+  template<class T, class ITEM, typename VALUE, VALUE (ITEM::*getter)() const>
+  void performIncrementActionTest(Molecule *molecule, ITEM *item, VALUE initialCount) {
     MolScene *scene = new MolScene();
     scene->addItem(molecule);
 
@@ -48,12 +44,21 @@ class ChargeHydrogenActionAcceptanceTest : public CxxTest::TestSuite {
     TS_ASSERT_EQUALS(action->isChecked(), true);
     TS_ASSERT_EQUALS(action->incrementAction()->isChecked(), true);
 
-    TSM_ASSERT_EQUALS("Count before increment wrong", (atom->*getter)(), initialCount);
-    QTest::mouseClick(view->viewport(), Qt::LeftButton, Qt::NoModifier, view->mapFromScene(atom->pos()) + clickOffset);
-    TSM_ASSERT_EQUALS("Hydrogen count after increment wrong", (atom->*getter)(), initialCount + 1);
+    TSM_ASSERT_EQUALS("Count before increment wrong", (item->*getter)(), initialCount);
+    const QPoint clickOffset(2,2);
+    QTest::mouseClick(view->viewport(), Qt::LeftButton, Qt::NoModifier, view->mapFromScene(item->pos()) + clickOffset);
+    TSM_ASSERT_EQUALS("Hydrogen count after increment wrong", (item->*getter)(), initialCount + 1);
 
     delete view;
     delete scene;
+  }
+
+  template<class T, int (Atom::*getter)() const>
+  void performIncrementActionTest(int initialCount) {
+    Atom *atom = new Atom;
+    Molecule *molecule = new Molecule(QSet<Atom*>() << atom, QSet<Bond*>());
+
+    performIncrementActionTest<T, Atom, int, getter>(molecule, atom, initialCount);
   }
 
 public:
@@ -63,5 +68,12 @@ public:
 
   void testHydrogenCountIncreasedWithAction() {
     performIncrementActionTest<chargeAction, &Atom::charge>(0);
+  }
+
+  void testZLevelIncreasedWithAction() {
+    Atom *atomA = new Atom(QPointF(-10, 0), "C"), *atomB = new Atom(QPointF(10, 0), "C");
+    Bond *bond = new Bond(atomA, atomB);
+    Molecule *molecule = new Molecule({atomA, atomB}, {bond});
+    performIncrementActionTest<ZLevelStepAction, QGraphicsItem, qreal, &QGraphicsItem::zValue>(molecule, bond, 2);
   }
 };
