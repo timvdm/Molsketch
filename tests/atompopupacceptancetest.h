@@ -300,7 +300,7 @@ public:
     assertNotNull(dynamic_cast<LonePair*>(atom->childItems().first()));
     QSM_ASSERT_EQUALS(checkBoxName, scene->stack()->count(), 1);
     QSM_ASSERT_EQUALS(checkBoxName, scene->stack()->undoText(), "Change lone pairs");
-    QSM_ASSERT_EQUALS(checkBoxName, (atom->childItems().first()->boundingRect().center().*edgeCoordinate)(), (atom->boundingRect().*atomEdge)());
+    QSM_ASSERT_DELTA(checkBoxName, (atom->childItems().first()->boundingRect().center().*edgeCoordinate)(), (atom->boundingRect().*atomEdge)(), 10 * std::numeric_limits<double>::epsilon()); // TODO why not exact?
     QSM_ASSERT_EQUALS(checkBoxName, (atom->childItems().first()->boundingRect().center().*atomCenterCoordinate)(), (atom->boundingRect().center().*atomCenterCoordinate)());
     TSM_ASSERT_DELTA(checkBoxName, dynamic_cast<LonePair*>(atom->childItems().first())->angle(), angle, 1e-4); // TODO delta
   }

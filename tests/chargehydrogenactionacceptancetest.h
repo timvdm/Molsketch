@@ -30,7 +30,7 @@ using namespace Molsketch;
 class ChargeHydrogenActionAcceptanceTest : public CxxTest::TestSuite {
 
   template<class T, class ITEM, typename VALUE, VALUE (ITEM::*getter)() const>
-  void performIncrementActionTest(Molecule *molecule, ITEM *item, VALUE initialCount) {
+  void performIncrementActionTest(Molecule *molecule, ITEM *item, QPointF position, VALUE initialCount) {
     MolScene *scene = new MolScene();
     scene->addItem(molecule);
 
@@ -45,9 +45,8 @@ class ChargeHydrogenActionAcceptanceTest : public CxxTest::TestSuite {
     TS_ASSERT_EQUALS(action->incrementAction()->isChecked(), true);
 
     TSM_ASSERT_EQUALS("Count before increment wrong", (item->*getter)(), initialCount);
-    const QPoint clickOffset(2,2);
-    QTest::mouseClick(view->viewport(), Qt::LeftButton, Qt::NoModifier, view->mapFromScene(item->pos()) + clickOffset);
-    TSM_ASSERT_EQUALS("Hydrogen count after increment wrong", (item->*getter)(), initialCount + 1);
+    QTest::mouseClick(view->viewport(), Qt::LeftButton, Qt::NoModifier, view->mapFromScene(position));
+    TSM_ASSERT_EQUALS("Count after increment wrong", (item->*getter)(), initialCount + 1);
 
     delete view;
     delete scene;
@@ -58,7 +57,7 @@ class ChargeHydrogenActionAcceptanceTest : public CxxTest::TestSuite {
     Atom *atom = new Atom;
     Molecule *molecule = new Molecule(QSet<Atom*>() << atom, QSet<Bond*>());
 
-    performIncrementActionTest<T, Atom, int, getter>(molecule, atom, initialCount);
+    performIncrementActionTest<T, Atom, int, getter>(molecule, atom, atom->pos(), initialCount);
   }
 
 public:
@@ -74,6 +73,6 @@ public:
     Atom *atomA = new Atom(QPointF(-10, 0), "C"), *atomB = new Atom(QPointF(10, 0), "C");
     Bond *bond = new Bond(atomA, atomB);
     Molecule *molecule = new Molecule({atomA, atomB}, {bond});
-    performIncrementActionTest<ZLevelStepAction, QGraphicsItem, qreal, &QGraphicsItem::zValue>(molecule, bond, 2);
+    performIncrementActionTest<ZLevelStepAction, QGraphicsItem, qreal, &QGraphicsItem::zValue>(molecule, bond, molecule->pos(), 2);
   }
 };
