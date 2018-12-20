@@ -78,7 +78,7 @@ public:
     QXmlStreamReader reader(svgWithAtomAndRadicalElectron());
     assertTrue(findNextElement(reader, "circle"), "Could not find circle in SVG!");
     TS_ASSERT_EQUALS(reader.attributes().value("cx").toDouble() * 2, 0);
-    TS_ASSERT_EQUALS(reader.attributes().value("cy").toDouble() * 3, -19.5);
+    TS_ASSERT_EQUALS(reader.attributes().value("cy").toDouble() * 3, -21);
   }
 
   void testBoundingRectWithoutParent() {
