@@ -704,6 +704,10 @@ namespace Molsketch {
     m_newmanDiameter = 0;
   }
 
+  SumFormula Atom::sumFormula() const {
+    return SumFormula::fromString(m_elementSymbol) + SumFormula{"H", numImplicitHydrogens(), charge()};
+  }
+
   void Atom::setNumImplicitHydrogens(const int& number)
   {
     m_implicitHydrogens = true;

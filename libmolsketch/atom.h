@@ -25,6 +25,7 @@
 #include <QList>
 
 #include "graphicsitem.h"
+#include "sumformula.h"
 
 namespace Molsketch {
 
@@ -72,6 +73,7 @@ namespace Molsketch {
     void setNewmanDiameter(const qreal& diameter);
     qreal getNewmanDiameter() const;
     void disableNewman();
+    SumFormula sumFormula() const;
     /** Returns the charge of the atom.
       * FC = # valency electrons - 0.5 * # shared electrons - # unpaired electrons + user specified contribution
       */

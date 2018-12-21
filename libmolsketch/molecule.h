@@ -150,6 +150,7 @@ namespace Molsketch {
 
     QList<Atom*> atoms() const;
     QList<Bond*> bonds() const;
+    SumFormula sumFormula() const;
 
     QWidget *getPropertiesWidget();
 

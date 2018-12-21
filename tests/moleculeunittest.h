@@ -287,4 +287,14 @@ public:
     TS_ASSERT_EQUALS(molecule->m_electronSystems.size(), 1);
     performAssertionsOnPiElectronSystem(molecule->m_electronSystems.last(), {atomA, atomB, atomC, atomD, atomE}, 1);
   }
+
+  void testSumFormula() {
+    setUpAtoms();
+    QS_ASSERT_EQUALS(molecule->sumFormula(), SumFormula());
+
+    auto atomA = new Atom(QPointF(), "CH2"), atomB = new Atom(QPointF(), "CH3");
+    Molecule c2h5({atomA, atomB}, {});
+    SumFormula c2h5sum({{"C", 2}, {"H", 5}});
+    QS_ASSERT_EQUALS(c2h5.sumFormula(), c2h5sum);
+  }
 };

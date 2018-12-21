@@ -320,6 +320,12 @@ namespace Molsketch {
     return childrenByType<Bond*>();
   }
 
+  SumFormula Molecule::sumFormula() const {
+    SumFormula result;
+    for (auto atom : atoms()) result += atom->sumFormula();
+    return result;
+  }
+
   QWidget *Molecule::getPropertiesWidget()
   {
     MoleculePopup* widget = new MoleculePopup;
