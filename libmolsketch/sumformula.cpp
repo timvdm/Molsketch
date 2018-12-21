@@ -20,6 +20,7 @@
 
 #include <QMap>
 #include <QDebug>
+#include <QRegularExpression>
 
 namespace Molsketch {
 
@@ -57,6 +58,10 @@ namespace Molsketch {
     : SumFormula()
   {
     Q_D(SumFormula);
+    if (count <= 0) {
+      qWarning() << "Tried to initialize sum formula with invalid element count. Element:" << atomSymbol << "count:" << count;
+      return;
+    }
     d->elementCounts[atomSymbol] = count;
   }
 
@@ -87,9 +92,45 @@ namespace Molsketch {
     return *this;
   }
 
+  SumFormula SumFormula::operator+(const SumFormula &other) const {
+    return SumFormula(*this) += other;
+  }
+
+  bool SumFormula::operator ==(const SumFormula &other) const  {
+    return this->d_ptr->elementCounts == other.d_ptr->elementCounts;
+  }
+
+  bool SumFormula::operator !=(const SumFormula &other) const {
+    return this->d_ptr->elementCounts != other.d_ptr->elementCounts;
+  }
+
   QString SumFormula::toHtml() const {
     Q_D(const SumFormula);
     return d->format("<sub>", "</sub>");
+  }
+
+  QString SumFormula::toString() {
+    return (QString) *this;
+  }
+
+const QRegularExpression &ATOM_SYMBOL_REGEX = QRegularExpression("(([A-Z][a-z]*)([0-9]*))");
+const QRegularExpression &FORMULA_REGEX = QRegularExpression("^" + ATOM_SYMBOL_REGEX.pattern() + "+$");
+
+  SumFormula SumFormula::fromString(const QString &formula, bool *success) {
+    bool matches = FORMULA_REGEX.match(formula).hasMatch();
+    if (success) *success = matches;
+    if (!matches) return SumFormula();
+
+    auto result = SumFormula();
+    auto atomSymbolIterator = ATOM_SYMBOL_REGEX.globalMatch(formula);
+    while (atomSymbolIterator.hasNext()) {
+      auto atomSymbolMatch = atomSymbolIterator.next();
+      auto atomSymbol = atomSymbolMatch.captured(2);
+      auto number = atomSymbolMatch.captured(3);
+      int count = number.isEmpty() ? 1 : number.toInt();
+      result += SumFormula(atomSymbol, count);
+    }
+    return result;
   }
 
   Molsketch::SumFormula::operator QString() const {

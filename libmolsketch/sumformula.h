@@ -37,7 +37,12 @@ namespace Molsketch {
     virtual ~SumFormula();
     operator QString() const;
     SumFormula& operator+=(const SumFormula &other);
+    SumFormula operator+(const SumFormula &other) const;
+    bool operator ==(const SumFormula &other) const;
+    bool operator !=(const SumFormula &other) const;
     QString toHtml() const;
+    QString toString();
+    static SumFormula fromString(const QString& formula, bool *success = nullptr);
   };
 
 } // namespace Molsketch
