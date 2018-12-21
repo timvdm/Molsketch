@@ -43,18 +43,27 @@ bool qMapLessThanKey<Molsketch::ElementSymbol>(const Molsketch::ElementSymbol &a
 namespace Molsketch {
   struct SumFormulaPrivate {
     QMap<ElementSymbol, int> elementCounts;
-    QString format(const QString &subscriptOpen = "", const QString &subscriptClose = "") const {
+    int charge;
+    SumFormulaPrivate() : charge(0) {}
+    QString format(const QString &subscriptOpen = "", const QString &subscriptClose = "",
+                   const QString &superscriptOpen = "", const QString &superscriptClose = "") const {
       QString result;
       for (auto element : elementCounts.keys()) {
         int count = elementCounts[element];
         if (count != 1) result += element + subscriptOpen + QString::number(count) + subscriptClose;
         else result += element;
       }
+      if (charge) {
+        result += superscriptOpen;
+        if (charge > 0) result += "+";
+        result += QString::number(charge);
+        result += superscriptClose;
+      }
       return result;
     }
   };
 
-  SumFormula::SumFormula(const QString& atomSymbol, int count)
+  SumFormula::SumFormula(const QString& atomSymbol, int count, int charge)
     : SumFormula()
   {
     Q_D(SumFormula);
@@ -63,6 +72,7 @@ namespace Molsketch {
       return;
     }
     d->elementCounts[atomSymbol] = count;
+    d->charge = charge;
   }
 
   SumFormula::SumFormula(const std::initializer_list<SumFormula> &items)
@@ -77,6 +87,7 @@ namespace Molsketch {
   {
     Q_D(SumFormula);
     d->elementCounts = other.d_ptr->elementCounts;
+    d->charge = other.d_ptr->charge;
   }
 
   SumFormula::SumFormula()
@@ -85,10 +96,17 @@ namespace Molsketch {
 
   SumFormula::~SumFormula() {}
 
+  int SumFormula::charge() const {
+    Q_D(const SumFormula);
+    return d->charge;
+
+  }
+
   SumFormula &SumFormula::operator+=(const SumFormula &other) {
     Q_D(SumFormula);
     for (auto element: other.d_ptr->elementCounts.keys())
       d->elementCounts[element] += other.d_ptr->elementCounts[element];
+    d->charge += other.d_ptr->charge;
     return *this;
   }
 
@@ -97,23 +115,25 @@ namespace Molsketch {
   }
 
   bool SumFormula::operator ==(const SumFormula &other) const  {
-    return this->d_ptr->elementCounts == other.d_ptr->elementCounts;
+    Q_D(const SumFormula);
+    return d->elementCounts == other.d_ptr->elementCounts
+        && d->charge == other.d_ptr->charge;
   }
 
   bool SumFormula::operator !=(const SumFormula &other) const {
-    return this->d_ptr->elementCounts != other.d_ptr->elementCounts;
+    return !(*this == other);
   }
 
   QString SumFormula::toHtml() const {
     Q_D(const SumFormula);
-    return d->format("<sub>", "</sub>");
+    return d->format("<sub>", "</sub>", "<super>", "</super>");
   }
 
   QString SumFormula::toString() {
     return (QString) *this;
   }
 
-const QRegularExpression &ATOM_SYMBOL_REGEX = QRegularExpression("(([A-Z][a-z]*)([0-9]*))");
+const QRegularExpression &ATOM_SYMBOL_REGEX = QRegularExpression("(([A-Z][a-z]*)([0-9]*)([+-][0-9]+)?)");
 const QRegularExpression &FORMULA_REGEX = QRegularExpression("^" + ATOM_SYMBOL_REGEX.pattern() + "+$");
 
   SumFormula SumFormula::fromString(const QString &formula, bool *success) {
@@ -128,7 +148,8 @@ const QRegularExpression &FORMULA_REGEX = QRegularExpression("^" + ATOM_SYMBOL_R
       auto atomSymbol = atomSymbolMatch.captured(2);
       auto number = atomSymbolMatch.captured(3);
       int count = number.isEmpty() ? 1 : number.toInt();
-      result += SumFormula(atomSymbol, count);
+      int charge = atomSymbolMatch.captured(4).toInt();
+      result += SumFormula{atomSymbol, count, charge};
     }
     return result;
   }

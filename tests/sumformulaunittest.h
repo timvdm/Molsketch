@@ -36,6 +36,24 @@ public:
 
     auto aa = SumFormula{{"A"}, {"H"}, {"A"}};
     QS_ASSERT_EQUALS(aa.toString(), QString("HA2"));
+
+    auto a3minus = SumFormula{"A", 1, -3};
+    QS_ASSERT_EQUALS(a3minus.charge(), -3);
+    QS_ASSERT_EQUALS(a3minus.toString(), QString("A-3"));
+
+    auto withEmptyElement = SumFormula{{"A"}, {"B", 0}};
+    QS_ASSERT_EQUALS(withEmptyElement, SumFormula{"A"});
+
+    auto withNegativeElement = SumFormula{{"A"}, {"B", -1}};
+    QS_ASSERT_EQUALS(withNegativeElement, SumFormula{"A"});
+
+    auto a3plus = SumFormula{"A", 1, +3};
+    QS_ASSERT_EQUALS(a3plus.charge(), 3);
+    QS_ASSERT_EQUALS(a3plus.toString(), QString("A+3"));
+
+    auto ab2_3minus = SumFormula{{"A", 1, -1}, {"B", 2, -2}};
+    QS_ASSERT_EQUALS(ab2_3minus.charge(), -3);
+    QS_ASSERT_EQUALS(ab2_3minus.toString(), QString("AB2-3"));
   }
 
   void testFormatting() {
@@ -50,11 +68,8 @@ public:
     auto aa = SumFormula{{"A"}, {"H"}, {"A"}};
     QS_ASSERT_EQUALS(aa.toHtml(), QString("HA<sub>2</sub>"));
 
-    auto withEmptyElement = SumFormula{{"A"}, {"B", 0}};
-    QS_ASSERT_EQUALS(withEmptyElement, SumFormula{"A"});
-
-    auto withNegativeElement = SumFormula{{"A"}, {"B", -1}};
-    QS_ASSERT_EQUALS(withEmptyElement, SumFormula{"A"});
+    auto withCharge = SumFormula{"A", 2, -3};
+    QS_ASSERT_EQUALS(withCharge.toHtml(), QString("A<sub>2</sub><super>-3</super>"));
   }
 
   void testAdding() {
@@ -72,6 +87,10 @@ public:
     auto a1b2c3 = SumFormula{{"A", 1}, {"B", 2}, {"C", 3}};
     auto d3c5a = SumFormula{{"D", 3}, {"C", 5}, {"A"}};
     QS_ASSERT_EQUALS((a1b2c3 + d3c5a).toString(), QString("C8A2B2D3"));
+
+    auto a3minus = SumFormula{"A", 1, -3};
+    auto b2minus = SumFormula{"B", 1, -2};
+    QS_ASSERT_EQUALS((a3minus + b2minus).toString(), QString("AB-5"));
   }
 
   void testEquality() {
@@ -81,14 +100,23 @@ public:
     auto aa = SumFormula{{"A"}, {"A"}};
     auto a2 = SumFormula{{"A", 2}};
     TS_ASSERT(aa == a2);
+    TS_ASSERT(!(aa != a2));
 
     auto abc = SumFormula{{"A"}, {"B"}, {"C"}};
     auto cba = SumFormula{{"C"}, {"B"}, {"A"}};
     TS_ASSERT(abc == cba);
+    TS_ASSERT(!(abc != cba));
 
     auto ab = SumFormula{{"A"}, {"B"}};
     auto abElement = SumFormula{{"AB"}};
     TS_ASSERT(ab != abElement);
+    TS_ASSERT(!(ab == abElement));
+
+    auto a3minus = SumFormula{"A", 1, -3};
+    TS_ASSERT(a3minus != SumFormula{"A"});
+    TS_ASSERT(!(a3minus == SumFormula{"A"}));
+    TS_ASSERT(a3minus == a3minus);
+    TS_ASSERT(!(a3minus != a3minus));
   }
 
   void testParsingString() {
@@ -124,6 +152,18 @@ public:
 
     auto a1b2c3 = SumFormula{{"A", 1}, {"B", 2}, {"C", 3}};
     QS_ASSERT_EQUALS(SumFormula::fromString("AB2C3"), a1b2c3);
+
+    auto a3minus = SumFormula{"A", 1, -3};
+    QS_ASSERT_EQUALS(SumFormula::fromString("A-3"), a3minus);
+
+    auto ab2_13minus = SumFormula{{"A", 1, -13}, {"B", 12}};
+    QS_ASSERT_EQUALS(SumFormula::fromString("AB12-13"), ab2_13minus);
+
+    auto a2b5_10minus = SumFormula{{"A", 2, -10}, {"B", 5}};
+    QS_ASSERT_EQUALS(SumFormula::fromString("A2-3B5-7"), a2b5_10minus);
+
+    auto a2b5_15minus = SumFormula{{"A", 2, -15}, {"B", 5}};
+    QS_ASSERT_EQUALS(SumFormula::fromString("A2-13B5-2"), a2b5_15minus);
   }
 
   void testValidityCheck() {
@@ -166,5 +206,13 @@ public:
     result = SumFormula::fromString("C H 3", &valid);
     TS_ASSERT(!valid);
     QS_ASSERT_EQUALS(result, SumFormula());
+
+    auto ab2_13minus = SumFormula{{"A", 1, -13}, {"B", 12}};
+    QS_ASSERT_EQUALS(SumFormula::fromString("AB12-13", &valid), ab2_13minus);
+    TS_ASSERT(valid);
+
+    auto a2b5_10minus = SumFormula{{"A", 2, -10}, {"B", 5}};
+    QS_ASSERT_EQUALS(SumFormula::fromString("A2-3B5-7", &valid), a2b5_10minus);
+    TS_ASSERT(valid);
   }
 };
