@@ -279,6 +279,10 @@ namespace Molsketch {
     m_electronSystemsUpdate = true;
   }
 
+  void Molecule::updateTooltip() {
+    setToolTip(sumFormula().toHtml());
+  }
+
   QSet<Atom*> getConnectedAtoms(Atom* startAtom)
   {
     QSet<Atom*> connectedAtoms = {startAtom};
@@ -713,6 +717,7 @@ void Molecule::updateElectronSystems()
     int i = 0;
     for (auto atom : atoms())
       atom->setIndex(QString("a") + QString::number(++i));
+    updateTooltip();
   }
 
   void Molecule::setDefaults()

@@ -68,8 +68,17 @@ public:
     auto aa = SumFormula{{"A"}, {"H"}, {"A"}};
     QS_ASSERT_EQUALS(aa.toHtml(), QString("HA<sub>2</sub>"));
 
-    auto withCharge = SumFormula{"A", 2, -3};
-    QS_ASSERT_EQUALS(withCharge.toHtml(), QString("A<sub>2</sub><super>-3</super>"));
+    auto withSingleNegativeCharge = SumFormula{"A", 2, -1};
+    QS_ASSERT_EQUALS(withSingleNegativeCharge.toHtml(), QString("A<sub>2</sub><super>-</super>"));
+
+    auto withSinglePositiveCharge = SumFormula{"A", 2, 1};
+    QS_ASSERT_EQUALS(withSinglePositiveCharge.toHtml(), QString("A<sub>2</sub><super>+</super>"));
+
+    auto withNegativeCharge = SumFormula{"A", 2, -3};
+    QS_ASSERT_EQUALS(withNegativeCharge.toHtml(), QString("A<sub>2</sub><super>3-</super>"));
+
+    auto withPositiveCharge = SumFormula{"A", 2, 3};
+    QS_ASSERT_EQUALS(withPositiveCharge.toHtml(), QString("A<sub>2</sub><super>3+</super>"));
   }
 
   void testAdding() {

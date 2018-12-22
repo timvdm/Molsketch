@@ -297,4 +297,48 @@ public:
     SumFormula c2h5sum({{"C", 2}, {"H", 5}});
     QS_ASSERT_EQUALS(c2h5.sumFormula(), c2h5sum);
   }
+
+  void testInitialTooltipSetting() {
+    auto atomA = new Atom(QPointF(), "CH2"), atomB = new Atom(QPointF(), "CH3");
+    Molecule c2h5({atomA, atomB}, {});
+    QS_ASSERT_EQUALS(c2h5.toolTip(), "C<sub>2</sub>H<sub>5</sub>");
+  }
+
+  void testToolTipSettingAfterAddingAtom() {
+    auto atomA = new Atom(QPointF(), "CH2"), atomB = new Atom(QPointF(), "CH3");
+    Molecule c2h5(QSet<Atom*>{atomA}, {});
+    QS_ASSERT_EQUALS(c2h5.toolTip(), "CH<sub>2</sub>");
+    c2h5.addAtom(atomB);
+    QS_ASSERT_EQUALS(c2h5.toolTip(), "C<sub>2</sub>H<sub>5</sub>");
+  }
+
+  void testToolTipSettingAfterDeletingAtom() {
+    auto atomA = new Atom(QPointF(), "CH2"), atomB = new Atom(QPointF(), "CH3");
+    Molecule c2h5({atomA, atomB}, {});
+    QS_ASSERT_EQUALS(c2h5.toolTip(), "C<sub>2</sub>H<sub>5</sub>");
+    c2h5.delAtom(atomB);
+    delete atomB;
+    QS_ASSERT_EQUALS(c2h5.toolTip(), "CH<sub>2</sub>");
+  }
+
+  void testToolTipSettingAfterChangingAtomSymbol() {
+    auto atomA = new Atom(QPointF(), "CH2");
+    Molecule c2h5(QSet<Atom*>{atomA}, {});
+    atomA->setElement("NH3");
+    QS_ASSERT_EQUALS(c2h5.toolTip(), "H<sub>3</sub>N"); // TODO change ordering in hydrogen compounds
+  }
+
+  void testToolTipSettingAfterChangingHydrogenCountOfAtom() {
+    auto atomA = new Atom(QPointF(), "C");
+    Molecule c2h5(QSet<Atom*>{atomA}, {});
+    atomA->setNumImplicitHydrogens(3);
+    QS_ASSERT_EQUALS(c2h5.toolTip(), "CH<sub>3</sub><super>+</super>");
+  }
+
+  void testToolTipSettingAfterChangingChargeOfAtom() {
+    auto atomA = new Atom(QPointF(), "C");
+    Molecule c2h5(QSet<Atom*>{atomA}, {});
+    atomA->setCharge(-3);
+    QS_ASSERT_EQUALS(c2h5.toolTip(), "CH<sub>4</sub><super>3-</super>");
+  }
 };

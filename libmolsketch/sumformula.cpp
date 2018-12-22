@@ -46,7 +46,8 @@ namespace Molsketch {
     int charge;
     SumFormulaPrivate() : charge(0) {}
     QString format(const QString &subscriptOpen = "", const QString &subscriptClose = "",
-                   const QString &superscriptOpen = "", const QString &superscriptClose = "") const {
+                   const QString &superscriptOpen = "", const QString &superscriptClose = "",
+                   bool trailingChargeSign = false) const {
       QString result;
       for (auto element : elementCounts.keys()) {
         int count = elementCounts[element];
@@ -55,8 +56,9 @@ namespace Molsketch {
       }
       if (charge) {
         result += superscriptOpen;
-        if (charge > 0) result += "+";
-        result += QString::number(charge);
+        if (!trailingChargeSign) result += charge > 0 ? "+" : "-";
+        if (!trailingChargeSign || qAbs(charge) != 1) result += QString::number(qAbs(charge));
+        if (trailingChargeSign) result += charge > 0 ? "+" : "-";
         result += superscriptClose;
       }
       return result;
@@ -126,7 +128,7 @@ namespace Molsketch {
 
   QString SumFormula::toHtml() const {
     Q_D(const SumFormula);
-    return d->format("<sub>", "</sub>", "<super>", "</super>");
+    return d->format("<sub>", "</sub>", "<super>", "</super>", true);
   }
 
   QString SumFormula::toString() {
