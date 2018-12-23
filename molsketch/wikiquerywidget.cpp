@@ -52,8 +52,7 @@ WikiQueryWidget::WikiQueryWidget(OBabelIfaceLoader *loader, QWidget *parent) :
   ui->setupUi(this);
   ui->moleculeListView->setModel(new LibraryModel(this));
   connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(processMoleculeQuery(QNetworkReply*)));
-  connect(loader, SIGNAL(inchiAvailable(bool)), this, SLOT(setEnabled(bool)));
-  setEnabled(false);
+  connect(loader, SIGNAL(inchiAvailable(bool)), ui->dockWidgetContents, SLOT(setEnabled(bool)));
   ui->progressWidget->hide();
   ui->queryInput->setValidator(new QRegularExpressionValidator(QRegularExpression("[^\"]*"),
                                                                ui->queryInput));

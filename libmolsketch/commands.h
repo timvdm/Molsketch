@@ -190,6 +190,7 @@ namespace Molsketch {
     typedef setItemPropertiesCommand<Atom, QString, &Atom::setElement, &Atom::element> ChangeElement;
     typedef setItemPropertiesCommand<Molecule, QString, &Molecule::setName, &Molecule::getName, MoleculeNameId> ChangeMoleculeName;
     typedef setItemPropertiesCommand<graphicsItem, qreal, &graphicsItem::setRelativeWidth, &graphicsItem::relativeWidth> changeRelativeWidth;
+    typedef SetItemProperty<QGraphicsItem, qreal, &QGraphicsItem::setZValue, & QGraphicsItem::zValue> SetZValue;
     typedef setItemPropertiesCommand<graphicsItem, QColor, &graphicsItem::setColor, &graphicsItem::getColor> changeColor;
     typedef setItemPropertiesCommand<Atom, qreal, &Atom::setNewmanDiameter, &Atom::getNewmanDiameter> SetNewmanDiameter;
     typedef setItemPropertiesCommand<graphicsItem, QPolygonF, &graphicsItem::setCoordinates, &graphicsItem::coordinates, CoordinateId> SetCoordinateCommand;

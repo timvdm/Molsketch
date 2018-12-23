@@ -189,18 +189,6 @@ namespace Molsketch {
     setSceneRect(QRectF(-5000,-5000,10000,10000));
     connect(this, &MolScene::selectionChanged, this, &MolScene::selectionSlot);
     connect(QApplication::clipboard(), &QClipboard::dataChanged, this, &MolScene::clipboardChanged);
-
-    // TODO - add text item
-    // - subclass QGraphicsTextItem?
-    // - make movable
-    // - make serializable
-    // - make readable
-    // - create action
-    // (- extract parent item from graphicsItem)
-//    QGraphicsTextItem *textItem = new QGraphicsTextItem();
-//    textItem->setHtml("some <b>text</b> example");
-//    textItem->setTextInteractionFlags(Qt::TextEditorInteraction);
-//    addItem(textItem);
   }
 
   MolScene::~MolScene() {
@@ -691,16 +679,4 @@ namespace Molsketch {
 
         return actions;
   }
-
-  template <class T>
-  T *MolScene::itemNear(const QPointF &pos, qreal tolerance) { // TODO unit test
-    qreal minDistance = tolerance;
-    T *result = nullptr;
-    for(QGraphicsItem* item : items(QRectF(pos.x()-tolerance, pos.y()-tolerance, tolerance, tolerance))) {
-      if (!(QLineF(item->scenePos(), pos).length() < minDistance)) continue;
-      if (T *itemPointer = dynamic_cast<T*>(item)) result = itemPointer;
-    }
-    return result;
-  }
-
 } // namespace

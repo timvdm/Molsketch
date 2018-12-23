@@ -44,6 +44,7 @@
 #endif
 #include "scenesettings.h"
 #include "settingsitem.h"
+#include <QDebug>
 
 #define REQ_MOLECULE auto m_molecule = molecule(); if (!m_molecule) return
 
@@ -239,7 +240,7 @@ namespace Molsketch {
 
   QRectF Atom::boundingRect() const
   {
-    if (!isDrawn()) {
+    if (!isDrawn() || m_elementSymbol.isEmpty()) {
       auto centeringDistance = QPointF(pointSelectionDistance(), pointSelectionDistance());
       return QRectF(-centeringDistance, centeringDistance);
     }
@@ -599,7 +600,7 @@ namespace Molsketch {
 
     drawAtomLabel(painter, getLabelWithHydrogens(), labelAlignment());
     drawSelectionHighlight(painter);
-    if (molScene->settings()->chargeVisible()->get())
+    if (molScene->settings()->chargeVisible()->get() && !m_elementSymbol.isEmpty())
       drawCharge(painter); // TODO unite with subscript drawing and align appropriately
     if (molScene->settings()->lonePairsVisible()->get()) drawElectrons(painter);
     painter->restore();
@@ -920,7 +921,103 @@ namespace Molsketch {
       return connection.p2();
     }
 
-    return getBondDrawingStartFromBoundingBox(connection, bondLineWidth/1.5);
+    return getBondDrawingStartFromBoundingBox(connection, bondLineWidth/1.5); // TODO: why 1.5?
+  }
+
+  class Atom::IntersectionData {
+    const QPointF intersection;
+    const QLineF edge;
+  public:
+    IntersectionData(const QPointF &intersection, const QLineF &edge)
+      : intersection(intersection), edge(edge) {}
+    QPointF getIntersectionPoint() const {
+      return intersection;
+    }
+    QLineF getEdge() const {
+      return edge;
+    }
+  };
+
+  Atom::IntersectionData Atom::intersectedEdge(const QLineF& line, qreal lineWidth) const { // Cave: atom has to be bond start
+    QRectF bounds = boundingRect().adjusted(-.5*lineWidth, -.5*lineWidth, .5*lineWidth, .5*lineWidth);
+    QPointF intersection;
+
+    QLineF topEdge{bounds.topLeft(), bounds.topRight()};
+    if (topEdge.intersect(line, &intersection) == QLineF::BoundedIntersection)
+      return IntersectionData(intersection, topEdge);
+
+    QLineF bottomEdge{bounds.bottomLeft(), bounds.bottomRight()};
+    if (bottomEdge.intersect(line, &intersection) == QLineF::BoundedIntersection)
+      return IntersectionData(intersection, bottomEdge);
+
+    QLineF leftEdge{bounds.topLeft(), bounds.bottomLeft()};
+    if (leftEdge.intersect(line, &intersection) == QLineF::BoundedIntersection)
+      return IntersectionData(intersection, leftEdge);
+
+    QLineF rightEdge{bounds.topRight(), bounds.bottomRight()};
+    if (rightEdge.intersect(line, &intersection) == QLineF::BoundedIntersection)
+      return IntersectionData(intersection, rightEdge);
+    // TODO pick the edge it intersects with first (i.e. closest to the middle)
+    return IntersectionData(QPointF(), QLineF());
+  }
+
+  QPointF closestPointTo(const QPointF& position, const QList<QPointF>& points) {
+    qreal shortestDistance = INFINITY;
+    QPointF closestPoint;
+    for (auto point : points) {
+      qreal distance = QLineF(position, point).length();
+      if (distance < shortestDistance) {
+        shortestDistance = distance;
+        closestPoint = point;
+      }
+    }
+    return closestPoint;
+  }
+
+
+  qreal getBondExtentForNewmanAtom(const QLineF &middleLine, qreal lineWidth, qreal newmanDiameter) {
+    qreal f = pow(middleLine.dx(), 2) + pow(middleLine.dy(), 2);
+    qreal p = 2*(middleLine.p1().x() * middleLine.dx() + middleLine.p1().y() * middleLine.dy()) / f / 2.;
+    qreal q = (pow(middleLine.p1().x(), 2) + pow(middleLine.p1().y(), 2) - pow((newmanDiameter + lineWidth)/2., 2))/f;
+    return qMax(-p + sqrt(p*p - q), -p - sqrt(p*p - q));
+  }
+
+  qreal Atom::getExtentForEndOnCorner(const QPolygonF &fullBondPolygon, const QLineF& middleLine, const QPointF& corner) const {
+    if (!fullBondPolygon.containsPoint(corner, Qt::OddEvenFill)) return 0;
+    QLineF unitVector{middleLine.unitVector()};
+    QLineF toCorner{middleLine.p1(), corner};
+    qreal extent = toCorner.dx() * unitVector.dx() + toCorner.dy() * unitVector.dy();
+    return extent / middleLine.length();
+  }
+
+  qreal Atom::getExtentForIntersectionOfOuterLineAndEdge(const IntersectionData &edgeIntersection, const QLineF &outer) const {
+    QPointF intersectionOfOuterAndEdge;
+    QLineF::IntersectType intersectType = edgeIntersection.getEdge().intersect(outer, &intersectionOfOuterAndEdge);
+    return QLineF::BoundedIntersection == intersectType
+        ? QLineF(intersectionOfOuterAndEdge, outer.p1()).length() / outer.length()
+        : 0;
+  }
+
+  qreal Atom::getBondExtent(const QLineF& outer1, const QLineF& outer2, qreal lineWidth) const { // Cave: atom has to be bond start
+    if (!isDrawn()) return 1;
+
+    // Assumption: p1 is the point closest to the atom; returned value is measured starting from atom accordingly
+    QLineF middleLine{0.5 * (outer1.p1() + outer2.p1()), 0.5 * (outer1.p2() + outer2.p2())};
+
+    if (m_newmanDiameter > 0) return getBondExtentForNewmanAtom(middleLine, lineWidth, m_newmanDiameter);
+
+    IntersectionData edgeIntersection{intersectedEdge(middleLine, lineWidth)};
+
+    QPolygonF fullBondPolygon({outer1.p1(), outer1.p2(), outer2.p2(), outer2.p1(), outer1.p1()});
+    QList<qreal> possibleExtents{
+          getExtentForEndOnCorner(fullBondPolygon, middleLine, edgeIntersection.getEdge().p1()),
+          getExtentForEndOnCorner(fullBondPolygon, middleLine, edgeIntersection.getEdge().p2()),
+          getExtentForIntersectionOfOuterLineAndEdge(edgeIntersection, outer1),
+          getExtentForIntersectionOfOuterLineAndEdge(edgeIntersection, outer2)
+    };
+
+    qSort(possibleExtents);
+    return possibleExtents.last();
   }
 
   bool Atom::contains(const QPointF &point) const {

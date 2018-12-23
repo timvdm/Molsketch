@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2015 Hendrik Vennekate                                  *
+ *   Copyright (C) 2018 by Hendrik Vennekate                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -16,53 +16,21 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
-#ifndef INCDECACTION_H
-#define INCDECACTION_H
+#ifndef ZLEVELACTION_H
+#define ZLEVELACTION_H
 
-#include "multiaction.h"
+#include "abstractrecursiveitemaction.h"
 
 namespace Molsketch {
-  class Atom ;
-  class Bond;
 
-  template <class T>
-  class incDecAction : public multiAction
-  {
-  public:
-    explicit incDecAction(MolScene* scene);
-    ~incDecAction() ;
-    void mousePressEvent(QGraphicsSceneMouseEvent *event) ;
-    QAction* decrementAction() const;
-    QAction* incrementAction() const;
-  protected:
-    void initialize(QIcon UpIcon,
-                    QIcon DownIcon,
-                    QString UpText,
-                    QString DownText,
-                    int (T::*getFunction)()const,
-                    void (T::*setFunction)(const int&)) ;
-  private:
-    class privateData;
-    privateData *d ;
-    T* getItem(const QPointF& p) ;
-  };
+class ZLevelAction : public abstractRecursiveItemAction
+{
+public:
+  explicit ZLevelAction(MolScene *parent = 0);
+private:
+  void execute();
+};
 
-  class chargeAction : public incDecAction<Atom>
-  {
-  public:
-    explicit chargeAction(MolScene *scene) ;
-  } ;
+} // namespace Molsketch
 
-  class hydrogenAction : public incDecAction<Atom>
-  {
-  public:
-    explicit hydrogenAction(MolScene *scene) ;
-  } ;
-
-  class ZLevelStepAction : public incDecAction<Bond> {
-  public:
-    explicit ZLevelStepAction(MolScene *scene);
-  };
-} //namespace
-
-#endif // INCDECACTION_H
+#endif // ZLEVELACTION_H

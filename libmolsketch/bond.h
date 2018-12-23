@@ -131,11 +131,14 @@ namespace Molsketch {
     void prepareContextMenu(QMenu *contextMenu);
     XmlObjectInterface* produceChild(const QString &name, const QString &type);
     void afterReadFinalization();
+    virtual QPainterPath outline() const;
 
   private:
-    void drawHashBond(QPainter *painter);
-    void drawWedgeBond(QPainter *painter);
+    QPainterPath drawHashBond() const;
+    QPainterPath drawWedgeBond() const;
+    QPainterPath getWedgeBondShape() const;
     void determineDoubleBondOrientation();
+    QPainterPath bondPath() const;
     QPointF determineBondDrawingStart(Atom* start, Atom* end) const;
 
     // Internal representation
@@ -143,6 +146,11 @@ namespace Molsketch {
     Atom* m_beginAtom;
     Atom* m_endAtom;
     QList<XmlObjectInterface*> helpers;
+    QLineF mapOuterLineToAtom(const Atom *atom, const QLineF &line, bool reverse) const;
+    qreal getExtentForStereoBond(const Atom *atom, const QPair<QLineF, QLineF> &outerLines, bool reverse) const;
+    QPair<QLineF, QLineF> getOuterLimitsOfStereoBond() const;
+    qreal bondShapeGap() const;
+    QPainterPath paintBrokenBondIndicators(QPainter *painter, const QPointF &begin, const QPointF &end, const QPointF &vb, const QPointF &normalVector);
   };
 
 } // namespace

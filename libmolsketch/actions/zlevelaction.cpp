@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2015 Hendrik Vennekate                                  *
+ *   Copyright (C) 2018 by Hendrik Vennekate                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -16,53 +16,38 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
-#ifndef INCDECACTION_H
-#define INCDECACTION_H
+#include "zlevelaction.h"
 
-#include "multiaction.h"
+#include <QInputDialog>
+#include "commands.h"
 
 namespace Molsketch {
-  class Atom ;
-  class Bond;
 
-  template <class T>
-  class incDecAction : public multiAction
-  {
-  public:
-    explicit incDecAction(MolScene* scene);
-    ~incDecAction() ;
-    void mousePressEvent(QGraphicsSceneMouseEvent *event) ;
-    QAction* decrementAction() const;
-    QAction* incrementAction() const;
-  protected:
-    void initialize(QIcon UpIcon,
-                    QIcon DownIcon,
-                    QString UpText,
-                    QString DownText,
-                    int (T::*getFunction)()const,
-                    void (T::*setFunction)(const int&)) ;
-  private:
-    class privateData;
-    privateData *d ;
-    T* getItem(const QPointF& p) ;
-  };
+ZLevelAction::ZLevelAction(MolScene *parent)
+  : abstractRecursiveItemAction(parent)
+{
+  setText(tr("Set relative level..."));
+  setToolTip(tr("Set the level at which the item will be drawn\n(higher values above lower values)"));
+  setWhatsThis(tr("Set the level at which the item will be drawn\n(higher values above lower values)"));
+  setCheckable(false);
+  setMinimumItemCount(1);
+}
 
-  class chargeAction : public incDecAction<Atom>
-  {
-  public:
-    explicit chargeAction(MolScene *scene) ;
-  } ;
+void ZLevelAction::execute() {
+  bool ok = false;
+  qreal newZLevel = QInputDialog::getDouble(0,
+                                            tr("New level"),
+                                            tr("Level (higher is drawn on top of lower):"),
+                                            items().size() == 1
+                                            ? items().first()->zValue()
+                                            : 0,
+                                            -100,
+                                            100,
+                                            0,
+                                            &ok);
+  if (!ok) return;
 
-  class hydrogenAction : public incDecAction<Atom>
-  {
-  public:
-    explicit hydrogenAction(MolScene *scene) ;
-  } ;
+  ITERATEOVERITEMSMACRO("Change level", SetZValue, newZLevel)
+}
 
-  class ZLevelStepAction : public incDecAction<Bond> {
-  public:
-    explicit ZLevelStepAction(MolScene *scene);
-  };
-} //namespace
-
-#endif // INCDECACTION_H
+} // namespace Molsketch
