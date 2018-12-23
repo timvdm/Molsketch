@@ -287,4 +287,77 @@ public: // TODO serialization tests
     TS_ASSERT_EQUALS(molecule->m_electronSystems.size(), 1);
     performAssertionsOnPiElectronSystem(molecule->m_electronSystems.last(), {atomA, atomB, atomC, atomD, atomE}, 1);
   }
+
+  void testSumFormula() {
+    setUpAtoms();
+    QS_ASSERT_EQUALS(molecule->sumFormula(), SumFormula());
+
+    auto atomA = new Atom(QPointF(), "CH2"), atomB = new Atom(QPointF(), "CH3");
+    Molecule c2h5({atomA, atomB}, {});
+    SumFormula c2h5sum({{"C", 2}, {"H", 5}});
+    QS_ASSERT_EQUALS(c2h5.sumFormula(), c2h5sum);
+  }
+
+  void testInitialTooltipSetting() {
+    auto atomA = new Atom(QPointF(), "CH2"), atomB = new Atom(QPointF(), "CH3");
+    Molecule c2h5({atomA, atomB}, {});
+    QS_ASSERT_EQUALS(c2h5.toolTip(), "C<sub>2</sub>H<sub>5</sub>");
+  }
+
+  void testToolTipSettingAfterAddingAtom() {
+    auto atomA = new Atom(QPointF(), "CH2"), atomB = new Atom(QPointF(), "CH3");
+    Molecule c2h5(QSet<Atom*>{atomA}, {});
+    QS_ASSERT_EQUALS(c2h5.toolTip(), "CH<sub>2</sub>");
+    c2h5.addAtom(atomB);
+    QS_ASSERT_EQUALS(c2h5.toolTip(), "C<sub>2</sub>H<sub>5</sub>");
+  }
+
+  void testToolTipSettingAfterDeletingAtom() {
+    auto atomA = new Atom(QPointF(), "CH2"), atomB = new Atom(QPointF(), "CH3");
+    Molecule c2h5({atomA, atomB}, {});
+    QS_ASSERT_EQUALS(c2h5.toolTip(), "C<sub>2</sub>H<sub>5</sub>");
+    c2h5.delAtom(atomB);
+    delete atomB;
+    QS_ASSERT_EQUALS(c2h5.toolTip(), "CH<sub>2</sub>");
+  }
+
+  void testToolTipSettingAfterChangingAtomSymbol() {
+    auto atomA = new Atom(QPointF(), "CH2");
+    Molecule c2h5(QSet<Atom*>{atomA}, {});
+    atomA->setElement("NH3");
+    QS_ASSERT_EQUALS(c2h5.toolTip(), "H<sub>3</sub>N"); // TODO change ordering in hydrogen compounds
+  }
+
+  void testToolTipSettingAfterChangingHydrogenCountOfAtom() {
+    auto atomA = new Atom(QPointF(), "C");
+    Molecule c2h5(QSet<Atom*>{atomA}, {});
+    atomA->setNumImplicitHydrogens(3);
+    QS_ASSERT_EQUALS(c2h5.toolTip(), "CH<sub>3</sub><super>+</super>");
+  }
+
+  void testToolTipSettingAfterChangingChargeOfAtom() {
+    auto atomA = new Atom(QPointF(), "C");
+    Molecule c2h5(QSet<Atom*>{atomA}, {});
+    atomA->setCharge(-3);
+    QS_ASSERT_EQUALS(c2h5.toolTip(), "CH<sub>4</sub><super>3-</super>");
+  }
+
+  void testAddingBondsUpdatesToolTip() {
+    auto atomA = new Atom(QPointF(), "C"),
+        atomB =  new Atom(QPointF(), "C");
+    Molecule molecule({atomA, atomB}, {});
+    molecule.addBond(atomA, atomB);
+    QS_ASSERT_EQUALS(molecule.toolTip(), "C<sub>2</sub>H<sub>6</sub>");
+    QS_ASSERT_EQUALS(molecule.sumFormula().toHtml(), "C<sub>2</sub>H<sub>6</sub>");
+  }
+
+  void testDeletingBondsUpdatesToolTip() {
+    auto atomA = new Atom(QPointF(), "C"),
+        atomB =  new Atom(QPointF(), "C");
+    auto bond = new Bond(atomA, atomB);
+    Molecule molecule({atomA, atomB}, {bond});
+    molecule.delBond(bond);
+    QS_ASSERT_EQUALS(molecule.toolTip(), "C<sub>2</sub>H<sub>8</sub>");
+    QS_ASSERT_EQUALS(molecule.sumFormula().toHtml(), "C<sub>2</sub>H<sub>8</sub>");
+  }
 };

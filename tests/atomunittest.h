@@ -22,6 +22,7 @@
 #include <bond.h>
 #include <lonepair.h>
 #include <molecule.h>
+#include <sumformula.h>
 
 #include <atom.h>
 #include <radicalelectron.h>
@@ -203,5 +204,25 @@ public:
                      QLineF::BoundedIntersection);
 
     QS_ASSERT_EQUALS(atom->bondDrawingStart(&otherAtom, 0), intersectionOfRightEdgeAndConnectingLine);
+  }
+
+  void testSumFormula() {
+    atom->setElement("C3H5");
+    auto c3h5 = SumFormula{{"C", 3}, {"H", 5}};
+    QS_ASSERT_EQUALS(atom->sumFormula(), c3h5);
+
+    atom->setElement("C");
+    atom->setNumImplicitHydrogens(0);
+    atom->setCharge(0);
+    QS_ASSERT_EQUALS(atom->sumFormula(), SumFormula{"C"});
+
+    atom->setNumImplicitHydrogens(2);
+    atom->setCharge(0);
+    SumFormula ch2{{"C"}, {"H", 2}};
+    QS_ASSERT_EQUALS(atom->sumFormula(), ch2);
+
+    atom->setCharge(-3);
+    SumFormula ch2_3minus{{"C"}, {"H", 2, -3}};
+    QS_ASSERT_EQUALS(atom->sumFormula(), ch2_3minus);
   }
 };

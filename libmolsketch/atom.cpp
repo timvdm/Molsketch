@@ -688,7 +688,10 @@ namespace Molsketch {
   {
     m_elementSymbol = element;
     updateShape();
-    if (Molecule *m = molecule()) m->invalidateElectronSystems();
+    if (Molecule *m = molecule()) {
+      m->invalidateElectronSystems();
+      m->updateTooltip();
+    }
   }
 
   void Atom::setNewmanDiameter(const qreal &diameter) {
@@ -704,6 +707,13 @@ namespace Molsketch {
     m_newmanDiameter = 0;
   }
 
+  SumFormula Atom::sumFormula() const {
+    int hydrogenCount = numImplicitHydrogens();
+    SumFormula result = SumFormula::fromString(m_elementSymbol);
+    if (hydrogenCount) result += SumFormula{"H", hydrogenCount, charge()};
+    return  result;
+  }
+
   void Atom::setNumImplicitHydrogens(const int& number)
   {
     m_implicitHydrogens = true;
@@ -712,6 +722,7 @@ namespace Molsketch {
     int deltaH = number - numImplicitHydrogens();
 
     m_userImplicitHydrogens = deltaH;
+    if (auto m = molecule()) m->updateTooltip();
   }
 
   int Atom::numBonds() const {
@@ -808,6 +819,7 @@ namespace Molsketch {
   {
     int computedCharge = charge() - m_userCharge;
     m_userCharge = requiredCharge - computedCharge;
+    if (auto m = molecule()) m->updateTooltip();
   }
 
   QString Atom::chargeString() const

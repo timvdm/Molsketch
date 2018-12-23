@@ -50,6 +50,7 @@
 #include "librarytoolbox.h"
 #include "settingsitem.h"
 #include "actioncontainer.h"
+#include "sumformulaindicator.h"
 
 #ifdef THIRD_PARTY_LICENSES
 #include "licensedialog.h"
@@ -478,7 +479,6 @@ void MainWindow::createFileMenuAndToolBar() {
 
 void MainWindow::createStatusBar()
 {
-  statusBar()->showMessage(tr("Ready"));
 #ifdef __ANDROID__
   QFont statusFont(statusBar()->font());
   statusFont.setPixelSize(12);
@@ -504,6 +504,9 @@ void MainWindow::createStatusBar()
   statusBar()->addPermanentWidget(openBabelIndicator);
   statusBar()->addPermanentWidget(inchiIndicator);
   statusBar()->addPermanentWidget(gen2dIndicator);
+  auto sumFormulaIndicator = new SumFormulaIndicator(m_molView->scene(), this);
+  connect(m_molView->scene(), &MolScene::selectionChanged, sumFormulaIndicator, &SumFormulaIndicator::updateSumFormula);
+  statusBar()->addWidget(sumFormulaIndicator);
   obabelLoader->reloadObabelIface(settings->obabelIfacePath());
   obabelLoader->setObabelFormats(settings->obabelFormatsPath());
 }

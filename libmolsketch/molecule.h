@@ -119,6 +119,8 @@ namespace Molsketch {
     /** Deletes @p bond from the molecule. */
     void delBond(Bond* bond);
 
+    void updateTooltip();
+
     /**
           * Splits the molecule up in different seperate molecules. Used to clean up the molecule after removing the connection
         * between two or more parts of the molecule.
@@ -150,6 +152,7 @@ namespace Molsketch {
 
     QList<Atom*> atoms() const;
     QList<Bond*> bonds() const;
+    SumFormula sumFormula() const;
 
     QWidget *getPropertiesWidget();
 

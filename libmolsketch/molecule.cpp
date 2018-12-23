@@ -204,6 +204,7 @@ namespace Molsketch {
     atom->setParentItem(this);
     m_electronSystemsUpdate = true;
     redoIndexes();
+    updateTooltip();
     return atom;
   }
 
@@ -240,6 +241,7 @@ namespace Molsketch {
     bond->setAtoms(bond->beginAtom(), bond->endAtom()); // TODO huh?
 
     m_electronSystemsUpdate = true;
+    updateTooltip();
     return bond;
   }
 
@@ -256,6 +258,7 @@ namespace Molsketch {
 
     m_electronSystemsUpdate = true;
     redoIndexes();
+    updateTooltip();
 
     return delList;
   }
@@ -277,6 +280,11 @@ namespace Molsketch {
     if (scene()) scene()->removeItem(bond);
 
     m_electronSystemsUpdate = true;
+    updateTooltip();
+  }
+
+  void Molecule::updateTooltip() {
+    setToolTip(sumFormula().toHtml());
   }
 
   QSet<Atom*> getConnectedAtoms(Atom* startAtom)
@@ -318,6 +326,12 @@ namespace Molsketch {
 
   QList<Bond*> Molecule::bonds() const {
     return childrenByType<Bond*>();
+  }
+
+  SumFormula Molecule::sumFormula() const {
+    SumFormula result;
+    for (auto atom : atoms()) result += atom->sumFormula();
+    return result;
   }
 
   QWidget *Molecule::getPropertiesWidget()
