@@ -62,7 +62,7 @@ public:
 
   void testDrawingDownFromAtom() { // TODO these tests could go into a data provider
     a2->setCoordinates(QPolygonF() << QPointF(0,50));
-    assertLineCoords("0,6.83333 0,43.1667 ");
+    assertLineCoords("0,7.33333 0,42.6667 ");
   }
 
   void testDrawingRightFromAtom() {
@@ -72,7 +72,7 @@ public:
 
   void testDrawingUpFromAtom() {
     a2->setCoordinates(QPolygonF() << QPointF(0,-50));
-    assertLineCoords("0,-6.83333 0,-43.1667 ");
+    assertLineCoords("0,-7.33333 0,-42.6667 ");
   }
 
   void testDrawingLeftFromAtom() {
