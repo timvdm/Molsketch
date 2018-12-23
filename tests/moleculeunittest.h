@@ -341,4 +341,23 @@ public:
     atomA->setCharge(-3);
     QS_ASSERT_EQUALS(c2h5.toolTip(), "CH<sub>4</sub><super>3-</super>");
   }
+
+  void testAddingBondsUpdatesToolTip() {
+    auto atomA = new Atom(QPointF(), "C"),
+        atomB =  new Atom(QPointF(), "C");
+    Molecule molecule({atomA, atomB}, {});
+    molecule.addBond(atomA, atomB);
+    QS_ASSERT_EQUALS(molecule.toolTip(), "C<sub>2</sub>H<sub>6</sub>");
+    QS_ASSERT_EQUALS(molecule.sumFormula().toHtml(), "C<sub>2</sub>H<sub>6</sub>");
+  }
+
+  void testDeletingBondsUpdatesToolTip() {
+    auto atomA = new Atom(QPointF(), "C"),
+        atomB =  new Atom(QPointF(), "C");
+    auto bond = new Bond(atomA, atomB);
+    Molecule molecule({atomA, atomB}, {bond});
+    molecule.delBond(bond);
+    QS_ASSERT_EQUALS(molecule.toolTip(), "C<sub>2</sub>H<sub>8</sub>");
+    QS_ASSERT_EQUALS(molecule.sumFormula().toHtml(), "C<sub>2</sub>H<sub>8</sub>");
+  }
 };

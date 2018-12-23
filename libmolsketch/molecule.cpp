@@ -204,6 +204,7 @@ namespace Molsketch {
     atom->setParentItem(this);
     m_electronSystemsUpdate = true;
     redoIndexes();
+    updateTooltip();
     return atom;
   }
 
@@ -240,6 +241,7 @@ namespace Molsketch {
     bond->setAtoms(bond->beginAtom(), bond->endAtom()); // TODO huh?
 
     m_electronSystemsUpdate = true;
+    updateTooltip();
     return bond;
   }
 
@@ -256,6 +258,7 @@ namespace Molsketch {
 
     m_electronSystemsUpdate = true;
     redoIndexes();
+    updateTooltip();
 
     return delList;
   }
@@ -277,6 +280,7 @@ namespace Molsketch {
     if (scene()) scene()->removeItem(bond);
 
     m_electronSystemsUpdate = true;
+    updateTooltip();
   }
 
   void Molecule::updateTooltip() {
@@ -717,7 +721,6 @@ void Molecule::updateElectronSystems()
     int i = 0;
     for (auto atom : atoms())
       atom->setIndex(QString("a") + QString::number(++i));
-    updateTooltip();
   }
 
   void Molecule::setDefaults()
