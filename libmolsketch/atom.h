@@ -98,10 +98,6 @@ namespace Molsketch {
     QString chargeString() const;
 
 
-    bool hasLabel() const;
-    QString string ()const;
-
-
     int numBonds() const;
     int bondOrderSum() const;
     /// Get the number of non-bonding electrons (e.g. 4 for O=, 2 for NH3, 1 for radicals).

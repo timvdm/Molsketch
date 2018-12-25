@@ -122,24 +122,20 @@ namespace Molsketch {
     setScene(a ? dynamic_cast<MolScene*>(a->scene()) : 0);
   }
 
-  void AtomPopup::on_element_textChanged(const QString &arg1) {
-    Q_UNUSED(arg1) // TODO why not just use the arg?
-    attemptToPushUndoCommand(new Commands::ChangeElement(d->atom, ui->element->text()));
+  void AtomPopup::on_element_textChanged(const QString &newText) {
+    attemptToPushUndoCommand(new Commands::ChangeElement(d->atom, newText));
   }
 
-  void AtomPopup::on_charge_valueChanged(int arg1) {
-    Q_UNUSED(arg1)
-    attemptToPushUndoCommand(new Commands::setAtomChargeCommand(d->atom, ui->charge->value()));
+  void AtomPopup::on_charge_valueChanged(int charge) {
+    attemptToPushUndoCommand(new Commands::setAtomChargeCommand(d->atom, charge));
   }
 
-  void AtomPopup::on_hydrogens_valueChanged(int arg1) {
-    Q_UNUSED(arg1)
-    attemptToPushUndoCommand(new Commands::setImplicitHydrogensCommand(d->atom, ui->hydrogens->value(), tr("Change Newman diameter")));
+  void AtomPopup::on_hydrogens_valueChanged(int newValue) {
+    attemptToPushUndoCommand(new Commands::setImplicitHydrogensCommand(d->atom, newValue, tr("Change number of hydrogen atoms")));
   }
 
-  void AtomPopup::on_newmanDiameter_valueChanged(double diameter) {
-    Q_UNUSED(diameter)
-    attemptToPushUndoCommand(new Commands::SetNewmanDiameter(d->atom, ui->newmanDiameter->value()));
+  void AtomPopup::on_newmanDiameter_valueChanged(double newDiameter) {
+    attemptToPushUndoCommand(new Commands::SetNewmanDiameter(d->atom, newDiameter));
   }
 
   void AtomPopup::onCoordinatesDatachanged() {
