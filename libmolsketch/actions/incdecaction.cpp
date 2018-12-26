@@ -185,8 +185,8 @@ namespace Molsketch {
     : incDecAction(scene)
   {
     setText(tr("Drawing Level"));
-    initialize(QIcon(":images/incDrawingLevel.svg"),
-               QIcon(":images/decDrawingLevel.svg"),
+    initialize(QIcon(":images/layerup.svg"),
+               QIcon(":images/layerdown.svg"),
                tr("Move up"),
                tr("Move down"),
                &Bond::roundedZValue,

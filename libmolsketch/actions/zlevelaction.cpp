@@ -26,6 +26,7 @@ namespace Molsketch {
 ZLevelAction::ZLevelAction(MolScene *parent)
   : abstractRecursiveItemAction(parent)
 {
+  setIcon(QIcon(":images/layerset.svg"));
   setText(tr("Set relative level..."));
   setToolTip(tr("Set the level at which the item will be drawn\n(higher values above lower values)"));
   setWhatsThis(tr("Set the level at which the item will be drawn\n(higher values above lower values)"));

@@ -69,5 +69,8 @@
         <file>images/space-vertical.svg</file>
         <file>images/space-horizontal.svg</file>
         <file>images/clean-structure.svg</file>
+        <file>images/layerup.svg</file>
+        <file>images/layerdown.svg</file>
+        <file>images/layerset.svg</file>
     </qresource>
 </RCC>
