@@ -27,6 +27,7 @@
 #include "molecule.h"
 #include "element.h"
 #include "molscene.h"
+#include "commands.h"
 
 namespace Molsketch
 {
@@ -67,9 +68,19 @@ namespace Molsketch
       return;
 
     QXmlStreamReader xml(&file);
-    while (xml.name().toString() != scene->xmlName() && xml.name().toString() != "div") // TODO div is only for old versions
+    while (xml.name().toString() != scene->xmlName()
+           && xml.name().toString() != "div"
+           && xml.name().toString() != Molecule::xmlClassName() // TODO extract
+           && !xml.atEnd()) // TODO div is only for old versions
       xml.readNext() ;
-    xml >> *scene ;
+    if (!xml.atEnd()) {
+      if (xml.name().toString() == scene->xmlName() || xml.name().toString() == "div") xml >> *scene ;
+      if (xml.name().toString() == Molecule::xmlClassName()) {
+        auto molecule = new Molecule;
+        xml >> *molecule;
+        Commands::ItemAction::addItemToScene(molecule, scene, QObject::tr("Open molecule"));
+      }
+    }
     if (xml.hasError()) {
       qDebug() << "ERROR while reading " << fileName;
       qDebug() << xml.errorString();
