@@ -100,11 +100,19 @@ namespace Molsketch {
     graphicsItem* hoverItem;
 
     privateData(MolScene* scene, SceneSettings* settings)
+      : privateData(new QUndoStack(scene), scene, settings)
+    {
+      connect(stack, SIGNAL(indexChanged(int)), scene, SIGNAL(documentChange()));
+      connect(stack, SIGNAL(indexChanged(int)), scene, SLOT(update()));
+      connect(stack, SIGNAL(indexChanged(int)), scene, SLOT(updateAll())) ;
+    }
+
+    privateData(QUndoStack *stack, MolScene *scene, SceneSettings *settings)
       : selectionRectangle(new QGraphicsRectItem),
         inputItem(new TextInputItem),
         grid(new Grid(settings)),
         scene(scene),
-        stack(new QUndoStack(scene)),
+        stack(stack),
         settings(settings),
         dragItem(0),
         hoverItem(0)
@@ -113,10 +121,6 @@ namespace Molsketch {
       selectionRectangle->setPen(QPen(Qt::blue,0,Qt::DashLine));
       selectionRectangle->setZValue(INFINITY);
       connect(scene, SIGNAL(sceneRectChanged(QRectF)), scene, SLOT(updateGrid(QRectF)));
-
-      connect(stack, SIGNAL(indexChanged(int)), scene, SIGNAL(documentChange()));
-      connect(stack, SIGNAL(indexChanged(int)), scene, SLOT(update()));
-      connect(stack, SIGNAL(indexChanged(int)), scene, SLOT(updateAll())) ;
     }
 
     ~privateData()
@@ -296,11 +300,13 @@ namespace Molsketch {
   void MolScene::clear()
   {
     clearSelection();
-    d->stack->clear();
+    auto undoStack = d->stack; // TODO don't delete the privateData instead
+    undoStack->clear();
     SceneSettings *settings = d->settings;
+    d->stack = nullptr;
     delete d; // TODO this seems a little extreme and dangerous!
     QGraphicsScene::clear();
-    d = new privateData(this, settings);
+    d = new privateData(undoStack, this, settings);
   }
 
   QByteArray MolScene::toSvg()
