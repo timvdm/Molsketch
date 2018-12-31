@@ -9,4 +9,12 @@
     <glob pattern="*.msk"/>
     <glob pattern="*.MSK"/>
   </mime-type>
+  <mime-type type="application/x-molsketch-molecule">
+    <comment>Molsketch molecule drawing</comment>
+    <magic priority="50">
+      <match type="string" offset="38:40" value="&lt;molecule&gt;"/>
+    </magic>
+    <glob pattern="*.msm"/>
+    <glob pattern="*.MSm"/>
+  </mime-type>
 </mime-info>
