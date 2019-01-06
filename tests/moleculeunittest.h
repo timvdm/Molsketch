@@ -360,4 +360,24 @@ public: // TODO serialization tests
     QS_ASSERT_EQUALS(molecule.toolTip(), "C<sub>2</sub>H<sub>8</sub>");
     QS_ASSERT_EQUALS(molecule.sumFormula().toHtml(), "C<sub>2</sub>H<sub>8</sub>");
   }
+
+  void testAtomsAreIndexedAfterAdding() {
+    Molecule molecule;
+    auto atom = new Atom();
+    atom->setParentItem(&molecule);
+    QS_ASSERT_EQUALS(atom->index(), "a1");
+  }
+
+  void testAtomsAreIndexedAfterRemoval() {
+    Molecule molecule;
+    auto atomA = new Atom(), atomB = new Atom();
+    atomA->setParentItem(&molecule);
+    atomB->setParentItem(&molecule);
+    auto initialIndexOfAtomB = atomB->index();
+    QS_ASSERT_EQUALS(initialIndexOfAtomB, "a2");
+    atomA->setParentItem(nullptr);
+    delete atomA;
+    QS_ASSERT_EQUALS(atomB->index(), "a1");
+    QS_ASSERT_NOT_EQUALS(atomB->index(), initialIndexOfAtomB);
+  }
 };

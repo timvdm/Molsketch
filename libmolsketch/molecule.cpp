@@ -401,6 +401,7 @@ namespace Molsketch {
   QVariant Molecule::itemChange(GraphicsItemChange change, const QVariant &value)
   {
     if (change == ItemTransformHasChanged) rebuild();
+    if (change == ItemChildAddedChange || change == ItemChildRemovedChange) redoIndexes();
 
     return graphicsItem::itemChange(change, value);
   }
