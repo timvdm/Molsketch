@@ -140,6 +140,7 @@ namespace Molsketch {
     void determineDoubleBondOrientation();
     QPainterPath bondPath() const;
     QPointF determineBondDrawingStart(Atom* start, Atom* end) const;
+    QList<Bond*> coveringBonds() const;
 
     // Internal representation
     Bond::BondType m_bondType;

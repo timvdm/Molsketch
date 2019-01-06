@@ -371,6 +371,18 @@ namespace Molsketch {
     return mapFromScene(start->bondDrawingStart(end, lineWidth()));
   }
 
+  QList<Bond *> Bond::coveringBonds() const
+  {
+    QList<Bond*> result;
+    auto sc = scene();
+    if (!sc) return result;
+    for (auto item : sc->items())
+      if (auto bond = dynamic_cast<Bond*>(item))
+        if (bond->zValue() > zValue() && collidesWithItem(bond))
+          result << bond;
+    return result;
+  }
+
   QPainterPath brokenBondIndicator(const QPointF &point, const QPointF &bondVector, const QPointF &normalVector) {
     QPointF bondUnitVector(bondVector/QLineF(QPointF(0,0), bondVector).length());
     const qreal decorationScale = 0.2; // TODO modifiable - from wedge bond width!
@@ -473,10 +485,8 @@ namespace Molsketch {
     painter->setPen(pen);
 
     QPainterPath coveringShapes;
-    for (auto coveringItem : collidingItems())
-      if (coveringItem->zValue() > zValue())
-        if (auto coveringBond = dynamic_cast<Bond*>(coveringItem))
-          coveringShapes = coveringShapes.united(mapFromItem(coveringBond, coveringBond->shape()));
+    for (auto coveringBond : coveringBonds())
+      coveringShapes = coveringShapes.united(mapFromItem(coveringBond, coveringBond->shape()));
 
     begin = mapFromParent(m_beginAtom->pos());
     end = mapFromParent(m_endAtom->pos());
