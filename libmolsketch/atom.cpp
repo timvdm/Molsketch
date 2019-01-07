@@ -1065,7 +1065,8 @@ namespace Molsketch {
   {
     QList<Atom*> nbrs;
     foreach (Bond *bond, bonds())
-      nbrs.append(bond->otherAtom(this));
+      if (auto otherAtom = bond->otherAtom(this))
+        nbrs << otherAtom;
     return nbrs;
   }
 
