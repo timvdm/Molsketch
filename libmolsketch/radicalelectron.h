@@ -48,7 +48,7 @@ namespace Molsketch {
     void readAttributes(const QXmlStreamAttributes &attributes) override;
     QXmlStreamAttributes xmlAttributes() const override;
     QList<const XmlObjectInterface *> children() const override;
-    XmlObjectInterface *produceChild(const QString &name, const QString &type) override;
+    XmlObjectInterface *produceChild(const QString &name, const QXmlStreamAttributes &attributes) override;
   };
 } // namespace Molsketch
 

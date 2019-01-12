@@ -51,10 +51,10 @@ namespace Molsketch {
       for (auto atom :  p->atoms()) result << atom;
       return result;
     }
-    abstractXmlObject *produceChild(const QString &name, const QString &type) {
-      Q_UNUSED(type)
+    abstractXmlObject *produceChild(const QString &name, const QXmlStreamAttributes &attributes) override {
+      Q_UNUSED(attributes)
       if (name != Atom::xmlClassName()) return nullptr;
-      auto atom = new Atom();
+      Atom *atom = attributes.hasAttribute("hydrogenCount") ? new LegacyAtom() : new Atom();
       atom->setParentItem(p);
       return atom;
     }
@@ -70,8 +70,8 @@ namespace Molsketch {
       for (auto bond :  p->bonds()) result << bond;
       return result;
     }
-    abstractXmlObject *produceChild(const QString &name, const QString &type) {
-      Q_UNUSED(type)
+    abstractXmlObject *produceChild(const QString &name, const QXmlStreamAttributes &attributes) override {
+      Q_UNUSED(attributes)
       if (name != Bond::xmlClassName()) return nullptr;
       auto bond = new Bond();
       bond->setParentItem(p);
@@ -693,8 +693,8 @@ void Molecule::updateElectronSystems()
     return QList<const XmlObjectInterface*>() << &d->atomList << &d->bondList ;
   }
 
-  XmlObjectInterface *Molecule::produceChild(const QString &name, const QString &type) {
-    Q_UNUSED(type)
+  XmlObjectInterface *Molecule::produceChild(const QString &name, const QXmlStreamAttributes &attributes) {
+    Q_UNUSED(attributes)
     Q_D(Molecule);
     if (d->atomList.xmlName() == name) return &d->atomList;
     if (d->bondList.xmlName() == name) return &d->bondList;
@@ -703,7 +703,9 @@ void Molecule::updateElectronSystems()
 
   void Molecule::afterReadFinalization()
   {
+    for (auto atom : atoms()) atom->afterMoleculeReadFinalization();
     updateElectronSystems();
+    updateTooltip();
   }
 
   void Molecule::readAttributes(const QXmlStreamAttributes &attributes)

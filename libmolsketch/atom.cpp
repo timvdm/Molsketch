@@ -668,20 +668,33 @@ namespace Molsketch {
     inputItem->clickedOn(this);
   }
 
+  const char *ID_ATTRIBUTE = "id";
+  const char *ELEMENT_ATTRIBUTE = "elementType";
+  const char *CHARGE_ATTRIBUTE = "userCharge";
+  const char *DISABLE_HYDROGENS_ATTRIBUTE = "disableHydrogens";
+  const char *HYDROGEN_COUNT_ATTRIBUTE = "hydrogens";
+  const char *NEWMAN_DIAMETER_ATTRIBUTE = "newmanDiameter";
+
   void Atom::readGraphicAttributes(const QXmlStreamAttributes &attributes)
   {
-    setElement(attributes.value("elementType").toString()) ;
-    setIndex(attributes.value("id").toString());
-    m_newmanDiameter = qAbs(attributes.value("newmanDiameter").toDouble());
+    m_elementSymbol = attributes.value(ELEMENT_ATTRIBUTE).toString();
+    m_index = attributes.value(ID_ATTRIBUTE).toString();
+    m_newmanDiameter = qAbs(attributes.value(NEWMAN_DIAMETER_ATTRIBUTE).toDouble());
+    m_userImplicitHydrogens = attributes.value(HYDROGEN_COUNT_ATTRIBUTE).toInt();
+    m_implicitHydrogens = !attributes.value(DISABLE_HYDROGENS_ATTRIBUTE).toInt();
+    m_userCharge = attributes.value(CHARGE_ATTRIBUTE).toInt();
+    updateShape();
   }
 
   QXmlStreamAttributes Atom::graphicAttributes() const
   {
     QXmlStreamAttributes attributes ;
-    attributes.append("id", index()) ;
-    attributes.append("elementType", element()) ;
-    attributes.append("hydrogenCount", QString::number(numImplicitHydrogens())) ;
-    if (m_newmanDiameter > 0) attributes.append("newmanDiameter", QString::number(m_newmanDiameter));
+    attributes.append(ID_ATTRIBUTE, m_index) ;
+    attributes.append(ELEMENT_ATTRIBUTE, m_elementSymbol) ;
+    attributes.append(CHARGE_ATTRIBUTE, QString::number(m_userCharge));
+    attributes.append(DISABLE_HYDROGENS_ATTRIBUTE, QString::number(!m_implicitHydrogens));
+    attributes.append(HYDROGEN_COUNT_ATTRIBUTE, QString::number(m_userImplicitHydrogens));
+    if (m_newmanDiameter > 0) attributes.append(NEWMAN_DIAMETER_ATTRIBUTE, QString::number(m_newmanDiameter));
     return attributes ;
   }
 
@@ -1079,8 +1092,8 @@ namespace Molsketch {
     return serializableChildren;
   }
 
-  XmlObjectInterface *Atom::produceChild(const QString &name, const QString &type) {
-    Q_UNUSED(type)
+  XmlObjectInterface *Atom::produceChild(const QString &name, const QXmlStreamAttributes &attributes) {
+    Q_UNUSED(attributes)
     if ("radicalElectron" == name) {
       RadicalElectron *radicalElectron = new RadicalElectron; // TODO default diameter?
       radicalElectron->setParentItem(this);
@@ -1091,8 +1104,21 @@ namespace Molsketch {
       lonePair->setParentItem(this);
       return lonePair;
     }
-    return graphicsItem::produceChild(name, type);
+    return graphicsItem::produceChild(name, attributes);
   }
+
+  void LegacyAtom::readGraphicAttributes(const QXmlStreamAttributes &attributes) {
+    m_legacyHydrogenCount = attributes.value("hydrogenCount").toInt();
+    m_elementSymbol = attributes.value(ELEMENT_ATTRIBUTE).toString();
+    m_index = attributes.value(ID_ATTRIBUTE).toString();
+    m_newmanDiameter = qAbs(attributes.value(NEWMAN_DIAMETER_ATTRIBUTE).toDouble());
+    updateShape();
+  }
+
+  void LegacyAtom::afterMoleculeReadFinalization() {
+    setNumImplicitHydrogens(m_legacyHydrogenCount);
+  }
+
 } // namespace
 
 

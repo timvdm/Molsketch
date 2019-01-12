@@ -20,9 +20,22 @@
 #include <cxxtest/TestSuite.h>
 
 #include <molecule.h>
+#include "utilities.h"
 #include <QSet>
 
 using namespace Molsketch;
+
+const QByteArray LEGACY_MOLECULE_XML{"<molecule>"
+                                     "<atomArray>"
+                                     "<atom id=\"a1\" elementType=\"C\" x2=\"-162.635\" y2=\"-70.7107\" hydrogenCount=\"3\" colorR=\"0\" colorG=\"0\" colorB=\"0\"/>"
+                                     "<atom id=\"a2\" elementType=\"C\" x2=\"-127.972\" y2=\"-90.6739\" hydrogenCount=\"3\" colorR=\"0\" colorG=\"0\" colorB=\"0\"/>"
+                                     "</atomArray>"
+                                     "<bondArray>"
+                                     "<bond atomRefs2=\"a2 a1\" order=\"1\" colorR=\"0\" colorG=\"0\" colorB=\"0\">"
+                                     "<bondStereo>W</bondStereo>"
+                                     "</bond>"
+                                     "</bondArray>"
+                                     "</molecule>"};
 
 class MoleculeTest : public CxxTest::TestSuite
 {
@@ -82,5 +95,27 @@ public:
               << MoleculeToplogy("null case", 0, 0, cv());
 
     for(auto testCase : testCases) testCase.runAssertions();
+  }
+
+  void testReadingLegacyMolecule() {
+    QXmlStreamReader reader(LEGACY_MOLECULE_XML);
+    reader.readNextStartElement();
+    Molecule molecule;
+    molecule.readXml(reader);
+
+    auto atoms = molecule.atoms();
+    QS_ASSERT_EQUALS(atoms.size(), 2);
+    QS_ASSERT_EQUALS(molecule.bonds().size(), 1);
+    auto bond = molecule.bonds().first();
+    QS_ASSERT_EQUALS(atoms[0], bond->endAtom());
+    QS_ASSERT_EQUALS(atoms[1], bond->beginAtom());
+    QS_ASSERT_NOT_EQUALS(bond->beginAtom(), bond->endAtom());
+
+    QS_ASSERT_EQUALS(bond->bondType(), Bond::Wedge);
+
+    QS_ASSERT_EQUALS(atoms[0]->numImplicitHydrogens(), 3);
+    QS_ASSERT_EQUALS(atoms[1]->numImplicitHydrogens(), 3);
+    QS_ASSERT_EQUALS(atoms[0]->pos(), QPointF(-162.635, -70.7107));
+    QS_ASSERT_EQUALS(atoms[1]->pos(), QPointF(-127.972, -90.6739));
   }
 };

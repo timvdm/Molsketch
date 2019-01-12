@@ -22,6 +22,7 @@
 #include <molecule.h>
 #include <QSet>
 #include <cxxtest/TestSuite.h>
+#include "utilities.h"
 
 #include "scenesettings.h"
 #include "settingsitem.h"
@@ -43,7 +44,7 @@ public:
       Q_ASSERT(restoredItem);
       TSM_ASSERT_EQUALS("Bond width", loadedScene.settings()->bondWidth()->get(), originalScene.settings()->bondWidth()->get());
       TSM_ASSERT_EQUALS("Bounding rect", restoredItem->boundingRect(), item->boundingRect());
-      TSM_ASSERT_EQUALS("SVG", loadedScene.toSvg(), originalScene.toSvg());
+      QSM_ASSERT_EQUALS("SVG", loadedScene.toSvg(), originalScene.toSvg());
     }
   }
 

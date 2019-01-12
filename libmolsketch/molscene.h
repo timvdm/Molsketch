@@ -173,7 +173,7 @@ namespace Molsketch {
       qreal getLonePairLineWidth() const;
       QWidget *getPropertiesWidget(); // TODO there should be an intgerface for this
   protected:
-      XmlObjectInterface *produceChild(const QString &childName, const QString& type) ;
+      XmlObjectInterface *produceChild(const QString &childName, const QXmlStreamAttributes &attributes) override;
       QList<const XmlObjectInterface *> children() const ;
       void readAttributes(const QXmlStreamAttributes &attributes) ;
       QXmlStreamAttributes xmlAttributes() const;

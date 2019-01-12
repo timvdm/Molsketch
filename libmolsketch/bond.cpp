@@ -690,8 +690,8 @@ namespace Molsketch {
     }
   };
 
-  XmlObjectInterface *Bond::produceChild(const QString &name, const QString &type) {
-    if (name != "bondStereo" || !type.isEmpty()) return nullptr;
+  XmlObjectInterface *Bond::produceChild(const QString &name, const QXmlStreamAttributes &attributes) {
+    if (name != "bondStereo" || !attributes.isEmpty()) return nullptr;
     XmlObjectInterface *helper = new LegacyBondStereo(this);
     helpers << helper;
     return helper;

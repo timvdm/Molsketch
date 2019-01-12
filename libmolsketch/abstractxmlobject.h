@@ -30,7 +30,7 @@ namespace Molsketch {
   {
   protected:
     // TODO should be factory function
-    virtual XmlObjectInterface* produceChild(const QString& name, const QString& type) { Q_UNUSED(name) Q_UNUSED(type) return 0 ; }
+    virtual XmlObjectInterface* produceChild(const QString& name, const QXmlStreamAttributes& attributes) { Q_UNUSED(name) Q_UNUSED(attributes) return 0 ; }
     virtual void readAttributes(const QXmlStreamAttributes& attributes) { Q_UNUSED(attributes) }
     virtual QList<const XmlObjectInterface*> children() const { return QList<const XmlObjectInterface*>() ; }
     virtual QXmlStreamAttributes xmlAttributes() const { return QXmlStreamAttributes() ; }

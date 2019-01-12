@@ -99,7 +99,7 @@ namespace Molsketch {
   protected:
     SettingsFacade &settingsFacade();
     QList<const XmlObjectInterface *> children() const override;
-    XmlObjectInterface *produceChild(const QString &name, const QString &type) override;
+    XmlObjectInterface *produceChild(const QString &name, const QXmlStreamAttributes &attributes) override;
   };
 
 } // namespace Molsketch

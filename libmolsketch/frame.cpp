@@ -363,9 +363,9 @@ namespace Molsketch {
     Q_UNUSED(contextMenu);
   }
 
-  abstractXmlObject *Frame::produceChild(const QString &name, const QString &type)
+  abstractXmlObject *Frame::produceChild(const QString &name, const QXmlStreamAttributes &attributes)
   {
-    Q_UNUSED(type)
+    Q_UNUSED(attributes)
     if ("molecule" == name) return new Molecule(this);
     if ("arrow" == name) return new Arrow(this); // TODO make static function for this
     if ("frame" == name) return new Frame(this);

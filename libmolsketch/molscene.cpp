@@ -420,7 +420,7 @@ namespace Molsketch {
     else removeItem(d->grid);
   }
 
-  XmlObjectInterface *MolScene::produceChild(const QString &childName, const QString &type)
+  XmlObjectInterface *MolScene::produceChild(const QString &childName, const QXmlStreamAttributes &attributes)
   {
     XmlObjectInterface *object = 0 ;
     if (Frame::xmlClassName() == childName) object = new Frame;
@@ -430,6 +430,7 @@ namespace Molsketch {
     if (d->settings->xmlName() == childName) object = d->settings;
     if (childName == "object")
     {
+      auto type = attributes.value("type").toString();
       if (type == "ReactionArrow") object = new Arrow ;
       if (type == "MechanismArrow") object = new Arrow ;
     }

@@ -55,7 +55,7 @@ namespace Molsketch {
     void readGraphicAttributes(const QXmlStreamAttributes &attributes);
     QXmlStreamAttributes graphicAttributes() const;
     void prepareContextMenu(QMenu *contextMenu);
-    abstractXmlObject* produceChild(const QString &name, const QString &type);
+    abstractXmlObject* produceChild(const QString &name, const QXmlStreamAttributes &attributes) override;
     QList<const XmlObjectInterface *> children() const;
   private:
     qreal sceneLineWidth(MolScene *scene) const;

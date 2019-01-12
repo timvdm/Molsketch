@@ -32,18 +32,18 @@
 using namespace Molsketch;
 using XmlAssert::assertThat;
 
-const QString ATOM_XML_WITH_RADICAL("<atom id=\"\" elementType=\"\" hydrogenCount=\"0\" colorR=\"0\" colorG=\"0\" colorB=\"0\" scalingParameter=\"1\" zLevel=\"3\" coordinates=\"0,0\">"
+const QString ATOM_XML_WITH_RADICAL("<atom id=\"\" elementType=\"\" userCharge=\"0\" disableHydrogens=\"0\" hydrogens=\"0\" colorR=\"0\" colorG=\"0\" colorB=\"0\" scalingParameter=\"1\" zLevel=\"3\" coordinates=\"0,0\">"
                                     "<radicalElectron diameter=\"3\" colorR=\"0\" colorG=\"0\" colorB=\"0\">"
                                     "<bbLinker originAnchor=\"Top\" targetAnchor=\"Bottom\" xOffset=\"0\" yOffset=\"0\"/>"
                                     "</radicalElectron>"
                                     "</atom>");
-const QString ATOM_XML_WITH_LONE_PAIR("<atom id=\"\" elementType=\"\" hydrogenCount=\"0\" colorR=\"0\" colorG=\"0\" colorB=\"0\" scalingParameter=\"1\" zLevel=\"3\" coordinates=\"0,0\">"
+const QString ATOM_XML_WITH_LONE_PAIR("<atom id=\"\" elementType=\"\" userCharge=\"0\" disableHydrogens=\"0\" hydrogens=\"0\" colorR=\"0\" colorG=\"0\" colorB=\"0\" scalingParameter=\"1\" zLevel=\"3\" coordinates=\"0,0\">"
                                       "<lonePair angle=\"45\" length=\"10\" lineWidth=\"1.5\" colorR=\"0\" colorG=\"0\" colorB=\"0\">"
                                       "<bbLinker originAnchor=\"TopLeft\" targetAnchor=\"Center\" xOffset=\"0\" yOffset=\"0\"/>"
                                       "</lonePair>"
                                       "</atom>");
 const QString ATOM_XML_WITH_LONE_PAIR_AND_RADICAL(
-    "<atom id=\"\" elementType=\"\" hydrogenCount=\"0\" colorR=\"0\" colorG=\"0\" colorB=\"0\" scalingParameter=\"1\" zLevel=\"3\" coordinates=\"0,0\">"
+    "<atom id=\"\" elementType=\"\" userCharge=\"0\" disableHydrogens=\"0\" hydrogens=\"0\" colorR=\"0\" colorG=\"0\" colorB=\"0\" scalingParameter=\"1\" zLevel=\"3\" coordinates=\"0,0\">"
     "<lonePair angle=\"45\" length=\"10\" lineWidth=\"1.5\" colorR=\"0\" colorG=\"0\" colorB=\"0\">"
     "<bbLinker originAnchor=\"TopLeft\" targetAnchor=\"Center\" xOffset=\"0\" yOffset=\"0\"/>"
     "</lonePair>"
@@ -51,6 +51,39 @@ const QString ATOM_XML_WITH_LONE_PAIR_AND_RADICAL(
     "<bbLinker originAnchor=\"Top\" targetAnchor=\"Bottom\" xOffset=\"0\" yOffset=\"0\"/>"
     "</radicalElectron>"
     "</atom>");
+const QString LEGACY_ATOM_XML("<atom "
+                              "id=\"testIndex\" "
+                              "elementType=\"M\" "
+                              "hydrogenCount=\"8\" "
+                              "newmanDiameter=\"3.5\" "
+                              "colorR=\"0\" "
+                              "colorG=\"0\" "
+                              "colorB=\"0\" "
+                              "scalingParameter=\"1\" "
+                              "zLevel=\"3\" "
+                              "coordinates=\"0,0\"/>");
+const QString ATOM_XML("<atom "
+                       "id=\"testIndex\" "
+                       "elementType=\"M\" "
+                       "userCharge=\"-2\" "
+                       "disableHydrogens=\"0\" "
+                       "hydrogens=\"8\" "
+                       "newmanDiameter=\"3.5\" "
+                       "colorR=\"0\" "
+                       "colorG=\"0\" "
+                       "colorB=\"0\" "
+                       "scalingParameter=\"1\" "
+                       "zLevel=\"3\" "
+                       "coordinates=\"0,0\"/>"
+);
+const struct
+{
+  const QString ELEMENT = "M";
+  const int CHARGE = -10;
+  const double NEWMAN_DIAMETER = 3.5;
+  const QString INDEX = "testIndex";
+  const int HYDROGENS = 8;
+} XML_DATA;
 const char NEWMAN_XQUERY[] = "//*:atom/@newmanDiameter/data(.)";
 const qreal RADICAL_DIAMETER = 3;
 const qreal LONE_PAIR_ANGLE = 45;
@@ -70,7 +103,7 @@ class AtomUnitTest : public CxxTest::TestSuite {
   }
 
   void readXmlInput(const QString& input) {
-    QXmlStreamReader reader(input);
+    QXmlStreamReader reader(input); // TODO extract XML utilities
     reader.readNextStartElement();
     atom->readXml(reader);
   }
@@ -224,5 +257,38 @@ public:
     atom->setCharge(-3);
     SumFormula ch2_3minus{{"C"}, {"H", 2, -3}};
     QS_ASSERT_EQUALS(atom->sumFormula(), ch2_3minus);
+  }
+
+  void testWritingAllAttributes() {
+    atom->setElement(XML_DATA.ELEMENT);
+    atom->setNewmanDiameter(XML_DATA.NEWMAN_DIAMETER);
+    atom->setIndex(XML_DATA.INDEX);
+    atom->setNumImplicitHydrogens(XML_DATA.HYDROGENS);
+    atom->setCharge(XML_DATA.CHARGE);
+    assertXmlOutput(ATOM_XML);
+  }
+
+  void testReadingAllAttributes() {
+    readXmlInput(ATOM_XML);
+    QS_ASSERT_EQUALS(atom->element(), XML_DATA.ELEMENT);
+    TS_ASSERT_EQUALS(atom->charge(), XML_DATA.CHARGE);
+    TS_ASSERT_EQUALS(atom->getNewmanDiameter(), XML_DATA.NEWMAN_DIAMETER);
+    QS_ASSERT_EQUALS(atom->index(), XML_DATA.INDEX);
+    TS_ASSERT_EQUALS(atom->numImplicitHydrogens(), XML_DATA.HYDROGENS);
+  }
+
+  void testReadingLegacyAtom() {
+    QXmlStreamReader reader(LEGACY_ATOM_XML);
+    reader.readNextStartElement();
+    auto legacyAtom = new LegacyAtom;
+    legacyAtom->readXml(reader);
+    QS_ASSERT_EQUALS(legacyAtom->element(), XML_DATA.ELEMENT);
+    TS_ASSERT_EQUALS(legacyAtom->charge(), 0);
+    TS_ASSERT_EQUALS(legacyAtom->getNewmanDiameter(), XML_DATA.NEWMAN_DIAMETER);
+    QS_ASSERT_EQUALS(legacyAtom->index(), XML_DATA.INDEX);
+    TS_ASSERT_EQUALS(legacyAtom->numImplicitHydrogens(), 0);
+    legacyAtom->afterMoleculeReadFinalization();
+    TS_ASSERT_EQUALS(legacyAtom->numImplicitHydrogens(), XML_DATA.HYDROGENS);
+    delete legacyAtom;
   }
 };

@@ -105,10 +105,10 @@ qreal LonePair::lineWidth() const {
   return pen().widthF(); // TODO use relative dimension
 }
 
-XmlObjectInterface* LonePair::produceChild (const QString& name, const QString& type) {
+XmlObjectInterface* LonePair::produceChild (const QString& name, const QXmlStreamAttributes& attributes) {
   Q_D(LonePair);
   if (d->linker.xmlName() == name) return &(d->linker);
-  return abstractXmlObject::produceChild(name, type);
+  return abstractXmlObject::produceChild(name, attributes);
 }
 
 void LonePair::readAttributes (const QXmlStreamAttributes& attributes) {

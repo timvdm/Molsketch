@@ -52,7 +52,7 @@ public:
 
   typedef abstractXmlObject super;
   SUPER_MOCK_CONST(QList<const XmlObjectInterface*>, children, , )
-  SUPER_MOCK(XmlObjectInterface*, produceChild, const QString& name COMMA const QString& type, name COMMA type)
+  SUPER_MOCK(XmlObjectInterface*, produceChild, const QString& name COMMA const QXmlStreamAttributes& attr, name COMMA attr)
   VOID_SUPER_MOCK(readAttributes, const QXmlStreamAttributes& attr, attr)
   MOCK_CONST(QXmlStreamAttributes, xmlAttributes, , )
   VOID_SUPER_MOCK(afterReadFinalization, , )
@@ -74,8 +74,8 @@ class AbstractXmlObjectUnitTest : public CxxTest::TestSuite {
     writer = new QXmlStreamWriter(target);
   }
 
-  static std::function<abstractXmlObject *(QString, QString)> noChildrenToProduce() {
-    return [](QString a, QString b) { Q_UNUSED(a) Q_UNUSED(b)
+  static std::function<abstractXmlObject *(QString, QXmlStreamAttributes)> noChildrenToProduce() {
+    return [](QString a, QXmlStreamAttributes b) { Q_UNUSED(a) Q_UNUSED(b)
       TSM_ASSERT("produceChild() should not be called if there are no children", false);
       return new AbstractXmlObjectForTesting; };
   }
@@ -138,9 +138,9 @@ class AbstractXmlObjectUnitTest : public CxxTest::TestSuite {
                             int desiredChildrenToProduce,
                             XmlObjectInterface* child) {
       this->desiredChildrenToProduce = desiredChildrenToProduce;
-      object->produceChildCallback = [=](const QString& name, const QString& type) {
+      object->produceChildCallback = [=](const QString& name, const QXmlStreamAttributes& attributes) {
         QS_ASSERT_EQUALS(name, expectedName);
-        QS_ASSERT_EQUALS(type, expectedType);
+        QS_ASSERT_EQUALS(attributes.value("type").toString(), expectedType);
         TSM_ASSERT("Should produce children before finalization", !timesFinalized);
         TSM_ASSERT_EQUALS("Should read attributes before reading childern", timesAttributesWereRead, 1);
         ++timesChildProduced;
@@ -175,7 +175,7 @@ public:
   }
 
   void testDefaultImplementations() {
-    TS_ASSERT_EQUALS(testObject->produceChild("", ""), nullptr);
+    TS_ASSERT_EQUALS(testObject->produceChild("", QXmlStreamAttributes()), nullptr);
     QS_ASSERT_EQUALS(testObject->children(), QList<const XmlObjectInterface*>());
     TS_ASSERT_EQUALS(testObject->xmlAttributes(), QXmlStreamAttributes());
   }

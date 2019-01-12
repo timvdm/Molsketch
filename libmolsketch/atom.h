@@ -130,6 +130,7 @@ namespace Molsketch {
     void setIndex(const QString& index);
     QString index() const;
     qreal getBondExtent(const QLineF &outer1, const QLineF &outer2, qreal lineWidth) const;
+    virtual void afterMoleculeReadFinalization() {}
   protected:
     // Event handlers
     /** Event handler to handle element changes. */
@@ -140,7 +141,7 @@ namespace Molsketch {
     void readGraphicAttributes(const QXmlStreamAttributes &attributes) ;
     QXmlStreamAttributes graphicAttributes() const ;
     QList<const XmlObjectInterface *> children() const override;
-    XmlObjectInterface* produceChild(const QString &name, const QString &type);
+    XmlObjectInterface* produceChild(const QString &name, const QXmlStreamAttributes &attributes) override;
 
   private:
     void drawAtomLabel(QPainter *painter, const QString &lbl, int alignment);
@@ -179,6 +180,16 @@ namespace Molsketch {
     IntersectionData intersectedEdge(const QLineF &line, qreal lineWidth) const;
     qreal getExtentForIntersectionOfOuterLineAndEdge(const Atom::IntersectionData &edgeIntersection, const QLineF &outer) const;
     qreal getExtentForEndOnCorner(const QPolygonF &fullBondPolygon, const QLineF &middleLine, const QPointF &corner) const;
+    friend class LegacyAtom;
+  };
+
+  class LegacyAtom : public Atom {
+  private:
+    int m_legacyHydrogenCount;
+  protected:
+    void readGraphicAttributes(const QXmlStreamAttributes &attributes) override;
+  public:
+    void afterMoleculeReadFinalization() override;
   };
 
 } // namespace

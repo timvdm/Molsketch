@@ -38,7 +38,7 @@ namespace Molsketch {
       in.readNext() ; // TODO probably we just want to go to the next start element here
       if (in.isEndElement()) break ;
       if (!in.isStartElement()) continue ;
-      XmlObjectInterface* child = produceChild(in.name().toString(), in.attributes().value("type").toString()) ;
+      XmlObjectInterface* child = produceChild(in.name().toString(), in.attributes()) ;
       if (!child) continue ;
       child->readXml(in) ;
     }

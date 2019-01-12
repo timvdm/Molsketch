@@ -129,7 +129,7 @@ namespace Molsketch {
     QXmlStreamAttributes graphicAttributes() const ;
     void readGraphicAttributes(const QXmlStreamAttributes &attributes) ;
     void prepareContextMenu(QMenu *contextMenu);
-    XmlObjectInterface* produceChild(const QString &name, const QString &type);
+    XmlObjectInterface* produceChild(const QString &name, const QXmlStreamAttributes &attributes) override;
     void afterReadFinalization();
     virtual QPainterPath outline() const;
 

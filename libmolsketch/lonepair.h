@@ -49,7 +49,7 @@ public:
   qreal length() const;
   qreal lineWidth() const;
 protected:
-  XmlObjectInterface* produceChild (const QString& name, const QString& type) override;
+  XmlObjectInterface* produceChild (const QString& name, const QXmlStreamAttributes &attributes) override;
   void readAttributes (const QXmlStreamAttributes& attributes) override;
   QList<const XmlObjectInterface*> children () const override;
   QXmlStreamAttributes xmlAttributes () const override;

@@ -179,7 +179,7 @@ namespace Molsketch {
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
     QList<const XmlObjectInterface *> children() const ;
-    XmlObjectInterface *produceChild(const QString &name, const QString &type) ;
+    XmlObjectInterface *produceChild(const QString &name, const QXmlStreamAttributes &attributes) override;
     void afterReadFinalization();
     void readAttributes(const QXmlStreamAttributes& attributes);
     QXmlStreamAttributes xmlAttributes() const;

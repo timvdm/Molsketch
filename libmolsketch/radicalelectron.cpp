@@ -122,9 +122,9 @@ namespace Molsketch {
     return QList<const XmlObjectInterface*>() << &(d->linker);
   }
 
-  XmlObjectInterface *RadicalElectron::produceChild(const QString &name, const QString &type) {
+  XmlObjectInterface *RadicalElectron::produceChild(const QString &name, const QXmlStreamAttributes &attributes) {
     Q_D(RadicalElectron);
     if (d->linker.xmlName() == name) return &(d->linker);
-    return abstractXmlObject::produceChild(name, type);
+    return abstractXmlObject::produceChild(name, attributes);
   }
 } // namespace Molsketch

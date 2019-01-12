@@ -231,8 +231,8 @@ namespace Molsketch {
     return result;
   }
 
-  XmlObjectInterface *SceneSettings::produceChild(const QString &name, const QString &type) {
-    Q_UNUSED(type)
+  XmlObjectInterface *SceneSettings::produceChild(const QString &name, const QXmlStreamAttributes &attributes) {
+    Q_UNUSED(attributes)
     Q_D(SceneSettings);
     if (d->settingsItems.contains(name))
       return d->settingsItems[name];

@@ -38,8 +38,8 @@ const QString SCENE_XML_WITH_ATTRIBUTE("<molscene MolsceneBondAngle=\"" + QStrin
 const QString MOLECULE_XML("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
                            "<molecule name=\"\">"
                            "<atomArray>"
-                           "<atom id=\"a1\" elementType=\"\" hydrogenCount=\"0\" colorR=\"0\" colorG=\"0\" colorB=\"0\" scalingParameter=\"1\" zLevel=\"3\" coordinates=\"5,5\"/>"
-                           "<atom id=\"a2\" elementType=\"\" hydrogenCount=\"0\" colorR=\"0\" colorG=\"0\" colorB=\"0\" scalingParameter=\"1\" zLevel=\"3\" coordinates=\"0,0\"/>"
+                           "<atom id=\"a1\" elementType=\"\" userCharge=\"0\" disableHydrogens=\"0\" hydrogens=\"0\" colorR=\"0\" colorG=\"0\" colorB=\"0\" scalingParameter=\"1\" zLevel=\"3\" coordinates=\"5,5\"/>"
+                           "<atom id=\"a2\" elementType=\"\" userCharge=\"0\" disableHydrogens=\"0\" hydrogens=\"0\" colorR=\"0\" colorG=\"0\" colorB=\"0\" scalingParameter=\"1\" zLevel=\"3\" coordinates=\"0,0\"/>"
                            "</atomArray>"
                            "<bondArray"
                            "><bond atomRefs2=\"a2 a1\" type=\"10\" colorR=\"0\" colorG=\"0\" colorB=\"0\" scalingParameter=\"1\" zLevel=\"2\" coordinates=\"0,0;5,5\"/>"
@@ -48,8 +48,8 @@ const QString MOLECULE_XML("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
 const QString ALTERNATIVE_MOLECULE_XML("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
                                        "<molecule name=\"\">"
                                        "<atomArray>"
-                                       "<atom id=\"a1\" elementType=\"\" hydrogenCount=\"0\" colorR=\"0\" colorG=\"0\" colorB=\"0\" scalingParameter=\"1\" zLevel=\"3\" coordinates=\"0,0\"/>"
-                                       "<atom id=\"a2\" elementType=\"\" hydrogenCount=\"0\" colorR=\"0\" colorG=\"0\" colorB=\"0\" scalingParameter=\"1\" zLevel=\"3\" coordinates=\"5,5\"/>"
+                                       "<atom id=\"a1\" elementType=\"\" userCharge=\"0\" disableHydrogens=\"0\" hydrogens=\"0\" colorR=\"0\" colorG=\"0\" colorB=\"0\" scalingParameter=\"1\" zLevel=\"3\" coordinates=\"0,0\"/>"
+                                       "<atom id=\"a2\" elementType=\"\" userCharge=\"0\" disableHydrogens=\"0\" hydrogens=\"0\" colorR=\"0\" colorG=\"0\" colorB=\"0\" scalingParameter=\"1\" zLevel=\"3\" coordinates=\"5,5\"/>"
                                        "</atomArray>"
                                        "<bondArray"
                                        "><bond atomRefs2=\"a1 a2\" type=\"10\" colorR=\"0\" colorG=\"0\" colorB=\"0\" scalingParameter=\"1\" zLevel=\"2\" coordinates=\"0,0;5,5\"/>"
@@ -57,8 +57,8 @@ const QString ALTERNATIVE_MOLECULE_XML("<?xml version=\"1.0\" encoding=\"UTF-8\"
                                        "</molecule>\n");
 
 struct MolSceneForTesting : public MolScene {
-  XmlObjectInterface* produceChild(const QString &childName, const QString &type) {
-    return MolScene::produceChild(childName, type);
+  XmlObjectInterface* produceChild(const QString &childName, const QXmlStreamAttributes &attributes) override {
+    return MolScene::produceChild(childName, attributes);
   }
   QList<const XmlObjectInterface*> children() const {
     return MolScene::children();
@@ -98,7 +98,7 @@ public:
   }
 
   void testDefaultProduceChild() {
-    QS_ASSERT_EQUALS(scene->produceChild("Somestring", ""), nullptr);
+    QS_ASSERT_EQUALS(scene->produceChild("Somestring", QXmlStreamAttributes()), nullptr);
     TS_ASSERT(scene->items().isEmpty());
   }
 
@@ -122,7 +122,9 @@ public:
       {"settings", "", typeid(SceneSettings)},
       };
     for (auto child : children) {
-      XmlObjectInterface *sceneChild = scene->produceChild(child.name, child.type);
+      QXmlStreamAttributes attributes;
+      attributes.append("type", child.type);
+      XmlObjectInterface *sceneChild = scene->produceChild(child.name, attributes);
       TSM_ASSERT(child.toString(), sceneChild);
       TSM_ASSERT_EQUALS(child.toString(), child.expectedType, std::type_index(typeid(*(sceneChild))));
       TSM_ASSERT(child.toString(), scene->children().contains(sceneChild));
