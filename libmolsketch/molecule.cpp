@@ -128,6 +128,8 @@ namespace Molsketch {
     setDefaults();
     clone(mol.atoms().toSet());
     setPos(mol.pos());
+    updateElectronSystems();
+    updateTooltip();
   }
 
   Molecule::Molecule(const Molecule &mol, const QSet<Atom *> &atoms, QGraphicsItem *parent)
@@ -138,9 +140,9 @@ namespace Molsketch {
     setDefaults();
     clone(atoms);
     setPos(mol.pos()); // TODO check this
-    }
+  }
 
-    Molecule::~Molecule() {}
+  Molecule::~Molecule() {}
 
   void Molecule::clone(QSet<Atom *> atoms)
   {

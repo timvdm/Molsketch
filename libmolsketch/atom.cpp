@@ -79,8 +79,12 @@ namespace Molsketch {
 
   Atom::Atom(const Atom &other GRAPHICSSCENESOURCE)
     : graphicsItem (other GRAPHICSSCENEINIT)
-  {
+  { // TODO unit test copy constructor
     initialize(other.scenePos(), other.element(), other.m_implicitHydrogens);
+    m_newmanDiameter = other.m_newmanDiameter;
+    m_userCharge = other.m_userCharge;
+    m_userElectrons = other.m_userElectrons;
+    m_userImplicitHydrogens = other.m_userImplicitHydrogens;
   }
 
   Atom::~Atom() {}
