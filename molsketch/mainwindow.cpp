@@ -614,7 +614,7 @@ void MainWindow::setCurrentFile(const QString &fileName)
   setWindowTitle(tr("%1[*] - %2").arg(shownName).arg(tr(PROGRAM_NAME))); // TODO use windowFilePath instead
 }
 
-void MainWindow::editPreferences( )
+void MainWindow::editPreferences()
 {
   SettingsDialog dialog(settings);
   connect(&dialog, SIGNAL(settingsChanged()), this, SLOT(readPreferences()));

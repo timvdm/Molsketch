@@ -82,9 +82,6 @@ void SettingsDialog::setInitialValues()
 
   ui.libraryPath->setText(settings->obabelIfacePath());
   ui.obfPath->setText(settings->obabelFormatsPath());
-
-  QWidget *drawingPage = findChild<QWidget*>("drawingPage");
-  setupDrawingSettings(new Molsketch::SceneSettings(Molsketch::SettingsFacade::transientSettings(drawingPage), drawingPage), drawingPage);
   // TODO accceptance test
 }
 
