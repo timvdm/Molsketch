@@ -1,5 +1,6 @@
 #include "sumformulaindicator.h"
 
+#include <QSet>
 #include <sumformula.h>
 #include <molscene.h>
 #include <molecule.h>
