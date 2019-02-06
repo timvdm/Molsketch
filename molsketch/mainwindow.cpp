@@ -283,14 +283,6 @@ bool MainWindow::saveAs() {
 
   settings->setLastPath(QFileInfo(fileName).path());
 
-  if (QFileInfo(fileName).suffix().isEmpty())
-  {
-    int index = filter.indexOf(QRegExp("\\*."));
-    filter = filter.remove(0, index + 1);
-    index = filter.indexOf(QRegExp("( \\*.)|(\\))"));
-    if (index > 0) filter.truncate(index);
-    fileName = fileName + filter;
-  }
   qDebug() << "Trying to save as " << fileName << "\n";
 
   return saveFile(fileName);
