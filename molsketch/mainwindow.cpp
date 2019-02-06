@@ -59,7 +59,7 @@
 
 #define PROGRAM_NAME "Molsketch"
 
-#define MSK_DEFAULT_FORMAT "MolsKetch default (*.msk)"
+#define MSK_DEFAULT_FORMAT "MolsKetch default (*.msk *.msm)"
 #define GRAPHIC_FILE_FORMATS "Scalable Vector Graphics (*.svg);;Portable Network Graphics (*.png);;Windows Bitmap (*.bmp);;Joint Photo Expert Group (*.jpeg)"
 #define GRAPHIC_DEFAULT_FORMAT "Portable Network Graphics (*.png)"
 #define OSRA_GRAPHIC_FILE_FORMATS "All supported types (*.*);;Images (*.png *.bmp *.jpg *.jpeg *.gif *.tif *.tiff);;Documents (*.pdf *.ps)"
@@ -72,6 +72,7 @@
 
 const char EMPTY_FILENAME[] = "untitled.msk";
 const char MSK_NATIVE_FORMAT[] = ".msk";
+const char MSM_MOLECULE_FORMAT[] = ".msm";
 
 using namespace Molsketch;
 
@@ -208,10 +209,15 @@ void MainWindow::openFile(const QString& fileName) {
   }
 
   settings->setLastPath(QFileInfo(fileName).path());
-  if (fileName.endsWith(MSK_NATIVE_FORMAT)) readMskFile(fileName, m_molView->scene());
-  else readToSceneUsingOpenBabel(fileName);
+  if (fileName.endsWith(MSM_MOLECULE_FORMAT)) {
+    QMessageBox::warning(this, tr("Molecule"), tr("File is an individual molecule,\nif you want to save it, use the molecule properties!"));
+    readMskFile(fileName, m_molView->scene());
+  } else {
+    if (fileName.endsWith(MSK_NATIVE_FORMAT)) readMskFile(fileName, m_molView->scene());
+    else readToSceneUsingOpenBabel(fileName);
+    setCurrentFile(fileName);
+  }
 
-  setCurrentFile(fileName);
 }
 
 bool MainWindow::saveFile(const QString& fileName) {
