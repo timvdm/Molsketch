@@ -280,6 +280,10 @@ bool MainWindow::saveAs() {
                                                   supportedFormats.join(";;"),
                                                   &filter);
   if (fileName.isEmpty()) return false;
+  if (MSK_DEFAULT_FORMAT == filter
+      && QFileInfo(fileName).suffix().isEmpty()
+      && !QFileInfo(fileName + MSK_NATIVE_FORMAT).exists())
+    fileName += MSK_NATIVE_FORMAT;
 
   settings->setLastPath(QFileInfo(fileName).path());
 

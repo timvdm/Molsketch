@@ -26,6 +26,9 @@
 #include "commands.h"
 #include "fileio.h"
 
+const char MSM_MOLECULE_FILTER[] = "MolsKetch molecule (*.msm)";
+const char MSM_MOLECULE_FORMAT[] = ".msm";
+
 namespace Molsketch {
 
   struct MoleculePopup::privateData
@@ -83,9 +86,14 @@ namespace Molsketch {
 
   void MoleculePopup::on_saveButton_clicked()
   {
-    QString filter = QString( "MolsKetch molecule (*.msm)");
-    QString saveFileName = QFileDialog::getSaveFileName(this, tr("Save molecule"), QString(), "MolsKetch molecule (*.msm)", &filter);
+    QString filter{MSM_MOLECULE_FILTER};
+    QString saveFileName = QFileDialog::getSaveFileName(this, tr("Save molecule"), QString(), MSM_MOLECULE_FILTER, &filter);
     if (saveFileName.isEmpty()) return;
+    if (MSM_MOLECULE_FILTER == filter
+        && QFileInfo(saveFileName).suffix().isEmpty()
+        && !QFileInfo(saveFileName + MSM_MOLECULE_FORMAT).exists())
+      saveFileName += MSM_MOLECULE_FORMAT;
+
     if (!writeMskFile(saveFileName, d->molecule))
       QMessageBox::warning(0, tr("Could not save"), tr("Could not open file for writing: ") + saveFileName);
   }
