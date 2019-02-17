@@ -6,6 +6,19 @@
     </ul>
 </b>
 
+<h1>0.6.0 Nitrogen</h1>
+<ul>
+    <li>Levels on which items are drawn are accessible; bonds are indicated to cover other bonds if on higher level</li>
+    <li>Broken  bond indicator with same color as rest of bond</li>
+    <li>Show sum formula of molecule during hover and after selection</li>
+    <li>Closable wiki query</li>
+    <li>Improved performance for drag-and-drop insertion of molecules</li>
+    <li>Associated *.msm files with Molsketch</li>
+    <li>Fixed crashes after undo/redo (changed linkage between molecule, bonds, atoms)</li>
+    <li>Fixed global preferences (accidentally had no effect)</li>
+    <li>Fixed number of hydrogens and charge in saving/loading molecules</li>
+</ul>
+
 <h2>0.5.2 Boron-11</h2>
 <ul>
     <li>(Drawing) properties of scene</li>
