@@ -23,7 +23,8 @@ unix {
   pixmap.files = images/molsketch.xpm
   pixmap.path = $$MSK_PREFIX/share/pixmaps
 
-  mimeicon.files = images/application-x-molsketch.svg
+  mimeicon.files = images/application-x-molsketch.svg \
+                   images/application-x-molsketch-molecule.svg
   mimeicon.path = $$MSK_PREFIX/share/icons/hicolor/scalable/mimetypes
 
   mimetype.files = molsketch.xml
