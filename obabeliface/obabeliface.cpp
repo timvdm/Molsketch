@@ -389,8 +389,10 @@ namespace Molsketch
 
     OpenBabel::OBMol obmol;
     qDebug() << "reading molecule" << input;
-    if (!conv.ReadString(&obmol, input.toStdString()))
+    if (!conv.ReadString(&obmol, input.toStdString())) {
       qCritical() << "Could not convert InChI:" << input; // TODO do we need error handling if false?
+      return nullptr;
+    }
     qDebug() << "Error messages:" << QString::fromStdString(OpenBabel::OBMessageHandler().GetMessageSummary());
 
     generate2dCoords(obmol);

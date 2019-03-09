@@ -45,7 +45,7 @@ namespace Molsketch {
     void ensureMolecule(MoleculeModelItem* item) {
       if (molecule) return;
       molecule = item->produceMolecule();
-      qDebug() << "produced molecule: " << (void*) molecule << (void*) item;
+      qDebug() << "produced molecule: " << (void*) molecule << "from item" << (void*) item;
     }
   };
 
