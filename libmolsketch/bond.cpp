@@ -490,13 +490,7 @@ namespace Molsketch {
 
     begin = mapFromParent(m_beginAtom->pos());
     end = mapFromParent(m_endAtom->pos());
-    qreal factor = 1.4 + lineWidth();
-    auto bondRectangle = QPainterPath(begin + factor * normalVector);
-    bondRectangle.lineTo(begin - factor * normalVector);
-    bondRectangle.lineTo(end - factor * normalVector);
-    bondRectangle.lineTo(end + factor * normalVector);
-    bondRectangle.closeSubpath();
-    auto clippingFromOverlappingBonds(bondRectangle.subtracted(coveringShapes));
+    auto clippingFromOverlappingBonds(shape().subtracted(coveringShapes));
     painter->setClipPath(clippingFromOverlappingBonds);
     auto clipPath = paintBrokenBondIndicators(painter, begin, end, vb, normalVector);
     painter->setClipPath(clippingFromOverlappingBonds.subtracted(clipPath));

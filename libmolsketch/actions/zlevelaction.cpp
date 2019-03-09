@@ -40,7 +40,7 @@ void ZLevelAction::execute() {
                                             tr("New level"),
                                             tr("Level (higher is drawn on top of lower):"),
                                             items().size() == 1
-                                            ? items().first()->zValue()
+                                            ? items().first()->zValue() // TODO this does not work for molecules
                                             : 0,
                                             -100,
                                             100,
