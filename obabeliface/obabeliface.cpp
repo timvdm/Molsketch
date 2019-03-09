@@ -168,9 +168,12 @@ namespace Molsketch
 
     qDebug() << "Number of atoms" <<obmol.NumAtoms();
     QHash<OBAtom*, Atom*> atomHash ;
+    QHash<Atom*, int> charges;
     // Add atoms one-by-ons
     FOR_ATOMS_OF_MOL(obatom, obmol) {
-      auto atom = new Atom(QPointF(obatom->x(), obatom->y()) * 40, Molsketch::number2symbol(obatom->GetAtomicNum()), false); // TODO this had to be done by MSK setting!
+      auto atom = new Atom(QPointF(obatom->x(), obatom->y()) * 40, Molsketch::number2symbol(obatom->GetAtomicNum()), true); // TODO this had to be done by MSK setting!
+//      atom->setNumImplicitHydrogens(obatom->ImplicitHydrogenCount()); // TODO check if hydrogens can be transfered (reference: wiki search for diazomethane -- diazo-group appears to be wrong)
+      charges[atom] = obatom->GetFormalCharge();
       atomHash[&(*obatom)] = atom;
       mol->addAtom(atom);
     }
@@ -183,11 +186,16 @@ namespace Molsketch
                                  atomHash[obbond->GetEndAtom()],
                                  Bond::simpleTypeFromOrder(obbond->GetBondOrder()));
       // Set special bond types
+      // TODO sometimes, when importing wikidata InChI molecules, this seems to lead to inverse bonds
       if (obbond->IsWedge())
         bond->setType( Bond::Wedge );
       if (obbond->IsHash())
         bond->setType( Bond::Hash );
     }
+
+    // Set charges (has to be done _after_ setting up the bond network
+    for (auto atom : charges.keys()) atom->setCharge(charges[atom]);
+
     return mol;
   }
 
@@ -197,6 +205,7 @@ namespace Molsketch
     using namespace OpenBabel;
     OBConversion conversion ;
     conversion.SetInFormat(conversion.FormatFromExt(fileName.toStdString())) ;
+    conversion.AddOption("h", OBConversion::GENOPTIONS);
     OBMol obmol;
 
     if (!conversion.ReadFile(&obmol, fileName.toStdString()))
@@ -386,6 +395,7 @@ namespace Molsketch
       qInfo() << "Available formats:" << outputFormats().join(", ");
       return 0;
     }
+    conv.AddOption("h", OpenBabel::OBConversion::GENOPTIONS);
 
     OpenBabel::OBMol obmol;
     qDebug() << "reading molecule" << input;

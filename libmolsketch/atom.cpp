@@ -1016,7 +1016,7 @@ namespace Molsketch {
   }
 
   qreal Atom::getBondExtent(const QLineF& outer1, const QLineF& outer2, qreal lineWidth) const { // Cave: atom has to be bond start
-    if (!isDrawn()) return 1;
+    if (!isDrawn()) return 0;
 
     // Assumption: p1 is the point closest to the atom; returned value is measured starting from atom accordingly
     QLineF middleLine{0.5 * (outer1.p1() + outer2.p1()), 0.5 * (outer1.p2() + outer2.p2())};
