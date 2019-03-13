@@ -542,6 +542,10 @@ namespace Molsketch {
   void Bond::setType(const BondType &t)
   {
     m_bondType = t;
+    if (Molecule *m = molecule()) {
+      m->updateElectronSystems();
+      m->updateTooltip();
+    }
     update();
   }
 
