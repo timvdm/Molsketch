@@ -404,14 +404,33 @@ namespace Molsketch {
     return path;
   }
 
-  QPainterPath clipBond(const QPointF& point,
+  QPainterPath Bond::getBrokenBondIndicatorsPath(const QPointF &begin, const QPointF &end, const QPointF &normalVector) const {
+    QPointF bondUnitVector((end-begin)/QLineF(end, begin).length());
+    const qreal decorationScale = 0.2; // TODO modifiable - from wedge bond width!
+    QPointF
+        x = normalVector*decorationScale,
+        y = 8*bondUnitVector*decorationScale,
+        xl = normalVector/QLineF(QPointF(), normalVector).length() * bondShapeGap() / 1.5,
+        yl = bondUnitVector * bondShapeGap() / 1.5;
+    QPainterPath path;
+    path.moveTo(-7*x - xl - y - yl);
+    path.lineTo(+7*x + xl - y - yl);
+    path.lineTo(+7*x + xl + yl);
+    path.lineTo(-7*x - xl + yl);
+    path.closeSubpath();
+    return path.translated(begin + 0.3 * (end - begin));
+  }
+
+
+  QPainterPath Bond::clipBrokenBondIndicator(const QPointF& point,
                      const QPointF& otherAtom,
-                     const QPointF& normalVector)
+                     const QPointF& normalVector) const
   {
     QPointF bondVector = otherAtom - point;
+    QPointF bondVectorOffset = bondVector / QLineF(QPointF(), bondVector).length() * 2 * lineWidth();
     QPainterPath path(brokenBondIndicator(point, bondVector, normalVector));
-    path.lineTo(point + 1.4 * normalVector); // TODO get from wedge bond width + linewidth
-    path.lineTo(point - 1.4 * normalVector); // TODO get from wedge bond width + linewidth
+    path.lineTo(point + 1.4 * normalVector - bondVectorOffset); // TODO get from wedge bond width + linewidth
+    path.lineTo(point - 1.4 * normalVector - bondVectorOffset); // TODO get from wedge bond width + linewidth
     path.closeSubpath();
     return path;
   }
@@ -420,28 +439,16 @@ namespace Molsketch {
                            const QPainterPath& path)
   {
     QPen subPen(painter->pen());
-    subPen.setWidthF(subPen.widthF()* 0.75);
+    subPen.setWidthF(subPen.widthF()* 0.75); // TODO fix shape box accordingly
     painter->save();
     painter->setPen(subPen);
     painter->drawPath(path);
     painter->restore();
   }
 
-  QPainterPath Bond::paintBrokenBondIndicators(QPainter *painter, const QPointF &begin, const QPointF &end, const QPointF &vb, const QPointF &normalVector) {
-    const bool beginBroken = m_beginAtom->element().isEmpty();
-    const bool endBroken = m_endAtom->element().isEmpty();
-    QPainterPath clipPath;
-    if (beginBroken) // TODO move this to after where the bond clipping has been computed
-    {
-      drawBrokenIndicator(painter, brokenBondIndicator(begin, vb, normalVector));
-      clipPath.addPath(clipBond(begin, end, normalVector));
-    }
-    if (endBroken)
-    {
-      drawBrokenIndicator(painter, brokenBondIndicator(end, -vb, normalVector));
-      clipPath.addPath(clipBond(end, begin, normalVector));
-    }
-    return clipPath;
+  void Bond::paintBrokenBondIndicators(QPainter *painter, const QPointF &begin, const QPointF &end, const QPointF &vb, const QPointF &normalVector) {
+    if (m_beginAtom->element().isEmpty()) drawBrokenIndicator(painter, brokenBondIndicator(begin, vb, normalVector));
+    if (m_endAtom->element().isEmpty()) drawBrokenIndicator(painter, brokenBondIndicator(end, -vb, normalVector));
   }
 
   void Bond::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
@@ -486,14 +493,16 @@ namespace Molsketch {
 
     QPainterPath coveringShapes;
     for (auto coveringBond : coveringBonds())
-      coveringShapes = coveringShapes.united(mapFromItem(coveringBond, coveringBond->shape()));
+      coveringShapes += mapFromItem(coveringBond, coveringBond->shape());
 
     begin = mapFromParent(m_beginAtom->pos());
     end = mapFromParent(m_endAtom->pos());
-    auto clippingFromOverlappingBonds(shape().subtracted(coveringShapes));
-    painter->setClipPath(clippingFromOverlappingBonds);
-    auto clipPath = paintBrokenBondIndicators(painter, begin, end, vb, normalVector);
-    painter->setClipPath(clippingFromOverlappingBonds.subtracted(clipPath));
+    painter->setClipPath(shape().subtracted(coveringShapes));
+    paintBrokenBondIndicators(painter, begin, end, vb, normalVector);
+    if (m_beginAtom->element().isEmpty())
+      painter->setClipPath(painter->clipPath().subtracted(clipBrokenBondIndicator(begin, end, normalVector)));
+    if (m_endAtom->element().isEmpty())
+      painter->setClipPath(painter->clipPath().subtracted(clipBrokenBondIndicator(end, begin, normalVector)));
 
     switch ( m_bondType ) // TODO beautify
     {
@@ -734,7 +743,8 @@ namespace Molsketch {
         break;
       case Bond::Wedge:
       case Bond::Hash:
-        return getWedgeBondShape();
+        result = getWedgeBondShape();
+        break;
       case DoubleSymmetric:
         {
           QPointF offset = .5*normalVector;
@@ -807,6 +817,12 @@ namespace Molsketch {
         }
       default: ;
     }
+    if (m_beginAtom->element().isEmpty())
+      (result -= clipBrokenBondIndicator(mapFromParent(m_beginAtom->pos()), mapFromParent(m_endAtom->pos()), normalVector))
+        += getBrokenBondIndicatorsPath(mapFromParent(m_beginAtom->pos()), mapFromParent(m_endAtom->pos()), normalVector);
+    if (m_endAtom->element().isEmpty())
+      (result -= clipBrokenBondIndicator(mapFromParent(m_endAtom->pos()), mapFromParent(m_beginAtom->pos()), normalVector))
+        += getBrokenBondIndicatorsPath(mapFromParent(m_endAtom->pos()), mapFromParent(m_beginAtom->pos()), normalVector);
     return result;
   }
 } // namespace

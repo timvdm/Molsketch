@@ -151,7 +151,9 @@ namespace Molsketch {
     qreal getExtentForStereoBond(const Atom *atom, const QPair<QLineF, QLineF> &outerLines, bool reverse) const;
     QPair<QLineF, QLineF> getOuterLimitsOfStereoBond() const;
     qreal bondShapeGap() const;
-    QPainterPath paintBrokenBondIndicators(QPainter *painter, const QPointF &begin, const QPointF &end, const QPointF &vb, const QPointF &normalVector);
+    void paintBrokenBondIndicators(QPainter *painter, const QPointF &begin, const QPointF &end, const QPointF &vb, const QPointF &normalVector);
+    QPainterPath getBrokenBondIndicatorsPath(const QPointF &begin, const QPointF &end, const QPointF &normalVector) const;
+    QPainterPath clipBrokenBondIndicator(const QPointF &point, const QPointF &otherAtom, const QPointF &normalVector) const;
   };
 
 } // namespace
