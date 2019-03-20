@@ -99,6 +99,9 @@ namespace Molsketch {
     switch (event->key()) {
       case Qt::Key_Escape:
         cleanUp();
+        clearFocus();
+        event->accept();
+        break;
       case Qt::Key_Return:
         clearFocus();
         event->accept();

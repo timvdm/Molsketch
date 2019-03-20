@@ -29,7 +29,7 @@ namespace Molsketch {
   public:
     explicit flipBondAction(MolScene *scene = 0);
   private:
-    void execute();
+    void execute() override;
   };
 
 } // namespace Molsketch

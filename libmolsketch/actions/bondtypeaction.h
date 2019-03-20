@@ -29,9 +29,9 @@ namespace Molsketch {
   public:
     explicit bondTypeAction(MolScene* scene = 0);
   private:
-    void applyTypeToItem(graphicsItem *item, int type) const;
-    bool getTypeFromItem(graphicsItem *item, int &type) const;
-    int defaultType() const;
+    void applyTypeToItem(graphicsItem *item, int type) const override;
+    bool getTypeFromItem(graphicsItem *item, int &type) const override;
+    int defaultType() const override;
   };
 
 } // namespace Molsketch

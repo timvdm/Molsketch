@@ -45,7 +45,7 @@ namespace Molsketch {
 
   public:
     enum { Type = graphicsItem::BondType };
-    int type() const {return Type; }
+    int type() const override {return Type; }
 
     enum BondType
     {
@@ -83,11 +83,11 @@ namespace Molsketch {
 
     virtual ~Bond();
 
-    void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget);
-    QVariant itemChange(GraphicsItemChange change, const QVariant & value);
+    void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
+    QVariant itemChange(GraphicsItemChange change, const QVariant & value) override;
 
-    virtual QPainterPath shape() const;
-    virtual QRectF boundingRect() const;
+    virtual QPainterPath shape() const override;
+    virtual QRectF boundingRect() const override;
     /** Returns the angle of this bond from atom @p origin */
     qreal bondAngle(const Atom* origin) const ;
     /** Returns the main bond axis */
@@ -118,19 +118,19 @@ namespace Molsketch {
          */
     static QLineF shiftVector(const QLineF & vector, qreal shift);
 
-    QString xmlName() const;
+    QString xmlName() const override;
     static QString xmlClassName();
     /** set the coordinates of the two atoms */
-    void setCoordinates(const QVector<QPointF> &c) ;
+    void setCoordinates(const QVector<QPointF> &c) override;
     /** get the coordinates of the two atoms */
-    QPolygonF coordinates() const ;
+    QPolygonF coordinates() const override;
 
   protected:
-    QXmlStreamAttributes graphicAttributes() const ;
-    void readGraphicAttributes(const QXmlStreamAttributes &attributes) ;
-    void prepareContextMenu(QMenu *contextMenu);
+    QXmlStreamAttributes graphicAttributes() const override;
+    void readGraphicAttributes(const QXmlStreamAttributes &attributes) override;
+    void prepareContextMenu(QMenu *contextMenu) override;
     XmlObjectInterface* produceChild(const QString &name, const QXmlStreamAttributes &attributes) override;
-    void afterReadFinalization();
+    void afterReadFinalization() override;
     virtual QPainterPath outline() const;
 
   private:

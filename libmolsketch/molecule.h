@@ -82,16 +82,16 @@ namespace Molsketch {
 
     static Molecule *combineMolecules(const QSet<Molecule *> &molecules, QMap<Atom*, Atom*>*atomMap, QMap<Bond *, Bond *> *bondMap);
 
-    QRectF boundingRect() const;
+    QRectF boundingRect() const override;
 
     /** Paint method to draw the atom onto a QPainter. Needed for Qt painting.*/
-    void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget);
+    void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
 
 
     /** Coordinates */
-    QPolygonF coordinates() const ;
+    QPolygonF coordinates() const override;
     /** Set coordinates */
-    void setCoordinates(const QVector<QPointF> &c) ;
+    void setCoordinates(const QVector<QPointF> &c) override;
 
     Atom* addAtom(Atom* atom); // TODO remove
 
@@ -137,7 +137,7 @@ namespace Molsketch {
         */
     void rebuild();
 
-    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
 
     /// Returns the pointer from ID
     Atom* atom(const QString& atomID) const ;
@@ -154,7 +154,7 @@ namespace Molsketch {
     QList<Bond*> bonds() const;
     SumFormula sumFormula() const;
 
-    QWidget *getPropertiesWidget();
+    QWidget *getPropertiesWidget() override;
 
     /** Returns the MolScene of the molecule. */
     virtual MolScene* scene() const;
@@ -168,21 +168,21 @@ namespace Molsketch {
       */
     void invalidateElectronSystems();
 
-    QString xmlName() const;
+    QString xmlName() const override;
     static QString xmlClassName();
 
   protected:
 
-    void prepareContextMenu(QMenu *contextMenu);
+    void prepareContextMenu(QMenu *contextMenu) override;
 
     /** Event handler for changes of the molecule. Needed for rotation handling.*/
-    QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+    QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 
-    QList<const XmlObjectInterface *> children() const ;
+    QList<const XmlObjectInterface *> children() const override;
     XmlObjectInterface *produceChild(const QString &name, const QXmlStreamAttributes &attributes) override;
-    void afterReadFinalization();
-    void readAttributes(const QXmlStreamAttributes& attributes);
-    QXmlStreamAttributes xmlAttributes() const;
+    void afterReadFinalization() override;
+    void readAttributes(const QXmlStreamAttributes& attributes) override;
+    QXmlStreamAttributes xmlAttributes() const override;
   private:
     void redoIndexes();
     void setDefaults();

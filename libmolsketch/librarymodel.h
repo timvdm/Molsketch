@@ -41,9 +41,9 @@ public:
     /** Adds the molecule to the model's list. Assumes ownership. */
     void addMolecule(MoleculeModelItem *molecule);
     QStringList mimeTypes() const override;
-    Qt::ItemFlags flags(const QModelIndex &index) const;
-    bool canFetchMore(const QModelIndex &parent) const;
-    void fetchMore(const QModelIndex &parent);
+    Qt::ItemFlags flags(const QModelIndex &index) const override;
+    bool canFetchMore(const QModelIndex &parent) const override;
+    void fetchMore(const QModelIndex &parent) override;
 };
 
 } // namespace Molsketch

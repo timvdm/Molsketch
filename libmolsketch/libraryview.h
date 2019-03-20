@@ -33,7 +33,7 @@ class LibraryView : public QListView
 public:
   explicit LibraryView(QWidget *parent = 0);
 private:
-  void paintEvent(QPaintEvent *e);
+  void paintEvent(QPaintEvent *e) override;
 };
 
 } // namespace Molsketch

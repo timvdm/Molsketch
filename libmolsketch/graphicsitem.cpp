@@ -57,18 +57,18 @@ namespace Molsketch {
     {
       setText(QObject::tr("Move command"));
     }
-    void redo()
+    void redo() override
     {
       for(auto item : items)
         item->movePointBy(shift, index);
 
       shift *= -1;
     }
-    void undo()
+    void undo() override
     {
       redo() ;
     }
-    bool mergeWith(const QUndoCommand *other)
+    bool mergeWith(const QUndoCommand *other) override
     {
       const movePointCommand* mpc = dynamic_cast<const movePointCommand*>(other) ;
       if (!mpc) return false ;
@@ -77,7 +77,7 @@ namespace Molsketch {
       shift += mpc->shift;
       return true ;
     }
-    int id() const { return 5000; } // TODO define command IDs in central place
+    int id() const override { return 5000; } // TODO define command IDs in central place
   };
 
   class graphicsItem::privateData

@@ -29,7 +29,7 @@ class HelpForEmptyToolBox : public Molsketch::HelpTextOnEmptyLabel
 public:
   explicit HelpForEmptyToolBox(const QString& helpText, QToolBox* toolBox, QWidget *parent = 0);
 protected:
-  bool isEmpty() const;
+  bool isEmpty() const override;
 private:
   QToolBox* toolBox;
 };

@@ -35,10 +35,10 @@ namespace Molsketch {
     explicit ringAction(MolScene* scene);
     ~ringAction();
 
-    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-    void leaveSceneEvent(QEvent *event);
-    void enterSceneEvent(QEvent *event);
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
+    void leaveSceneEvent(QEvent *event) override;
+    void enterSceneEvent(QEvent *event) override;
 
   private:
     class privateData;

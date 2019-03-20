@@ -29,7 +29,7 @@ class ItemTypeSelectionAction : public AbstractItemAction
 {
 public:
     ItemTypeSelectionAction(MolScene *parent);
-    void execute();
+    void execute() override;
     static QList<QGraphicsItem*> itemsByType(const QList<QGraphicsItem *>& items, const QList<int>& types);
     static void selectItems(QGraphicsScene* scene, const QList<QGraphicsItem*>& items);
 };

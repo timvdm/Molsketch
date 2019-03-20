@@ -80,7 +80,7 @@ namespace Molsketch {
       SigmaElectrons(Geometry geometry = TwoCenter) : ElectronSystem(), m_geometry(geometry) {}
       virtual ~SigmaElectrons() {}
 
-      Type type() const { return SigmaType; }
+      Type type() const override { return SigmaType; }
 
       Geometry getGeometry() const { return m_geometry; }
       void setGeometry(Geometry geometry) { m_geometry = geometry; }
@@ -97,7 +97,7 @@ namespace Molsketch {
       PiElectrons(QList<Atom*> atoms, int numElectrons);
       PiElectrons(const QPair<Atom*, Atom*>& atoms, int numElectrons);
 
-      Type type() const { return PiType; }
+      Type type() const override { return PiType; }
   };
 
   class CoordElectrons : public ElectronSystem
@@ -106,7 +106,7 @@ namespace Molsketch {
       CoordElectrons() : ElectronSystem() {}
       virtual ~CoordElectrons() {}
 
-      Type type() const { return CoordType; }
+      Type type() const override { return CoordType; }
   };
 
 

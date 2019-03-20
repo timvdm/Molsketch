@@ -68,12 +68,12 @@ class MainWindow : public QMainWindow
 public:
   MainWindow();
 
-  QMenu* createPopupMenu();
+  QMenu* createPopupMenu() override;
 
   void openFile(const QString &fileName);
 protected:
   /** Reimplements the close event to asked for a save on exit. */
-  void closeEvent(QCloseEvent *event);
+  void closeEvent(QCloseEvent *event) override;
 
   explicit MainWindow(ApplicationSettings* appSetttings);
 

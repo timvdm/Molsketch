@@ -618,7 +618,7 @@ namespace Molsketch {
   void MolScene::dragEnterEvent(QGraphicsSceneDragDropEvent *event)
   {
     if (!event->mimeData() || !event->mimeData()->hasFormat(mimeType())) return;
-    if (!event->proposedAction() == Qt::CopyAction) return;
+    if (event->proposedAction() != Qt::CopyAction) return;
     event->accept();
     for (genericAction* action : sceneActions())
       action->setChecked(false);

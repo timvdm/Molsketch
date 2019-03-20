@@ -30,35 +30,35 @@ namespace Molsketch {
     privateData *d;
   public:
     enum { Type = FrameType };
-    int type() const { return Type; }
+    int type() const override { return Type; }
 
     explicit Frame(QGraphicsItem* parent = 0);
     ~Frame();
-    void setCoordinates(const QVector<QPointF> &c);
-    QPolygonF coordinates() const;
-    QPolygonF moveablePoints() const;
-    void movePointBy(const QPointF &offset, int pointIndex);
+    void setCoordinates(const QVector<QPointF> &c) override;
+    QPolygonF coordinates() const override;
+    QPolygonF moveablePoints() const override;
+    void movePointBy(const QPointF &offset, int pointIndex) override;
 
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    QRectF boundingRect() const;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
 //    QRectF boundingRect() const;
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-    int coordinateCount() const;
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
+    int coordinateCount() const override;
 
     void setFrameString(const QString& frameString);
     QString frameString() const;
 
-    QString xmlName() const;
+    QString xmlName() const override;
     static QString xmlClassName();
-    QPointF getPoint(const int &index) const;
+    QPointF getPoint(const int &index) const override;
   protected:
-    void readGraphicAttributes(const QXmlStreamAttributes &attributes);
-    QXmlStreamAttributes graphicAttributes() const;
-    void prepareContextMenu(QMenu *contextMenu);
+    void readGraphicAttributes(const QXmlStreamAttributes &attributes) override;
+    QXmlStreamAttributes graphicAttributes() const override;
+    void prepareContextMenu(QMenu *contextMenu) override;
     abstractXmlObject* produceChild(const QString &name, const QXmlStreamAttributes &attributes) override;
-    QList<const XmlObjectInterface *> children() const;
+    QList<const XmlObjectInterface *> children() const override;
   private:
-    qreal sceneLineWidth(MolScene *scene) const;
+    qreal sceneLineWidth(MolScene *scene) const override;
   }; // TODO let classes start with capital letters.
 
 } // namespace Molsketch

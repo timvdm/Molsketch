@@ -49,7 +49,7 @@ signals:
     Molsketch::SettingsFacade *sceneSettingsFacade;
 
   private slots:
-    void accept();
+    void accept() override;
     void applyChanges();
     void setInitialValues();
     void buttonClicked(QAbstractButton * button);

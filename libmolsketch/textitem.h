@@ -35,14 +35,14 @@ namespace Molsketch {
   protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
-    void focusInEvent(QFocusEvent *event);
+    void focusInEvent(QFocusEvent *event) override;
     void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
     void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) override;
 
     // XmlObjectInterface interface
   public:
-    QXmlStreamReader& readXml(QXmlStreamReader& in);
-    QXmlStreamWriter& writeXml(QXmlStreamWriter& out) const;
+    QXmlStreamReader& readXml(QXmlStreamReader& in) override;
+    QXmlStreamWriter& writeXml(QXmlStreamWriter& out) const override;
     static QString xmlClassName();
   private:
     class privateData;

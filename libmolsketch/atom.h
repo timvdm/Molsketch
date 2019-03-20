@@ -46,7 +46,7 @@ namespace Molsketch {
 
   public:
     enum { Type = AtomType };
-    int type() const { return Type; }
+    int type() const override { return Type; }
 
     /**
        * Creates a new atom.
@@ -59,13 +59,13 @@ namespace Molsketch {
          bool implicitHydrogens = true, QGraphicsItem* parent = 0 GRAPHICSSCENEHEADER ) ;
     Atom(const Atom& other GRAPHICSSCENEHEADER);
     ~Atom() ;
-    virtual QRectF boundingRect() const;
-    void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget);
+    virtual QRectF boundingRect() const override;
+    void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
     qreal annotationDirection() const ;
 
     bool isDrawn() const;
-    void setCoordinates(const QVector<QPointF> &c) ;
-    QPolygonF coordinates() const ;
+    void setCoordinates(const QVector<QPointF> &c) override;
+    QPolygonF coordinates() const override;
     virtual Molecule* molecule() const;
     void setMolecule(Molecule *molecule);
     QString element() const;
@@ -116,14 +116,14 @@ namespace Molsketch {
       */
     void setNumImplicitHydrogens(const int &number);
 
-    QString xmlName() const;
+    QString xmlName() const override;
     static QString xmlClassName();
     Molsketch::Alignment labelAlignment() const;
     Bond *bondTo(Atom *other) const;
-    QWidget* getPropertiesWidget();
+    QWidget* getPropertiesWidget() override;
     void propertiesWidgetDestroyed();
     QPointF bondDrawingStart(const Atom *other, qreal bondLineWidth) const;
-    bool contains(const QPointF &point) const;
+    bool contains(const QPointF &point) const override;
     QPolygonF moveablePoints() const override;
 
     void updateShape();
@@ -134,12 +134,12 @@ namespace Molsketch {
   protected:
     // Event handlers
     /** Event handler to handle element changes. */
-    QVariant itemChange(GraphicsItemChange change, const QVariant & value);
+    QVariant itemChange(GraphicsItemChange change, const QVariant & value) override;
     /** Event handler to edit element (double click) */
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
 
-    void readGraphicAttributes(const QXmlStreamAttributes &attributes) ;
-    QXmlStreamAttributes graphicAttributes() const ;
+    void readGraphicAttributes(const QXmlStreamAttributes &attributes) override;
+    QXmlStreamAttributes graphicAttributes() const override;
     QList<const XmlObjectInterface *> children() const override;
     XmlObjectInterface* produceChild(const QString &name, const QXmlStreamAttributes &attributes) override;
 
@@ -175,7 +175,7 @@ namespace Molsketch {
     QString getLabelWithHydrogens();
     void drawNewman(QPainter *painter);
     QPointF getBondDrawingStartFromBoundingBox(const QLineF &connection, qreal bondLineWidth) const;
-    bool showHoverPoint() const { return false; }
+    bool showHoverPoint() const override { return false; }
     class IntersectionData;
     IntersectionData intersectedEdge(const QLineF &line, qreal lineWidth) const;
     qreal getExtentForIntersectionOfOuterLineAndEdge(const Atom::IntersectionData &edgeIntersection, const QLineF &outer) const;

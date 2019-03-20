@@ -28,9 +28,9 @@ namespace Molsketch {
   public:
     explicit reactionArrowAction(MolScene* scene);
     ~reactionArrowAction();
-    void mousePressEvent(QGraphicsSceneMouseEvent *event) ;
-    void mouseMoveEvent(QGraphicsSceneMouseEvent *event) ;
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) ;
+    void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
   protected:
     virtual QPolygonF makePolygon(const QLineF& line);
   private:

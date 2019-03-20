@@ -56,9 +56,9 @@ namespace Molsketch {
     qreal relativeWidth() const ;
 
     /** Event handlers */
-    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-    void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
+    void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 
     /** coordinate functions */
     virtual QPolygonF coordinates() const = 0;
@@ -94,8 +94,8 @@ namespace Molsketch {
     qreal pointSelectionDistance() const;
     virtual bool showHoverBox() const { return true; }
     virtual bool showHoverPoint() const { return true; }
-    void readAttributes(const QXmlStreamAttributes &attributes);
-    QXmlStreamAttributes xmlAttributes() const;
+    void readAttributes(const QXmlStreamAttributes &attributes) override;
+    QXmlStreamAttributes xmlAttributes() const override;
     virtual void readGraphicAttributes(const QXmlStreamAttributes& attributes) { Q_UNUSED(attributes)}
     virtual QXmlStreamAttributes graphicAttributes() const { return QXmlStreamAttributes() ; }
     /**
@@ -105,7 +105,7 @@ namespace Molsketch {
     void attemptBeginMacro(const QString& text);
     void attemptEndEndMacro();
     virtual void prepareItemContextMenu(QMenu* contextMenu);
-    QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+    QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
     template<typename T>
 
     static QList<T> itemsByType(QList<QGraphicsItem*> input) {
@@ -125,8 +125,8 @@ namespace Molsketch {
     qreal lineWidthScaling ;
     class privateData;
     privateData *d;
-    virtual qreal sceneLineWidth(MolScene* scene) const ;
-    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event) ;
+    virtual qreal sceneLineWidth(MolScene* scene) const;
+    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event) override;
     // TODO automatically return item children from graphicsitem as xmlitem
   };
 

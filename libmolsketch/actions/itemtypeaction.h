@@ -34,8 +34,8 @@ namespace Molsketch {
     virtual void applyTypeToItem(graphicsItem* item, int type) const = 0;
     virtual bool getTypeFromItem(graphicsItem* item, int& type) const = 0;
   private:
-    void applyType(int type, const QVariant &data) const;
-    void getType(int &type, QVariant &data) const;
+    void applyType(int type, const QVariant &data) const override;
+    void getType(int &type, QVariant &data) const override;
   };
 
 } // namespace Molsketch

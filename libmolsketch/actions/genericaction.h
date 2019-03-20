@@ -51,7 +51,7 @@ namespace Molsketch {
   protected:
     MolScene *scene() const ;
     QUndoStack* undoStack() const ;
-    bool eventFilter(QObject *object, QEvent *event);
+    bool eventFilter(QObject *object, QEvent *event) override;
     void attemptUndoPush(QUndoCommand* command) const ;
     void attemptBeginMacro(const QString& text) const;
     void attemptEndMacro() const;

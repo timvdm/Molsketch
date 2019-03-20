@@ -31,8 +31,8 @@ namespace Molsketch {
     Grid(SceneSettings *settings);
     ~Grid();
     virtual QPointF alignPoint(const QPointF& point);
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    QRectF boundingRect() const;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
   private:
     class privateData;
     privateData *d;

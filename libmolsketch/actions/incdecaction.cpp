@@ -49,11 +49,11 @@ namespace Molsketch {
     {
     }
 
-    void redo()
+    void redo() override
     {
       (t->*setFunction)((t->*getFunction)() + (plus ? 1 : -1)) ;
     }
-    void undo()
+    void undo() override
     {
       (t->*setFunction)((t->*getFunction)() + (plus ? -1 : 1)) ;
     }

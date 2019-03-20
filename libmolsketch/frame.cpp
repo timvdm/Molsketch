@@ -111,7 +111,7 @@ public:
 template <void (QPainterPath::*fp)(const QPointF&)>
 class SinglePointSegment : public PathSegmentParser
 {
-  void process(QPainterPath &path, CoordinateParser &parser)
+  void process(QPainterPath &path, CoordinateParser &parser) override
   {
     parser.parse(regExp().capturedTexts().mid(1));
     (path.*fp)(parser.getCurrentCoordinate());
@@ -122,7 +122,7 @@ public:
 
 class SilentMoveSegment : public PathSegmentParser
 {
-  void process(QPainterPath &path, CoordinateParser &parser)
+  void process(QPainterPath &path, CoordinateParser &parser) override
   {
     Q_UNUSED(path)
     parser.parse(regExp().capturedTexts().mid(1));
@@ -133,7 +133,7 @@ public:
 
 class QuadToSegment : public PathSegmentParser
 {
-  void process(QPainterPath &path, CoordinateParser &parser)
+  void process(QPainterPath &path, CoordinateParser &parser) override
   {
     parser.parse(regExp().capturedTexts().mid(1,9));
     QPointF point1(parser.getCurrentCoordinate());

@@ -43,7 +43,7 @@ namespace Molsketch {
     Ui::arrowPopup *ui;
     class privateData;
     privateData *d;
-    void propertiesChanged();
+    void propertiesChanged() override;
   private slots:
     void applyPropertiesToArrow();
   };

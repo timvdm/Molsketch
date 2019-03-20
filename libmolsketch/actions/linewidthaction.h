@@ -39,7 +39,7 @@ namespace Molsketch {
     explicit lineWidthAction(MolScene *parent = 0);
 
   private:
-    void execute() ;
+    void execute() override;
   };
 
 } // namespace

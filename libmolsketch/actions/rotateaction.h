@@ -29,9 +29,9 @@ namespace Molsketch {
     Q_OBJECT
   public:
     explicit transformAction(MolScene* scene);
-    void mousePressEvent(QGraphicsSceneMouseEvent *event) ;
-    void mouseMoveEvent(QGraphicsSceneMouseEvent *event) ;
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) ;
+    void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 
   protected:
     virtual QTransform generateTransform(const QLineF& originalLine, const QLineF& currentLine) = 0;
@@ -48,9 +48,9 @@ namespace Molsketch {
   public:
     explicit rotateAction(MolScene* scene) ;
   private:
-    QTransform generateTransform(const QLineF &originalLine, const QLineF &currentLine) ;
-    void snapLine(const QLineF &originalLine, QLineF &currentLine);
-    QString cursorLabel(const QLineF &originalLine, QLineF &currentLine);
+    QTransform generateTransform(const QLineF &originalLine, const QLineF &currentLine) override;
+    void snapLine(const QLineF &originalLine, QLineF &currentLine) override;
+    QString cursorLabel(const QLineF &originalLine, QLineF &currentLine) override;
   };
 
   class translateAction : public transformAction
@@ -59,8 +59,8 @@ namespace Molsketch {
   public:
     explicit translateAction(MolScene* scene) ;
   private:
-    QTransform generateTransform(const QLineF &originalLine, const QLineF &currentLine) ;
-    void snapLine(const QLineF &originalLine, QLineF &currentLine);
+    QTransform generateTransform(const QLineF &originalLine, const QLineF &currentLine) override;
+    void snapLine(const QLineF &originalLine, QLineF &currentLine) override;
   };
 
 } // namespace Molsketch

@@ -3,6 +3,7 @@ MSK_SOURCE_BASE = $$PWD
 QT += widgets printsupport svg
 CONFIG += silent c++14
 lessThan(QT_MAJOR_VERSION,5): QMAKE_CXXFLAGS += -std=c++11
+QMAKE_CXXFLAGS += -Wsuggest-override
 
 qtVersionSuffix=""
 equals(QT_MAJOR_VERSION, 5) {

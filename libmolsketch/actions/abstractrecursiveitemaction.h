@@ -42,7 +42,7 @@ namespace Molsketch
   public:
     explicit abstractRecursiveItemAction(MolScene *parent = 0);
   protected:
-    QSet<graphicsItem*> filterItems(const QList<QGraphicsItem *> &list) const;
+    QSet<graphicsItem*> filterItems(const QList<QGraphicsItem *> &list) const override;
   };
 
 } // namespace

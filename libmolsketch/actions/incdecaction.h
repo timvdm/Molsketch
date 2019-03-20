@@ -31,7 +31,7 @@ namespace Molsketch {
   public:
     explicit incDecAction(MolScene* scene);
     ~incDecAction() ;
-    void mousePressEvent(QGraphicsSceneMouseEvent *event) ;
+    void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
     QAction* decrementAction() const;
     QAction* incrementAction() const;
   protected:

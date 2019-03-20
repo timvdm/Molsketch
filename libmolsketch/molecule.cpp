@@ -45,8 +45,8 @@ namespace Molsketch {
     Molecule* p ;
   public:
     explicit AtomProxyList(Molecule* parent) : p(parent) {}
-    QString xmlName() const { return "atomArray"; }
-    QList<const XmlObjectInterface *> children() const {
+    QString xmlName() const override { return "atomArray"; }
+    QList<const XmlObjectInterface *> children() const override {
       QList<const XmlObjectInterface*> result;
       for (auto atom :  p->atoms()) result << atom;
       return result;
@@ -64,8 +64,8 @@ namespace Molsketch {
     Molecule* p ;
   public:
     explicit BondProxyList(Molecule* parent) : p(parent) {}
-    QString xmlName() const { return "bondArray"; }
-    QList<const XmlObjectInterface *> children() const {
+    QString xmlName() const override { return "bondArray"; }
+    QList<const XmlObjectInterface *> children() const override {
       QList<const XmlObjectInterface*> result;
       for (auto bond :  p->bonds()) result << bond;
       return result;
@@ -745,7 +745,7 @@ void Molecule::updateElectronSystems()
   QList<Atom*> Molecule::smallestRing(QList<Atom*> atomList) const // TODO test
   { // TODO JAVA-style iterators for clarity
     if (atomList.empty()) return atomList ;
-    int size = INFINITY ;
+    int size = INT_MAX ;
     QList<Atom*> ring ;
     foreach (Atom* next, atomList.last()->neighbours())
     {

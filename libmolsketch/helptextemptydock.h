@@ -29,7 +29,7 @@ namespace Molsketch {
   public:
     explicit HelpTextEmptyDock(const QString& helpText, QWidget *parent = 0);
   protected:
-    bool isEmpty() const;
+    bool isEmpty() const override;
   };
 
 } // namespace Molsketch

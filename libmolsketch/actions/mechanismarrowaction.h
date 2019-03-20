@@ -31,7 +31,7 @@ namespace Molsketch {
     explicit mechanismArrowAction(MolScene* scene);
     ~mechanismArrowAction();
   private:
-    QPolygonF makePolygon(const QLineF &line);
+    QPolygonF makePolygon(const QLineF &line) override;
   };
 
 } // namespace Molsketch

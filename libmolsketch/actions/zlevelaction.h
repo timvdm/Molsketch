@@ -28,7 +28,7 @@ class ZLevelAction : public abstractRecursiveItemAction
 public:
   explicit ZLevelAction(MolScene *parent = 0);
 private:
-  void execute();
+  void execute() override;
 };
 
 } // namespace Molsketch

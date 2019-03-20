@@ -30,7 +30,7 @@ namespace Molsketch {
   public:
     explicit flipStereoBondsAction(MolScene *scene = 0);
   private:
-    void execute();
+    void execute() override;
   };
 
 } //namespace Molsketch

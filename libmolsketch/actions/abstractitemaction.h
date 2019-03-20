@@ -67,7 +67,7 @@ namespace Molsketch {
   };
 
   class TopLevelItemAction : public AbstractItemAction {
-    QSet<graphicsItem*> filterItems(const QList<QGraphicsItem *> &inputItems) const;
+    QSet<graphicsItem*> filterItems(const QList<QGraphicsItem *> &inputItems) const override;
   public:
     explicit TopLevelItemAction(MolScene *scene = 0)
       : AbstractItemAction(scene) {}
@@ -75,7 +75,7 @@ namespace Molsketch {
 
   template<class T>
   class FilteredItemAction : public AbstractItemAction {
-    QSet<graphicsItem*> filterItems(const QList<QGraphicsItem *> &inputItems) const {
+    QSet<graphicsItem*> filterItems(const QList<QGraphicsItem *> &inputItems) const override {
       QSet<graphicsItem*> result;
       for (auto item : inputItems)
         result << dynamic_cast<T*>(item);

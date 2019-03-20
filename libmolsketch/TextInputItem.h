@@ -34,14 +34,14 @@ public:
 	/** Defines the type of the class. Needed for Qt typecasting.*/
   enum { Type = graphicsItem::TextInputType };
 	/** Returns the type of the class. Needed fro Qt typecasting. */
-        virtual int type() const {return Type;};
+        virtual int type() const override {return Type;}
 	
 protected:
-	void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 ) ;
-	void focusOutEvent ( QFocusEvent * event );
+        void paint (QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0) override;
+        void focusOutEvent (QFocusEvent * event) override;
 	void applyString ();
         void cleanUp();
-	void keyPressEvent (QKeyEvent *event);
+        void keyPressEvent (QKeyEvent *event) override;
 	Atom *_atom;
 };
 } //namespace

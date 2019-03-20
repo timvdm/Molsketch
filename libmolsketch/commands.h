@@ -101,7 +101,7 @@ namespace Molsketch {
     class SceneCommand : public Command<ItemType, OwnType, CommandId> {
     protected:
       virtual MolScene* getScene() const = 0;
-      QUndoStack *getStack() {
+      QUndoStack *getStack() override {
         MolScene *scene = getScene();
         return scene ? scene->stack() : nullptr;
       }
@@ -115,7 +115,7 @@ namespace Molsketch {
     template<class ItemType, class OwnType, int CommandId = -1>
     class ItemCommand : public SceneCommand<ItemType, OwnType, CommandId> { // TODO unit test
     protected: // TODO make sure that ItemType inherits graphicsItem
-      virtual MolScene* getScene() const { ItemType* actualItem = this->getItem();
+      virtual MolScene* getScene() const override { ItemType* actualItem = this->getItem();
                                            return actualItem ? dynamic_cast<MolScene*>(actualItem->scene()) : nullptr; }
     public:
       explicit ItemCommand(const QString& text = "", QUndoCommand* parent = 0)
@@ -173,8 +173,8 @@ namespace Molsketch {
       ChildItemCommand(QGraphicsItem* parent, QGraphicsItem* child, const QString& text = "");
       virtual ~ChildItemCommand();
     protected:
-      void undo();
-      void redo();
+      void undo() override;
+      void redo() override;
     private:
       QGraphicsItem *child;
       bool owning;
@@ -216,8 +216,8 @@ namespace Molsketch {
       ItemAction(QGraphicsItem* newItem, MolScene* addScene, const QString & text = "");
     private:
       ~ItemAction();
-      virtual void undo();
-      virtual void redo();
+      virtual void undo() override;
+      virtual void redo() override;
     public:
       static void addItemToScene(QGraphicsItem* item, MolScene* scene, const QString &text = "");
       static void removeItemFromScene(QGraphicsItem* item, const QString &text = "");

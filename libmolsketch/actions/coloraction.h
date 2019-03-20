@@ -41,7 +41,7 @@ namespace Molsketch {
     explicit colorAction(MolScene *parent = 0);
     ~colorAction();
   private:
-    void execute() ;
+    void execute() override;
     class privateData;
     privateData *d;
   };

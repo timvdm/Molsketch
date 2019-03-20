@@ -41,12 +41,12 @@ namespace Molsketch {
     ~MoleculePopup();
 
   protected:
-    void focusOutEvent(QFocusEvent* e);
+    void focusOutEvent(QFocusEvent* e) override;
   private:
     ::Ui::MoleculePopup *ui;
     class privateData;
     privateData *d;
-    void showEvent(QShowEvent* e);
+    void showEvent(QShowEvent* e) override;
   private slots:
     void applyPropertiesToMolecule();
     void on_saveButton_clicked();

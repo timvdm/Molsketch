@@ -685,14 +685,14 @@ namespace Molsketch {
     Bond *bond;
   public:
     LegacyBondStereo(Bond *bond) : bond(bond) {}
-    QXmlStreamReader& readXml(QXmlStreamReader &in) {
+    QXmlStreamReader& readXml(QXmlStreamReader &in) override {
       auto text = in.readElementText();
       if ("H" == text) bond->setType(Bond::Hash);
       if ("W" == text) bond->setType(Bond::Wedge);
       return in;
     }
 
-    QXmlStreamWriter& writeXml(QXmlStreamWriter &out) const {
+    QXmlStreamWriter& writeXml(QXmlStreamWriter &out) const override {
       return out;
     }
   };

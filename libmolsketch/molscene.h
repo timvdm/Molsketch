@@ -133,21 +133,21 @@ namespace Molsketch {
 
 
     protected:
-      void keyPressEvent(QKeyEvent* keyEvent);
-      void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
-      void mousePressEvent(QGraphicsSceneMouseEvent *event);
-      void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-      void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+      void keyPressEvent(QKeyEvent* keyEvent) override;
+      void contextMenuEvent(QGraphicsSceneContextMenuEvent *event) override;
+      void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+      void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
+      void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 
-      void dragEnterEvent(QGraphicsSceneDragDropEvent *event);
-      void dragLeaveEvent(QGraphicsSceneDragDropEvent *event);
-      void dropEvent(QGraphicsSceneDragDropEvent *event);
-      void dragMoveEvent(QGraphicsSceneDragDropEvent *event);
+      void dragEnterEvent(QGraphicsSceneDragDropEvent *event) override;
+      void dragLeaveEvent(QGraphicsSceneDragDropEvent *event) override;
+      void dropEvent(QGraphicsSceneDragDropEvent *event) override;
+      void dragMoveEvent(QGraphicsSceneDragDropEvent *event) override;
 
-      void wheelEvent(QGraphicsSceneWheelEvent *event);
+      void wheelEvent(QGraphicsSceneWheelEvent *event) override;
   public:
 
-      QString xmlName() const;
+      QString xmlName() const override;
       static QString xmlClassName();
       QPointF snapToGrid(const QPointF& point, bool force = false);
       bool snappingToGrid() const;
@@ -174,9 +174,9 @@ namespace Molsketch {
       QWidget *getPropertiesWidget(); // TODO there should be an intgerface for this
   protected:
       XmlObjectInterface *produceChild(const QString &childName, const QXmlStreamAttributes &attributes) override;
-      QList<const XmlObjectInterface *> children() const ;
-      void readAttributes(const QXmlStreamAttributes &attributes) ;
-      QXmlStreamAttributes xmlAttributes() const;
+      QList<const XmlObjectInterface *> children() const override;
+      void readAttributes(const QXmlStreamAttributes &attributes) override;
+      QXmlStreamAttributes xmlAttributes() const override;
 
   private:
 

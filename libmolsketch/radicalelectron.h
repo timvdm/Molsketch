@@ -39,7 +39,7 @@ namespace Molsketch {
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     BoundingBoxLinker linker() const;
     bool operator==(const RadicalElectron& other);
-    QString xmlName() const;
+    QString xmlName() const override;
     static QString xmlClassName();
 #ifdef QT_DEBUG
     friend QDebug operator<<(QDebug debug, const RadicalElectron& radicalElectron);

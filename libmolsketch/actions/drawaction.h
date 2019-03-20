@@ -30,11 +30,11 @@ namespace Molsketch {
     explicit drawAction(MolScene* scene);
     ~drawAction();
 
-    void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event); // TODO
-    void wheelEvent(QGraphicsSceneWheelEvent *event);
+    void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override; // TODO
+    void wheelEvent(QGraphicsSceneWheelEvent *event) override;
 
   private:
     class privateData;

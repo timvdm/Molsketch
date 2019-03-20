@@ -31,10 +31,10 @@ namespace Molsketch {
     transformCommand(graphicsItem *item, const QTransform &trafo, const QPointF &center, QUndoCommand *parent= 0);
     transformCommand(const QList<Molsketch::graphicsItem *> &items, const QTransform &trafo, const QPointF &center, QUndoCommand *parent= 0);
     ~transformCommand() ;
-    void undo() ;
-    void redo() ;
-    bool mergeWith(const QUndoCommand *other) ;
-    int id() const ;
+    void undo() override;
+    void redo() override;
+    bool mergeWith(const QUndoCommand *other) override;
+    int id() const override;
   private:
     class privateData ;
     privateData* d ;

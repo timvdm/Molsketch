@@ -53,7 +53,7 @@ namespace Molsketch {
     Ui::AtomPopup *ui;
     class PrivateData;
     PrivateData *d;
-    void propertiesChanged();
+    void propertiesChanged() override;
     void addRadical(const QCheckBox*, const BoundingBoxLinker& linker);
     void addLonePair(const QCheckBox*, const BoundingBoxLinker& linker, const qreal angle);
   };

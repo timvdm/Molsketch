@@ -28,7 +28,7 @@ namespace Molsketch {
   public:
     explicit multiAction(MolScene *scene) ;
     ~multiAction() ;
-    void wheelEvent(QGraphicsSceneWheelEvent *event);
+    void wheelEvent(QGraphicsSceneWheelEvent *event) override;
     void cycleSubActions(bool inverse = false);
   protected:
     void addSubAction(QAction*) ;

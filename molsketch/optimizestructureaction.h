@@ -29,7 +29,7 @@ class OptimizeStructureAction : public Molsketch::FilteredItemAction<Molsketch::
 public:
   explicit OptimizeStructureAction(OBabelIfaceLoader *obabelLoader, Molsketch::MolScene *scene = 0);
 private:
-  void execute();
+  void execute() override;
   OBabelIfaceLoader *obabelLoader;
 };
 

@@ -27,7 +27,7 @@ namespace Molsketch {
   {
   public:
     enum {Type = ArrowType} ;
-    int type() const {return Type;}
+    int type() const override {return Type;}
 
     enum ArrowTypeParts {
       NoArrow = 0,
@@ -56,35 +56,35 @@ namespace Molsketch {
     void setArrowTipPart(const ArrowTypeParts& part);
     void unsetArrowTipPart(const ArrowTypeParts& part);
     ArrowType getArrowType() const;
-    void setCoordinates(const QVector<QPointF> &c) ;
-    QPolygonF coordinates() const ;
+    void setCoordinates(const QVector<QPointF> &c) override;
+    QPolygonF coordinates() const override;
 
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    QRectF boundingRect() const ;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    QRectF boundingRect() const override;
 
-    void setPoint(const int& index, const QPointF& p) ;
+    void setPoint(const int& index, const QPointF& p);
     void setPoints(const QPolygonF& polygon);
-    QPointF getPoint(const int& index) const;
-    QPointF lastPoint() const;
-    QPointF firstPoint() const;
-    int coordinateCount() const ;
-    void swapPoint(const int& index, QPointF &p) ;
+    QPointF getPoint(const int& index) const override;
+    QPointF lastPoint() const override;
+    QPointF firstPoint() const override;
+    int coordinateCount() const override;
+    void swapPoint(const int& index, QPointF &p) override;
 
-    QString xmlName() const;
+    QString xmlName() const override;
     static QString xmlClassName();
 
     Properties getProperties() const;
-    QWidget* getPropertiesWidget();
+    QWidget* getPropertiesWidget() override;
     void setProperties(const Properties& p);
   protected:
-    void readGraphicAttributes(const QXmlStreamAttributes &attributes) ;
-    QXmlStreamAttributes graphicAttributes() const ;
-    void prepareContextMenu(QMenu *contextMenu);
+    void readGraphicAttributes(const QXmlStreamAttributes &attributes) override;
+    QXmlStreamAttributes graphicAttributes() const  override;
+    void prepareContextMenu(QMenu *contextMenu) override;
 
   private:
     class privateData ;
     privateData *d ;
-    qreal sceneLineWidth(MolScene *scene) const;
+    qreal sceneLineWidth(MolScene *scene) const override;
   };
 
 } // namespace

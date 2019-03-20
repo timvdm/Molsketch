@@ -42,7 +42,7 @@ namespace Molsketch {
   private:
     class privateData;
     privateData *d;
-    void execute();
+    void execute() override;
   private slots:
     virtual void checkItemType();
   };
