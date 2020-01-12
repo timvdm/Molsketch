@@ -31,6 +31,7 @@ function(findOpenBabel)
     message(FATAL_ERROR "Could not find OpenBabel libs (try setting OPENBABEL_LIBRARIES or '-DMSK_OBABELIFACE=false')")
   endif(NOT OPENBABEL_LIBRARIES)
 
+  set(OPENBABEL_FOUND true)
   message(STATUS "Found OpenBabel.  Includes: ${OPENBABEL_INCLUDE_DIR} Libs: ${OPENBABEL_LIBRARIES}")
 endfunction(findOpenBabel)
 
