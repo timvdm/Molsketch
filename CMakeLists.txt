@@ -7,7 +7,7 @@ cmake_policy(SET CMP0020 OLD)
 project(Molsketch)
 
 # Include the extra modules (OpenBabel/uninstall)
-set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
+set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake-modules)
 
 ###########################################################
 # Here I am adding GCC magic from KDE. With these settings#
