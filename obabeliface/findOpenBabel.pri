@@ -1,15 +1,19 @@
 defineTest(findOpenBabel) {
         message("Trying to find OpenBabel-2.0")
         possibleOBIncDirs = \
-                $${OPENBABEL2_INCLUDE_DIR} \
+                $${OPENBABEL_INCLUDE_DIR} \
                 C:/openbabel/include \
+                C:/openbabel/include/openbabel3 \
+                C:/openbabel/include/openbabel-2.0 \
                 /usr/local/include \
+                /usr/local/include/openbabel3 \
                 /usr/local/include/openbabel-2.0 \
                 /usr/include \
+                /usr/include/openbabel3 \
                 /usr/include/openbabel-2.0 \
                 ${GNUWIN32_DIR}/include
         possibleOBLibDirs = \
-                $${OPENBABEL2_LIBRARIES} \
+                $${OPENBABEL_LIBRARIES} \
                 C:/openbabel/lib \
                 /usr/lib \
                 /usr/lib64 \
@@ -29,9 +33,9 @@ defineTest(findOpenBabel) {
                         break()
                 }
         }
-        isEmpty(OBINCLUDEPATH) : error("Could not find OpenBabel-2.0 includes (try setting OPENBABEL2_INCLUDE_DIR)")
-        isEmpty(OBLIBS) : error("Could not find OpenBabel-2.0 libs (try setting OPENBABEL2_LIBRARIES)")
-        message("Found OpenBabel-2.0.  Includes: $$OBINCLUDEPATH Libs: $$OBLIBS")
+        isEmpty(OBINCLUDEPATH) : error("Could not find OpenBabel includes (try setting OPENBABEL_INCLUDE_DIR or '-DMSK_OBABELIFACE=false')")
+        isEmpty(OBLIBS) : error("Could not find OpenBabel libs (try setting OPENBABEL_LIBRARIES or '-DMSK_OBABELIFACE=false')")
+        message("Found OpenBabel.  Includes: $$OBINCLUDEPATH Libs: $$OBLIBS")
         LIBS += -L$${OBLIBS} -lopenbabel
         INCLUDEPATH += $$OBINCLUDEPATH
         export(LIBS)
@@ -41,11 +45,16 @@ defineTest(findOpenBabel) {
 
 unix {
         CONFIG += link_pkgconfig
-        packagesExist(openbabel-2.0) {
+        packagesExist(openbabel-3) {
                 message("Using pkgconfig to find OpenBabel.")
-                PKGCONFIG += openbabel-2.0
+                PKGCONFIG += openbabel-3
         } else {
-                findOpenBabel()
+                packagesExist(openbabel-2.0) {
+                        message("Using pkgconfig to find OpenBabel.")
+                        PKGCONFIG += openbabel-2.0
+                } else {
+                        findOpenBabel()
+                }
         }
 } else {
         findOpenBabel()

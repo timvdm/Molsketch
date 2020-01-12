@@ -40,7 +40,7 @@ and want to force the usage of Qt4, use
 in the cmake step above.
 
 4. Notes on OpenBabel (esp. Windows)
-If you have difficulties making qmake or cmake find openbabel, you might want to set the variables OPENBABEL2_LIBRARIES and OPENBABEL2_INCLUDE_DIR:
-cmake -DOPENBABEL2_LIBRARIES=<path of openbabel.dll/libopenbabel.so> -DOPENBABEL_INCLUDE_DIR=<directory containing babelconfig.h> <path to Molsketch sources>
+If you have difficulties making qmake or cmake find openbabel, you might want to set the variables OPENBABEL_LIBRARIES and OPENBABEL_INCLUDE_DIR:
+cmake -DOPENBABEL_LIBRARIES=<path of openbabel.dll/libopenbabel.so> -DOPENBABEL_INCLUDE_DIR=<directory containing babelconfig.h> <path to Molsketch sources>
 or
-qmake OPENBABEL2_LIBRARIES=<openbabel.dll/libopenbabel.so directory> OPENBABEL_INCLUDE_DIR=<directory containing babelconfig.h> <path to Molsketch sources>
+qmake OPENBABEL_LIBRARIES=<openbabel.dll/libopenbabel.so directory> OPENBABEL_INCLUDE_DIR=<directory containing babelconfig.h> <path to Molsketch sources>

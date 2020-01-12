@@ -38,15 +38,8 @@
 #include "scenesettings.h"
 #include "settingsitem.h"
 
-#ifdef OPENBABEL2_TRUNK
 #include <openbabel/graphsym.h>
 #include <openbabel/stereo/stereo.h>
-#include <openbabel/graphsym.h>
-#else
-#include <openbabel/alias.h>
-#include <openbabel/bitvec.h>
-#include <openbabel/canon.h>
-#endif
 
 #include <openbabel/mol.h>
 #include <openbabel/data.h>
@@ -55,7 +48,15 @@
 #include <openbabel/op.h>
 #include <openbabel/stereo/stereo.h>
 
-OpenBabel::OBElementTable eTable ;
+#if (OB_VERSION >= OB_VERSION_CHECK(3, 0, 0))
+#include <openbabel/obiter.h>
+#include <openbabel/bond.h>
+#include <openbabel/elements.h>
+#endif
+
+#if (OB_VERSION < OB_VERSION_CHECK(3, 0, 0))
+OpenBabel::OBElementTable elementTable;
+#endif
 
 namespace Molsketch
 {
@@ -63,12 +64,20 @@ namespace Molsketch
 
   QString number2symbol( int number )
   {
-    return eTable.GetSymbol(number);
+#if (OB_VERSION >= OB_VERSION_CHECK(3, 0, 0))
+    return OpenBabel::OBElements::GetSymbol(number);
+#else
+    return elementTable.OBElementTable::GetSymbol(number);
+#endif
   }
 
   int symbol2number( const QString &symbol )
   {
-    return eTable.GetAtomicNum(symbol.STRINGCONVERSION) ;
+#if (OB_VERSION >= OB_VERSION_CHECK(3, 0, 0))
+    return OpenBabel::OBElements::GetAtomicNum(symbol.STRINGCONVERSION) ;
+#else
+    return elementTable.GetAtomicNum(symbol.STRINGCONVERSION) ;
+#endif
   }
 
   OpenBabel::OBMol toOBMolecule(const Molsketch::Molecule* originalMolecule, unsigned short int dim = 2)
@@ -219,28 +228,8 @@ namespace Molsketch
     symmetry_classes.clear() ;
     if (!molecule) return ;
     OpenBabel::OBMol obmol(toOBMolecule(molecule)) ;
-#ifdef OPENBABEL2_TRUNK
     OpenBabel::OBGraphSym graphsym(&obmol);
     graphsym.GetSymmetry(symmetry_classes);
-#else
-    OpenBabel::OBBitVec fragatoms(obmol.NumAtoms());
-
-    using OpenBabel::OBMolAtomIter;
-    FOR_ATOMS_OF_MOL(a, &obmol)
-      fragatoms.SetBitOn(a->GetIdx());
-    std::vector<unsigned int> canonical_labels;
-#ifndef OB_VERSION
-    OpenBabel::OBBitVec fragAtoms;
-    OpenBabel::CanonicalLabels(&obmol, fragAtoms, symmetry_classes, canonical_labels);
-#else
-#if (OB_VERSION_CHECK(2,3,0) > OB_VERSION)
-    OpenBabel::OBBitVec fragAtoms;
-    OpenBabel::CanonicalLabels(&obmol, fragAtoms, symmetry_classes, canonical_labels);
-#else
-    OpenBabel::CanonicalLabels(&obmol, symmetry_classes, canonical_labels);
-#endif
-#endif
-#endif
   }
 
   QList<Atom*> chiralAtoms(const Molecule* molecule)
@@ -250,7 +239,6 @@ namespace Molsketch
 
     QList<Atom*> atoms(molecule->atoms()) ;
     OpenBabel::OBMol obmol(toOBMolecule(molecule)) ;
-#ifdef OPENBABEL2_TRUNK
     // need to calculate symmetry first
     std::vector<unsigned int> symmetry_classes;
     OpenBabel::OBGraphSym graphsym(&obmol);
@@ -272,12 +260,6 @@ namespace Molsketch
                << atoms[obatom2->GetIndex()] ;
       }
     }
-#else
-    using OpenBabel::OBMolAtomIter;
-    FOR_ATOMS_OF_MOL(atom, obmol)
-      if (atom->IsChiral())
-        result << atoms[atom->GetIdx()-1] ;
-#endif
     return result ;
   }
 
@@ -353,8 +335,13 @@ namespace Molsketch
       using namespace OpenBabel;
     // Remove any existing wedge and hash bonds
     FOR_BONDS_OF_MOL(b, &mol)  {
+#if (OB_VERSION >= OB_VERSION_CHECK(3, 0, 0))
+      b->SetWedge(false);
+      b->SetHash(false);
+#else
       b->UnsetWedge();
       b->UnsetHash();
+#endif
     }
 
     std::map<OBBond*, enum OBStereo::BondDirection> updown;

@@ -134,5 +134,7 @@ set(CMAKE_INSTALL_PREFIX ${MSK_PREFIX})
 
 ################ Adding subdirs
 add_subdirectory(libmolsketch)
-add_subdirectory(obabeliface)
 add_subdirectory(molsketch)
+if (MSK_OBABELIFACE)
+    add_subdirectory(obabeliface)
+endif (MSK_OBABELIFACE)
