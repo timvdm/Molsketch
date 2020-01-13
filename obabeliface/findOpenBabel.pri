@@ -1,7 +1,7 @@
 defineTest(findOpenBabel) {
         message("Trying to find OpenBabel-2.0")
         possibleOBIncDirs = \
-                $${OPENBABEL_INCLUDE_DIR} \
+                $${OB_INCLUDE_DIRS} \
                 C:/openbabel/include \
                 C:/openbabel/include/openbabel3 \
                 C:/openbabel/include/openbabel-2.0 \
@@ -13,7 +13,7 @@ defineTest(findOpenBabel) {
                 /usr/include/openbabel-2.0 \
                 ${GNUWIN32_DIR}/include
         possibleOBLibDirs = \
-                $${OPENBABEL_LIBRARIES} \
+                $${OB_LIBRARY_DIRS} \
                 C:/openbabel/lib \
                 /usr/lib \
                 /usr/lib64 \
@@ -33,8 +33,8 @@ defineTest(findOpenBabel) {
                         break()
                 }
         }
-        isEmpty(OBINCLUDEPATH) : error("Could not find OpenBabel includes (try setting OPENBABEL_INCLUDE_DIR or '-DMSK_OBABELIFACE=false')")
-        isEmpty(OBLIBS) : error("Could not find OpenBabel libs (try setting OPENBABEL_LIBRARIES or '-DMSK_OBABELIFACE=false')")
+        isEmpty(OBINCLUDEPATH) : error("Could not find OpenBabel includes (try setting 'OB_INCLUDE_DIRS=<DIR>' or 'MSK_OBABELIFACE=false')")
+        isEmpty(OBLIBS) : error("Could not find OpenBabel libs (try setting 'OB_LIBRARY_DIRS=<DIR>' or 'MSK_OBABELIFACE=false')")
         message("Found OpenBabel.  Includes: $$OBINCLUDEPATH Libs: $$OBLIBS")
         LIBS += -L$${OBLIBS} -lopenbabel
         INCLUDEPATH += $$OBINCLUDEPATH

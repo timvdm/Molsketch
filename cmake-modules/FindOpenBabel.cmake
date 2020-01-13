@@ -1,6 +1,6 @@
 function(findOpenBabel)
-  find_path(OPENBABEL_INCLUDE_DIR openbabel/obconversion.h
-      ${OPENBABEL_INCLUDE_DIR}
+  find_path(OPENBABEL_INCLUDE_DIRS openbabel/obconversion.h
+      ${OB_INCLUDE_DIRS}
       C:/openbabel/include
       C:/openbabel/include/openbabel3
       C:/openbabel/include/openbabel-2.0
@@ -13,9 +13,9 @@ function(findOpenBabel)
       ${GNUWIN32_DIR}/include
   )
 
-  find_library(OPENBABEL_LIBRARIES NAMES openbabel
+  find_library(OPENBABEL_LINK_LIBRARIES NAMES openbabel
       PATHS
-      ${OPENBABEL2_LIBRARIES}
+      ${OB_LIBRARY_DIRS}
       C:/openbabel/lib
       /usr/lib
       /usr/lib64
@@ -24,15 +24,15 @@ function(findOpenBabel)
       ${GNUWIN32_DIR}/lib
   )
 
-  if(NOT OPENBABEL_INCLUDE_DIR)
-    message(FATAL_ERROR "Could not find OpenBabel includes (try setting OPENBABEL_INCLUDE_DIR or '-DMSK_OBABELIFACE=false')")
-  endif(NOT OPENBABEL_INCLUDE_DIR)
-  if(NOT OPENBABEL_LIBRARIES)
-    message(FATAL_ERROR "Could not find OpenBabel libs (try setting OPENBABEL_LIBRARIES or '-DMSK_OBABELIFACE=false')")
-  endif(NOT OPENBABEL_LIBRARIES)
+  if(NOT OPENBABEL_INCLUDE_DIRS)
+    message(FATAL_ERROR "Could not find OpenBabel includes (try setting '-DOB_INCLUDE_DIRS=<DIR>' or '-DMSK_OBABELIFACE=false')")
+  endif(NOT OPENBABEL_INCLUDE_DIRS)
+  if(NOT OPENBABEL_LINK_LIBRARIES)
+    message(FATAL_ERROR "Could not find OpenBabel libs (try setting '-DOB_LIBRARY_DIRS=<DIR>' or '-DMSK_OBABELIFACE=false')")
+  endif(NOT OPENBABEL_LINK_LIBRARIES)
 
   set(OPENBABEL_FOUND true)
-  message(STATUS "Found OpenBabel.  Includes: ${OPENBABEL_INCLUDE_DIR} Libs: ${OPENBABEL_LIBRARIES}")
+  message(STATUS "Found OpenBabel.  Includes: ${OPENBABEL_INCLUDE_DIRS} Libs: ${OPENBABEL_LINK_LIBRARIES}")
 endfunction(findOpenBabel)
 
 if(NOT WIN32)

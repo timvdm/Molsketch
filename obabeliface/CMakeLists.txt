@@ -17,7 +17,7 @@ find_package(OpenBabel REQUIRED)
 get_directory_property(tmp_include_dirs INCLUDE_DIRECTORIES)
 set_directory_properties(PROPERTIES INCLUDE_DIRECTORIES
         "${CMAKE_CURRENT_BINARY_DIR}/include;${tmp_include_dirs}")
-include_directories(${OPENBABEL_INCLUDE_DIR}
+include_directories(${OPENBABEL_INCLUDE_DIRS}
                     ${CMAKE_CURRENT_BINARY_DIR})
 
 # Create the obabeliface library
@@ -27,7 +27,8 @@ set_property(TARGET obabeliface_LIB PROPERTY CXX_STANDARD 14)
 if(WIN32 OR WIN64)
         set_target_properties(obabeliface_LIB PROPERTIES PREFIX "")
 endif(WIN32 OR WIN64)
-target_link_libraries(obabeliface_LIB molsketch_LIB ${QT_LIBRARIES} ${OPENBABEL_LIBRARIES})
+
+target_link_libraries(obabeliface_LIB molsketch_LIB ${QT_LIBRARIES} ${OPENBABEL_LINK_LIBRARIES})
 
 # Install the executable and the library
 install(TARGETS obabeliface_LIB
