@@ -10,8 +10,7 @@ if(FORCEQt4)
         include(${QT_USE_FILE})
 endif(FORCEQt4)
 
-find_package(PkgConfig)
-find_package(OpenBabel REQUIRED)
+include(findOpenBabel.cmake)
 
 # Ensure the Molsketch include directory is always first
 get_directory_property(tmp_include_dirs INCLUDE_DIRECTORIES)

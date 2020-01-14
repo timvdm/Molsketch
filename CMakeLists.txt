@@ -6,9 +6,6 @@ cmake_policy(SET CMP0020 OLD)
 # The name of the project
 project(Molsketch)
 
-# Include the extra modules (OpenBabel/uninstall)
-set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake-modules)
-
 ###########################################################
 # Here I am adding GCC magic from KDE. With these settings#
 # compiler issues are fixed and more warnings are issued. #
@@ -33,7 +30,7 @@ set(CPACK_SOURCE_IGNORE_FILES "/build;/.git")
 include(CPack)
 
 # Add support for the "make uninstall" target
-configure_file("${CMAKE_SOURCE_DIR}/cmake-modules/cmake_uninstall.cmake.in"
+configure_file("${CMAKE_SOURCE_DIR}/cmake_uninstall.cmake.in"
                "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
                IMMEDIATE @ONLY)
 add_custom_target(uninstall "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
