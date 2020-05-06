@@ -46,6 +46,7 @@
 #endif
 #include <QDebug>
 #include <QDockWidget>
+#include <QInputDialog>
 #include <QLabel>
 #include <QMainWindow>
 #include <QPair>
@@ -335,13 +336,15 @@ namespace Molsketch {
 
   QImage MolScene::renderImage(const QRectF &rect)
   {
+    const int scalingFactor = QInputDialog::getInt(0, tr("Scale image"), tr("Enter output scaling factor:"), 1, 1, 50, 1);
         // Creating an image
-        QImage image(int(rect.width()),int(rect.height()),QImage::Format_RGB32);
+        QImage image(int(rect.width()) * scalingFactor,int(rect.height()) * scalingFactor,QImage::Format_RGB32);
         image.fill(QColor("white").rgb());
 
         // Creating and setting the painter
         QPainter painter(&image);
         painter.setRenderHint(QPainter::Antialiasing);
+        painter.scale(scalingFactor, scalingFactor);
 
         // Rendering in the image and saving to file
         render(&painter,QRectF(0,0,rect.width(),rect.height()),rect);
