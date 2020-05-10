@@ -334,9 +334,8 @@ namespace Molsketch {
   }
 
 
-  QImage MolScene::renderImage(const QRectF &rect)
+  QImage MolScene::renderImage(const QRectF &rect, const qreal &scalingFactor)
   {
-    const int scalingFactor = QInputDialog::getInt(0, tr("Scale image"), tr("Enter output scaling factor:"), 1, 1, 50, 1);
         // Creating an image
         QImage image(int(rect.width()) * scalingFactor,int(rect.height()) * scalingFactor,QImage::Format_RGB32);
         image.fill(QColor("white").rgb());

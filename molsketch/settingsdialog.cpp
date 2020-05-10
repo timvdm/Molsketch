@@ -54,6 +54,9 @@ SettingsDialog::SettingsDialog(ApplicationSettings *settings, QWidget * parent, 
     sceneSettingsFacade(const_cast<const ApplicationSettings*>(settings)->settingsFacade().cloneTransiently()) // TODO ownership?
 {
   ui.setupUi(this);
+  for (auto mainIcon : ui.listWidget->findItems("", Qt::MatchContains))
+    mainIcon->setSizeHint(QSize(100, 60)); // TODO fix in ui XML
+
   QWidget *drawingPage = findChild<QWidget*>("drawingPage");
   setupDrawingSettings(new Molsketch::SceneSettings(sceneSettingsFacade, drawingPage), drawingPage);
 
@@ -72,13 +75,15 @@ SettingsDialog::~SettingsDialog(){}
 void SettingsDialog::setInitialValues()
 {
   ui.spinBoxAutoSave->setValue(settings->autoSaveInterval()/60000);
-
-  ui.libraries->clear();
-  ui.libraries->addItems(settings->libraries()->get());
+  // TODO image format setting!
+  ui.pixelScalingFactor->setValue(settings->pixelScalingFactor());
 
   Molsketch::SceneSettings::MouseWheelMode mouseWheelForTools = settings->getMouseWheelMode();
   ui.mouseWheelCycleTools->setChecked(Molsketch::SceneSettings::CycleTools == mouseWheelForTools);
   ui.mouseWheelCycleTools->setChecked(Molsketch::SceneSettings::Zoom == mouseWheelForTools);
+
+  ui.libraries->clear();
+  ui.libraries->addItems(settings->libraries()->get());
 
   ui.libraryPath->setText(settings->obabelIfacePath());
   ui.obfPath->setText(settings->obabelFormatsPath());
@@ -94,6 +99,7 @@ void SettingsDialog::accept()
 void SettingsDialog::applyChanges()
 {
   settings->setAutoSaveInterval(ui.spinBoxAutoSave->value()*60000);
+  settings->setPixelScalingFactor(ui.pixelScalingFactor->value());
 
   // Library settings
   QStringList libraries;

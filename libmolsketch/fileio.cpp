@@ -87,13 +87,13 @@ namespace Molsketch
     }
   }
 
-  bool exportFile(const QString &fileName, MolScene * scene) // TODO make part of scene
+  bool exportFile(const QString &fileName, MolScene * scene, const qreal &scaling) // TODO make part of scene
   {
     // Clear selection
     QList<QGraphicsItem*> selList(scene->selectedItems());
     scene->clearSelection();
 
-    QImage image = scene->renderImage(scene->itemsBoundingRect());
+    QImage image = scene->renderImage(scene->itemsBoundingRect(), scaling);
 
     // Restore selection
     foreach(QGraphicsItem* item, selList) item->setSelected(true);

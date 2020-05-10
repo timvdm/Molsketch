@@ -68,6 +68,6 @@ class abstractXmlObject;
  * Exports the document on MolScene @p scene as a bitmap with @p fileName
  * and returns @c false if the export failed.
  */
-  bool exportFile(const QString &fileName, MolScene * scene);
+  bool exportFile(const QString &fileName, MolScene * scene, const qreal &scaling);
 
 }
