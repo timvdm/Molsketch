@@ -217,6 +217,7 @@ namespace Molsketch {
     //pre: position is a valid position in scene coordinates
     setPos(position);
     setZValue(3);
+    setShapeType(Rectangle);
 
     MolScene *molScene = qobject_cast<MolScene*>(scene());
 
@@ -678,6 +679,7 @@ namespace Molsketch {
   const char *DISABLE_HYDROGENS_ATTRIBUTE = "disableHydrogens";
   const char *HYDROGEN_COUNT_ATTRIBUTE = "hydrogens";
   const char *NEWMAN_DIAMETER_ATTRIBUTE = "newmanDiameter";
+  const char *SHAPE_TYPE_ATTRIBUTE = "shapeType";
 
   void Atom::readGraphicAttributes(const QXmlStreamAttributes &attributes)
   {
@@ -687,6 +689,7 @@ namespace Molsketch {
     m_userImplicitHydrogens = attributes.value(HYDROGEN_COUNT_ATTRIBUTE).toInt();
     m_implicitHydrogens = !attributes.value(DISABLE_HYDROGENS_ATTRIBUTE).toInt();
     m_userCharge = attributes.value(CHARGE_ATTRIBUTE).toInt();
+    m_shapeType = (ShapeType) attributes.value(SHAPE_TYPE_ATTRIBUTE).toInt();
     updateShape();
   }
 
@@ -698,6 +701,7 @@ namespace Molsketch {
     attributes.append(CHARGE_ATTRIBUTE, QString::number(m_userCharge));
     attributes.append(DISABLE_HYDROGENS_ATTRIBUTE, QString::number(!m_implicitHydrogens));
     attributes.append(HYDROGEN_COUNT_ATTRIBUTE, QString::number(m_userImplicitHydrogens));
+    attributes.append(SHAPE_TYPE_ATTRIBUTE, QString::number(m_shapeType));
     if (m_newmanDiameter > 0) attributes.append(NEWMAN_DIAMETER_ATTRIBUTE, QString::number(m_newmanDiameter));
     return attributes ;
   }
@@ -710,6 +714,14 @@ namespace Molsketch {
       m->invalidateElectronSystems();
       m->updateTooltip();
     }
+  }
+
+  Atom::ShapeType Atom::shapeType() const {
+    return m_shapeType;
+  }
+
+  void Atom::setShapeType(const Atom::ShapeType &shapeType) {
+    m_shapeType = shapeType;
   }
 
   void Atom::setNewmanDiameter(const qreal &diameter) {
@@ -938,6 +950,14 @@ namespace Molsketch {
       return connection.p2();
     }
 
+    if (Circle == m_shapeType) {
+      auto bounds = boundingRect();
+      auto circleDiameter = QLineF(bounds.center(), bounds.topRight()).length() * 2;
+      connection.setLength((circleDiameter + qMax(lineWidth(), bondLineWidth))/2. );
+      return connection.p2();
+    }
+
+
     return getBondDrawingStartFromBoundingBox(connection, bondLineWidth/1.5); // TODO: why 1.5?
   }
 
@@ -1022,6 +1042,12 @@ namespace Molsketch {
     QLineF middleLine{0.5 * (outer1.p1() + outer2.p1()), 0.5 * (outer1.p2() + outer2.p2())};
 
     if (m_newmanDiameter > 0) return getBondExtentForNewmanAtom(middleLine, lineWidth, m_newmanDiameter);
+
+    if (Circle == m_shapeType) {
+      auto bounds = boundingRect();
+      auto circleDiameter = QLineF(bounds.center(), bounds.topRight()).length() * 2;
+      return getBondExtentForNewmanAtom(middleLine, lineWidth, circleDiameter);
+    }
 
     IntersectionData edgeIntersection{intersectedEdge(middleLine, lineWidth)};
 

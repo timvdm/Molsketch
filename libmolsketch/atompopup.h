@@ -46,6 +46,7 @@ namespace Molsketch {
     void on_charge_valueChanged(int arg1);
     void on_hydrogens_valueChanged(int arg1);
     void on_newmanDiameter_valueChanged(double diameter);
+    void on_shapeType_currentIndexChanged(int newIndex);
     void onCoordinatesDatachanged();
     void updateRadicals();
     void updateLonePairs();

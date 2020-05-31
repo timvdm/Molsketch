@@ -48,6 +48,8 @@ namespace Molsketch {
     enum { Type = AtomType };
     int type() const override { return Type; }
 
+    enum ShapeType { Rectangle = 0, Circle = 1 };
+
     /**
        * Creates a new atom.
        *
@@ -70,6 +72,8 @@ namespace Molsketch {
     void setMolecule(Molecule *molecule);
     QString element() const;
     void setElement(const QString & element);
+    ShapeType shapeType() const;
+    void setShapeType(const ShapeType& shapeType);
     void setNewmanDiameter(const qreal& diameter);
     qreal getNewmanDiameter() const;
     void disableNewman();
@@ -156,6 +160,7 @@ namespace Molsketch {
     int m_userElectrons;
     qreal m_newmanDiameter;
     QString m_index;
+    ShapeType m_shapeType;
 
     int m_userImplicitHydrogens;
     bool m_implicitHydrogens;
