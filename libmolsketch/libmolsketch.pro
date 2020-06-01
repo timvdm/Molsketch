@@ -6,7 +6,9 @@ HEADERS += $$files(*.h, true)
 SOURCES += $$files(*.cpp, true)
 FORMS += $$files(*.ui, true)
 RESOURCES += $$files(*.qrc, true)
+TRANSLATIONS += $$files(*.ts, true)
 
+CONFIG += lrelease embed_translations
 TARGET = molsketch$$qtVersionSuffix
 DESTDIR = ../lib
 QMAKE_CXXFLAGS_DEBUG +=  -g -gstabs

@@ -62,10 +62,12 @@ int main(int argc, char *argv[])
   QCoreApplication::setOrganizationDomain("sourceforge.net");
   QCoreApplication::setApplicationName("Molsketch");
 
-  QTranslator translator;
-  auto translationLoaded = translator.load(QLocale::system(), "molsketch_");
-  qDebug() << "System locale:" << QLocale::system() << "Translation loaded:" << translationLoaded;
-  app.installTranslator(&translator);
+  QTranslator molsketchTranslator, libraryTranslator;
+  auto molsketchTranslationsLoaded = molsketchTranslator.load(QLocale::system(), ":/i18n/molsketch_"); // TODO also load Qt module translations
+  auto libraryTranslationsLoaded = libraryTranslator.load(QLocale::system(), ":/i18n/libmolsketch_");
+  app.installTranslator(&molsketchTranslator);
+  app.installTranslator(&libraryTranslator);
+  qDebug() << "System locale:" << QLocale::system() << "Translation loaded:" << molsketchTranslationsLoaded << "for library:" << libraryTranslationsLoaded;
 
   QCommandLineParser parser;
   parser.addPositionalArgument("files", QApplication::translate("main", "Files to open, optionally."), "[files...]");
