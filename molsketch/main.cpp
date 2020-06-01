@@ -25,6 +25,7 @@
 #include <settingsfacade.h>
 #include <QSettings>
 #include <QCommandLineParser>
+#include <QDebug>
 
 #include "applicationsettings.h"
 #include "mainwindow.h"
@@ -61,10 +62,9 @@ int main(int argc, char *argv[])
   QCoreApplication::setOrganizationDomain("sourceforge.net");
   QCoreApplication::setApplicationName("Molsketch");
 
-  // Add support for i18n
-  QString locale = QLocale::system().name();
   QTranslator translator;
-  translator.load(QString("molsketch_") + locale);
+  auto translationLoaded = translator.load(QLocale::system(), "molsketch_");
+  qDebug() << "System locale:" << QLocale::system() << "Translation loaded:" << translationLoaded;
   app.installTranslator(&translator);
 
   QCommandLineParser parser;
@@ -83,4 +83,3 @@ int main(int argc, char *argv[])
 
   return app.exec();
 }
-

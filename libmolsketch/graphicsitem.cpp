@@ -55,7 +55,7 @@ namespace Molsketch {
         shift(p), // if index <0: implicitly the position of the first point
         items(a)
     {
-      setText(QObject::tr("Move command"));
+      setText(QObject::tr("Move"));
     }
     void redo() override
     {

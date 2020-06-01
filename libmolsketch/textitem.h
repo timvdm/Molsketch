@@ -26,8 +26,8 @@
 
 namespace Molsketch {
 
-  class TextItem : public QGraphicsTextItem, public XmlObjectInterface
-  {
+  class TextItem : public QGraphicsTextItem, public XmlObjectInterface {
+    Q_OBJECT
   public:
     explicit TextItem(GRAPHICSSCENEHEADER);
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;

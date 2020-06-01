@@ -8,11 +8,11 @@
     <x>0</x>
     <y>0</y>
     <width>602</width>
-    <height>509</height>
+    <height>524</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>molsKetch - Preferences</string>
+   <string>Preferences</string>
   </property>
   <property name="windowIcon">
    <iconset theme="preferences-system" resource="oxygenicons.qrc">
@@ -326,7 +326,7 @@
                 <item>
                  <widget class="QLabel" name="libraryExplanation">
                   <property name="text">
-                   <string>If you have downloaded the auxiliary package from molsketch.sf.net,&lt;br&gt;please provide the path to the folder where you stored the libraries.</string>
+                   <string>If you have downloaded the auxiliary package from &lt;a href=&quot;http://molsketch.sourceforge.net/&quot;&gt;molsketch.sf.net&lt;/a&gt;,&lt;br/&gt;please provide the path to the folder where you stored the libraries.</string>
                   </property>
                  </widget>
                 </item>
@@ -384,16 +384,16 @@
              </property>
              <layout class="QGridLayout" name="obfPathLayout">
               <item row="0" column="0">
-               <layout class="QVBoxLayout" name="verticalLayout_4">
+               <layout class="QVBoxLayout" name="obfPathLayout_2">
                 <item>
                  <widget class="QLabel" name="obfExplanation">
                   <property name="text">
-                   <string>If you have downloaded the auxiliary package from molsketch.sf.net,&lt;br&gt;please provide the path to the folder where you stored the OBF files.</string>
+                   <string>If you have downloaded the auxiliary package from &lt;a href=&quot;http://molsketch.sourceforge.net/&quot;&gt;molsketch.sf.net&lt;/a&gt;,&lt;br/&gt;please provide the path to the folder where you stored the OBF files.</string>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_4">
+                 <layout class="QHBoxLayout" name="obfPathSelectorLayout">
                   <item>
                    <widget class="QLineEdit" name="obfPath">
                     <property name="placeholderText">
@@ -417,7 +417,7 @@
                </layout>
               </item>
               <item row="2" column="0">
-               <spacer name="verticalSpacer_2">
+               <spacer name="obfSpacer">
                 <property name="orientation">
                  <enum>Qt::Vertical</enum>
                 </property>
@@ -430,7 +430,7 @@
                </spacer>
               </item>
               <item row="1" column="0">
-               <widget class="QLabel" name="label_3">
+               <widget class="QLabel" name="obfWarning">
                 <property name="text">
                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Warning!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Selecting a folder of OpenBabel formats here that was not built&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;for the version of OpenBabel for which the &amp;quot;obabeliface&amp;quot; above was built&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;may lead to crashes or prevent formats from working!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
@@ -470,8 +470,8 @@
   <tabstop>removeLibrary</tabstop>
  </tabstops>
  <resources>
-  <include location="oxygenicons.qrc"/>
   <include location="molsketch.qrc"/>
+  <include location="oxygenicons.qrc"/>
  </resources>
  <connections>
   <connection>
