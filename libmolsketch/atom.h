@@ -33,10 +33,18 @@ namespace Molsketch {
   class Molecule;
 
   enum Alignment {
-    Left,
-    Right,
-    Up,
-    Down
+    Left = 1,
+    Right = 2,
+    Up = 3,
+    Down = 4
+  };
+
+  enum HAlignment {
+    Auto = 0,
+    West = 1,
+    East = 2,
+    North = 3,
+    South = 4
   };
 
   /// Atom class
@@ -72,6 +80,8 @@ namespace Molsketch {
     void setElement(const QString & element);
     void setNewmanDiameter(const qreal& diameter);
     qreal getNewmanDiameter() const;
+    void setHAlignment(const HAlignment&);
+    HAlignment hAlignment() const;
     void disableNewman();
     SumFormula sumFormula() const;
     /** Returns the charge of the atom.
@@ -156,6 +166,8 @@ namespace Molsketch {
     int m_userElectrons;
     qreal m_newmanDiameter;
     QString m_index;
+    bool m_fixAlignment;
+    Alignment m_alignment;
 
     int m_userImplicitHydrogens;
     bool m_implicitHydrogens;

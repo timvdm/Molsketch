@@ -7,261 +7,403 @@
     <x>0</x>
     <y>0</y>
     <width>231</width>
-    <height>481</height>
+    <height>503</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QFormLayout" name="formLayout">
-   <item row="0" column="0">
-    <widget class="QLabel" name="elementLabel">
-     <property name="text">
-      <string>S&amp;ymbol</string>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QToolBox" name="toolBox">
+     <property name="currentIndex">
+      <number>0</number>
      </property>
-     <property name="buddy">
-      <cstring>element</cstring>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="1">
-    <widget class="QLineEdit" name="element"/>
-   </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="chargeLabel">
-     <property name="text">
-      <string>Charge</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="1">
-    <widget class="QSpinBox" name="charge">
-     <property name="minimum">
-      <number>-20</number>
-     </property>
-     <property name="maximum">
-      <number>20</number>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0">
-    <widget class="QLabel" name="hydrogenLabel">
-     <property name="text">
-      <string>Hydrogens</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="1">
-    <widget class="QSpinBox" name="hydrogens">
-     <property name="minimum">
-      <number>-20</number>
-     </property>
-     <property name="maximum">
-      <number>20</number>
-     </property>
-    </widget>
-   </item>
-   <item row="10" column="0" colspan="2">
-    <widget class="Molsketch::CoordinateTableView" name="coordinates">
-     <property name="alternatingRowColors">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="0">
-    <widget class="QLabel" name="radicalsLabel">
-     <property name="text">
-      <string>Radicals</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="1">
-    <layout class="QGridLayout" name="gridLayout">
-     <item row="1" column="0">
-      <widget class="QCheckBox" name="leftRadical">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
-      <widget class="QCheckBox" name="topLeftRadical">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="2">
-      <widget class="QCheckBox" name="topRightRadical">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QCheckBox" name="bottomLeftRadical">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="2">
-      <widget class="QCheckBox" name="bottomRightRadical">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QCheckBox" name="topRadical">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QCheckBox" name="bottomRadical">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="2">
-      <widget class="QCheckBox" name="rightRadical">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QLabel" name="radicalElementLabel">
-       <property name="text">
-        <string>E</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item row="6" column="1">
-    <layout class="QGridLayout" name="gridLayout_2">
-     <item row="1" column="0">
-      <widget class="QCheckBox" name="leftLonePair">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
-      <widget class="QCheckBox" name="topLeftLonePair">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="2">
-      <widget class="QCheckBox" name="topRightLonePair">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QCheckBox" name="bottomLeftLonePair">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="2">
-      <widget class="QCheckBox" name="bottomRightLonePair">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QCheckBox" name="topLonePair">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QCheckBox" name="bottomLonePair">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="2">
-      <widget class="QCheckBox" name="rightLonePair">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QLabel" name="lonePairLabel">
-       <property name="text">
-        <string>E</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item row="6" column="0">
-    <widget class="QLabel" name="lonePairsLabel">
-     <property name="text">
-      <string>Lone pairs</string>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="0">
-    <widget class="QLabel" name="radicalDiameterLabel">
-     <property name="text">
-      <string>Diameter</string>
-     </property>
-    </widget>
-   </item>
-   <item row="8" column="0">
-    <widget class="QLabel" name="lonePairLineWidthLabel">
-     <property name="text">
-      <string>Line width</string>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="0">
-    <widget class="QLabel" name="lonePairLengthLabel">
-     <property name="text">
-      <string>Length</string>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="1">
-    <widget class="QDoubleSpinBox" name="radicalDiameter"/>
-   </item>
-   <item row="7" column="1">
-    <widget class="QDoubleSpinBox" name="lonePairLength"/>
-   </item>
-   <item row="8" column="1">
-    <widget class="QDoubleSpinBox" name="lonePairLineWidth"/>
-   </item>
-   <item row="9" column="0">
-    <widget class="QLabel" name="newmanLabel">
-     <property name="text">
-      <string>Newman
+     <widget class="QWidget" name="generalPage">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>219</width>
+        <height>383</height>
+       </rect>
+      </property>
+      <attribute name="label">
+       <string>General</string>
+      </attribute>
+      <layout class="QFormLayout" name="formLayout">
+       <item row="0" column="0">
+        <widget class="QLabel" name="elementLabel">
+         <property name="text">
+          <string>S&amp;ymbol</string>
+         </property>
+         <property name="buddy">
+          <cstring>element</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="element"/>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="chargeLabel">
+         <property name="text">
+          <string>Charge</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QSpinBox" name="charge">
+         <property name="minimum">
+          <number>-20</number>
+         </property>
+         <property name="maximum">
+          <number>20</number>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="newmanLabel">
+         <property name="text">
+          <string>Newman
 diameter</string>
-     </property>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QDoubleSpinBox" name="newmanDiameter"/>
+       </item>
+       <item row="3" column="0" colspan="2">
+        <widget class="Molsketch::CoordinateTableView" name="coordinates">
+         <property name="alternatingRowColors">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="hydrogensPage">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>219</width>
+        <height>383</height>
+       </rect>
+      </property>
+      <attribute name="label">
+       <string>Hydrogens</string>
+      </attribute>
+      <layout class="QFormLayout" name="formLayout_2">
+       <item row="0" column="0">
+        <widget class="QLabel" name="hydrogenLabel">
+         <property name="text">
+          <string>Hydrogens</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QSpinBox" name="hydrogens">
+         <property name="minimum">
+          <number>-20</number>
+         </property>
+         <property name="maximum">
+          <number>20</number>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="hydrogenAlignmentLabel">
+         <property name="text">
+          <string>Alignment</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <layout class="QGridLayout" name="gridLayout_5">
+         <item row="5" column="2">
+          <widget class="QLabel" name="hydrogensElementLabel">
+           <property name="text">
+            <string>E</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="2">
+          <widget class="QRadioButton" name="hydrogensNorth">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="2">
+          <widget class="QRadioButton" name="hydrogensSouth">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <widget class="QRadioButton" name="hydrogensWest">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <spacer name="verticalSpacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Fixed</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>10</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="5" column="3">
+          <widget class="QRadioButton" name="hydrogensEast">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1" colspan="3">
+          <widget class="QRadioButton" name="hydrogensAutoAlignment">
+           <property name="text">
+            <string>Auto</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="lonePairsPage">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>219</width>
+        <height>383</height>
+       </rect>
+      </property>
+      <attribute name="label">
+       <string>Lone Pairs</string>
+      </attribute>
+      <layout class="QFormLayout" name="formLayout_3">
+       <item row="2" column="0">
+        <widget class="QLabel" name="lonePairLineWidthLabel">
+         <property name="text">
+          <string>Line width</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QDoubleSpinBox" name="lonePairLineWidth"/>
+       </item>
+       <item row="1" column="1">
+        <widget class="QDoubleSpinBox" name="lonePairLength"/>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="lonePairLengthLabel">
+         <property name="text">
+          <string>Length</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="lonePairsLabel">
+         <property name="text">
+          <string>Lone pairs</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <layout class="QGridLayout" name="gridLayout_2">
+         <item row="1" column="0">
+          <widget class="QCheckBox" name="leftLonePair">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QCheckBox" name="topLeftLonePair">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QCheckBox" name="topRightLonePair">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QCheckBox" name="bottomLeftLonePair">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <widget class="QCheckBox" name="bottomRightLonePair">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QCheckBox" name="topLonePair">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QCheckBox" name="bottomLonePair">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QCheckBox" name="rightLonePair">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLabel" name="lonePairLabel">
+           <property name="text">
+            <string>E</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="radicalsPage">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>219</width>
+        <height>383</height>
+       </rect>
+      </property>
+      <attribute name="label">
+       <string>Radical Electrons</string>
+      </attribute>
+      <layout class="QFormLayout" name="formLayout_4">
+       <item row="1" column="0">
+        <widget class="QLabel" name="radicalDiameterLabel">
+         <property name="text">
+          <string>Diameter</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QDoubleSpinBox" name="radicalDiameter"/>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="radicalsLabel">
+         <property name="text">
+          <string>Radicals</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="1" column="0">
+          <widget class="QCheckBox" name="leftRadical">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QCheckBox" name="topLeftRadical">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QCheckBox" name="topRightRadical">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QCheckBox" name="bottomLeftRadical">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <widget class="QCheckBox" name="bottomRightRadical">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QCheckBox" name="topRadical">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QCheckBox" name="bottomRadical">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QCheckBox" name="rightRadical">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLabel" name="radicalElementLabel">
+           <property name="text">
+            <string>E</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
     </widget>
-   </item>
-   <item row="9" column="1">
-    <widget class="QDoubleSpinBox" name="newmanDiameter"/>
    </item>
   </layout>
  </widget>
@@ -281,12 +423,12 @@ diameter</string>
    <slot>setText(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>170</x>
-     <y>24</y>
+     <x>174</x>
+     <y>55</y>
     </hint>
     <hint type="destinationlabel">
-     <x>145</x>
-     <y>145</y>
+     <x>120</x>
+     <y>166</y>
     </hint>
    </hints>
   </connection>
@@ -297,8 +439,8 @@ diameter</string>
    <slot>updateRadicals()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>88</x>
-     <y>120</y>
+     <x>86</x>
+     <y>140</y>
     </hint>
     <hint type="destinationlabel">
      <x>153</x>
@@ -313,8 +455,8 @@ diameter</string>
    <slot>updateRadicals()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>125</x>
-     <y>121</y>
+     <x>120</x>
+     <y>140</y>
     </hint>
     <hint type="destinationlabel">
      <x>135</x>
@@ -329,8 +471,8 @@ diameter</string>
    <slot>updateRadicals()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>169</x>
-     <y>123</y>
+     <x>154</x>
+     <y>140</y>
     </hint>
     <hint type="destinationlabel">
      <x>115</x>
@@ -345,7 +487,7 @@ diameter</string>
    <slot>updateRadicals()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>104</x>
+     <x>86</x>
      <y>192</y>
     </hint>
     <hint type="destinationlabel">
@@ -361,7 +503,7 @@ diameter</string>
    <slot>updateRadicals()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>186</x>
+     <x>154</x>
      <y>192</y>
     </hint>
     <hint type="destinationlabel">
@@ -377,7 +519,7 @@ diameter</string>
    <slot>updateRadicals()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>145</x>
+     <x>120</x>
      <y>192</y>
     </hint>
     <hint type="destinationlabel">
@@ -393,8 +535,8 @@ diameter</string>
    <slot>updateRadicals()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>104</x>
-     <y>145</y>
+     <x>86</x>
+     <y>166</y>
     </hint>
     <hint type="destinationlabel">
      <x>115</x>
@@ -409,8 +551,8 @@ diameter</string>
    <slot>updateRadicals()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>186</x>
-     <y>145</y>
+     <x>154</x>
+     <y>166</y>
     </hint>
     <hint type="destinationlabel">
      <x>115</x>
@@ -425,12 +567,12 @@ diameter</string>
    <slot>setText(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>146</x>
-     <y>20</y>
+     <x>150</x>
+     <y>51</y>
     </hint>
     <hint type="destinationlabel">
-     <x>145</x>
-     <y>293</y>
+     <x>124</x>
+     <y>139</y>
     </hint>
    </hints>
   </connection>
@@ -441,8 +583,8 @@ diameter</string>
    <slot>updateLonePairs()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>145</x>
-     <y>322</y>
+     <x>124</x>
+     <y>165</y>
     </hint>
     <hint type="destinationlabel">
      <x>115</x>
@@ -457,8 +599,8 @@ diameter</string>
    <slot>updateLonePairs()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>186</x>
-     <y>322</y>
+     <x>158</x>
+     <y>165</y>
     </hint>
     <hint type="destinationlabel">
      <x>115</x>
@@ -473,8 +615,8 @@ diameter</string>
    <slot>updateLonePairs()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>104</x>
-     <y>293</y>
+     <x>90</x>
+     <y>139</y>
     </hint>
     <hint type="destinationlabel">
      <x>115</x>
@@ -489,8 +631,8 @@ diameter</string>
    <slot>updateLonePairs()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>186</x>
-     <y>264</y>
+     <x>158</x>
+     <y>113</y>
     </hint>
     <hint type="destinationlabel">
      <x>115</x>
@@ -505,8 +647,8 @@ diameter</string>
    <slot>updateLonePairs()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>145</x>
-     <y>264</y>
+     <x>124</x>
+     <y>113</y>
     </hint>
     <hint type="destinationlabel">
      <x>115</x>
@@ -521,8 +663,8 @@ diameter</string>
    <slot>updateLonePairs()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>104</x>
-     <y>264</y>
+     <x>90</x>
+     <y>113</y>
     </hint>
     <hint type="destinationlabel">
      <x>115</x>
@@ -537,8 +679,8 @@ diameter</string>
    <slot>updateLonePairs()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>186</x>
-     <y>293</y>
+     <x>158</x>
+     <y>139</y>
     </hint>
     <hint type="destinationlabel">
      <x>115</x>
@@ -553,8 +695,8 @@ diameter</string>
    <slot>updateLonePairs()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>104</x>
-     <y>322</y>
+     <x>90</x>
+     <y>165</y>
     </hint>
     <hint type="destinationlabel">
      <x>28</x>
@@ -585,8 +727,8 @@ diameter</string>
    <slot>updateLonePairs()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>101</x>
-     <y>379</y>
+     <x>105</x>
+     <y>234</y>
     </hint>
     <hint type="destinationlabel">
      <x>115</x>
@@ -601,8 +743,8 @@ diameter</string>
    <slot>updateLonePairs()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>101</x>
-     <y>344</y>
+     <x>105</x>
+     <y>200</y>
     </hint>
     <hint type="destinationlabel">
      <x>115</x>
@@ -610,9 +752,90 @@ diameter</string>
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>hydrogensAutoAlignment</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>AtomPopup</receiver>
+   <slot>updateHAlignment()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>72</x>
+     <y>107</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-5</x>
+     <y>148</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>hydrogensNorth</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>AtomPopup</receiver>
+   <slot>updateHAlignment()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>104</x>
+     <y>153</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>0</x>
+     <y>184</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>hydrogensWest</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>AtomPopup</receiver>
+   <slot>updateHAlignment()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>78</x>
+     <y>182</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>2</x>
+     <y>221</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>hydrogensSouth</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>AtomPopup</receiver>
+   <slot>updateHAlignment()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>107</x>
+     <y>201</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>4</x>
+     <y>256</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>hydrogensEast</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>AtomPopup</receiver>
+   <slot>updateHAlignment()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>141</x>
+     <y>176</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>232</x>
+     <y>179</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>updateRadicals()</slot>
   <slot>updateLonePairs()</slot>
+  <slot>updateHAlignment()</slot>
  </slots>
 </ui>

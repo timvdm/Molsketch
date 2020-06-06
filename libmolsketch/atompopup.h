@@ -49,6 +49,7 @@ namespace Molsketch {
     void onCoordinatesDatachanged();
     void updateRadicals();
     void updateLonePairs();
+    void updateHAlignment();
   private:
     Ui::AtomPopup *ui;
     class PrivateData;
