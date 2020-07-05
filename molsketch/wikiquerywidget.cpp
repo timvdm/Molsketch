@@ -113,7 +113,7 @@ void WikiQueryWidget::processMoleculeQuery(QNetworkReply *reply) {
     qInfo() << "obtained molecule from wikidata:" << label << smiles << inchi << isomer;
     namesAndInchiStrings << qMakePair(label, inchi);
   }
-  qSort(namesAndInchiStrings);
+  std::sort(namesAndInchiStrings);
   QList<MoleculeModelItem*> items;
   for (auto item : namesAndInchiStrings)
     items << new InChIItem(item.first, item.second, obloader);

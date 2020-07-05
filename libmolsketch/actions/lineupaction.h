@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2009 Tim Vandermeersch                                  *
+ *   Copyright (C) 2017 by Hendrik Vennekate                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -16,27 +16,29 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
-#ifndef MIMIMOLECULE_H
-#define MIMIMOLECULE_H
+#ifndef LINEUPACTION_H
+#define LINEUPACTION_H
 
-#include <QMimeData>
+#include <actions/abstractitemaction.h>
 
 namespace Molsketch {
 
   class Molecule;
 
-  class MimeMolecule : public QMimeData // TODO this is wildly dangerous!
-  {
-    public:
-      MimeMolecule();
-
-      void setMolecule(Molecule *molecule);
-      Molecule* molecule() const;
-
-    private:
-      Molecule *m_molecule;
+  class LineUpAction : public TopLevelItemAction {
+  public:
+    static LineUpAction* horizontal(MolScene *scene = 0);
+    static LineUpAction* vertical(MolScene *scene = 0);
+  private:
+    void execute() override;
+  protected:
+    explicit LineUpAction(MolScene *scene);
+    void spaceItemsEqually(qreal distance, bool distanceBetweenCenters);
+    virtual qreal getOrderingValue(const graphicsItem*) const = 0;
+    virtual QPointF offsetForEdges(const graphicsItem* reference, const graphicsItem *item, qreal distance) const = 0;
+    virtual QPointF offsetForCenters(const graphicsItem* reference, const graphicsItem *item, qreal distance) const = 0;
   };
 
-}
+} // namespace Molsketch
 
-#endif // MIMIMOLECULE_H
+#endif // LINEUPACTION_H

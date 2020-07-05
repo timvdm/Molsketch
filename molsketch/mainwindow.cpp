@@ -27,7 +27,7 @@
 #include <QProgressBar>
 #include <QPrintPreviewDialog>
 #include <QMenuBar>
-#include <lineupaction.h>
+#include <actions/lineupaction.h>
 #if QT_VERSION <= 0x040603
 #include <QAssistantClient>
 #endif

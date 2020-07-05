@@ -34,7 +34,7 @@ namespace Molsketch {
       : parent(p), minItemCount(0) {}
     void checkItems()
     {
-      itemList.remove(0) ;
+      itemList.remove(0) ; // TODO this seems wrong!
       parent->setEnabled(itemList.size() >= minItemCount);
       emit parent->itemsChanged();
     }

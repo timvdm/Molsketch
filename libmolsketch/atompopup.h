@@ -42,9 +42,9 @@ namespace Molsketch {
     void connectAtom(Atom* a);
 
   private slots:
-    void on_element_textChanged(const QString &arg1);
-    void on_charge_valueChanged(int arg1);
-    void on_hydrogens_valueChanged(int arg1);
+    void on_element_textChanged(const QString &newElementSymbol);
+    void on_charge_valueChanged(int newCharge);
+    void on_hydrogens_valueChanged(int newHydrogenCount);
     void on_newmanDiameter_valueChanged(double diameter);
     void onCoordinatesDatachanged();
     void updateRadicals();

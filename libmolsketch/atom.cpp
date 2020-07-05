@@ -98,18 +98,18 @@ namespace Molsketch {
     if ((alignment == Right) || (alignment == Left) || !lbl.contains("H")) {
       for (int i = 0; i < lbl.size(); ++i) {
         if (lbl[i].isDigit())
-          totalWidth += fmScript.width(lbl[i]);
+          totalWidth += fmScript.horizontalAdvance(lbl[i]);
         else
-          totalWidth += fmSymbol.width(lbl[i]);
+          totalWidth += fmSymbol.horizontalAdvance(lbl[i]);
       }
     } else {
-      totalWidth = fmSymbol.width(lbl.left(lbl.indexOf("H")));
+      totalWidth = fmSymbol.horizontalAdvance(lbl.left(lbl.indexOf("H")));
       qreal width = 0.0;
       for (int i = lbl.indexOf("H"); i < lbl.size(); ++i) {
         if (lbl[i].isDigit())
-          width += fmScript.width(lbl[i]);
+          width += fmScript.horizontalAdvance(lbl[i]);
         else
-          width += fmSymbol.width(lbl[i]);
+          width += fmSymbol.horizontalAdvance(lbl[i]);
       }
 
       if (width > totalWidth)
@@ -123,15 +123,15 @@ namespace Molsketch {
     qreal xOffset;
     switch (alignment) {
       case Right:
-        xOffset = - 0.5 * fmSymbol.width(lbl.left(1));
+        xOffset = - 0.5 * fmSymbol.horizontalAdvance(lbl.left(1));
         break;
       case Left:
-        xOffset = 0.5 * fmSymbol.width(lbl.right(1)) - totalWidth;
+        xOffset = 0.5 * fmSymbol.horizontalAdvance(lbl.right(1)) - totalWidth;
         break;
       case Up:
       case Down:
         if (lbl.contains("H") && !QRegExp("H[0-9]*").exactMatch(lbl))
-          xOffset = - 0.5 * fmSymbol.width(lbl.left(lbl.indexOf("H")));
+          xOffset = - 0.5 * fmSymbol.horizontalAdvance(lbl.left(lbl.indexOf("H")));
         else
           xOffset = - 0.5 * totalWidth;
         break;
@@ -152,7 +152,7 @@ namespace Molsketch {
   {
     QFont symbolFont;
     MolScene *sc = qobject_cast<MolScene*>(scene());
-    if (sc) symbolFont = sc->getAtomFont();
+    if (sc) symbolFont = sc->settings()->atomFont()->get();
     if (symbolFont.pointSizeF() > 0)
       symbolFont.setPointSizeF(symbolFont.pointSizeF() * relativeWidth());
     return symbolFont;
@@ -280,18 +280,18 @@ namespace Molsketch {
     if ((alignment == Right) || (alignment == Left) || !lbl.contains("H")) {
       for (int i = 0; i < lbl.size(); ++i) {
         if (lbl[i].isDigit())
-          totalWidth += fmScript.width(lbl[i]);
+          totalWidth += fmScript.horizontalAdvance(lbl[i]);
         else
-          totalWidth += fmSymbol.width(lbl[i]);
+          totalWidth += fmSymbol.horizontalAdvance(lbl[i]);
       }
     } else {
-      totalWidth = fmSymbol.width(lbl.left(lbl.indexOf("H")));
+      totalWidth = fmSymbol.horizontalAdvance(lbl.left(lbl.indexOf("H")));
       qreal width = 0.0;
       for (int i = lbl.indexOf("H"); i < lbl.size(); ++i) {
         if (lbl[i].isDigit())
-          width += fmScript.width(lbl[i]);
+          width += fmScript.horizontalAdvance(lbl[i]);
         else
-          width += fmSymbol.width(lbl[i]);
+          width += fmSymbol.horizontalAdvance(lbl[i]);
       }
 
       if (width > totalWidth)
@@ -303,15 +303,15 @@ namespace Molsketch {
     qreal xOffset, yOffset, yOffsetSubscript;
     switch (alignment) {
       case Right:
-        xOffset = - 0.5 * fmSymbol.width(lbl.left(1));
+        xOffset = - 0.5 * fmSymbol.horizontalAdvance(lbl.left(1));
         break;
       case Left:
-        xOffset = 0.5 * fmSymbol.width(lbl.right(1)) - totalWidth;
+        xOffset = 0.5 * fmSymbol.horizontalAdvance(lbl.right(1)) - totalWidth;
         break;
       case Up:
       case Down:
         if (lbl.contains("H") && !QRegExp("H[0-9]*").exactMatch(lbl))
-          xOffset = - 0.5 * fmSymbol.width(lbl.left(lbl.indexOf("H")));
+          xOffset = - 0.5 * fmSymbol.horizontalAdvance(lbl.left(lbl.indexOf("H")));
         else
           xOffset = - 0.5 * totalWidth;
         break;
@@ -358,7 +358,7 @@ namespace Molsketch {
           // write the current string
           painter->setFont(symbolFont);
           painter->drawText(xOffset, yOffset, str);
-          xOffset += fmSymbol.width(str);
+          xOffset += fmSymbol.horizontalAdvance(str);
           str.clear();
         }
 
@@ -368,7 +368,7 @@ namespace Molsketch {
           // write the current subscript
           painter->setFont(subscriptFont);
           painter->drawText(xOffset, yOffsetSubscript, subscript);
-          xOffset += fmScript.width(subscript);
+          xOffset += fmScript.horizontalAdvance(subscript);
           subscript.clear();
         }
 
@@ -503,7 +503,7 @@ namespace Molsketch {
     QFont superscriptFont = getSymbolFont();
     superscriptFont.setPointSize(0.75 * superscriptFont.pointSize());
     QFontMetrics fmSymbol(superscriptFont);
-    int offset = 0.5 * fmSymbol.width("+");
+    int offset = 0.5 * fmSymbol.horizontalAdvance("+");
     painter->save();
     painter->setFont(superscriptFont);
     painter->drawText(m_shape.right() - offset, m_shape.top() + offset, chargeId);
@@ -636,7 +636,7 @@ namespace Molsketch {
     QVector<qreal> angles ;
     foreach (Bond *bond, m_bonds)
       angles << bond->bondAngle(this) ;
-    qSort(angles) ;
+    std::sort(angles) ;
     angles << angles.first() + 360. ;
     qreal maxAngleGap = -1, result = 270 ;
     for (int i = 0 ; i < angles.size()-1 ; ++i)
@@ -960,19 +960,19 @@ namespace Molsketch {
     QPointF intersection;
 
     QLineF topEdge{bounds.topLeft(), bounds.topRight()};
-    if (topEdge.intersect(line, &intersection) == QLineF::BoundedIntersection)
+    if (topEdge.intersects(line, &intersection) == QLineF::BoundedIntersection)
       return IntersectionData(intersection, topEdge);
 
     QLineF bottomEdge{bounds.bottomLeft(), bounds.bottomRight()};
-    if (bottomEdge.intersect(line, &intersection) == QLineF::BoundedIntersection)
+    if (bottomEdge.intersects(line, &intersection) == QLineF::BoundedIntersection)
       return IntersectionData(intersection, bottomEdge);
 
     QLineF leftEdge{bounds.topLeft(), bounds.bottomLeft()};
-    if (leftEdge.intersect(line, &intersection) == QLineF::BoundedIntersection)
+    if (leftEdge.intersects(line, &intersection) == QLineF::BoundedIntersection)
       return IntersectionData(intersection, leftEdge);
 
     QLineF rightEdge{bounds.topRight(), bounds.bottomRight()};
-    if (rightEdge.intersect(line, &intersection) == QLineF::BoundedIntersection)
+    if (rightEdge.intersects(line, &intersection) == QLineF::BoundedIntersection)
       return IntersectionData(intersection, rightEdge);
     // TODO pick the edge it intersects with first (i.e. closest to the middle)
     return IntersectionData(QPointF(), QLineF());
@@ -1009,7 +1009,7 @@ namespace Molsketch {
 
   qreal Atom::getExtentForIntersectionOfOuterLineAndEdge(const IntersectionData &edgeIntersection, const QLineF &outer) const {
     QPointF intersectionOfOuterAndEdge;
-    QLineF::IntersectType intersectType = edgeIntersection.getEdge().intersect(outer, &intersectionOfOuterAndEdge);
+    QLineF::IntersectType intersectType = edgeIntersection.getEdge().intersects(outer, &intersectionOfOuterAndEdge);
     return QLineF::BoundedIntersection == intersectType
         ? QLineF(intersectionOfOuterAndEdge, outer.p1()).length() / outer.length()
         : 0;
@@ -1033,7 +1033,7 @@ namespace Molsketch {
           getExtentForIntersectionOfOuterLineAndEdge(edgeIntersection, outer2)
     };
 
-    qSort(possibleExtents);
+    std::sort(possibleExtents);
     return possibleExtents.last();
   }
 
@@ -1072,7 +1072,7 @@ namespace Molsketch {
     {
       QLineF edge(corners[i], corners[i+1]);
       QPointF result;
-      if (connection.intersect(edge, &result) == QLineF::BoundedIntersection)
+      if (connection.intersects(edge, &result) == QLineF::BoundedIntersection)
         return result;
     }
     return connection.p1();

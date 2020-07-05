@@ -150,8 +150,8 @@ namespace Molsketch {
     /// @return @c true if the molecule exists of two seperate submolecules, and @c false otherwise.
     bool canSplit() const;
 
-    QList<Atom*> atoms() const;
-    QList<Bond*> bonds() const;
+    QList<Atom*> atoms() const; // TODO return set
+    QList<Bond*> bonds() const; // TODO return set
     SumFormula sumFormula() const;
 
     QWidget *getPropertiesWidget() override;

@@ -126,7 +126,9 @@ namespace Molsketch {
       DEFAULTINITIALIZER
   {
     setDefaults();
-    clone(mol.atoms().toSet());
+    auto atoms = mol.atoms();
+    auto atomSet = QSet<Atom*>(atoms.begin(), atoms.end());
+    clone(atomSet);
     setPos(mol.pos());
     updateElectronSystems();
     updateTooltip();
@@ -221,26 +223,20 @@ namespace Molsketch {
 
   Bond* Molecule::addBond(Bond* bond)
   {
-    //pre(1): bond is a valid pointer to a bond
     Q_CHECK_PTR(bond);
-    //pre(2): the bond is between two atoms of this molecule
-    // TODO this is broken...
-//    Q_ASSERT(m_atomList.contains(bond->beginAtom()));
-//    Q_ASSERT(m_atomList.contains(bond->endAtom()));
 
-    if (scene ()) bond ->setColor(scene()->settings()->defaultColor()->get()); // TODO ??
+    if (scene ()) bond->setColor(scene()->settings()->defaultColor()->get());
     // Checking if and altering when a bond exists
     Bond* bondX = bondBetween(bond->beginAtom(), bond->endAtom());
     if (bondX) {
       delete bond;
-      if (scene ()) bondX ->setColor(scene()->settings()->defaultColor()->get());
+      if (scene()) bondX->setColor(scene()->settings()->defaultColor()->get());
       return bondX;
     }
 
-    // Adding the bond the the molecule
     bond->setParentItem(this);
 
-    bond->setAtoms(bond->beginAtom(), bond->endAtom()); // TODO huh?
+    bond->setAtoms(bond->beginAtom(), bond->endAtom()); // updates pos and atom shapes
 
     m_electronSystemsUpdate = true;
     updateTooltip();
@@ -296,8 +292,9 @@ namespace Molsketch {
     while (lastSize < connectedAtoms.size())
     {
       lastSize = connectedAtoms.size();
-      foreach(Atom* atom, connectedAtoms)
-        connectedAtoms += atom->neighbours().toSet();
+      for(auto atom : connectedAtoms)
+        for (auto neighbor : atom->neighbours())
+          connectedAtoms += neighbor;
     }
     return connectedAtoms;
   }
@@ -306,7 +303,8 @@ namespace Molsketch {
   {
     QList<Molecule*> molList;
 
-    QSet<Atom*> atomSet = atoms().toSet();
+    auto atomList = atoms();
+    auto atomSet = QSet<Atom*>(atomList.begin(), atomList.end());
     while (!atomSet.empty())
     {
       QSet<Atom*> subgroup = getConnectedAtoms(*(atomSet.begin()));
@@ -397,7 +395,9 @@ namespace Molsketch {
   bool Molecule::canSplit() const
   {
     if (atoms().isEmpty()) return false;
-    return getConnectedAtoms(atoms().first()) != atoms().toSet();
+    auto atomList = atoms();
+    auto atomSet = QSet<Atom*>(atomList.begin(), atomList.end());
+    return getConnectedAtoms(atoms().first()) != atomSet;
   }
 
   QVariant Molecule::itemChange(GraphicsItemChange change, const QVariant &value)
@@ -594,8 +594,10 @@ void Molecule::paintElectronSystems(QPainter *painter) const {
 
 bool canMerge(const ElectronSystem *es1, const ElectronSystem *es2)
 {
-  auto firstSetOfAtoms = es1->atoms().toSet();
-  auto secondSetOfAtoms = es2->atoms().toSet();
+  auto firstListOfAtoms = es1->atoms();
+  auto firstSetOfAtoms = QSet<Atom*>(firstListOfAtoms.begin(), firstListOfAtoms.end());
+  auto secondListOfAtoms =
+  auto secondSetOfAtoms = es2->atoms().toSet(); // TODO utility function
   // may not share an atom
   if (!(firstSetOfAtoms & secondSetOfAtoms).empty()) return false;
 
@@ -660,7 +662,7 @@ void Molecule::collectElectronSystems() {
     while (unboundElectronPairs--) m_electronSystems << new PiElectrons({atom}, 2);
     if (atom->numNonBondingElectrons() % 2) m_electronSystems << new PiElectrons({atom}, 1);
   }
-  qSort(m_electronSystems.begin(), m_electronSystems.end(), NumAtomsMoreThan); // TODO this should be redundant
+  std::sort(m_electronSystems.begin(), m_electronSystems.end(), NumAtomsMoreThan); // TODO this should be redundant
 }
 
 void Molecule::mergeElectronSystems() {

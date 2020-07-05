@@ -65,8 +65,6 @@ namespace Molsketch {
 
       SceneSettings* settings() const;
 
-      QFont getAtomFont() const;
-
       static QString mimeType();
 
       qreal bondAngle() const;
@@ -122,7 +120,6 @@ namespace Molsketch {
       void clear();
       /** Slot to select all contents of the scene. */
       void selectAll();
-      void addMolecule(Molecule* mol);
       void setGrid(bool on = true);
       void clipboardChanged();
 
@@ -168,9 +165,6 @@ namespace Molsketch {
         }
         return result;
       }
-      qreal getRadicalDiameter() const;
-      qreal getLonePairLength() const;
-      qreal getLonePairLineWidth() const;
       QWidget *getPropertiesWidget(); // TODO there should be an intgerface for this
   protected:
       XmlObjectInterface *produceChild(const QString &childName, const QXmlStreamAttributes &attributes) override;

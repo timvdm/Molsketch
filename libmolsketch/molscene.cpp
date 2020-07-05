@@ -50,6 +50,7 @@
 #include <QMainWindow>
 #include <QPair>
 #include <QVBoxLayout>
+#include <QMimeData>
 
 #include "molscene.h"
 
@@ -58,7 +59,6 @@
 #include "bond.h"
 #include "molecule.h"
 #include "commands.h"
-#include "mimemolecule.h"
 #include "TextInputItem.h"
 #include "math2d.h"
 #include "grid.h"
@@ -125,9 +125,6 @@ namespace Molsketch {
 
     ~privateData()
     {
-//      if (inputItem && !inputItem->scene()) // TODO compare with this scene
-//        delete inputItem; // TODO should clean up this item...
-//      delete selectionRectangle; // TODO why?
       if (!grid->scene()) delete grid;
       if (!selectionRectangle->scene()) delete selectionRectangle;
       delete stack;
@@ -204,22 +201,6 @@ namespace Molsketch {
 
   SceneSettings *MolScene::settings() const {
     return d->settings;
-  }
-
-  QFont MolScene::getAtomFont() const {
-    return d->settings->atomFont()->get(); // FIXME connect signal/slot
-  }
-
-  qreal MolScene::getRadicalDiameter() const {
-    return d->settings->radicalDiameter()->get(); // FIXME connect signal/slot
-  }
-
-  qreal MolScene::getLonePairLength() const {
-    return d->settings->lonePairLength()->get(); // FIXME connect signal/slot
-  }
-
-  qreal MolScene::getLonePairLineWidth() const {
-    return d->settings->lonePairLineWidth()->get(); // FIXME connect signal/slot
   }
 
   QWidget *MolScene::getPropertiesWidget() {
@@ -311,7 +292,7 @@ namespace Molsketch {
 
   QByteArray MolScene::toSvg()
   {
-    QList<QGraphicsItem*> selection(selectedItems()); // TODO unused?
+    QList<QGraphicsItem*> selList(selectedItems());
     clearSelection();
     QByteArray ba;
     QBuffer buffer(&ba);
@@ -328,39 +309,21 @@ namespace Molsketch {
     render(&painter, bounds, bounds);
     painter.end();
     buffer.close();
-    // TODO reselect items
+    foreach(QGraphicsItem* item, selList) item->setSelected(true);
     return ba;
   }
 
 
   QImage MolScene::renderImage(const QRectF &rect)
   {
-        // Creating an image
         QImage image(int(rect.width()),int(rect.height()),QImage::Format_RGB32);
         image.fill(QColor("white").rgb());
 
-        // Creating and setting the painter
         QPainter painter(&image);
         painter.setRenderHint(QPainter::Antialiasing);
 
-        // Rendering in the image and saving to file
         render(&painter,QRectF(0,0,rect.width(),rect.height()),rect);
-
         return image;
-  }
-
-  void MolScene::addMolecule(Molecule* mol) // TODO decommission this
-  {
-        Q_CHECK_PTR(mol);
-        if (!mol) return;
-        d->stack->beginMacro(tr("add molecule"));
-        ItemAction::addItemToScene(mol, this);
-        if (mol->canSplit()) {
-          for(Molecule* molecule : mol->split())
-            ItemAction::addItemToScene(molecule, this);
-          ItemAction::removeItemFromScene(mol);
-        }
-        d->stack->endMacro();
   }
 
   void MolScene::selectAll()
