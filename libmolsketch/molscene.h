@@ -80,7 +80,7 @@ namespace Molsketch {
 
       // Commands
       /** Renders the @p rect on the scene in a image. */
-      QImage renderImage(const QRectF &rect);
+      QImage renderImage(const QRectF &rect, const qreal &scalingFactor = 10);
 
       QByteArray toSvg();
 

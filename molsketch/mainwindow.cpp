@@ -356,7 +356,7 @@ bool MainWindow::exportDoc()
   // Try to export the file
   if (fileName.endsWith(".svg")) return Molsketch::saveToSVG(fileName, m_molView->scene());
 
-  if (!Molsketch::exportFile(fileName,m_molView->scene())) {
+  if (!Molsketch::exportFile(fileName,m_molView->scene(), settings->pixelScalingFactor())) {
     QMessageBox::critical(this,tr(PROGRAM_NAME),tr("Error while exporting file"),QMessageBox::Ok,QMessageBox::Ok);
     return false;
   }
