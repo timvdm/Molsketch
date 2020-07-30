@@ -120,72 +120,14 @@ diameter</string>
         </widget>
        </item>
        <item row="1" column="1">
-        <layout class="QGridLayout" name="gridLayout_5">
-         <item row="5" column="2">
-          <widget class="QLabel" name="hydrogensElementLabel">
-           <property name="text">
-            <string>E</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="2">
-          <widget class="QRadioButton" name="hydrogensNorth">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="2">
-          <widget class="QRadioButton" name="hydrogensSouth">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="1">
-          <widget class="QRadioButton" name="hydrogensWest">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="2">
-          <spacer name="verticalSpacer">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Fixed</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>10</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="5" column="3">
-          <widget class="QRadioButton" name="hydrogensEast">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1" colspan="3">
-          <widget class="QRadioButton" name="hydrogensAutoAlignment">
-           <property name="text">
-            <string>Auto</string>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        <widget class="Molsketch::ElementAlignment" name="hydrogenAlignment" native="true">
+         <property name="minimumSize">
+          <size>
+           <width>50</width>
+           <height>50</height>
+          </size>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -412,6 +354,16 @@ diameter</string>
    <class>Molsketch::CoordinateTableView</class>
    <extends>QTableView</extends>
    <header>coordinatetableview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Molsketch::ElementAlignment</class>
+   <extends>QWidget</extends>
+   <header>elementalignment.h</header>
+   <container>1</container>
+   <slots>
+    <signal>alignmentChanged(NeighborAlignment)</signal>
+    <slot>setElement(QString)</slot>
+   </slots>
   </customwidget>
  </customwidgets>
  <resources/>
@@ -711,8 +663,8 @@ diameter</string>
    <slot>updateRadicals()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>101</x>
-     <y>220</y>
+     <x>105</x>
+     <y>227</y>
     </hint>
     <hint type="destinationlabel">
      <x>115</x>
@@ -727,7 +679,7 @@ diameter</string>
    <slot>updateLonePairs()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>105</x>
+     <x>109</x>
      <y>234</y>
     </hint>
     <hint type="destinationlabel">
@@ -743,7 +695,7 @@ diameter</string>
    <slot>updateLonePairs()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>105</x>
+     <x>109</x>
      <y>200</y>
     </hint>
     <hint type="destinationlabel">
@@ -753,82 +705,34 @@ diameter</string>
    </hints>
   </connection>
   <connection>
-   <sender>hydrogensAutoAlignment</sender>
-   <signal>toggled(bool)</signal>
+   <sender>hydrogenAlignment</sender>
+   <signal>alignmentChanged(NeighborAlignment)</signal>
    <receiver>AtomPopup</receiver>
-   <slot>updateHAlignment()</slot>
+   <slot>updateHAlignment(NeighborAlignment)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>72</x>
-     <y>107</y>
+     <x>90</x>
+     <y>123</y>
     </hint>
     <hint type="destinationlabel">
      <x>-5</x>
-     <y>148</y>
+     <y>233</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>hydrogensNorth</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>AtomPopup</receiver>
-   <slot>updateHAlignment()</slot>
+   <sender>element</sender>
+   <signal>textChanged(QString)</signal>
+   <receiver>hydrogenAlignment</receiver>
+   <slot>setElement(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>104</x>
-     <y>153</y>
+     <x>137</x>
+     <y>52</y>
     </hint>
     <hint type="destinationlabel">
-     <x>0</x>
-     <y>184</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>hydrogensWest</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>AtomPopup</receiver>
-   <slot>updateHAlignment()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>78</x>
-     <y>182</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>2</x>
-     <y>221</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>hydrogensSouth</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>AtomPopup</receiver>
-   <slot>updateHAlignment()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>107</x>
-     <y>201</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>4</x>
-     <y>256</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>hydrogensEast</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>AtomPopup</receiver>
-   <slot>updateHAlignment()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>141</x>
-     <y>176</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>232</x>
-     <y>179</y>
+     <x>89</x>
+     <y>124</y>
     </hint>
    </hints>
   </connection>
@@ -836,6 +740,6 @@ diameter</string>
  <slots>
   <slot>updateRadicals()</slot>
   <slot>updateLonePairs()</slot>
-  <slot>updateHAlignment()</slot>
+  <slot>updateHAlignment(NeighborAlignment)</slot>
  </slots>
 </ui>

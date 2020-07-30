@@ -54,13 +54,7 @@ namespace Molsketch {
       getRadicalsFromAtom();
       getLonePairsFromAtom();
       ui->coordinates->resizeRowsToContents();
-      switch (atom->hAlignment()) {
-        case Auto: ui->hydrogensAutoAlignment->setChecked(true); break;
-        case North: ui->hydrogensNorth->setChecked(true); break;
-        case South: ui->hydrogensSouth->setChecked(true); break;
-        case East: ui->hydrogensEast->setChecked(true); break;
-        case West: ui->hydrogensWest->setChecked(true); break;
-      }
+      ui->hydrogenAlignment->setAlignment(atom->hAlignment());
     }
 
     void getRadicalsFromAtom() {
@@ -187,15 +181,9 @@ namespace Molsketch {
     attemptEndMacro();
   }
 
-  void AtomPopup::updateHAlignment() {
+  void AtomPopup::updateHAlignment(const NeighborAlignment &newAlignment) {
     if (!d->atom) return;
-    QUndoCommand *alignmentCommand = nullptr;
-    if (ui->hydrogensAutoAlignment->isChecked()) alignmentCommand = new Commands::SetHAlignment(d->atom, Auto);
-    if (ui->hydrogensNorth->isChecked()) alignmentCommand = new Commands::SetHAlignment(d->atom, North);
-    if (ui->hydrogensSouth->isChecked()) alignmentCommand = new Commands::SetHAlignment(d->atom, South);
-    if (ui->hydrogensEast->isChecked()) alignmentCommand = new Commands::SetHAlignment(d->atom, East);
-    if (ui->hydrogensWest->isChecked()) alignmentCommand = new Commands::SetHAlignment(d->atom, West);
-    if (alignmentCommand) attemptToPushUndoCommand(alignmentCommand);
+    attemptToPushUndoCommand(new Commands::SetHAlignment(d->atom, newAlignment));
   }
 
   void AtomPopup::propertiesChanged()

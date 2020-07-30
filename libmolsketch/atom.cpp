@@ -57,8 +57,16 @@ namespace Molsketch {
   //   Left   Right   Down     Up           //
   //                                        //
   Alignment Atom::labelAlignment() const {
-    if (m_fixAlignment) return m_alignment;
+    switch (hydrogenAlignment) {
+      case north: return Up;
+      case south: return Down;
+      case east: return Right;
+      case west: return Left;
+      case automatic: return autoLabelAlignment();
+    }
+  }
 
+  Alignment Atom::autoLabelAlignment() const {
     // compute the sum of the bond vectors, this gives
     QPointF direction(0.0, 0.0);
     foreach (Atom *nbr, this->neighbours())
@@ -69,7 +77,6 @@ namespace Molsketch {
     return direction.x() < -0.1 // hack to make almost vertical lines align Right
         ? Left : Right;
   }
-
 
   Atom::Atom(const QPointF &position, const QString &element, bool implicitHydrogens,
              QGraphicsItem* parent GRAPHICSSCENESOURCE )
@@ -215,8 +222,7 @@ namespace Molsketch {
                         const QString &element,
                         bool implicitHydrogens)
   {
-    m_fixAlignment = false;
-    m_alignment = Right;
+    hydrogenAlignment = automatic;
     setPos(position);
     setZValue(3);
 
@@ -691,8 +697,7 @@ namespace Molsketch {
     m_implicitHydrogens = !attributes.value(DISABLE_HYDROGENS_ATTRIBUTE).toInt();
     m_userCharge = attributes.value(CHARGE_ATTRIBUTE).toInt();
     auto hAlignment = attributes.value(HYDROGEN_ALIGNMENT).toInt();
-    m_fixAlignment = hAlignment;
-    if (m_fixAlignment) m_alignment = (Alignment) hAlignment;
+    hydrogenAlignment = (NeighborAlignment) hAlignment;
     updateShape();
 
   }
@@ -706,7 +711,7 @@ namespace Molsketch {
     attributes.append(DISABLE_HYDROGENS_ATTRIBUTE, QString::number(!m_implicitHydrogens));
     attributes.append(HYDROGEN_COUNT_ATTRIBUTE, QString::number(m_userImplicitHydrogens));
     if (m_newmanDiameter > 0) attributes.append(NEWMAN_DIAMETER_ATTRIBUTE, QString::number(m_newmanDiameter));
-    attributes.append(HYDROGEN_ALIGNMENT, QString::number(m_fixAlignment ? m_alignment : 0));
+    attributes.append(HYDROGEN_ALIGNMENT, QString::number(hydrogenAlignment));
     return attributes ;
   }
 
@@ -729,27 +734,13 @@ namespace Molsketch {
     return m_newmanDiameter;
   }
 
-  void Atom::setHAlignment(const HAlignment &hAlignment) {
-    switch (hAlignment) {
-      case Auto:
-        m_fixAlignment = false;
-        return;
-      case West: m_alignment = Left; break;
-      case East: m_alignment = Right; break;
-      case North: m_alignment = Up; break;
-      case South: m_alignment = Down; break;
-    }
-    m_fixAlignment = true;
+  void Atom::setHAlignment(const NeighborAlignment &hAlignment) {
+    hydrogenAlignment = hAlignment;
+    updateShape();
   }
 
-  HAlignment Atom::hAlignment() const {
-    if (!m_fixAlignment) return Auto;
-    switch (m_alignment) {
-      case Left: return West;
-      case Right: return East;
-      case Up: return North;
-      case Down: return South;
-    }
+  NeighborAlignment Atom::hAlignment() const {
+    return hydrogenAlignment;
   }
 
   void Atom::disableNewman() {
