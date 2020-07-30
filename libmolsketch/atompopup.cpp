@@ -54,6 +54,7 @@ namespace Molsketch {
       getRadicalsFromAtom();
       getLonePairsFromAtom();
       ui->coordinates->resizeRowsToContents();
+      ui->hydrogenAlignment->setAlignment(atom->hAlignment());
     }
 
     void getRadicalsFromAtom() {
@@ -174,6 +175,11 @@ namespace Molsketch {
     addLonePair(ui->leftLonePair, BoundingBoxLinker::atLeft(), 90);
     addLonePair(ui->rightLonePair, BoundingBoxLinker::atRight(), 270);
     attemptEndMacro();
+  }
+
+  void AtomPopup::updateHAlignment(const NeighborAlignment &newAlignment) {
+    if (!d->atom) return;
+    attemptToPushUndoCommand(new Commands::SetHAlignment(d->atom, newAlignment));
   }
 
   void AtomPopup::propertiesChanged()
