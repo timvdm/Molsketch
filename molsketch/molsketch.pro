@@ -5,7 +5,9 @@ HEADERS += $$files(*.h, true)
 SOURCES += $$files(*.cpp, true)
 FORMS += $$files(*.ui, true)
 RESOURCES += $$files(*.qrc, true)
+TRANSLATIONS += $$files(*.ts, true)
 
+CONFIG += lrelease embed_translations
 LIBS += -L../lib -lmolsketch$$qtVersionSuffix
 TARGET = molsketch$$qtVersionSuffix
 DESTDIR = ../bin

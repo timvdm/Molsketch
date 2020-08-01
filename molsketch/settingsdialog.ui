@@ -7,12 +7,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>609</width>
-    <height>509</height>
+    <width>602</width>
+    <height>524</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>molsKetch - Preferences</string>
+   <string>Preferences</string>
   </property>
   <property name="windowIcon">
    <iconset theme="preferences-system" resource="oxygenicons.qrc">
@@ -360,7 +360,7 @@
                 <item>
                  <widget class="QLabel" name="libraryExplanation">
                   <property name="text">
-                   <string>If you have downloaded the auxiliary package from molsketch.sf.net,&lt;br&gt;please provide the path to the folder where you stored the libraries.</string>
+                   <string>If you have downloaded the auxiliary package from &lt;a href=&quot;http://molsketch.sourceforge.net/&quot;&gt;molsketch.sf.net&lt;/a&gt;,&lt;br/&gt;please provide the path to the folder where you stored the libraries.</string>
                   </property>
                  </widget>
                 </item>
@@ -422,7 +422,7 @@
                 <item>
                  <widget class="QLabel" name="obfExplanation">
                   <property name="text">
-                   <string>If you have downloaded the auxiliary package from molsketch.sf.net,&lt;br&gt;please provide the path to the folder where you stored the OBF files.</string>
+                   <string>If you have downloaded the auxiliary package from &lt;a href=&quot;http://molsketch.sourceforge.net/&quot;&gt;molsketch.sf.net&lt;/a&gt;,&lt;br/&gt;please provide the path to the folder where you stored the OBF files.</string>
                   </property>
                  </widget>
                 </item>
@@ -509,8 +509,8 @@
   <tabstop>obfPathButton</tabstop>
  </tabstops>
  <resources>
-  <include location="oxygenicons.qrc"/>
   <include location="molsketch.qrc"/>
+  <include location="oxygenicons.qrc"/>
  </resources>
  <connections>
   <connection>

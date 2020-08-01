@@ -137,14 +137,12 @@
 <ul>
     <li>added support for OpenBabel under Windows</li>
     <li>switched to cmake as build system</li>
-    <li>you can now use left click to delete items in th document</li>
+    <li>you can now use left click to delete items in the document</li>
     <li>loaded/imported files are now splitted in seperate molecules</li>
     <li>made hinting less intrusive</li>
     <li>made charge changes undoable</li>
-    <li>made scrolling on the document zoom to the cursor position (thanks to
-    Vladimir Zima for the suggestion)</li>
-    <li>made the element selector look like a periodic table (thanks to Carsten
-    Niehaus for the suggestion)</li>
+    <li>made scrolling on the document zoom to the cursor position (thanks to Vladimir Zima for the suggestion)</li>
+    <li>made the element selector look like a periodic table (thanks to Carsten Niehaus for the suggestion)</li>
     <li>updated the element data</li>
     <li>added bug report menu entry</li>
     <li>updated some of the shortcuts</li>

@@ -181,7 +181,7 @@ void MainWindow::open()
   QStringList readableFormats;
   readableFormats << MSK_DEFAULT_FORMAT << obabelLoader->inputFormats();
   QString fileName = QFileDialog::getOpenFileName(this,
-                                                  tr("Open - Molsketch"),
+                                                  tr("Open"),
                                                   settings->lastPath(),
                                                   readableFormats.join(";;"));
   if (fileName.isEmpty()) return;
@@ -223,13 +223,13 @@ void MainWindow::openFile(const QString& fileName) {
 bool MainWindow::saveFile(const QString& fileName) {
   if (fileName.endsWith(".msk")) {
       if (!writeMskFile(fileName, m_molView->scene())) {
-        QMessageBox::warning(this, tr("Saving file failed!"), tr("Could not save file ") + fileName);
+        QMessageBox::warning(this, tr("Saving file failed!"), tr("Could not save file '%1'.").arg(fileName));
         return false;
       }
   } else {
     bool threeD = QMessageBox::question(this, tr("Save as 3D?"), tr("Save as three dimensional coordinates?")) == QMessageBox::Yes;
     if (!obabelLoader->saveFile(fileName, m_molView->scene(), threeD)) {
-      QMessageBox::warning(0, tr("Could not save"), tr("Could not save file using OpenBabel: ") + fileName);
+      QMessageBox::warning(0, tr("Could not save"), tr("Could not save file '%1' using OpenBabel.").arg(fileName));
       return false ;
     }
   }
@@ -275,7 +275,7 @@ bool MainWindow::saveAs() {
   QStringList supportedFormats;
   supportedFormats << MSK_DEFAULT_FORMAT << obabelLoader->outputFormats();
   QString fileName = QFileDialog::getSaveFileName(this,
-                                                  tr("Save as - Molsketch"),
+                                                  tr("Save as"),
                                                   settings->lastPath(),
                                                   supportedFormats.join(";;"),
                                                   &filter);
@@ -296,7 +296,7 @@ bool MainWindow::saveAs() {
 
   bool MainWindow::importDoc()
   {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Import - molsKetch"), settings->lastPath(), tr(OSRA_GRAPHIC_FILE_FORMATS));
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Import"), settings->lastPath(), tr(OSRA_GRAPHIC_FILE_FORMATS));
 
     if (!fileName.isEmpty()) {
       // Save accessed path
@@ -332,7 +332,7 @@ bool MainWindow::exportDoc()
 {
   // Getting the filename
   QString filter = GRAPHIC_DEFAULT_FORMAT;
-  QString fileName = QFileDialog::getSaveFileName(this,tr("Export - Molsketch"), settings->lastPath(), tr(GRAPHIC_FILE_FORMATS), &filter);
+  QString fileName = QFileDialog::getSaveFileName(this,tr("Export"), settings->lastPath(), tr(GRAPHIC_FILE_FORMATS), &filter);
 
   // Abort if filename is empty
   if (fileName.isEmpty()) return false;
@@ -407,21 +407,22 @@ void MainWindow::about()
 {
   QString version(settings->currentVersion().toString()), versionNick(settings->versionNick());
   QMessageBox::about(this, tr("About"),
-                     tr("<H3>About Molsketch</H3>"
-                        "<H4>Version: ") + version + " -- " + versionNick + tr("</H4>"
-                        "<P> Molsketch is a program for drawing molecular structures developed by Harm van Eersel at the "
-                        "<A href=\"http://www.tue.nl\">Eindhoven University of Technology</A>."
-                        "<P> For more info check <A href=\"http://molsketch.sourceforge.net\">http://molsketch.sourceforge.net</A>"
-                        "<P> It is <A href=\"http://www.gnu.org/philosophy/free-sw.html\">free software</A> and available under the "
-                        "<A>GPL</A>."
-                        "<P> Special thanks to: <UL>"
-                        "<LI>Prof. Dr. H. Zantema (coach of the initial version)</LI>"
-                        "<LI>Davy van der Vaart (tester)</LI>"
-                        "<LI>Frans Visscher (tester)</LI>"
-                        "<LI>Carsten Niehaus (reviewer)</LI>"
-                        "</UL>Copyright 2007 - 2008, Harm van Eersel"
-                        "<P>Copyright 2009 Tim Vandermeersch"
-                        "<P>Maintenance since 12/2014: Hendrik Vennekate"));
+                     tr("<h3>About Molsketch</h3>\n"
+                        "<h4>Version: %1 -- %2</h4>\n"
+                        "<p>Molsketch is a program for drawing molecular structures developed by Harm van Eersel at the "
+                        "<a href=\"http://www.tue.nl\">Eindhoven University of Technology</a>.</p>\n"
+                        "<p>For more info check <A href=\"http://molsketch.sourceforge.net\">http://molsketch.sourceforge.net</a>.</p>\n"
+                        "<p>It is <a href=\"http://www.gnu.org/philosophy/free-sw.html\">free software</a> and available under "
+                        "the <a href=\"https://www.gnu.org/licenses/old-licenses/gpl-2.0.html\">GNU GPL version 2</a> or later versions of the GPL.</p>\n"
+                        "<p>Special thanks to: <ul>\n"
+                        "<li>Prof. Dr. H. Zantema (coach of the initial version)</li>\n"
+                        "<li>Davy van der Vaart (tester)</li>\n"
+                        "<li>Frans Visscher (tester)</li>\n"
+                        "<li>Carsten Niehaus (reviewer)</li>\n"
+                        "</ul></p>\n"
+                        "<p>Copyright 2007 - 2008, Harm van Eersel</p>\n"
+                        "<p>Copyright 2009 Tim Vandermeersch</p>\n"
+                        "<p>Maintenance since 12/2014: Hendrik Vennekate</p>").arg(version).arg(versionNick));
 }
 
 void MainWindow::showReleaseNotes() {
