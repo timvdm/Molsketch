@@ -47,6 +47,7 @@ namespace Molsketch {
 
     void getFromAtom() {
       ui->element->setText(atom->element());
+      ui->shapeType->setCurrentIndex(atom->shapeType());
       ui->charge->setValue(atom->charge());
       ui->hydrogens->setValue(atom->numImplicitHydrogens());
       ui->coordinates->model()->setCoordinates(atom->coordinates());
@@ -137,6 +138,10 @@ namespace Molsketch {
 
   void AtomPopup::on_newmanDiameter_valueChanged(double diameter) {
     attemptToPushUndoCommand(new Commands::SetNewmanDiameter(d->atom, diameter, tr("Change Newman diameter")));
+  }
+
+  void AtomPopup::on_shapeType_currentIndexChanged(int newIndex) {
+    attemptToPushUndoCommand(new Commands::SetShapeType(d->atom, (Atom::ShapeType) newIndex));
   }
 
   void AtomPopup::onCoordinatesDatachanged() {

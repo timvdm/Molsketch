@@ -193,6 +193,7 @@ namespace Molsketch {
     typedef SetItemProperty<QGraphicsItem, qreal, &QGraphicsItem::setZValue, & QGraphicsItem::zValue> SetZValue;
     typedef setItemPropertiesCommand<graphicsItem, QColor, &graphicsItem::setColor, &graphicsItem::getColor> changeColor;
     typedef setItemPropertiesCommand<Atom, qreal, &Atom::setNewmanDiameter, &Atom::getNewmanDiameter> SetNewmanDiameter;
+    typedef setItemPropertiesCommand<Atom, Atom::ShapeType, &Atom::setShapeType, &Atom::shapeType> SetShapeType;
     typedef setItemPropertiesCommand<Atom, NeighborAlignment, &Atom::setHAlignment, &Atom::hAlignment> SetHAlignment;
     typedef setItemPropertiesCommand<graphicsItem, QPolygonF, &graphicsItem::setCoordinates, &graphicsItem::coordinates, CoordinateId> SetCoordinateCommand;
     typedef SetItemProperty<QGraphicsItem, QGraphicsItem*, &QGraphicsItem::setParentItem, &QGraphicsItem::parentItem> SetParentItem;

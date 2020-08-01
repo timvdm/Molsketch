@@ -49,6 +49,8 @@ namespace Molsketch {
     enum { Type = AtomType };
     int type() const override { return Type; }
 
+    enum ShapeType { Rectangle = 0, Circle = 1 };
+
     /**
        * Creates a new atom.
        *
@@ -71,6 +73,8 @@ namespace Molsketch {
     void setMolecule(Molecule *molecule);
     QString element() const;
     void setElement(const QString & element);
+    ShapeType shapeType() const;
+    void setShapeType(const ShapeType& shapeType);
     void setNewmanDiameter(const qreal& diameter);
     qreal getNewmanDiameter() const;
     void setHAlignment(const Molsketch::NeighborAlignment &);
@@ -160,6 +164,7 @@ namespace Molsketch {
     int m_userElectrons;
     qreal m_newmanDiameter;
     QString m_index;
+    ShapeType m_shapeType;
     NeighborAlignment hydrogenAlignment;
 
     int m_userImplicitHydrogens;
@@ -177,6 +182,7 @@ namespace Molsketch {
     void renderColoredCircle(QPainter* painter);
     void renderColoredShape(QPainter *painter, void (QPainter::*drawMethod)(int, int, int, int));
     void drawSelectionHighlight(QPainter* painter);
+    qreal diameterForCircularShape() const;
     QString getLabelWithHydrogens();
     void drawNewman(QPainter *painter);
     QPointF getBondDrawingStartFromBoundingBox(const QLineF &connection, qreal bondLineWidth) const;

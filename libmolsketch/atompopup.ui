@@ -73,7 +73,28 @@ diameter</string>
        <item row="2" column="1">
         <widget class="QDoubleSpinBox" name="newmanDiameter"/>
        </item>
-       <item row="3" column="0" colspan="2">
+       <item row="3" column="0">
+        <widget class="QLabel" name="shapeTypeLabel">
+         <property name="text">
+          <string>Shape</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QComboBox" name="shapeType">
+         <item>
+          <property name="text">
+           <string>Rectangle</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Circle</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="4" column="0" colspan="2">
         <widget class="Molsketch::CoordinateTableView" name="coordinates">
          <property name="alternatingRowColors">
           <bool>true</bool>
