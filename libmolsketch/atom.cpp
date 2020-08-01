@@ -187,6 +187,11 @@ namespace Molsketch {
   QRectF Atom::computeBoundingRect()
   {
     if (m_newmanDiameter > 0.) return QRectF(-m_newmanDiameter/2., -m_newmanDiameter/2., m_newmanDiameter, m_newmanDiameter);
+
+    if (Circle == m_shapeType) {
+      auto radius = diameterForCircularShape()/2.;
+      return QRectF(-radius, -radius, radius, radius);
+    }
     // TODO do proper prepareGeometryChange() call
     // TODO call whenever boundingRect() is called
     Alignment alignment = labelAlignment();
@@ -532,6 +537,11 @@ namespace Molsketch {
     }
   }
 
+  qreal Atom::diameterForCircularShape() const {
+    auto bounds = boundingRect();
+    return QLineF(bounds.center(), bounds.topRight()).length() * 2;
+  }
+
   void Atom::drawSelectionHighlight(QPainter* painter)
   {
     if (this->isSelected()) {
@@ -722,6 +732,7 @@ namespace Molsketch {
 
   void Atom::setShapeType(const Atom::ShapeType &shapeType) {
     m_shapeType = shapeType;
+    updateShape();
   }
 
   void Atom::setNewmanDiameter(const qreal &diameter) {
@@ -1043,11 +1054,7 @@ namespace Molsketch {
 
     if (m_newmanDiameter > 0) return getBondExtentForNewmanAtom(middleLine, lineWidth, m_newmanDiameter);
 
-    if (Circle == m_shapeType) {
-      auto bounds = boundingRect();
-      auto circleDiameter = QLineF(bounds.center(), bounds.topRight()).length() * 2;
-      return getBondExtentForNewmanAtom(middleLine, lineWidth, circleDiameter);
-    }
+    if (Circle == m_shapeType) return getBondExtentForNewmanAtom(middleLine, lineWidth, diameterForCircularShape());
 
     IntersectionData edgeIntersection{intersectedEdge(middleLine, lineWidth)};
 

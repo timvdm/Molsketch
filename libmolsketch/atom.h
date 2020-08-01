@@ -177,6 +177,7 @@ namespace Molsketch {
     void renderColoredCircle(QPainter* painter);
     void renderColoredShape(QPainter *painter, void (QPainter::*drawMethod)(int, int, int, int));
     void drawSelectionHighlight(QPainter* painter);
+    qreal diameterForCircularShape() const;
     QString getLabelWithHydrogens();
     void drawNewman(QPainter *painter);
     QPointF getBondDrawingStartFromBoundingBox(const QLineF &connection, qreal bondLineWidth) const;
