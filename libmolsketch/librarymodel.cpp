@@ -40,7 +40,8 @@ namespace Molsketch {
     int fetchCount;
     void cleanMolecules() {
       qInfo("Clearing list of molecules. Count: %d", items.size());
-      for (auto molecule : items.toSet()) delete molecule;
+      auto itemSet = QSet<MoleculeModelItem*>(items.begin(), items.end());
+      for (auto molecule : itemSet) delete molecule;
       items.clear();
       fetchCount = 0;
     }

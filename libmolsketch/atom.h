@@ -26,6 +26,7 @@
 
 #include "graphicsitem.h"
 #include "sumformula.h"
+#include "neighboralignment.h"
 
 namespace Molsketch {
 
@@ -33,10 +34,10 @@ namespace Molsketch {
   class Molecule;
 
   enum Alignment {
-    Left,
-    Right,
-    Up,
-    Down
+    Left = 1,
+    Right = 2,
+    Up = 3,
+    Down = 4
   };
 
   /// Atom class
@@ -76,6 +77,8 @@ namespace Molsketch {
     void setShapeType(const ShapeType& shapeType);
     void setNewmanDiameter(const qreal& diameter);
     qreal getNewmanDiameter() const;
+    void setHAlignment(const Molsketch::NeighborAlignment &);
+    Molsketch::NeighborAlignment hAlignment() const;
     void disableNewman();
     SumFormula sumFormula() const;
     /** Returns the charge of the atom.
@@ -149,6 +152,7 @@ namespace Molsketch {
 
   private:
     void drawAtomLabel(QPainter *painter, const QString &lbl, int alignment);
+    Alignment autoLabelAlignment() const;
     QRectF computeBoundingRect();
 
     void initialize(const QPointF & position,
@@ -161,6 +165,7 @@ namespace Molsketch {
     qreal m_newmanDiameter;
     QString m_index;
     ShapeType m_shapeType;
+    NeighborAlignment hydrogenAlignment;
 
     int m_userImplicitHydrogens;
     bool m_implicitHydrogens;

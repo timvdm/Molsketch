@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2017 by Hendrik Vennekate                               *
+ *   Copyright (C) 2020 Hendrik Vennekate                                  *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -16,29 +16,36 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
-#ifndef LINEUPACTION_H
-#define LINEUPACTION_H
 
-#include <actions/abstractitemaction.h>
+#ifndef ELEMENTALIGNMENT_H
+#define ELEMENTALIGNMENT_H
+
+#include <QWidget>
+#include "neighboralignment.h"
 
 namespace Molsketch {
+  class ElementAlignmentPrivate;
 
-  class Molecule;
-
-  class LineUpAction : public TopLevelItemAction { // TODO move to actions folder
+  class ElementAlignment : public QWidget {
+    Q_OBJECT
+    Q_DECLARE_PRIVATE(ElementAlignment)
+    QScopedPointer<ElementAlignmentPrivate> d_ptr;
   public:
-    static LineUpAction* horizontal(MolScene *scene = 0);
-    static LineUpAction* vertical(MolScene *scene = 0);
-  private:
-    void execute() override;
-  protected:
-    explicit LineUpAction(MolScene *scene);
-    void spaceItemsEqually(qreal distance, bool distanceBetweenCenters);
-    virtual qreal getOrderingValue(const graphicsItem*) const = 0;
-    virtual QPointF offsetForEdges(const graphicsItem* reference, const graphicsItem *item, qreal distance) const = 0;
-    virtual QPointF offsetForCenters(const graphicsItem* reference, const graphicsItem *item, qreal distance) const = 0;
+    explicit ElementAlignment(QWidget *parent = nullptr);
+    ~ElementAlignment();
+    NeighborAlignment getAlignment() const;
+  signals:
+    void alignmentChanged(const NeighborAlignment &newAlignment);
+  public slots:
+    void setAlignment(const NeighborAlignment &newAlignment);
+    void setElement(const QString &elementSymbol);
+  private slots:
+    void on_automatic_toggled(bool on);
+    void on_east_toggled(bool on);
+    void on_west_toggled(bool on);
+    void on_north_toggled(bool on);
+    void on_south_toggled(bool on);
   };
+} // namespace
 
-} // namespace Molsketch
-
-#endif // LINEUPACTION_H
+#endif // ELEMENTALIGNMENT_H
