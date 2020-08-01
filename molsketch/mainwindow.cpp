@@ -399,7 +399,7 @@ void MainWindow::openAssistant()
   stream << QLatin1String("setSource ")
          << file.absoluteFilePath()
          << QLatin1Char('\0')
-         << endl;
+         << Qt::endl;
 #endif
 }
 
@@ -562,7 +562,7 @@ void MainWindow::initializeAssistant()
   stream << QLatin1String("register ")
          << file.absoluteFilePath()
          << QLatin1Char('\0')
-         << endl;
+         << Qt::endl;
 #endif
 }
 

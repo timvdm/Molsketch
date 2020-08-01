@@ -106,7 +106,7 @@ namespace Molsketch {
 
   QList<graphicsItem *> AbstractItemAction::items() const
   {
-    return d->itemList.toList() ;
+    return d->itemList.values();
   }
 
   void AbstractItemAction::gotTrigger()

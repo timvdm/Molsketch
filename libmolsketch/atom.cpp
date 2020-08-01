@@ -63,6 +63,7 @@ namespace Molsketch {
       case east: return Right;
       case west: return Left;
       case automatic: return autoLabelAlignment();
+      default: return autoLabelAlignment();
     }
   }
 

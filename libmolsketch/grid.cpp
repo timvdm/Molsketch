@@ -39,7 +39,7 @@ namespace Molsketch {
   Grid::Grid(SceneSettings *settings)
     : d(new privateData) {
     setZValue(-INFINITY);
-    setFlags(0);
+    setFlags(GraphicsItemFlags());
     d->settings = settings;
   }
 

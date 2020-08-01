@@ -162,7 +162,7 @@
           <number>0</number>
          </property>
          <widget class="QWidget" name="generalPage">
-          <layout class="QFormLayout" name="openBabelPageLayout">
+          <layout class="QFormLayout" name="generalPageLayout">
            <property name="fieldGrowthPolicy">
             <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
            </property>
