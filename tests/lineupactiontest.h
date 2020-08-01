@@ -18,7 +18,7 @@
  ***************************************************************************/
 
 #include <cxxtest/TestSuite.h>
-#include <lineupaction.h>
+#include <actions/lineupaction.h>
 #include <molecule.h>
 #include <molscene.h>
 #include <QDebug>

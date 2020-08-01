@@ -644,7 +644,7 @@ namespace Molsketch {
     QVector<qreal> angles ;
     foreach (Bond *bond, m_bonds)
       angles << bond->bondAngle(this) ;
-    std::sort(angles) ;
+    std::sort(angles.begin(), angles.end()) ;
     angles << angles.first() + 360. ;
     qreal maxAngleGap = -1, result = 270 ;
     for (int i = 0 ; i < angles.size()-1 ; ++i)
@@ -1055,8 +1055,7 @@ namespace Molsketch {
           getExtentForIntersectionOfOuterLineAndEdge(edgeIntersection, outer2)
     };
 
-    std::sort(possibleExtents);
-    return possibleExtents.last();
+    return *(std::max_element(possibleExtents.begin(), possibleExtents.end()));
   }
 
   bool Atom::contains(const QPointF &point) const {

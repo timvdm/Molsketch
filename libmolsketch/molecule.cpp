@@ -596,8 +596,8 @@ bool canMerge(const ElectronSystem *es1, const ElectronSystem *es2)
 {
   auto firstListOfAtoms = es1->atoms();
   auto firstSetOfAtoms = QSet<Atom*>(firstListOfAtoms.begin(), firstListOfAtoms.end());
-  auto secondListOfAtoms =
-  auto secondSetOfAtoms = es2->atoms().toSet(); // TODO utility function
+  auto secondListOfAtoms = es2->atoms();
+  auto secondSetOfAtoms = QSet<Atom*>(secondListOfAtoms.begin(), secondListOfAtoms.end()); // TODO utility function
   // may not share an atom
   if (!(firstSetOfAtoms & secondSetOfAtoms).empty()) return false;
 
