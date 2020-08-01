@@ -266,20 +266,6 @@ namespace Molsketch {
     return m_shape;
   }
 
-  bool Atom::hasLabel() const
-  { // TODO what is the difference between this and isDrawn() ?
-    MolScene* molScene = dynamic_cast<MolScene*>(scene());
-    if (!molScene) return true ;
-
-    if ((m_elementSymbol == "C")
-        && !molScene->settings()->carbonVisible()->get()
-        && (numBonds() > 1 || (numBonds() == 1 && !molScene->settings()->showTerminalMethyls()->get()))
-        && ((charge() == 0) || !molScene->settings()->chargeVisible()->get()))
-      return false;
-
-    return true;
-  }
-
   void Atom::drawAtomLabel(QPainter *painter, const QString &lbl, int alignment)
   {
     painter->save(); // TODO unite with computeBoundingRect
@@ -834,20 +820,6 @@ namespace Molsketch {
       default:
         return 0 + m_userElectrons;
     }
-  }
-
-  QString Atom::string () const {
-    QString el = element ();
-    int n = numImplicitHydrogens();
-    QString hs;
-    QString num = "";
-    if (n) {
-      if (n > 1) num.setNum (n);
-      hs = QString ("H") + num;
-    }
-    else hs = QString ("");
-    QString q = chargeString();
-    return el+hs+q;
   }
 
   int Atom::numImplicitHydrogens() const {
