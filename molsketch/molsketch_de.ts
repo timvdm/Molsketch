@@ -1628,7 +1628,7 @@ if you want to save it, use the molecule properties!</source>
     <message>
         <location filename="mainwindow.cpp" line="440"/>
         <source>Show release notes...</source>
-        <translation>&amp;Versionshinweise...</translation>
+        <translation>Versionshinweise...</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="440"/>
@@ -1648,7 +1648,7 @@ if you want to save it, use the molecule properties!</source>
     <message>
         <location filename="mainwindow.cpp" line="447"/>
         <source>Thirdparty licenses...</source>
-        <translation>Software&amp;lizenzen...</translation>
+        <translation>Softwarelizenzen...</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="447"/>
@@ -2102,104 +2102,111 @@ Wollen Sie die Änderungen speichern?</translation>
         <translation>Einstellungen</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="63"/>
+        <location filename="settingsdialog.ui" line="99"/>
         <source>General</source>
         <translation>Allgemein</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="72"/>
+        <location filename="settingsdialog.ui" line="114"/>
         <source>Draw settings</source>
         <translation>Zeichnen</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="81"/>
-        <location filename="settingsdialog.ui" line="267"/>
+        <location filename="settingsdialog.ui" line="129"/>
+        <location filename="settingsdialog.ui" line="301"/>
         <source>Libraries</source>
         <translation>Sammlungen</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="90"/>
         <source>OpenBabel</source>
-        <translation>OpenBabel</translation>
+        <translation type="vanished">OpenBabel</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="115"/>
         <source>General options</source>
-        <translation>Allgemeine Einstellungen</translation>
+        <translation type="vanished">Allgemeine Einstellungen</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="125"/>
+        <location filename="settingsdialog.ui" line="184"/>
         <source>Default file type</source>
         <translation>Voreingestellter Dateityp</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="136"/>
+        <location filename="settingsdialog.ui" line="195"/>
         <source>MDL (*.mdl)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="141"/>
+        <location filename="settingsdialog.ui" line="200"/>
         <source>Chemical Markup Language (*.cml)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="153"/>
         <source>Default image type</source>
-        <translation>Vorausgewählter Bilddateityp</translation>
+        <translation type="vanished">Vorausgewählter Bilddateityp</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="164"/>
-        <source>Scalable Vector Graphics (*.svg)</source>
-        <translation></translation>
+        <location filename="settingsdialog.ui" line="144"/>
+        <source>Open Babel</source>
+        <translation>Open Babel</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="169"/>
-        <source>Portable Network Graphics (*.png)</source>
-        <translation></translation>
+        <location filename="settingsdialog.ui" line="208"/>
+        <source>Scaling for bitmap export</source>
+        <translation>Skalierung von exportierten Bitmaps</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="181"/>
+        <location filename="settingsdialog.ui" line="218"/>
+        <source>By which factor to scale pixels when exporting. Higher value leads to better image quality.</source>
+        <translation>Um welchen Faktor Pixel skaliert werden sollen. Größere Werte ergeben bessere Bildern.</translation>
+    </message>
+    <message>
+        <location filename="settingsdialog.ui" line="221"/>
+        <source> x</source>
+        <translation> x</translation>
+    </message>
+    <message>
+        <location filename="settingsdialog.ui" line="237"/>
         <source>Autosa&amp;ve each</source>
         <translation>&amp;Automatisches Speichern</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="204"/>
+        <location filename="settingsdialog.ui" line="247"/>
         <source> min</source>
         <translation> Minuten</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="218"/>
+        <location filename="settingsdialog.ui" line="257"/>
         <source>Use &amp;mouse wheel to...</source>
         <translation>Funktion des &amp;Mausrads</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="233"/>
+        <location filename="settingsdialog.ui" line="272"/>
         <source>&amp;zoom</source>
-        <translation>Zoom</translation>
+        <translation>&amp;Zoom</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="240"/>
+        <location filename="settingsdialog.ui" line="279"/>
         <source>c&amp;ycle tools</source>
         <translation>&amp;Werkzeugwechsel</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="321"/>
+        <location filename="settingsdialog.ui" line="355"/>
         <source>OpenBabel Library Path</source>
         <translation>Pfad zu OpenBabel</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="329"/>
+        <location filename="settingsdialog.ui" line="363"/>
         <source>If you have downloaded the auxiliary package from &lt;a href=&quot;http://molsketch.sourceforge.net/&quot;&gt;molsketch.sf.net&lt;/a&gt;,&lt;br/&gt;please provide the path to the folder where you stored the libraries.</source>
         <oldsource>If you have downloaded the auxiliary package from molsketch.sf.net,&lt;br&gt;please provide the path to the folder where you stored the libraries.</oldsource>
         <translation>Wenn Sie die Hilfsbibliotheken von &lt;a href=&quot;http://molsketch.sourceforge.net/&quot;&gt;molsketch.sf.net&lt;/a&gt; heruntergeladen&lt;br/&gt;haben, können Sie hier das Verzeichnis dazu angeben.</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="338"/>
+        <location filename="settingsdialog.ui" line="372"/>
         <source>Path to shared libraries</source>
         <translation>Pfad zu den Programmbibliotheken</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="373"/>
+        <location filename="settingsdialog.ui" line="407"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Warning!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Setting an &amp;quot;obabeliface&amp;quot; library here that was not built&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;for this version of Molsketch may lead to crashes!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;
 &lt;body&gt;
@@ -2209,23 +2216,23 @@ Wollen Sie die Änderungen speichern?</translation>
 &lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="383"/>
+        <location filename="settingsdialog.ui" line="417"/>
         <source>OpenBabel Format File Path</source>
         <translation>Pfad zu den OpenBabel-Formatdateien</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="391"/>
+        <location filename="settingsdialog.ui" line="425"/>
         <source>If you have downloaded the auxiliary package from &lt;a href=&quot;http://molsketch.sourceforge.net/&quot;&gt;molsketch.sf.net&lt;/a&gt;,&lt;br/&gt;please provide the path to the folder where you stored the OBF files.</source>
         <oldsource>If you have downloaded the auxiliary package from molsketch.sf.net,&lt;br&gt;please provide the path to the folder where you stored the OBF files.</oldsource>
         <translation>Wenn Sie die Hilfsbibliotheken von &lt;a href=&quot;http://molsketch.sourceforge.net/&quot;&gt;molsketch.sf.net&lt;/a&gt; heruntergeladen&lt;br/&gt;haben, können Sie hier den Pfad zu den OBF-Dateien angeben.</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="400"/>
+        <location filename="settingsdialog.ui" line="434"/>
         <source>Path to OBF files</source>
         <translation>Pfad zu den OBF-Dateien</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="435"/>
+        <location filename="settingsdialog.ui" line="469"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Warning!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Selecting a folder of OpenBabel formats here that was not built&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;for the version of OpenBabel for which the &amp;quot;obabeliface&amp;quot; above was built&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;may lead to crashes or prevent formats from working!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;
 &lt;body&gt;
@@ -2236,17 +2243,17 @@ Wollen Sie die Änderungen speichern?</translation>
 &lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="settingsdialog.cpp" line="141"/>
+        <location filename="settingsdialog.cpp" line="147"/>
         <source>Select library folder</source>
         <translation>Verzeichnis der Programmbibliotheken</translation>
     </message>
     <message>
-        <location filename="settingsdialog.cpp" line="154"/>
+        <location filename="settingsdialog.cpp" line="160"/>
         <source>OBF folder</source>
         <translation>OBF-Verzeichnis</translation>
     </message>
     <message>
-        <location filename="settingsdialog.cpp" line="159"/>
+        <location filename="settingsdialog.cpp" line="165"/>
         <source>Path to obabelIface</source>
         <translation>Pfad zu obabeliface</translation>
     </message>
@@ -2267,7 +2274,7 @@ Wollen Sie die Änderungen speichern?</translation>
 <context>
     <name>main</name>
     <message>
-        <location filename="main.cpp" line="71"/>
+        <location filename="main.cpp" line="73"/>
         <source>Files to open, optionally.</source>
         <translation>Zu öffnende Dateien (optional).</translation>
     </message>
