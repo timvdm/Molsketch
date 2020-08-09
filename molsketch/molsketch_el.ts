@@ -2076,138 +2076,141 @@ Do you want to save your changes?</source>
         <translation>Προτιμήσεις</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="63"/>
+        <location filename="settingsdialog.ui" line="99"/>
         <source>General</source>
         <translation>Γενικά</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="72"/>
+        <location filename="settingsdialog.ui" line="114"/>
         <source>Draw settings</source>
         <translation>Ρυθμίσεις σχεδίασης</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="81"/>
-        <location filename="settingsdialog.ui" line="267"/>
+        <location filename="settingsdialog.ui" line="129"/>
+        <location filename="settingsdialog.ui" line="301"/>
         <source>Libraries</source>
         <translation>Βιβλιοθήκες</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="90"/>
-        <source>OpenBabel</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="settingsdialog.ui" line="115"/>
         <source>General options</source>
-        <translation>Γενικές επιλογές</translation>
+        <translation type="vanished">Γενικές επιλογές</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="125"/>
+        <location filename="settingsdialog.ui" line="184"/>
         <source>Default file type</source>
         <translation>Προεπιλεγμένος τύπος αρχείου</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="136"/>
+        <location filename="settingsdialog.ui" line="195"/>
         <source>MDL (*.mdl)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="141"/>
+        <location filename="settingsdialog.ui" line="200"/>
         <source>Chemical Markup Language (*.cml)</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="153"/>
         <source>Default image type</source>
-        <translation>Προεπιλεγμένος τύπος εικόνας</translation>
+        <translation type="vanished">Προεπιλεγμένος τύπος εικόνας</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="164"/>
-        <source>Scalable Vector Graphics (*.svg)</source>
+        <location filename="settingsdialog.ui" line="144"/>
+        <source>Open Babel</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="169"/>
-        <source>Portable Network Graphics (*.png)</source>
+        <location filename="settingsdialog.ui" line="208"/>
+        <source>Scaling for bitmap export</source>
+        <translation>Προσαρμογή μεγέθους για εξαγωγή bitmap</translation>
+    </message>
+    <message>
+        <location filename="settingsdialog.ui" line="218"/>
+        <source>By which factor to scale pixels when exporting. Higher value leads to better image quality.</source>
+        <translation>Συντελεστής κλιμάκωσης εικονοστοιχείων κατά την εξαγωγή. Υψηλότερες τιμές βελτιώνουν την ποιότητα της εικόνας.</translation>
+    </message>
+    <message>
+        <location filename="settingsdialog.ui" line="221"/>
+        <source> x</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="181"/>
+        <location filename="settingsdialog.ui" line="237"/>
         <source>Autosa&amp;ve each</source>
         <translation>Αυτόματη απο&amp;θήκευση κάθε</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="204"/>
+        <location filename="settingsdialog.ui" line="247"/>
         <source> min</source>
         <translation> λεπτά</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="218"/>
+        <location filename="settingsdialog.ui" line="257"/>
         <source>Use &amp;mouse wheel to...</source>
         <translation>Χρήση τροχού &amp;ποντικιού για...</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="233"/>
+        <location filename="settingsdialog.ui" line="272"/>
         <source>&amp;zoom</source>
         <translation>&amp;ζουμ</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="240"/>
+        <location filename="settingsdialog.ui" line="279"/>
         <source>c&amp;ycle tools</source>
         <translation>&amp;κυκλική εναλλαγή εργαλείων</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="321"/>
+        <location filename="settingsdialog.ui" line="355"/>
         <source>OpenBabel Library Path</source>
         <translation>Διδαδρομή Βιβλιοθήκης OpenBabel</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="329"/>
+        <location filename="settingsdialog.ui" line="363"/>
         <source>If you have downloaded the auxiliary package from &lt;a href=&quot;http://molsketch.sourceforge.net/&quot;&gt;molsketch.sf.net&lt;/a&gt;,&lt;br/&gt;please provide the path to the folder where you stored the libraries.</source>
         <translation>Εάν έχετε κατεβάσει το βοηθητικό πακέτο από &lt;a href=&quot;http://molsketch.sourceforge.net/&quot;&gt;molsketch.sf.net&lt;/a&gt;,&lt;br/&gt;παρακαλείσθε να ορίσετε την διαδρομή προς τον φάκελο όπου αποθηκεύσατε τις βιβλιοθήκες.</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="338"/>
+        <location filename="settingsdialog.ui" line="372"/>
         <source>Path to shared libraries</source>
         <translation>Διαδρομή προς κοινόχρηστες βιβλιοθήκες</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="373"/>
+        <location filename="settingsdialog.ui" line="407"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Warning!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Setting an &amp;quot;obabeliface&amp;quot; library here that was not built&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;for this version of Molsketch may lead to crashes!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Προσοχή!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Ο ορισμός εδώ μιας βιβλιοθήκης &amp;quot;obabeliface&amp;quot; που δεν μεταγλωττίστηκε&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;για αυτήν την έκδοση του Molsketch μπορεί να οδηγήσει σε σφάλματα!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="383"/>
+        <location filename="settingsdialog.ui" line="417"/>
         <source>OpenBabel Format File Path</source>
         <translation>Διαδρομή Μορφής Αρχείου OpenBabel</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="391"/>
+        <location filename="settingsdialog.ui" line="425"/>
         <source>If you have downloaded the auxiliary package from &lt;a href=&quot;http://molsketch.sourceforge.net/&quot;&gt;molsketch.sf.net&lt;/a&gt;,&lt;br/&gt;please provide the path to the folder where you stored the OBF files.</source>
         <translation>Εάν έχετε κατεβάσει το βοηθητικό πακέτο από &lt;a href=&quot;http://molsketch.sourceforge.net/&quot;&gt;molsketch.sf.net&lt;/a&gt;,&lt;br/&gt;παρακαλείσθε να ορίσετε την διαδρομή προς τον φάκελο όπου αποθηκεύσατε τα αρχεία OBF.</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="400"/>
+        <location filename="settingsdialog.ui" line="434"/>
         <source>Path to OBF files</source>
         <translation>Διαδρομή προς αρχεία OBF</translation>
     </message>
     <message>
-        <location filename="settingsdialog.ui" line="435"/>
+        <location filename="settingsdialog.ui" line="469"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Warning!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Selecting a folder of OpenBabel formats here that was not built&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;for the version of OpenBabel for which the &amp;quot;obabeliface&amp;quot; above was built&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;may lead to crashes or prevent formats from working!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Προσοχή!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Ο ορισμός εδώ ενός φακέλου μορφών OpenBabel που δεν μεταγλωττίστηκε&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;για την έκδοση του OpenBabel για την οποία δομήθηκε η παραπάνω &amp;quot;obabeliface&amp;quot;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;μπορεί να οδηγήσει σε σφάλματα και να εμποδίσει την λειτουργία των μορφών!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="settingsdialog.cpp" line="141"/>
+        <location filename="settingsdialog.cpp" line="147"/>
         <source>Select library folder</source>
         <translation>Επιλογή φακέλου βιβλιοθήκης</translation>
     </message>
     <message>
-        <location filename="settingsdialog.cpp" line="154"/>
+        <location filename="settingsdialog.cpp" line="160"/>
         <source>OBF folder</source>
         <translation>Φάκελος OBF</translation>
     </message>
     <message>
-        <location filename="settingsdialog.cpp" line="159"/>
+        <location filename="settingsdialog.cpp" line="165"/>
         <source>Path to obabelIface</source>
         <translation>Διαδρομή προς obabeliface</translation>
     </message>
