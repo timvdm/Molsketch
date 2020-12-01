@@ -22,6 +22,7 @@
 #include <cxxtest/TestSuite.h>
 #include <settingsfacade.h>
 #include <settingsitem.h>
+#include <stringify.h>
 
 using namespace Molsketch;
 
@@ -45,9 +46,9 @@ const QString ALTERNATE_COLOR_AS_STRING("Af//AAAAAP//AAA=");
 
 const QString FONT_KEY("TestFontKey");
 const QFont FONT_VALUE("Times", 10, QFont::Bold);
-const QString FONT_AS_STRING("AAAACgBUAGkAbQBlAHP/////QCQAAAAAAAD/////BQABAEsQAAABAAAAAAAAAAAAAA==");
+const QString FONT_AS_STRING(stringify(FONT_VALUE));
 const QFont ALTERNATE_FONT("Helvetica", 15, QFont::Cursive);
-const QString ALTERNATE_FONT_AS_STRING("AAAAEgBIAGUAbAB2AGUAdABpAGMAYf////9ALgAAAAAAAP////8FAAEABhAAAAEAAAAAAAAAAAAA");
+const QString ALTERNATE_FONT_AS_STRING(stringify(ALTERNATE_FONT));
 
 const QString STRING_LIST_KEY("TestStringListKey");
 const QStringList STRING_LIST_VALUE{"testString1", "testString2"};

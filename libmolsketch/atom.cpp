@@ -56,8 +56,17 @@ namespace Molsketch {
   //                                        //
   //   Left   Right   Down     Up           //
   //                                        //
-  Alignment Atom::labelAlignment() const
-  {
+  Alignment Atom::labelAlignment() const {
+    switch (hydrogenAlignment) {
+      case north: return Up;
+      case south: return Down;
+      case east: return Right;
+      case west: return Left;
+      case automatic: return autoLabelAlignment();
+    }
+  }
+
+  Alignment Atom::autoLabelAlignment() const {
     // compute the sum of the bond vectors, this gives
     QPointF direction(0.0, 0.0);
     foreach (Atom *nbr, this->neighbours())
@@ -68,7 +77,6 @@ namespace Molsketch {
     return direction.x() < -0.1 // hack to make almost vertical lines align Right
         ? Left : Right;
   }
-
 
   Atom::Atom(const QPointF &position, const QString &element, bool implicitHydrogens,
              QGraphicsItem* parent GRAPHICSSCENESOURCE )
@@ -214,7 +222,7 @@ namespace Molsketch {
                         const QString &element,
                         bool implicitHydrogens)
   {
-    //pre: position is a valid position in scene coordinates
+    hydrogenAlignment = automatic;
     setPos(position);
     setZValue(3);
 
@@ -678,6 +686,7 @@ namespace Molsketch {
   const char *DISABLE_HYDROGENS_ATTRIBUTE = "disableHydrogens";
   const char *HYDROGEN_COUNT_ATTRIBUTE = "hydrogens";
   const char *NEWMAN_DIAMETER_ATTRIBUTE = "newmanDiameter";
+  const char *HYDROGEN_ALIGNMENT = "hydrogenAlignment";
 
   void Atom::readGraphicAttributes(const QXmlStreamAttributes &attributes)
   {
@@ -687,7 +696,10 @@ namespace Molsketch {
     m_userImplicitHydrogens = attributes.value(HYDROGEN_COUNT_ATTRIBUTE).toInt();
     m_implicitHydrogens = !attributes.value(DISABLE_HYDROGENS_ATTRIBUTE).toInt();
     m_userCharge = attributes.value(CHARGE_ATTRIBUTE).toInt();
+    auto hAlignment = attributes.value(HYDROGEN_ALIGNMENT).toInt();
+    hydrogenAlignment = (NeighborAlignment) hAlignment;
     updateShape();
+
   }
 
   QXmlStreamAttributes Atom::graphicAttributes() const
@@ -699,6 +711,7 @@ namespace Molsketch {
     attributes.append(DISABLE_HYDROGENS_ATTRIBUTE, QString::number(!m_implicitHydrogens));
     attributes.append(HYDROGEN_COUNT_ATTRIBUTE, QString::number(m_userImplicitHydrogens));
     if (m_newmanDiameter > 0) attributes.append(NEWMAN_DIAMETER_ATTRIBUTE, QString::number(m_newmanDiameter));
+    attributes.append(HYDROGEN_ALIGNMENT, QString::number(hydrogenAlignment));
     return attributes ;
   }
 
@@ -719,6 +732,15 @@ namespace Molsketch {
 
   qreal Atom::getNewmanDiameter() const {
     return m_newmanDiameter;
+  }
+
+  void Atom::setHAlignment(const NeighborAlignment &hAlignment) {
+    hydrogenAlignment = hAlignment;
+    updateShape();
+  }
+
+  NeighborAlignment Atom::hAlignment() const {
+    return hydrogenAlignment;
   }
 
   void Atom::disableNewman() {

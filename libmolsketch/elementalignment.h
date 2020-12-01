@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2015 Hendrik Vennekate                                  *
+ *   Copyright (C) 2020 Hendrik Vennekate                                  *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -16,50 +16,36 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
-#ifndef ATOMPOPUP_H
-#define ATOMPOPUP_H
 
-#include "propertieswidget.h"
+#ifndef ELEMENTALIGNMENT_H
+#define ELEMENTALIGNMENT_H
+
+#include <QWidget>
 #include "neighboralignment.h"
 
-class QCheckBox;
-
-namespace Ui {
-  class AtomPopup;
-}
-
 namespace Molsketch {
-  class Atom;
-  class BoundingBoxLinker;
+  class ElementAlignmentPrivate;
 
-  class AtomPopup : public PropertiesWidget
-  {
+  class ElementAlignment : public QWidget {
     Q_OBJECT
-
+    Q_DECLARE_PRIVATE(ElementAlignment)
+    QScopedPointer<ElementAlignmentPrivate> d_ptr;
   public:
-    explicit AtomPopup(QWidget *parent = 0);
-    ~AtomPopup();
-
-    void connectAtom(Atom* a);
-
+    explicit ElementAlignment(QWidget *parent = nullptr);
+    ~ElementAlignment();
+    NeighborAlignment getAlignment() const;
+  signals:
+    void alignmentChanged(const NeighborAlignment &newAlignment);
+  public slots:
+    void setAlignment(const NeighborAlignment &newAlignment);
+    void setElement(const QString &elementSymbol);
   private slots:
-    void on_element_textChanged(const QString &arg1);
-    void on_charge_valueChanged(int arg1);
-    void on_hydrogens_valueChanged(int arg1);
-    void on_newmanDiameter_valueChanged(double diameter);
-    void onCoordinatesDatachanged();
-    void updateRadicals();
-    void updateLonePairs();
-    void updateHAlignment(const NeighborAlignment& newAlignment);
-  private:
-    Ui::AtomPopup *ui;
-    class PrivateData;
-    PrivateData *d;
-    void propertiesChanged() override;
-    void addRadical(const QCheckBox*, const BoundingBoxLinker& linker);
-    void addLonePair(const QCheckBox*, const BoundingBoxLinker& linker, const qreal angle);
+    void on_automatic_toggled(bool on);
+    void on_east_toggled(bool on);
+    void on_west_toggled(bool on);
+    void on_north_toggled(bool on);
+    void on_south_toggled(bool on);
   };
-
 } // namespace
 
-#endif // ATOMPOPUP_H
+#endif // ELEMENTALIGNMENT_H
