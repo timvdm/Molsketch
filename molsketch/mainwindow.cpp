@@ -422,7 +422,12 @@ void MainWindow::about()
                         "</ul></p>\n"
                         "<p>Copyright 2007 - 2008, Harm van Eersel</p>\n"
                         "<p>Copyright 2009 Tim Vandermeersch</p>\n"
-                        "<p>Maintenance since 12/2014: Hendrik Vennekate</p>").arg(version).arg(versionNick));
+                        "<p>Maintenance since 12/2014: Hendrik Vennekate</p>"
+                        "<h3>Translations</h3>"
+                        "<table>"
+                        "<tr><td>Greek</td><td> - </td><td>Alexander Ploumistos</td></tr>"
+                        "<tr><td>Chinese</td><td> - </td><td>Wensi Vennekate</td></tr>"
+                        "</table>").arg(version).arg(versionNick));
 }
 
 void MainWindow::showReleaseNotes() {

@@ -1545,13 +1545,13 @@ if you want to save it, use the molecule properties!</source>
 &lt;/ul&gt;&lt;/p&gt;
 &lt;p&gt;Copyright 2007 - 2008, Harm van Eersel&lt;/p&gt;
 &lt;p&gt;Copyright 2009 Tim Vandermeersch&lt;/p&gt;
-&lt;p&gt;Maintenance since 12/2014: Hendrik Vennekate&lt;/p&gt;</source>
+&lt;p&gt;Maintenance since 12/2014: Hendrik Vennekate&lt;/p&gt;&lt;h3&gt;Translations&lt;/h3&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;Greek&lt;/td&gt;&lt;td&gt; - &lt;/td&gt;&lt;td&gt;Alexander Ploumistos&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Chinese&lt;/td&gt;&lt;td&gt; - &lt;/td&gt;&lt;td&gt;Wensi Vennekate&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</source>
         <oldsource>&lt;h3&gt;About Molsketch&lt;/h3&gt;
 &lt;h4&gt;Version: %1 -- %2&lt;/h4&gt;
 &lt;p&gt;Molsketch is a program for drawing molecular structures developed by Harm van Eersel at the &lt;a href=&quot;http://www.tue.nl&quot;&gt;Eindhoven University of Technology&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;For more info check &lt;A href=&quot;http://molsketch.sourceforge.net&quot;&gt;http://molsketch.sourceforge.net&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;It is &lt;a href=&quot;http://www.gnu.org/philosophy/free-sw.html&quot;&gt;free software&lt;/a&gt; and available under the &lt;a href=&quot;https://www.gnu.org/licenses/old-licenses/gpl-2.0.html&quot;&gt;GNU GPL version 2&lt;/A&gt; or later versions of the GPL.&lt;/p&gt;
-&lt;p&gt; Special thanks to: &lt;ul&gt;
+&lt;p&gt;It is &lt;a href=&quot;http://www.gnu.org/philosophy/free-sw.html&quot;&gt;free software&lt;/a&gt; and available under the &lt;a href=&quot;https://www.gnu.org/licenses/old-licenses/gpl-2.0.html&quot;&gt;GNU GPL version 2&lt;/a&gt; or later versions of the GPL.&lt;/p&gt;
+&lt;p&gt;Special thanks to: &lt;ul&gt;
 &lt;li&gt;Prof. Dr. H. Zantema (coach of the initial version)&lt;/li&gt;
 &lt;li&gt;Davy van der Vaart (tester)&lt;/li&gt;
 &lt;li&gt;Frans Visscher (tester)&lt;/li&gt;
@@ -1573,303 +1573,308 @@ if you want to save it, use the molecule properties!</source>
 &lt;/ul&gt;&lt;/p&gt;
 &lt;p&gt;Copyright 2007 - 2008 Harm van Eersel&lt;/p&gt;
 &lt;p&gt;Copyright 2009 Tim Vandermeersch&lt;/p&gt;
-&lt;p&gt;Betreuung seit 2014: Hendrik Vennekate&lt;/p&gt;</translation>
+&lt;p&gt;Betreuung seit 2014: Hendrik Vennekate&lt;/p&gt;
+&lt;h3&gt;Übersetzungen&lt;/h3&gt;
+&lt;table&gt;
+&lt;tr&gt;&lt;td&gt;Griechisch&lt;/td&gt;&lt;td&gt; - &lt;/td&gt;&lt;td&gt;Alexander Ploumistos&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Chinesisch&lt;/td&gt;&lt;td&gt; - &lt;/td&gt;&lt;td&gt;Wensi Vennekate&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="434"/>
+        <location filename="mainwindow.cpp" line="439"/>
         <source>&amp;Help</source>
         <translation>&amp;Hilfe</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="436"/>
+        <location filename="mainwindow.cpp" line="441"/>
         <source>&amp;Help Contents...</source>
         <translation>&amp;Inhalt...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="436"/>
+        <location filename="mainwindow.cpp" line="441"/>
         <source>F1</source>
         <translation>F1</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="436"/>
+        <location filename="mainwindow.cpp" line="441"/>
         <source>Show the application&apos;s help contents</source>
         <translation>Hilfe-Inhalt anzeigen</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="437"/>
+        <location filename="mainwindow.cpp" line="442"/>
         <source>Submit &amp;Bug...</source>
         <translation>&amp;Fehler melden...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="437"/>
+        <location filename="mainwindow.cpp" line="442"/>
         <source>Open the browser with the bug tracker</source>
         <translation>Öffnet die Internetseite zum Melden von Fehlern</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="438"/>
+        <location filename="mainwindow.cpp" line="443"/>
         <source>YouTube channel...</source>
         <translation>YouTube-Kanal...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="438"/>
+        <location filename="mainwindow.cpp" line="443"/>
         <source>Open the browser with the YouTube channel page</source>
         <translation>Öffnet die Seite des YouTube-Kanals</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="439"/>
+        <location filename="mainwindow.cpp" line="444"/>
         <source>&amp;About...</source>
         <translation>Ü&amp;ber...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="439"/>
+        <location filename="mainwindow.cpp" line="444"/>
         <source>Show the application&apos;s About box</source>
         <translation>Zeige Informationen über Molsketch</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="440"/>
+        <location filename="mainwindow.cpp" line="445"/>
         <source>Show release notes...</source>
         <translation>Versionshinweise...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="440"/>
+        <location filename="mainwindow.cpp" line="445"/>
         <source>Show the entire release notes list for all versions of Molsketch</source>
         <translation>Zeige Informationen über die aktuelle und frühere Molsketch-Versionen</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="443"/>
+        <location filename="mainwindow.cpp" line="448"/>
         <source>About &amp;Qt...</source>
         <translation>Über &amp;Qt...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="443"/>
+        <location filename="mainwindow.cpp" line="448"/>
         <source>Show the Qt library&apos;s About box</source>
         <translation>Zeige Informationen über die Qt-Bibliothek</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="447"/>
+        <location filename="mainwindow.cpp" line="452"/>
         <source>Thirdparty licenses...</source>
         <translation>Softwarelizenzen...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="447"/>
+        <location filename="mainwindow.cpp" line="452"/>
         <source>Show licenses of included libraries</source>
         <translation>Zeige Lizenzen enthaltener Programmbibliotheken</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="455"/>
+        <location filename="mainwindow.cpp" line="460"/>
         <source>&amp;New</source>
         <translation>&amp;Neu</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="455"/>
+        <location filename="mainwindow.cpp" line="460"/>
         <source>Ctrl+N</source>
         <translation>Ctrl+N</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="455"/>
+        <location filename="mainwindow.cpp" line="460"/>
         <source>Create a new file</source>
         <translation>Neues Fenster öffnen</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="456"/>
+        <location filename="mainwindow.cpp" line="461"/>
         <source>&amp;Open...</source>
         <translation>Ö&amp;ffnen...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="456"/>
+        <location filename="mainwindow.cpp" line="461"/>
         <source>Ctrl+O</source>
         <translation>Ctrl+O</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="456"/>
+        <location filename="mainwindow.cpp" line="461"/>
         <source>Open an existing file</source>
         <translation>Existierende Datei öffnen</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="457"/>
+        <location filename="mainwindow.cpp" line="462"/>
         <source>&amp;Save</source>
         <translation>&amp;Speichern</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="457"/>
+        <location filename="mainwindow.cpp" line="462"/>
         <source>Ctrl+S</source>
         <translation>Ctrl+S</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="457"/>
+        <location filename="mainwindow.cpp" line="462"/>
         <source>Save the document to disk</source>
         <translation>Datei speichern</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="458"/>
+        <location filename="mainwindow.cpp" line="463"/>
         <source>&amp;Import...</source>
         <translation>&amp;Importieren...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="458"/>
+        <location filename="mainwindow.cpp" line="463"/>
         <source>Ctrl+I</source>
         <translation>Ctrl+I</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="458"/>
+        <location filename="mainwindow.cpp" line="463"/>
         <source>Insert an existing molecule into the document</source>
         <translation>Moleküldaten aus einem anderen Format importieren</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="459"/>
+        <location filename="mainwindow.cpp" line="464"/>
         <source>&amp;Export...</source>
         <translation>&amp;Exportieren...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="459"/>
+        <location filename="mainwindow.cpp" line="464"/>
         <source>Ctrl+E</source>
         <translation>Ctrl+E</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="459"/>
+        <location filename="mainwindow.cpp" line="464"/>
         <source>Export the current document as a picture</source>
         <translation>Dokument als Grafik-/Bilddatei exportieren</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="460"/>
+        <location filename="mainwindow.cpp" line="465"/>
         <source>&amp;Print...</source>
         <translation>&amp;Drucken...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="460"/>
+        <location filename="mainwindow.cpp" line="465"/>
         <source>Ctrl+P</source>
         <translation>Ctrl+P</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="460"/>
+        <location filename="mainwindow.cpp" line="465"/>
         <source>Print the current document</source>
         <translation>Gesamtes Dokument drucken</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="462"/>
+        <location filename="mainwindow.cpp" line="467"/>
         <source>&amp;File</source>
         <translation>&amp;Datei</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="464"/>
+        <location filename="mainwindow.cpp" line="469"/>
         <source>Save &amp;As...</source>
         <translation>Speichern &amp;unter...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="464"/>
+        <location filename="mainwindow.cpp" line="469"/>
         <source>Ctrl+Shift+S</source>
         <translation>Ctrl+Shift+S</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="464"/>
+        <location filename="mainwindow.cpp" line="469"/>
         <source>Save the document under a new name</source>
         <translation>Dokument unter neuem Namen speichern</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="468"/>
+        <location filename="mainwindow.cpp" line="473"/>
         <source>Pre&amp;ferences...</source>
         <translation>&amp;Einstellungen...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="468"/>
+        <location filename="mainwindow.cpp" line="473"/>
         <source>Ctrl+F</source>
         <translation>Ctrl+F</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="468"/>
+        <location filename="mainwindow.cpp" line="473"/>
         <source>Edit your preferences</source>
         <translation>Einstellungen von Molsketch bearbeiten</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="471"/>
+        <location filename="mainwindow.cpp" line="476"/>
         <source>E&amp;xit</source>
         <translation>&amp;Beenden</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="471"/>
+        <location filename="mainwindow.cpp" line="476"/>
         <source>Ctrl+Q</source>
         <translation>Ctrl+Q</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="471"/>
+        <location filename="mainwindow.cpp" line="476"/>
         <source>Exit the application</source>
         <translation>Molsketch verlassen</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="473"/>
+        <location filename="mainwindow.cpp" line="478"/>
         <source>File</source>
         <translation>Datei</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="491"/>
+        <location filename="mainwindow.cpp" line="496"/>
         <source>OpenBabel</source>
         <translation>OpenBabel</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="492"/>
+        <location filename="mainwindow.cpp" line="497"/>
         <source>Indicates if OpenBabel was found and could be loaded.
 If OpenBabel is not available, download the auxiliary library package from molsketch.sf.net</source>
         <translation>Zeigt an, ob die Hilfsbibliothek OpenBabel gefunden und geladen werden konnte.
 Die Hilfsbibliothek kann unter molsketch.sf.net heruntergeladen werden.</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="494"/>
+        <location filename="mainwindow.cpp" line="499"/>
         <source>InChI</source>
         <translation>InChI</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="495"/>
+        <location filename="mainwindow.cpp" line="500"/>
         <source>Indicates if InChI format support is available.
 If InChI is unavailable, download the auxiliary OpenBabel formats package from molsketch.sf.net</source>
         <translation>Zeigt an, ob das InChI-Format verfügbar ist.
 Die entsprechende Hilfsbibliothek kann von molsketch.sf.net heruntergeladen werden.</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="498"/>
+        <location filename="mainwindow.cpp" line="503"/>
         <source>gen2d</source>
         <translation>gen2d</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="499"/>
+        <location filename="mainwindow.cpp" line="504"/>
         <source>Indicates if &apos;gen2d&apos; of OpenBabel is available.
 Required for structure optimization.</source>
         <translation>Zeigt an, ob die &apos;gen2d&apos;-Operation von OpenBabel verfügbar ist.
 Benötigt zur Strukturoptimierung.</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="520"/>
+        <location filename="mainwindow.cpp" line="525"/>
         <source>Icons</source>
         <translation>Icons</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="521"/>
+        <location filename="mainwindow.cpp" line="526"/>
         <source>Texts</source>
         <translation>Text</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="522"/>
+        <location filename="mainwindow.cpp" line="527"/>
         <source>Texts under icons</source>
         <translation>Text unter Icons</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="523"/>
+        <location filename="mainwindow.cpp" line="528"/>
         <source>Texts besides icons</source>
         <translation>Text neben Icons</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="524"/>
+        <location filename="mainwindow.cpp" line="529"/>
         <source>System default</source>
         <translation>Systemeinstellung</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="595"/>
+        <location filename="mainwindow.cpp" line="600"/>
         <source>This document has been modified.
 Do you want to save your changes?</source>
         <translation>Dieses Dokument wurde verändert.
 Wollen Sie die Änderungen speichern?</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="617"/>
+        <location filename="mainwindow.cpp" line="622"/>
         <source>%1[*] - %2</source>
         <translation></translation>
     </message>

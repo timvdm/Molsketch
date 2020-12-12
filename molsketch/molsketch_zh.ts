@@ -1531,7 +1531,21 @@ if you want to save it, use the molecule properties!</source>
 &lt;/ul&gt;&lt;/p&gt;
 &lt;p&gt;Copyright 2007 - 2008, Harm van Eersel&lt;/p&gt;
 &lt;p&gt;Copyright 2009 Tim Vandermeersch&lt;/p&gt;
-&lt;p&gt;Maintenance since 12/2014: Hendrik Vennekate&lt;/p&gt;</source>
+&lt;p&gt;Maintenance since 12/2014: Hendrik Vennekate&lt;/p&gt;&lt;h3&gt;Translations&lt;/h3&gt;&lt;table&gt;&lt;tr&gt;&lt;td&gt;Greek&lt;/td&gt;&lt;td&gt; - &lt;/td&gt;&lt;td&gt;Alexander Ploumistos&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Chinese&lt;/td&gt;&lt;td&gt; - &lt;/td&gt;&lt;td&gt;Wensi Vennekate&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</source>
+        <oldsource>&lt;h3&gt;About Molsketch&lt;/h3&gt;
+&lt;h4&gt;Version: %1 -- %2&lt;/h4&gt;
+&lt;p&gt;Molsketch is a program for drawing molecular structures developed by Harm van Eersel at the &lt;a href=&quot;http://www.tue.nl&quot;&gt;Eindhoven University of Technology&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;For more info check &lt;A href=&quot;http://molsketch.sourceforge.net&quot;&gt;http://molsketch.sourceforge.net&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;It is &lt;a href=&quot;http://www.gnu.org/philosophy/free-sw.html&quot;&gt;free software&lt;/a&gt; and available under the &lt;a href=&quot;https://www.gnu.org/licenses/old-licenses/gpl-2.0.html&quot;&gt;GNU GPL version 2&lt;/a&gt; or later versions of the GPL.&lt;/p&gt;
+&lt;p&gt;Special thanks to: &lt;ul&gt;
+&lt;li&gt;Prof. Dr. H. Zantema (coach of the initial version)&lt;/li&gt;
+&lt;li&gt;Davy van der Vaart (tester)&lt;/li&gt;
+&lt;li&gt;Frans Visscher (tester)&lt;/li&gt;
+&lt;li&gt;Carsten Niehaus (reviewer)&lt;/li&gt;
+&lt;/ul&gt;&lt;/p&gt;
+&lt;p&gt;Copyright 2007 - 2008, Harm van Eersel&lt;/p&gt;
+&lt;p&gt;Copyright 2009 Tim Vandermeersch&lt;/p&gt;
+&lt;p&gt;Maintenance since 12/2014: Hendrik Vennekate&lt;/p&gt;</oldsource>
         <translation>&lt;h3&gt;关于Molsketch&lt;/h3&gt;
 &lt;h4&gt;版本: %1 -- %2&lt;/h4&gt;
 &lt;p&gt;Molsketch是一个绘制分子结构图形的程序。该程序是由Harm van Eersel在荷兰埃因霍温科技大学（&lt;a href=&quot;http://www.tue.nl&quot;&gt;Eindhoven University of Technology&lt;/a&gt;）编写的。&lt;/p&gt;
@@ -1545,307 +1559,312 @@ if you want to save it, use the molecule properties!</source>
 &lt;/ul&gt;&lt;/p&gt;
 &lt;p&gt;版权 2007 - 2008，Harm van Eersel&lt;/p&gt;
 &lt;p&gt;版权 2009，Tim Vandermeersch&lt;/p&gt;
-&lt;p&gt;维护 12/2014至今：Hendrik Vennekate&lt;/p&gt;</translation>
+&lt;p&gt;维护 12/2014至今：Hendrik Vennekate&lt;/p&gt;
+&lt;h3&gt;翻译&lt;/h3&gt;
+&lt;table&gt;
+&lt;tr&gt;&lt;td&gt;希腊语&lt;/td&gt;&lt;td&gt; - &lt;/td&gt;&lt;td&gt;Alexander Ploumistos&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;中文&lt;/td&gt;&lt;td&gt; - &lt;/td&gt;&lt;td&gt;Wensi Vennekate&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="434"/>
+        <location filename="mainwindow.cpp" line="439"/>
         <source>&amp;Help</source>
         <translation>帮助</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="436"/>
+        <location filename="mainwindow.cpp" line="441"/>
         <source>&amp;Help Contents...</source>
         <translation>帮助内容</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="436"/>
+        <location filename="mainwindow.cpp" line="441"/>
         <source>F1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="436"/>
+        <location filename="mainwindow.cpp" line="441"/>
         <source>Show the application&apos;s help contents</source>
         <translation>显示应用里的帮助内容</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="437"/>
+        <location filename="mainwindow.cpp" line="442"/>
         <source>Submit &amp;Bug...</source>
         <translation>提交错误</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="437"/>
+        <location filename="mainwindow.cpp" line="442"/>
         <source>Open the browser with the bug tracker</source>
         <translatorcomment>Open the bug tracker</translatorcomment>
         <translation>打开错误追踪页面</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="438"/>
+        <location filename="mainwindow.cpp" line="443"/>
         <source>YouTube channel...</source>
         <translatorcomment>油管</translatorcomment>
         <translation>YouTube频道</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="438"/>
+        <location filename="mainwindow.cpp" line="443"/>
         <source>Open the browser with the YouTube channel page</source>
         <translatorcomment>Open the YouTube channel</translatorcomment>
         <translation>打开YouTube频道</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="439"/>
+        <location filename="mainwindow.cpp" line="444"/>
         <source>&amp;About...</source>
         <translation>关于</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="439"/>
+        <location filename="mainwindow.cpp" line="444"/>
         <source>Show the application&apos;s About box</source>
         <translation>显示应用里的关于菜单</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="440"/>
+        <location filename="mainwindow.cpp" line="445"/>
         <source>Show release notes...</source>
         <translation>显示版本的发行说明</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="440"/>
+        <location filename="mainwindow.cpp" line="445"/>
         <source>Show the entire release notes list for all versions of Molsketch</source>
         <translation>显示所有Molsketch版本的发行说明</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="443"/>
+        <location filename="mainwindow.cpp" line="448"/>
         <source>About &amp;Qt...</source>
         <translation>关于Qt</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="443"/>
+        <location filename="mainwindow.cpp" line="448"/>
         <source>Show the Qt library&apos;s About box</source>
         <translation>显示Qt图书馆里的关于菜单</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="447"/>
+        <location filename="mainwindow.cpp" line="452"/>
         <source>Thirdparty licenses...</source>
         <translation>第三方许可</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="447"/>
+        <location filename="mainwindow.cpp" line="452"/>
         <source>Show licenses of included libraries</source>
         <translation>显示随附库的许可</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="455"/>
+        <location filename="mainwindow.cpp" line="460"/>
         <source>&amp;New</source>
         <translation>新建</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="455"/>
+        <location filename="mainwindow.cpp" line="460"/>
         <source>Ctrl+N</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="455"/>
+        <location filename="mainwindow.cpp" line="460"/>
         <source>Create a new file</source>
         <translation>新建文件</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="456"/>
+        <location filename="mainwindow.cpp" line="461"/>
         <source>&amp;Open...</source>
         <translation>打开</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="456"/>
+        <location filename="mainwindow.cpp" line="461"/>
         <source>Ctrl+O</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="456"/>
+        <location filename="mainwindow.cpp" line="461"/>
         <source>Open an existing file</source>
         <translation>打开现有文件</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="457"/>
+        <location filename="mainwindow.cpp" line="462"/>
         <source>&amp;Save</source>
         <translation>保存</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="457"/>
+        <location filename="mainwindow.cpp" line="462"/>
         <source>Ctrl+S</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="457"/>
+        <location filename="mainwindow.cpp" line="462"/>
         <source>Save the document to disk</source>
         <translation>将文件保存到磁盘</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="458"/>
+        <location filename="mainwindow.cpp" line="463"/>
         <source>&amp;Import...</source>
         <translation>导入</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="458"/>
+        <location filename="mainwindow.cpp" line="463"/>
         <source>Ctrl+I</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="458"/>
+        <location filename="mainwindow.cpp" line="463"/>
         <source>Insert an existing molecule into the document</source>
         <translation>添加现有分子结构到文件</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="459"/>
+        <location filename="mainwindow.cpp" line="464"/>
         <source>&amp;Export...</source>
         <translation>导出</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="459"/>
+        <location filename="mainwindow.cpp" line="464"/>
         <source>Ctrl+E</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="459"/>
+        <location filename="mainwindow.cpp" line="464"/>
         <source>Export the current document as a picture</source>
         <translation>将当前文档导出为图片</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="460"/>
+        <location filename="mainwindow.cpp" line="465"/>
         <source>&amp;Print...</source>
         <translation>打印</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="460"/>
+        <location filename="mainwindow.cpp" line="465"/>
         <source>Ctrl+P</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="460"/>
+        <location filename="mainwindow.cpp" line="465"/>
         <source>Print the current document</source>
         <translation>打印当前文档</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="462"/>
+        <location filename="mainwindow.cpp" line="467"/>
         <source>&amp;File</source>
         <translation>文件</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="464"/>
+        <location filename="mainwindow.cpp" line="469"/>
         <source>Save &amp;As...</source>
         <translation>保存为</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="464"/>
+        <location filename="mainwindow.cpp" line="469"/>
         <source>Ctrl+Shift+S</source>
         <translation>Ctrl+Shift+S</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="464"/>
+        <location filename="mainwindow.cpp" line="469"/>
         <source>Save the document under a new name</source>
         <translatorcomment>重命名</translatorcomment>
         <translation>用新名称保存文档</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="468"/>
+        <location filename="mainwindow.cpp" line="473"/>
         <source>Pre&amp;ferences...</source>
         <translation>设置</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="468"/>
+        <location filename="mainwindow.cpp" line="473"/>
         <source>Ctrl+F</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="468"/>
+        <location filename="mainwindow.cpp" line="473"/>
         <source>Edit your preferences</source>
         <translation>编辑您的设置</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="471"/>
+        <location filename="mainwindow.cpp" line="476"/>
         <source>E&amp;xit</source>
         <translation>退出</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="471"/>
+        <location filename="mainwindow.cpp" line="476"/>
         <source>Ctrl+Q</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="471"/>
+        <location filename="mainwindow.cpp" line="476"/>
         <source>Exit the application</source>
         <translation>退出应用</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="473"/>
+        <location filename="mainwindow.cpp" line="478"/>
         <source>File</source>
         <translation>文件</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="491"/>
+        <location filename="mainwindow.cpp" line="496"/>
         <source>OpenBabel</source>
         <translation>OpenBabel</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="492"/>
+        <location filename="mainwindow.cpp" line="497"/>
         <source>Indicates if OpenBabel was found and could be loaded.
 If OpenBabel is not available, download the auxiliary library package from molsketch.sf.net</source>
         <translation>“+”表示OpenBabel可以被找到和加载。
 “-”表示OpenBabel无法使用，可以从molsketch.sf.net下载辅助库包。</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="494"/>
+        <location filename="mainwindow.cpp" line="499"/>
         <source>InChI</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="495"/>
+        <location filename="mainwindow.cpp" line="500"/>
         <source>Indicates if InChI format support is available.
 If InChI is unavailable, download the auxiliary OpenBabel formats package from molsketch.sf.net</source>
         <translation>“+”表示支持InChI格式。
 “-”表示无法找到InChI，可以从molsketch.sf.net下载辅助OpenBabel格式包。</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="498"/>
+        <location filename="mainwindow.cpp" line="503"/>
         <source>gen2d</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="499"/>
+        <location filename="mainwindow.cpp" line="504"/>
         <source>Indicates if &apos;gen2d&apos; of OpenBabel is available.
 Required for structure optimization.</source>
         <translation>“+”表示可以找到OpenBabel的gen2d。
 gen2d用于优化结构。</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="520"/>
+        <location filename="mainwindow.cpp" line="525"/>
         <source>Icons</source>
         <translation>图示</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="521"/>
+        <location filename="mainwindow.cpp" line="526"/>
         <source>Texts</source>
         <translation>文字</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="522"/>
+        <location filename="mainwindow.cpp" line="527"/>
         <source>Texts under icons</source>
         <translation>文字在图示下</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="523"/>
+        <location filename="mainwindow.cpp" line="528"/>
         <source>Texts besides icons</source>
         <translation>文字在图示傍</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="524"/>
+        <location filename="mainwindow.cpp" line="529"/>
         <source>System default</source>
         <translation>系统默认</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="595"/>
+        <location filename="mainwindow.cpp" line="600"/>
         <source>This document has been modified.
 Do you want to save your changes?</source>
         <translation>本文档已被修改。
 保存更改吗？</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="617"/>
+        <location filename="mainwindow.cpp" line="622"/>
         <source>%1[*] - %2</source>
         <translation></translation>
     </message>
