@@ -6,6 +6,18 @@
     </ul>
 </b>
 
+<h1>0.7.0 Oxygen</h1>
+<ul>
+    <li>New localizations: Greek, German, and Chinese</li>
+    <li>Direction of attached hydrogen atoms can be set explicitly by user</li>
+    <li>Atom shape can also be a circle instead of a rectangle</li>
+    <li>Bitmap export with adjustable resolution</li>
+    <li>Support OpenBabel 3</li>
+    <li>Fixes for sum formula and molecule tooltip</li>
+    <li>Fix clipping of bonds</li>
+    <li>Fixed OpenBabel support</li>
+</ul>
+
 <h1>0.6.0 Nitrogen</h1>
 <ul>
     <li>Levels on which items are drawn are accessible; bonds are indicated to cover other bonds if on higher level</li>
