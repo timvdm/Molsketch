@@ -113,7 +113,7 @@ namespace Molsketch
 
     // Rendering on the printer
     QRectF rect(scene->itemsBoundingRect());
-    scene->render(&painter,printer.pageRect(),rect);
+    scene->render(&painter, printer.pageRect(QPrinter::Point), rect); // TODO the scene rect is actually usually too large
 
     // Restore selection
     foreach(QGraphicsItem* item, selList) item->setSelected(true);
