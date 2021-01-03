@@ -34,7 +34,7 @@ target_link_libraries(molsketch molsketch_LIB)
 foreach(package ${Qt5RequiredPackages})
         target_link_libraries(molsketch Qt5::${package})
 endforeach(package)
-set_target_properties(molsketch PROPERTIES OUTPUT_NAME "molsketch${QTVERSIONSUFFIX}")
+set_target_properties(molsketch PROPERTIES OUTPUT_NAME "molsketch")
 
 # Install the documentation
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/doc/ DESTINATION ${MSK_INSTALL_DOCS})

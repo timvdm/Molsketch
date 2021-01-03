@@ -99,12 +99,10 @@ if( CMAKE_SIZEOF_VOID_P EQUAL 8 AND NOT APPLE )
         set(MSK_INSTALL_LIBS "${MSK_INSTALL_LIBS64}")
 endif( CMAKE_SIZEOF_VOID_P EQUAL 8 AND NOT APPLE )
 
-set(QTVERSIONSUFFIX "-qt5")
-
-set(OBABEL_IFACE_NAME "libobabeliface${QTVERSIONSUFFIX}.so")
+set(OBABEL_IFACE_NAME "libobabeliface.so")
 
 if(WIN32 OR WIN64)
-        set(OBABEL_IFACE_NAME "obabeliface${QTVERSIONSUFFIX}.dll")
+        set(OBABEL_IFACE_NAME "obabeliface.dll")
 endif(WIN32 OR WIN64)
 
 add_definitions(-DOBABEL_IFACE_LOCATION="\\\"${MSK_INSTALL_LIBS}/${OBABEL_IFACE_NAME}\\\"")

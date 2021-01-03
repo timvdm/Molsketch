@@ -528,19 +528,10 @@ void MainWindow::createToolBarContextMenuOptions()
 
 void MainWindow::initializeAssistant()
 {
-#if QT_VERSION <= 0x040603
-  assistantClient = new QAssistantClient("", this);
-  QString docfile("molsketch.adp") ;
-  QStringList arguments;
-#else
   assistantClient = new QProcess(this) ;
   QString app = QLibraryInfo::location(QLibraryInfo::BinariesPath)
-               + QLatin1String("/assistant");
-#if QT_VERSION >= 0x050000
-  app += QLatin1String("-qt5") ;
-#endif
+               + QLatin1String("/assistant-qt5"); // TODO the "-qt5" suffix might be specific to some Linux distros
   QString docfile("molsketch.qhp") ;
-#endif
 
   QFileInfo file(MSK_INSTALL_DOCS + QString("/molsketch.adp"));
   if (!file.exists()) file.setFile(QApplication::applicationDirPath() + "/doc/en/" + docfile );

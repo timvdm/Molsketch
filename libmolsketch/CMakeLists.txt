@@ -37,7 +37,7 @@ if(MSK_STATIC_LIB)
 else(MSK_STATIC_LIB)
         add_library(molsketch_LIB SHARED ${libmolsketch_SRCS} ${molsketch_UIS_H})
 endif(MSK_STATIC_LIB)
-set_target_properties(molsketch_LIB PROPERTIES OUTPUT_NAME "molsketch${QTVERSIONSUFFIX}")
+set_target_properties(molsketch_LIB PROPERTIES OUTPUT_NAME "molsketch")
 set_property(TARGET molsketch_LIB PROPERTY CXX_STANDARD 14)
 target_link_libraries(molsketch_LIB ${QT_LIBRARIES})
 
