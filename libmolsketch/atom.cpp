@@ -76,14 +76,14 @@ namespace Molsketch {
   }
 
   Atom::Atom(const QPointF &position, const QString &element, bool implicitHydrogens,
-             QGraphicsItem* parent GRAPHICSSCENESOURCE )
-    : graphicsItem (parent GRAPHICSSCENEINIT )
+             QGraphicsItem* parent)
+    : graphicsItem (parent)
   {
     initialize(position, element, implicitHydrogens);
   }
 
-  Atom::Atom(const Atom &other GRAPHICSSCENESOURCE)
-    : graphicsItem (other GRAPHICSSCENEINIT)
+  Atom::Atom(const Atom &other)
+    : graphicsItem (other)
   { // TODO unit test copy constructor
     initialize(other.scenePos(), other.element(), other.m_implicitHydrogens);
     m_newmanDiameter = other.m_newmanDiameter;

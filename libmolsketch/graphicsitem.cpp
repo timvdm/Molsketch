@@ -84,8 +84,8 @@ namespace Molsketch {
     privateData() : selectedPoint(-1), hovering(false) {}
   };
 
-  graphicsItem::graphicsItem(QGraphicsItem *parent GRAPHICSSCENESOURCE)
-    : QGraphicsItem(parent GRAPHICSSCENEINIT),
+  graphicsItem::graphicsItem(QGraphicsItem *parent)
+    : QGraphicsItem(parent),
       lineWidthScaling(1),
       d(new privateData)
   {
@@ -95,8 +95,8 @@ namespace Molsketch {
     setAcceptedMouseButtons(Qt::LeftButton | Qt::RightButton);
   }
 
-  graphicsItem::graphicsItem(const graphicsItem &other GRAPHICSSCENESOURCE)
-    : QGraphicsItem(0 GRAPHICSSCENEINIT),
+  graphicsItem::graphicsItem(const graphicsItem &other)
+    : QGraphicsItem(0),
       m_color(other.m_color),
       lineWidthScaling(other.lineWidthScaling),
       d(new privateData)

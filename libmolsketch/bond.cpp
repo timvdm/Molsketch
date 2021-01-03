@@ -59,8 +59,8 @@ namespace Molsketch {
     }
   }
 
-  Bond::Bond(Atom* atomA, Atom* atomB, Bond::BondType type, QGraphicsItem* parent GRAPHICSSCENESOURCE )
-    : graphicsItem (parent GRAPHICSSCENEINIT ),
+  Bond::Bond(Atom* atomA, Atom* atomB, Bond::BondType type, QGraphicsItem* parent)
+    : graphicsItem (parent),
       m_bondType(type),
       m_beginAtom(0),
       m_endAtom(0)
