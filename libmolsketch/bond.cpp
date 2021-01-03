@@ -231,10 +231,10 @@ namespace Molsketch {
     if (m_bondType != DoubleLegacy) return;
     m_bondType = DoubleSymmetric;
     auto beginBondList = m_beginAtom->bonds();
-    auto beginBonds = QSet<Bond*>(beginBondList.begin(), beginBondList.end());
+    auto beginBonds = QSet<Bond*>::fromList(beginBondList);
     beginBonds -= this;
     auto endBondList = m_endAtom->bonds();
-    auto endBonds = QSet<Bond*>(endBondList.begin(), endBondList.end());
+    auto endBonds = QSet<Bond*>::fromList(endBondList);
     endBonds -= this;
     // no other bonds: symmetric
     if (beginBonds.empty() && endBonds.empty()) return;

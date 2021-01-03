@@ -127,7 +127,7 @@ namespace Molsketch {
   {
     setDefaults();
     auto atoms = mol.atoms();
-    auto atomSet = QSet<Atom*>(atoms.begin(), atoms.end());
+    auto atomSet = QSet<Atom*>::fromList(atoms);
     clone(atomSet);
     setPos(mol.pos());
     updateElectronSystems();
@@ -304,7 +304,7 @@ namespace Molsketch {
     QList<Molecule*> molList;
 
     auto atomList = atoms();
-    auto atomSet = QSet<Atom*>(atomList.begin(), atomList.end());
+    auto atomSet = QSet<Atom*>::fromList(atomList);
     while (!atomSet.empty())
     {
       QSet<Atom*> subgroup = getConnectedAtoms(*(atomSet.begin()));
@@ -396,7 +396,7 @@ namespace Molsketch {
   {
     if (atoms().isEmpty()) return false;
     auto atomList = atoms();
-    auto atomSet = QSet<Atom*>(atomList.begin(), atomList.end());
+    auto atomSet = QSet<Atom*>::fromList(atomList);
     return getConnectedAtoms(atoms().first()) != atomSet;
   }
 
@@ -595,9 +595,9 @@ void Molecule::paintElectronSystems(QPainter *painter) const {
 bool canMerge(const ElectronSystem *es1, const ElectronSystem *es2)
 {
   auto firstListOfAtoms = es1->atoms();
-  auto firstSetOfAtoms = QSet<Atom*>(firstListOfAtoms.begin(), firstListOfAtoms.end());
+  auto firstSetOfAtoms = QSet<Atom*>::fromList(firstListOfAtoms);
   auto secondListOfAtoms = es2->atoms();
-  auto secondSetOfAtoms = QSet<Atom*>(secondListOfAtoms.begin(), secondListOfAtoms.end()); // TODO utility function
+  auto secondSetOfAtoms = QSet<Atom*>::fromList(secondListOfAtoms); // TODO utility function
   // may not share an atom
   if (!(firstSetOfAtoms & secondSetOfAtoms).empty()) return false;
 
