@@ -28,9 +28,6 @@
 #include <QPrintPreviewDialog>
 #include <QMenuBar>
 #include <actions/lineupaction.h>
-#if QT_VERSION <= 0x040603
-#include <QAssistantClient>
-#endif
 
 #include <QToolTip>
 #include <propertiesdock.h>
@@ -162,11 +159,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
   }
   saveWindowProperties();
   if (assistantClient) {
-#if QT_VERSION <= 0x040603
-    assistantClient->closeAssistant();
-#else
     assistantClient->terminate();
-#endif
   }
   event->accept();
   deleteLater();
@@ -391,16 +384,12 @@ void MainWindow::openAssistant()
   QFileInfo file(MSK_INSTALL_DOCS + QString("/index.html"));
   if (!file.exists()) file.setFile(QApplication::applicationDirPath() + "/doc/en/index.html");
   if (!file.exists()) file.setFile(QApplication::applicationDirPath() + "/../share/doc/molsketch/doc/en/index.html");
-#if QT_VERSION <= 0x040603
-  assistantClient->showPage(file.absoluteFilePath());
-#else
   qDebug() << "Opening help:" << file.absoluteFilePath() ;
   QTextStream stream(assistantClient) ;
   stream << QLatin1String("setSource ")
          << file.absoluteFilePath()
          << QLatin1Char('\0')
          << Qt::endl;
-#endif
 }
 
 void MainWindow::about()
@@ -557,10 +546,6 @@ void MainWindow::initializeAssistant()
   if (!file.exists()) file.setFile(QApplication::applicationDirPath() + "/doc/en/" + docfile );
   if (!file.exists()) file.setFile(QApplication::applicationDirPath() + "/../share/doc/molsketch/doc/en/" + docfile);
 
-#if QT_VERSION <= 0x040603
-  arguments << "-profile" << file.absoluteFilePath();
-  assistantClient->setArguments(arguments);
-#else
   qDebug() << "Starting assistant with arguments:" << file.absoluteFilePath() << app ;
 //  assistantClient->start(app, QStringList() << QLatin1String("-enableRemoteControl")) ;
   QTextStream stream(assistantClient) ;
@@ -568,7 +553,6 @@ void MainWindow::initializeAssistant()
          << file.absoluteFilePath()
          << QLatin1Char('\0')
          << Qt::endl;
-#endif
 }
 
 void MainWindow::readSettings()

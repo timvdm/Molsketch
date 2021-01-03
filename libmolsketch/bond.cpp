@@ -67,13 +67,7 @@ namespace Molsketch {
   {
     setAtoms(atomA, atomB);
 
-    MolScene* molScene = dynamic_cast<MolScene*>(
-      #if QT_VERSION < 0x050000
-          scene
-      #else
-          scene()
-      #endif
-          );
+    MolScene* molScene = dynamic_cast<MolScene*>(scene());
     if (molScene)
       setColor(molScene->settings()->defaultColor()->get());
     else

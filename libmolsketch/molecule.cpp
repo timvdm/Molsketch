@@ -736,11 +736,7 @@ void Molecule::updateElectronSystems()
   void Molecule::setDefaults()
   {
     setHandlesChildEvents(false);
-#if QT_VERSION < 0x050000
-    setAcceptsHoverEvents(true);
-#else
     setAcceptHoverEvents(true) ;
-#endif
     setZValue(-50);
   }
 

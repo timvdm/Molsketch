@@ -26,11 +26,7 @@
 #include <QDockWidget>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsItemGroup>
-#if QT_VERSION >= 0x050000
 #include <QtMath>
-#else
-#include <QtCore/qmath.h>
-#endif
 #include <QMainWindow>
 #include "periodictablewidget.h"
 #include "bondtypewidget.h"

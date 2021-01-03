@@ -23,12 +23,8 @@
 #include "molscene.h"
 #include "actions/coloraction.h"
 #include "actions/linewidthaction.h"
-#if QT_VERSION >= 0x050000
 #include <QPainter>
 #include <QtMath>
-#else
-#include <QtCore/qmath.h>
-#endif
 #include <QDebug>
 #include <actions/rotateaction.h>
 #include "scenesettings.h"

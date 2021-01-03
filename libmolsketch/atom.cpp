@@ -37,11 +37,7 @@
 #include "molscene.h"
 #include "TextInputItem.h"
 #include <iostream>
-#if QT_VERSION >= 0x050000
 #include <QtMath>
-#else
-#include <QtCore/qmath.h>
-#endif
 #include "scenesettings.h"
 #include "settingsitem.h"
 #include <QDebug>
@@ -240,11 +236,7 @@ namespace Molsketch {
     }
     else setColor (QColor (0, 0, 0));
     // Enabling hovereffects
-#if QT_VERSION < 0x050000
-    setAcceptsHoverEvents(true);
-#else
     setAcceptHoverEvents(true) ;
-#endif
 
     // Setting private fields
     m_elementSymbol = element;
