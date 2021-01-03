@@ -1,7 +1,7 @@
 ## CMakeLists.txt for Molsketch
-cmake_minimum_required(VERSION 2.6.0) # Depend on CMake 2.6 or better
-cmake_policy(SET CMP0005 OLD)
-cmake_policy(SET CMP0020 OLD)
+cmake_minimum_required(VERSION 2.8.12) # Depend on CMake 2.6 or better
+cmake_policy(SET CMP0005 NEW)
+cmake_policy(SET CMP0020 NEW)
 
 # The name of the project
 project(Molsketch)
