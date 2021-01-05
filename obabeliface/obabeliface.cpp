@@ -34,6 +34,11 @@
 #include "scenesettings.h"
 #include "settingsitem.h"
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wsuggest-override"
+#pragma GCC diagnostic ignored "-Wdeprecated-copy" // OpenBabel 2 only
+
 #include <openbabel/graphsym.h>
 #include <openbabel/stereo/stereo.h>
 
@@ -49,6 +54,8 @@
 #include <openbabel/bond.h>
 #include <openbabel/elements.h>
 #endif
+
+#pragma GCC diagnostic pop
 
 #if (OB_VERSION < OB_VERSION_CHECK(3, 0, 0))
 OpenBabel::OBElementTable elementTable;
