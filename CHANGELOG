@@ -6,6 +6,13 @@
     </ul>
 </b>
 
+<h2>0.7.1 Oxygen-16</h2>
+<ul>
+    <li>Copy and cut actions also copy SVG image</li>
+    <li>Fixed compilation with Qt 5 versions before Qt 5.14</li>
+    <li><em>Removed support for Qt 4; filenames changed!</em></li>
+</ul>
+
 <h1>0.7.0 Oxygen</h1>
 <ul>
     <li>New localizations: Greek, German, and Chinese</li>
