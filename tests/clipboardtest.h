@@ -22,6 +22,7 @@
 #include <QClipboard>
 #include <molscene.h>
 #include <QMimeData>
+#include <QSet>
 #include "utilities.h"
 
 using namespace Molsketch;
@@ -65,6 +66,17 @@ public:
     QS_ASSERT_EQUALS(QApplication::clipboard()->mimeData()->data(MIME_TYPE), CLIPBOARD_CONTENT);
     TS_ASSERT_EQUALS(scene->items().size(), 1);
     TS_ASSERT_EQUALS(scene->stack()->count(), 0);
+  }
+
+  void testCopyingIncludesPngAndSvgFormats() {
+    Atom *atom = new Atom(ATOM_COORDS, ELEMENT);
+    scene->addItem(atom);
+    atom->setSelected(true);
+    scene->copy();
+    auto actualFormatList = QApplication::clipboard()->mimeData()->formats();
+    auto actualFormats = QSet<QString>{actualFormatList.cbegin(), actualFormatList.cend()};
+    auto expectedFormats = QSet<QString>{MIME_TYPE, "application/x-qt-image", "image/svg+xml"};
+    QS_ASSERT_EQUALS(actualFormats, expectedFormats)
   }
 
   void testCutting() {

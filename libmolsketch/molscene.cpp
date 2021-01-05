@@ -228,14 +228,15 @@ namespace Molsketch {
     }
 
     // Clear selection
-    QList<QGraphicsItem*> selList(selectedItems());
+    QList<QGraphicsItem*> selectedList(selectedItems());
     clearSelection();
     QMimeData *mimeData = new QMimeData;
-    mimeData->setImageData(renderImage(selectionRect));
     mimeData->setData(moleculeMimeType, graphicsItem::serialize(items));
+    mimeData->setImageData(renderImage(selectionRect));
+    mimeData->setData("image/svg+xml", toSvg());
     QApplication::clipboard()->setMimeData(mimeData);
 
-    foreach(QGraphicsItem* item, selList) item->setSelected(true);
+    foreach(QGraphicsItem* item, selectedList) item->setSelected(true);
   }
 
   void MolScene::paste() {
