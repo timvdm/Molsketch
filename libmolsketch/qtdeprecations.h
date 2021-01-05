@@ -15,7 +15,7 @@ inline QLineF::IntersectType intersectionType(const QLineF& first, const QLineF&
 }
 #else
 template<class T>
-inline QSet<T> toSet(const QList<T>& list) { return new QSet<T>(list.cbegin(), list.cend()); }
+inline QSet<T> toSet(const QList<T>& list) { return QSet<T>(list.cbegin(), list.cend()); }
 
 inline QLineF::IntersectType intersectionType(const QLineF& first, const QLineF& second, QPointF *intersectionPoint) {
   return first.intersects(second, intersectionPoint);
