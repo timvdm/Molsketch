@@ -60,21 +60,15 @@ namespace Molsketch {
     }
   }
 
-  Bond::Bond(Atom* atomA, Atom* atomB, Bond::BondType type, QGraphicsItem* parent GRAPHICSSCENESOURCE )
-    : graphicsItem (parent GRAPHICSSCENEINIT ),
+  Bond::Bond(Atom* atomA, Atom* atomB, Bond::BondType type, QGraphicsItem* parent)
+    : graphicsItem (parent),
       m_bondType(type),
       m_beginAtom(0),
       m_endAtom(0)
   {
     setAtoms(atomA, atomB);
 
-    MolScene* molScene = dynamic_cast<MolScene*>(
-      #if QT_VERSION < 0x050000
-          scene
-      #else
-          scene()
-      #endif
-          );
+    MolScene* molScene = dynamic_cast<MolScene*>(scene());
     if (molScene)
       setColor(molScene->settings()->defaultColor()->get());
     else

@@ -39,11 +39,7 @@
 #include "molscene.h"
 #include "TextInputItem.h"
 #include <iostream>
-#if QT_VERSION >= 0x050000
 #include <QtMath>
-#else
-#include <QtCore/qmath.h>
-#endif
 #include "scenesettings.h"
 #include "settingsitem.h"
 #include <QDebug>
@@ -82,14 +78,14 @@ namespace Molsketch {
   }
 
   Atom::Atom(const QPointF &position, const QString &element, bool implicitHydrogens,
-             QGraphicsItem* parent GRAPHICSSCENESOURCE )
-    : graphicsItem (parent GRAPHICSSCENEINIT )
+             QGraphicsItem* parent)
+    : graphicsItem (parent)
   {
     initialize(position, element, implicitHydrogens);
   }
 
-  Atom::Atom(const Atom &other GRAPHICSSCENESOURCE)
-    : graphicsItem (other GRAPHICSSCENEINIT)
+  Atom::Atom(const Atom &other)
+    : graphicsItem (other)
   { // TODO unit test copy constructor
     initialize(other.scenePos(), other.element(), other.m_implicitHydrogens);
     m_newmanDiameter = other.m_newmanDiameter;
@@ -242,11 +238,7 @@ namespace Molsketch {
     }
     else setColor (QColor (0, 0, 0));
     // Enabling hovereffects
-#if QT_VERSION < 0x050000
-    setAcceptsHoverEvents(true);
-#else
     setAcceptHoverEvents(true) ;
-#endif
 
     // Setting private fields
     m_elementSymbol = element;

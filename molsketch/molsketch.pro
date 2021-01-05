@@ -8,8 +8,8 @@ RESOURCES += $$files(*.qrc, true)
 TRANSLATIONS += $$files(*.ts, true)
 
 CONFIG += lrelease embed_translations
-LIBS += -L../lib -lmolsketch$$qtVersionSuffix
-TARGET = molsketch$$qtVersionSuffix
+LIBS += -L../lib -lmolsketch
+TARGET = molsketch
 DESTDIR = ../bin
 QMAKE_RPATHDIR = $${MSK_INSTALL_LIBS}
 target.path=$${MSK_INSTALL_BINS}

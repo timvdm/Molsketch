@@ -28,9 +28,6 @@
 #include <QPrintPreviewDialog>
 #include <QMenuBar>
 #include <actions/lineupaction.h>
-#if QT_VERSION <= 0x040603
-#include <QAssistantClient>
-#endif
 
 #include <QToolTip>
 #include <propertiesdock.h>
@@ -162,11 +159,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
   }
   saveWindowProperties();
   if (assistantClient) {
-#if QT_VERSION <= 0x040603
-    assistantClient->closeAssistant();
-#else
     assistantClient->terminate();
-#endif
   }
   event->accept();
   deleteLater();
@@ -391,16 +384,12 @@ void MainWindow::openAssistant()
   QFileInfo file(MSK_INSTALL_DOCS + QString("/index.html"));
   if (!file.exists()) file.setFile(QApplication::applicationDirPath() + "/doc/en/index.html");
   if (!file.exists()) file.setFile(QApplication::applicationDirPath() + "/../share/doc/molsketch/doc/en/index.html");
-#if QT_VERSION <= 0x040603
-  assistantClient->showPage(file.absoluteFilePath());
-#else
   qDebug() << "Opening help:" << file.absoluteFilePath() ;
   QTextStream stream(assistantClient) ;
   stream << QLatin1String("setSource ")
          << file.absoluteFilePath()
          << QLatin1Char('\0')
          << ('\n');
-#endif
 }
 
 void MainWindow::about()
@@ -539,36 +528,21 @@ void MainWindow::createToolBarContextMenuOptions()
 
 void MainWindow::initializeAssistant()
 {
-#if QT_VERSION <= 0x040603
-  assistantClient = new QAssistantClient("", this);
-  QString docfile("molsketch.adp") ;
-  QStringList arguments;
-#else
   assistantClient = new QProcess(this) ;
   QString app = QLibraryInfo::location(QLibraryInfo::BinariesPath)
-               + QLatin1String("/assistant");
-#if QT_VERSION >= 0x050000
-  app += QLatin1String("-qt5") ;
-#endif
+               + QLatin1String("/assistant-qt5"); // TODO the "-qt5" suffix might be specific to some Linux distros
   QString docfile("molsketch.qhp") ;
-#endif
 
   QFileInfo file(MSK_INSTALL_DOCS + QString("/molsketch.adp"));
   if (!file.exists()) file.setFile(QApplication::applicationDirPath() + "/doc/en/" + docfile );
   if (!file.exists()) file.setFile(QApplication::applicationDirPath() + "/../share/doc/molsketch/doc/en/" + docfile);
 
-#if QT_VERSION <= 0x040603
-  arguments << "-profile" << file.absoluteFilePath();
-  assistantClient->setArguments(arguments);
-#else
   qDebug() << "Starting assistant with arguments:" << file.absoluteFilePath() << app ;
-//  assistantClient->start(app, QStringList() << QLatin1String("-enableRemoteControl")) ;
   QTextStream stream(assistantClient) ;
   stream << QLatin1String("register ")
          << file.absoluteFilePath()
          << QLatin1Char('\0')
          << ('\n');
-#endif
 }
 
 void MainWindow::readSettings()

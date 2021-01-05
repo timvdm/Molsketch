@@ -95,16 +95,16 @@ namespace Molsketch {
 
 #define DEFAULTINITIALIZER d_ptr(new MoleculePrivate(this)), m_electronSystemsUpdate(true)
 
-  Molecule::Molecule(QGraphicsItem* parent GRAPHICSSCENESOURCE )
-    : graphicsItem(parent GRAPHICSSCENEINIT ),
+  Molecule::Molecule(QGraphicsItem* parent)
+    : graphicsItem(parent),
       DEFAULTINITIALIZER
   {
     setDefaults();
   }
 
   Molecule::Molecule(QSet<Atom*> atomSet, QSet<Bond*> bondSet,
-                     QGraphicsItem* parent GRAPHICSSCENESOURCE)
-    : graphicsItem (parent GRAPHICSSCENEINIT ),
+                     QGraphicsItem* parent)
+    : graphicsItem (parent),
       DEFAULTINITIALIZER
   {
     setDefaults();
@@ -121,8 +121,8 @@ namespace Molsketch {
     }
   }
 
-  Molecule::Molecule(const Molecule &mol GRAPHICSSCENESOURCE)
-    : graphicsItem (mol GRAPHICSSCENEINIT),
+  Molecule::Molecule(const Molecule &mol)
+    : graphicsItem (mol),
       DEFAULTINITIALIZER
   {
     setDefaults();
@@ -736,11 +736,7 @@ void Molecule::updateElectronSystems()
   void Molecule::setDefaults()
   {
     setHandlesChildEvents(false);
-#if QT_VERSION < 0x050000
-    setAcceptsHoverEvents(true);
-#else
     setAcceptHoverEvents(true) ;
-#endif
     setZValue(-50);
   }
 

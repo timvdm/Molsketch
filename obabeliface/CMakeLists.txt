@@ -5,11 +5,6 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/libmolsketch
 set(obabeliface_HDRS obabeliface.h)
 set(obabeliface_SRCS obabeliface.cpp)
 
-# Including qt4
-if(FORCEQt4)
-        include(${QT_USE_FILE})
-endif(FORCEQt4)
-
 include(findOpenBabel.cmake)
 
 # Ensure the Molsketch include directory is always first
@@ -21,7 +16,7 @@ include_directories(${OPENBABEL_INCLUDE_DIRS}
 
 # Create the obabeliface library
 add_library(obabeliface_LIB SHARED ${obabeliface_SRCS})
-set_target_properties(obabeliface_LIB PROPERTIES OUTPUT_NAME "obabeliface${QTVERSIONSUFFIX}")
+set_target_properties(obabeliface_LIB PROPERTIES OUTPUT_NAME "obabeliface")
 set_property(TARGET obabeliface_LIB PROPERTY CXX_STANDARD 14)
 if(WIN32 OR WIN64)
         set_target_properties(obabeliface_LIB PROPERTIES PREFIX "")

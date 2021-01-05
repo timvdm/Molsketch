@@ -9,7 +9,7 @@ RESOURCES += $$files(*.qrc, true)
 TRANSLATIONS += $$files(*.ts, true)
 
 CONFIG += lrelease embed_translations
-TARGET = molsketch$$qtVersionSuffix
+TARGET = molsketch
 DESTDIR = ../lib
 QMAKE_CXXFLAGS_DEBUG +=  -g -gstabs
 win* : VERSION =

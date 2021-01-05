@@ -24,7 +24,7 @@
 
 
 
-class ProgramVersion
+class ProgramVersion // TODO replace with QVersionNumber
 {
 public:
   ProgramVersion(const QString& version = "");
