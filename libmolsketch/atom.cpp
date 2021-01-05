@@ -985,19 +985,19 @@ namespace Molsketch {
     QPointF intersection;
 
     QLineF topEdge{bounds.topLeft(), bounds.topRight()};
-    if (topEdge.intersects(line, &intersection) == QLineF::BoundedIntersection)
+    if (topEdge.intersect(line, &intersection) == QLineF::BoundedIntersection)
       return IntersectionData(intersection, topEdge);
 
     QLineF bottomEdge{bounds.bottomLeft(), bounds.bottomRight()};
-    if (bottomEdge.intersects(line, &intersection) == QLineF::BoundedIntersection)
+    if (bottomEdge.intersect(line, &intersection) == QLineF::BoundedIntersection)
       return IntersectionData(intersection, bottomEdge);
 
     QLineF leftEdge{bounds.topLeft(), bounds.bottomLeft()};
-    if (leftEdge.intersects(line, &intersection) == QLineF::BoundedIntersection)
+    if (leftEdge.intersect(line, &intersection) == QLineF::BoundedIntersection)
       return IntersectionData(intersection, leftEdge);
 
     QLineF rightEdge{bounds.topRight(), bounds.bottomRight()};
-    if (rightEdge.intersects(line, &intersection) == QLineF::BoundedIntersection)
+    if (rightEdge.intersect(line, &intersection) == QLineF::BoundedIntersection)
       return IntersectionData(intersection, rightEdge);
     // TODO pick the edge it intersects with first (i.e. closest to the middle)
     return IntersectionData(QPointF(), QLineF());
@@ -1034,7 +1034,7 @@ namespace Molsketch {
 
   qreal Atom::getExtentForIntersectionOfOuterLineAndEdge(const IntersectionData &edgeIntersection, const QLineF &outer) const {
     QPointF intersectionOfOuterAndEdge;
-    QLineF::IntersectType intersectType = edgeIntersection.getEdge().intersects(outer, &intersectionOfOuterAndEdge);
+    QLineF::IntersectType intersectType = edgeIntersection.getEdge().intersect(outer, &intersectionOfOuterAndEdge);
     return QLineF::BoundedIntersection == intersectType
         ? QLineF(intersectionOfOuterAndEdge, outer.p1()).length() / outer.length()
         : 0;
@@ -1098,7 +1098,7 @@ namespace Molsketch {
     {
       QLineF edge(corners[i], corners[i+1]);
       QPointF result;
-      if (connection.intersects(edge, &result) == QLineF::BoundedIntersection)
+      if (connection.intersect(edge, &result) == QLineF::BoundedIntersection)
         return result;
     }
     return connection.p1();
