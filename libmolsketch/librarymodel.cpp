@@ -21,6 +21,7 @@
 #include "molecule.h"
 #include "stringify.h"
 #include "moleculemodelitem.h"
+#include "qtdeprecations.h"
 
 #include <QElapsedTimer>
 #include <QIcon>
@@ -40,7 +41,7 @@ namespace Molsketch {
     int fetchCount;
     void cleanMolecules() {
       qInfo("Clearing list of molecules. Count: %d", items.size());
-      auto itemSet = QSet<MoleculeModelItem*>::fromList(items);
+      auto itemSet = toSet(items);
       for (auto molecule : itemSet) delete molecule;
       items.clear();
       fetchCount = 0;

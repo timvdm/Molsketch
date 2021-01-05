@@ -27,6 +27,8 @@
 #include <QDebug>
 #include <QGraphicsSceneMouseEvent>
 
+#include "qtdeprecations.h"
+
 #include "atompopup.h"
 #include "bond.h"
 #include "lonepair.h"
@@ -985,19 +987,19 @@ namespace Molsketch {
     QPointF intersection;
 
     QLineF topEdge{bounds.topLeft(), bounds.topRight()};
-    if (topEdge.intersect(line, &intersection) == QLineF::BoundedIntersection)
+    if (intersectionType(topEdge, line, &intersection) == QLineF::BoundedIntersection)
       return IntersectionData(intersection, topEdge);
 
     QLineF bottomEdge{bounds.bottomLeft(), bounds.bottomRight()};
-    if (bottomEdge.intersect(line, &intersection) == QLineF::BoundedIntersection)
+    if (intersectionType(bottomEdge, line, &intersection) == QLineF::BoundedIntersection)
       return IntersectionData(intersection, bottomEdge);
 
     QLineF leftEdge{bounds.topLeft(), bounds.bottomLeft()};
-    if (leftEdge.intersect(line, &intersection) == QLineF::BoundedIntersection)
+    if (intersectionType(leftEdge, line, &intersection) == QLineF::BoundedIntersection)
       return IntersectionData(intersection, leftEdge);
 
     QLineF rightEdge{bounds.topRight(), bounds.bottomRight()};
-    if (rightEdge.intersect(line, &intersection) == QLineF::BoundedIntersection)
+    if (intersectionType(rightEdge, line, &intersection) == QLineF::BoundedIntersection)
       return IntersectionData(intersection, rightEdge);
     // TODO pick the edge it intersects with first (i.e. closest to the middle)
     return IntersectionData(QPointF(), QLineF());

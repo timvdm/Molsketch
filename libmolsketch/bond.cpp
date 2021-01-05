@@ -26,6 +26,7 @@
 
 #include <math.h>
 
+#include "qtdeprecations.h"
 #include "bond.h"
 
 #include "atom.h"
@@ -231,10 +232,10 @@ namespace Molsketch {
     if (m_bondType != DoubleLegacy) return;
     m_bondType = DoubleSymmetric;
     auto beginBondList = m_beginAtom->bonds();
-    auto beginBonds = QSet<Bond*>::fromList(beginBondList);
+    auto beginBonds = toSet(beginBondList);
     beginBonds -= this;
     auto endBondList = m_endAtom->bonds();
-    auto endBonds = QSet<Bond*>::fromList(endBondList);
+    auto endBonds = toSet(endBondList);
     endBonds -= this;
     // no other bonds: symmetric
     if (beginBonds.empty() && endBonds.empty()) return;
