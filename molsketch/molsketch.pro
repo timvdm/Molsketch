@@ -6,6 +6,7 @@ SOURCES += $$files(*.cpp, true)
 FORMS += $$files(*.ui, true)
 RESOURCES += $$files(*.qrc, true)
 TRANSLATIONS += $$files(*.ts, true)
+RC_ICONS = images/molsketch.ico
 
 CONFIG += lrelease embed_translations
 LIBS += -L../lib -lmolsketch$$qtVersionSuffix

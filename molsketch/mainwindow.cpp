@@ -59,7 +59,7 @@
 
 #define PROGRAM_NAME "Molsketch"
 
-#define MSK_DEFAULT_FORMAT "MolsKetch default (*.msk *.msm)"
+#define MSK_DEFAULT_FORMAT "Molsketch default (*.msk *.msm)"
 #define GRAPHIC_FILE_FORMATS "Scalable Vector Graphics (*.svg);;Portable Network Graphics (*.png);;Windows Bitmap (*.bmp);;Joint Photo Expert Group (*.jpeg)"
 #define GRAPHIC_DEFAULT_FORMAT "Portable Network Graphics (*.png)"
 #define OSRA_GRAPHIC_FILE_FORMATS "All supported types (*.*);;Images (*.png *.bmp *.jpg *.jpeg *.gif *.tif *.tiff);;Documents (*.pdf *.ps)"
