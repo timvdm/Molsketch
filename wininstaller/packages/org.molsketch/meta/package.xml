@@ -10,4 +10,7 @@
   <ForcedInstallation>true</ForcedInstallation>
   <ExpandedByDefault>true</ExpandedByDefault>
   <Script>installscript.qs</Script>
+  <UserInterfaces>
+      <UserInterface>PostInstallActions.ui</UserInterface>
+  </UserInterfaces>
 </Package>
