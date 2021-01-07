@@ -12,7 +12,7 @@ Component.prototype.createOperations = function()
 
     if (installer.value("os") === "win") {
         var iconId = 0;
-        var programPath = installer.value("TargetDir") + "\\molsketch-qt5.exe";
+        var programPath = installer.value("TargetDir") + "\\molsketch.exe";
 
         var startMenuPage = gui.pageById(QInstaller.StartMenuSelection);
         var createDesktopShortcut = gui.findChild(startMenuPage, "createDesktopShortcutCheckbox").checked;

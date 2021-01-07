@@ -8,7 +8,7 @@
     <InstallerApplicationIcon>molsketch</InstallerApplicationIcon>
     <InstallerWindowIcon>molsketch.png</InstallerWindowIcon>
     <WizardStyle>Classic</WizardStyle>
-    <RunProgram>@TargetDir@/molsketch-qt5.exe</RunProgram>
+    <RunProgram>@TargetDir@/molsketch.exe</RunProgram>
     <StartMenuDir>Molsketch</StartMenuDir>
     <TargetDir>@ApplicationsDir@/Molsketch</TargetDir>
     <ControlScript>installscript.qs</ControlScript>
