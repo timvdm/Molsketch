@@ -59,8 +59,8 @@ namespace Molsketch {
        * @param invisible makes the atom invisible if @c true
        */
     Atom(const QPointF & position = QPointF(), const QString & element = QString(),
-         bool implicitHydrogens = true, QGraphicsItem* parent = 0 GRAPHICSSCENEHEADER ) ;
-    Atom(const Atom& other GRAPHICSSCENEHEADER);
+         bool implicitHydrogens = true, QGraphicsItem* parent = 0) ;
+    Atom(const Atom& other);
     ~Atom() ;
     virtual QRectF boundingRect() const override;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;

@@ -37,13 +37,7 @@
 #include <QSvgGenerator>
 #include <QPushButton>
 #include <QBuffer>
-#if QT_VERSION < 0x050000
 #include <QtMath>
-#include <QDesktopServices>
-#else
-#include <QtCore/qmath.h>
-#include <QStandardPaths>
-#endif
 #include <QDebug>
 #include <QDockWidget>
 #include <QInputDialog>
@@ -641,15 +635,6 @@ namespace Molsketch {
 
   QList<genericAction *> MolScene::sceneActions() const
   {
-    QList<genericAction *> actions;
-#if QT_VERSION < 0x050000
-        QList<genericAction*> allActionChildren = findChildren<genericAction*>() ;
-        std::copy_if(allActionChildren.begin(), allActionChildren.end(), std::back_inserter(actions),
-                     [&](QAction* a) { return a->parent() == this; });
-#else
-        actions = findChildren<genericAction*>(QString(), Qt::FindDirectChildrenOnly);
-#endif
-
-        return actions;
+    return findChildren<genericAction*>(QString(), Qt::FindDirectChildrenOnly);
   }
 } // namespace

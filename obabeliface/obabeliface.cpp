@@ -23,11 +23,7 @@
 #include <QGraphicsItem>
 #include <QProcess>
 #include <QDir>
-#if QT_VERSION < 0x050000
-#include <QDesktopServices>
-#else
 #include <QStandardPaths>
-#endif
 
 #include "obabeliface.h"
 #include "molecule.h"
@@ -37,6 +33,11 @@
 
 #include "scenesettings.h"
 #include "settingsitem.h"
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wsuggest-override"
+#pragma GCC diagnostic ignored "-Wdeprecated-copy" // OpenBabel 2 only
 
 #include <openbabel/graphsym.h>
 #include <openbabel/stereo/stereo.h>
@@ -53,6 +54,8 @@
 #include <openbabel/bond.h>
 #include <openbabel/elements.h>
 #endif
+
+#pragma GCC diagnostic pop
 
 #if (OB_VERSION < OB_VERSION_CHECK(3, 0, 0))
 OpenBabel::OBElementTable elementTable;
@@ -74,9 +77,9 @@ namespace Molsketch
   int symbol2number( const QString &symbol )
   {
 #if (OB_VERSION >= OB_VERSION_CHECK(3, 0, 0))
-    return OpenBabel::OBElements::GetAtomicNum(symbol.STRINGCONVERSION) ;
+    return OpenBabel::OBElements::GetAtomicNum(symbol.toLatin1()) ;
 #else
-    return elementTable.GetAtomicNum(symbol.STRINGCONVERSION) ;
+    return elementTable.GetAtomicNum(symbol.toLatin1()) ;
 #endif
   }
 
@@ -136,7 +139,7 @@ namespace Molsketch
     using namespace OpenBabel;
     OBConversion conversion;
 
-    if (!conversion.SetOutFormat(QFileInfo(fileName).suffix(). STRINGCONVERSION))
+    if (!conversion.SetOutFormat(QFileInfo(fileName).suffix().toLatin1()))
     {
       qDebug() << "Error while saving #1";
       return false;
@@ -266,11 +269,7 @@ namespace Molsketch
   Molecule* call_osra(QString fileName)
   {
     int n=0;
-#if QT_VERSION < 0x050000
-    QString tmpresult = QDesktopServices::storageLocation(QDesktopServices::TempLocation) + QDir::separator() + "osra";
-#else
     QString tmpresult = QStandardPaths::writableLocation(QStandardPaths::TempLocation) + QDir::separator() + "osra";
-#endif
     tmpresult += ".sdf";
     QString command;
     char *env = getenv("OSRA");

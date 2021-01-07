@@ -26,6 +26,7 @@
 
 #include <math.h>
 
+#include "qtdeprecations.h"
 #include "bond.h"
 
 #include "atom.h"
@@ -59,21 +60,15 @@ namespace Molsketch {
     }
   }
 
-  Bond::Bond(Atom* atomA, Atom* atomB, Bond::BondType type, QGraphicsItem* parent GRAPHICSSCENESOURCE )
-    : graphicsItem (parent GRAPHICSSCENEINIT ),
+  Bond::Bond(Atom* atomA, Atom* atomB, Bond::BondType type, QGraphicsItem* parent)
+    : graphicsItem (parent),
       m_bondType(type),
       m_beginAtom(0),
       m_endAtom(0)
   {
     setAtoms(atomA, atomB);
 
-    MolScene* molScene = dynamic_cast<MolScene*>(
-      #if QT_VERSION < 0x050000
-          scene
-      #else
-          scene()
-      #endif
-          );
+    MolScene* molScene = dynamic_cast<MolScene*>(scene());
     if (molScene)
       setColor(molScene->settings()->defaultColor()->get());
     else
@@ -231,10 +226,10 @@ namespace Molsketch {
     if (m_bondType != DoubleLegacy) return;
     m_bondType = DoubleSymmetric;
     auto beginBondList = m_beginAtom->bonds();
-    auto beginBonds = QSet<Bond*>(beginBondList.begin(), beginBondList.end());
+    auto beginBonds = toSet(beginBondList);
     beginBonds -= this;
     auto endBondList = m_endAtom->bonds();
-    auto endBonds = QSet<Bond*>(endBondList.begin(), endBondList.end());
+    auto endBonds = toSet(endBondList);
     endBonds -= this;
     // no other bonds: symmetric
     if (beginBonds.empty() && endBonds.empty()) return;

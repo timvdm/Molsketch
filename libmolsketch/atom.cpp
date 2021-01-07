@@ -27,6 +27,8 @@
 #include <QDebug>
 #include <QGraphicsSceneMouseEvent>
 
+#include "qtdeprecations.h"
+
 #include "atompopup.h"
 #include "bond.h"
 #include "lonepair.h"
@@ -37,11 +39,7 @@
 #include "molscene.h"
 #include "TextInputItem.h"
 #include <iostream>
-#if QT_VERSION >= 0x050000
 #include <QtMath>
-#else
-#include <QtCore/qmath.h>
-#endif
 #include "scenesettings.h"
 #include "settingsitem.h"
 #include <QDebug>
@@ -80,14 +78,14 @@ namespace Molsketch {
   }
 
   Atom::Atom(const QPointF &position, const QString &element, bool implicitHydrogens,
-             QGraphicsItem* parent GRAPHICSSCENESOURCE )
-    : graphicsItem (parent GRAPHICSSCENEINIT )
+             QGraphicsItem* parent)
+    : graphicsItem (parent)
   {
     initialize(position, element, implicitHydrogens);
   }
 
-  Atom::Atom(const Atom &other GRAPHICSSCENESOURCE)
-    : graphicsItem (other GRAPHICSSCENEINIT)
+  Atom::Atom(const Atom &other)
+    : graphicsItem (other)
   { // TODO unit test copy constructor
     initialize(other.scenePos(), other.element(), other.m_implicitHydrogens);
     m_newmanDiameter = other.m_newmanDiameter;
@@ -240,11 +238,7 @@ namespace Molsketch {
     }
     else setColor (QColor (0, 0, 0));
     // Enabling hovereffects
-#if QT_VERSION < 0x050000
-    setAcceptsHoverEvents(true);
-#else
     setAcceptHoverEvents(true) ;
-#endif
 
     // Setting private fields
     m_elementSymbol = element;
@@ -985,19 +979,19 @@ namespace Molsketch {
     QPointF intersection;
 
     QLineF topEdge{bounds.topLeft(), bounds.topRight()};
-    if (topEdge.intersects(line, &intersection) == QLineF::BoundedIntersection)
+    if (intersectionType(topEdge, line, &intersection) == QLineF::BoundedIntersection)
       return IntersectionData(intersection, topEdge);
 
     QLineF bottomEdge{bounds.bottomLeft(), bounds.bottomRight()};
-    if (bottomEdge.intersects(line, &intersection) == QLineF::BoundedIntersection)
+    if (intersectionType(bottomEdge, line, &intersection) == QLineF::BoundedIntersection)
       return IntersectionData(intersection, bottomEdge);
 
     QLineF leftEdge{bounds.topLeft(), bounds.bottomLeft()};
-    if (leftEdge.intersects(line, &intersection) == QLineF::BoundedIntersection)
+    if (intersectionType(leftEdge, line, &intersection) == QLineF::BoundedIntersection)
       return IntersectionData(intersection, leftEdge);
 
     QLineF rightEdge{bounds.topRight(), bounds.bottomRight()};
-    if (rightEdge.intersects(line, &intersection) == QLineF::BoundedIntersection)
+    if (intersectionType(rightEdge, line, &intersection) == QLineF::BoundedIntersection)
       return IntersectionData(intersection, rightEdge);
     // TODO pick the edge it intersects with first (i.e. closest to the middle)
     return IntersectionData(QPointF(), QLineF());
@@ -1034,7 +1028,7 @@ namespace Molsketch {
 
   qreal Atom::getExtentForIntersectionOfOuterLineAndEdge(const IntersectionData &edgeIntersection, const QLineF &outer) const {
     QPointF intersectionOfOuterAndEdge;
-    QLineF::IntersectType intersectType = edgeIntersection.getEdge().intersects(outer, &intersectionOfOuterAndEdge);
+    QLineF::IntersectType intersectType = intersectionType( edgeIntersection.getEdge(), outer, &intersectionOfOuterAndEdge);
     return QLineF::BoundedIntersection == intersectType
         ? QLineF(intersectionOfOuterAndEdge, outer.p1()).length() / outer.length()
         : 0;
@@ -1098,7 +1092,7 @@ namespace Molsketch {
     {
       QLineF edge(corners[i], corners[i+1]);
       QPointF result;
-      if (connection.intersects(edge, &result) == QLineF::BoundedIntersection)
+      if (intersectionType(connection, edge, &result) == QLineF::BoundedIntersection)
         return result;
     }
     return connection.p1();

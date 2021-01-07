@@ -29,6 +29,8 @@
 
 #include "molecule.h"
 
+#include "qtdeprecations.h"
+
 #include "atom.h"
 #include "bond.h"
 #include "molscene.h"
@@ -95,16 +97,16 @@ namespace Molsketch {
 
 #define DEFAULTINITIALIZER d_ptr(new MoleculePrivate(this)), m_electronSystemsUpdate(true)
 
-  Molecule::Molecule(QGraphicsItem* parent GRAPHICSSCENESOURCE )
-    : graphicsItem(parent GRAPHICSSCENEINIT ),
+  Molecule::Molecule(QGraphicsItem* parent)
+    : graphicsItem(parent),
       DEFAULTINITIALIZER
   {
     setDefaults();
   }
 
   Molecule::Molecule(QSet<Atom*> atomSet, QSet<Bond*> bondSet,
-                     QGraphicsItem* parent GRAPHICSSCENESOURCE)
-    : graphicsItem (parent GRAPHICSSCENEINIT ),
+                     QGraphicsItem* parent)
+    : graphicsItem (parent),
       DEFAULTINITIALIZER
   {
     setDefaults();
@@ -121,13 +123,13 @@ namespace Molsketch {
     }
   }
 
-  Molecule::Molecule(const Molecule &mol GRAPHICSSCENESOURCE)
-    : graphicsItem (mol GRAPHICSSCENEINIT),
+  Molecule::Molecule(const Molecule &mol)
+    : graphicsItem (mol),
       DEFAULTINITIALIZER
   {
     setDefaults();
     auto atoms = mol.atoms();
-    auto atomSet = QSet<Atom*>(atoms.begin(), atoms.end());
+    auto atomSet = toSet(atoms);
     clone(atomSet);
     setPos(mol.pos());
     updateElectronSystems();
@@ -304,7 +306,7 @@ namespace Molsketch {
     QList<Molecule*> molList;
 
     auto atomList = atoms();
-    auto atomSet = QSet<Atom*>(atomList.begin(), atomList.end());
+    auto atomSet = toSet(atomList);
     while (!atomSet.empty())
     {
       QSet<Atom*> subgroup = getConnectedAtoms(*(atomSet.begin()));
@@ -396,7 +398,7 @@ namespace Molsketch {
   {
     if (atoms().isEmpty()) return false;
     auto atomList = atoms();
-    auto atomSet = QSet<Atom*>(atomList.begin(), atomList.end());
+    auto atomSet = toSet(atomList);
     return getConnectedAtoms(atoms().first()) != atomSet;
   }
 
@@ -595,9 +597,9 @@ void Molecule::paintElectronSystems(QPainter *painter) const {
 bool canMerge(const ElectronSystem *es1, const ElectronSystem *es2)
 {
   auto firstListOfAtoms = es1->atoms();
-  auto firstSetOfAtoms = QSet<Atom*>(firstListOfAtoms.begin(), firstListOfAtoms.end());
+  auto firstSetOfAtoms = toSet(firstListOfAtoms);
   auto secondListOfAtoms = es2->atoms();
-  auto secondSetOfAtoms = QSet<Atom*>(secondListOfAtoms.begin(), secondListOfAtoms.end()); // TODO utility function
+  auto secondSetOfAtoms = toSet(secondListOfAtoms); // TODO utility function
   // may not share an atom
   if (!(firstSetOfAtoms & secondSetOfAtoms).empty()) return false;
 
@@ -736,11 +738,7 @@ void Molecule::updateElectronSystems()
   void Molecule::setDefaults()
   {
     setHandlesChildEvents(false);
-#if QT_VERSION < 0x050000
-    setAcceptsHoverEvents(true);
-#else
     setAcceptHoverEvents(true) ;
-#endif
     setZValue(-50);
   }
 
