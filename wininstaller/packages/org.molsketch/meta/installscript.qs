@@ -10,17 +10,27 @@ Component.prototype.createOperations = function()
         var programPath = installer.value("TargetDir") + "\\molsketch-qt5.exe";
         component.addOperation("RegisterFileType",
                                "msk",
-                               programPath + " '%1'",
+                               "\"" + programPath + "\" \"%1\"",
                                "Molsketch Drawing",
                                "application/x-molsketch",
                                programPath + "," + iconId,
                                "ProgId=Molsketch");
         component.addOperation("RegisterFileType",
                                "msm",
-                               programPath + " '%1'",
+                               "\"" + programPath + "\" \"%1\"",
                                "Molsketch Molecule",
                                "application/x-molsketch-molecule",
                                programPath + "," + iconId,
                                "ProgId=Molsketch");
+        component.addOperation("CreateShortcut",
+                               programPath,
+                               "@StartMenuDir@/Molsketch.lnk",
+                               "workingDirectory=@TargetDir@",
+                               "iconPath=@TargetDir@\\molsketch.ico");
+        component.addOperation("CreateShortcut",
+                               programPath,
+                               "@DesktopDir@/Molsketch.lnk",
+                               "workingDirectory=@TargetDir@",
+                               "iconPath=@TargetDir@\\molsketch.ico");
     }
 }
