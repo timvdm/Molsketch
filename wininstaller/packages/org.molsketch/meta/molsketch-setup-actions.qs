@@ -37,8 +37,8 @@ Component.prototype.createOperations = function()
                                    "\"" + programPath + "\" \"%1\"",
                                    "Molsketch Molecule",
                                    "application/x-molsketch-molecule",
-                                   programPath + "," + iconId,
-                                   "ProgId=Molsketch");
+                                   "@TargetDir@\\molsketch-molecule.ico",
+                                   "ProgId=Molsketch-Molecule");
         if (createDesktopShortcut)
             component.addOperation("CreateShortcut",
                                    programPath,
@@ -50,6 +50,5 @@ Component.prototype.createOperations = function()
                                "@StartMenuDir@/Molsketch.lnk",
                                "workingDirectory=@TargetDir@",
                                "iconPath=@TargetDir@\\molsketch.ico");
-        // TODO Add uninstall link
     }
 }

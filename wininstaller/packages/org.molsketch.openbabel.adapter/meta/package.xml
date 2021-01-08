@@ -6,5 +6,5 @@
   <ReleaseDate>2020-12-13</ReleaseDate>
   <AutoDependOn>org.molsketch,org.openbabel</AutoDependOn>
   <Virtual>true</Virtual>
-  <Script>installscript.qs</Script>
+  <Script>adapter-registry-entry.qs</Script>
 </Package>

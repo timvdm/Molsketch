@@ -6,5 +6,5 @@
   <ReleaseDate>2020-05-08</ReleaseDate>
   <Dependencies>org.openbabel.mainlib</Dependencies>
   <Default>true</Default>
-  <Script>installscript.qs</Script>
+  <Script>openbabel-format-registry-entry.qs</Script>
 </Package>
