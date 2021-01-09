@@ -12,26 +12,10 @@ file(GLOB_RECURSE libmolsketch_SRCS *.cpp)
 file(GLOB_RECURSE libmolsketch_UIS *.ui)
 file(GLOB_RECURSE libmolsketch_RCS *.qrc)
 
-if(FORCEQt4)
-    qt4_automoc(${libmolsketch_HDRS})
-    qt4_add_resources(libmolsketch_SRCS ${libmolsketch_RCS})
-    qt4_wrap_ui(libmolsketch_UIS_H ${libmolsketch_UIS})
-else(FORCEQt4)
-    include("../generateTranslations.cmake")
-    addTranslationResources(libmolsketch_TS_resource "libmolsketch_translations")
-    qt5_add_resources(libmolsketch_SRCS ${libmolsketch_RCS} ${libmolsketch_TS_resource})
-    qt5_wrap_ui(libmolsketch_UIS_H ${libmolsketch_UIS})
-endif(FORCEQt4)
-
-
-# MOC-ing headers
-if(FORCEQt4)
-    set(molsketch_LIB_MOC_HDRS ${libmolsketch_HDRS})
-    qt4_wrap_cpp(libmolsketch_SRCS ${molsketch_LIB_MOC_HDRS})
-    # Take care of the .moc files
-    qt4_automoc(${libmolsketch_SRCS})
-endif(FORCEQt4)
-
+include("../generateTranslations.cmake")
+addTranslationResources(libmolsketch_TS_resource "libmolsketch_translations")
+qt5_add_resources(libmolsketch_SRCS ${libmolsketch_RCS} ${libmolsketch_TS_resource})
+qt5_wrap_ui(libmolsketch_UIS_H ${libmolsketch_UIS})
 
 # Create the molsKetch libraries
 if(MSK_STATIC_LIB)
