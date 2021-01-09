@@ -10,6 +10,6 @@ Component.prototype.createOperations = function()
                                "SourceForge",
                                "Molsketch",
                                "obabel-iface-path",
-                               installer.value("TargetDir" + "\\obabeliface.dll"));
+                               "@TargetDir@\\obabeliface.dll");
     }
 }

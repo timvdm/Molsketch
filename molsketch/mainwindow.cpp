@@ -56,7 +56,8 @@
 
 #define PROGRAM_NAME "Molsketch"
 
-#define MSK_DEFAULT_FORMAT "Molsketch default (*.msk *.msm)"
+#define MSK_MSM_FORMATS "Molsketch (*.msk *.msm)"
+#define MSK_FORMAT "Molsketch (*.msk)"
 #define GRAPHIC_FILE_FORMATS "Scalable Vector Graphics (*.svg);;Portable Network Graphics (*.png);;Windows Bitmap (*.bmp);;Joint Photo Expert Group (*.jpeg)"
 #define GRAPHIC_DEFAULT_FORMAT "Portable Network Graphics (*.png)"
 #define OSRA_GRAPHIC_FILE_FORMATS "All supported types (*.*);;Images (*.png *.bmp *.jpg *.jpeg *.gif *.tif *.tiff);;Documents (*.pdf *.ps)"
@@ -172,7 +173,7 @@ void MainWindow::newFile() {
 void MainWindow::open()
 {
   QStringList readableFormats;
-  readableFormats << MSK_DEFAULT_FORMAT << obabelLoader->inputFormats();
+  readableFormats << MSK_MSM_FORMATS << obabelLoader->inputFormats();
   QString fileName = QFileDialog::getOpenFileName(this,
                                                   tr("Open"),
                                                   settings->lastPath(),
@@ -264,16 +265,16 @@ bool MainWindow::autoSave()
 }
 
 bool MainWindow::saveAs() {
-  QString filter = MSK_DEFAULT_FORMAT;
+  QString filter = MSK_FORMAT;
   QStringList supportedFormats;
-  supportedFormats << MSK_DEFAULT_FORMAT << obabelLoader->outputFormats();
+  supportedFormats << MSK_FORMAT << obabelLoader->outputFormats();
   QString fileName = QFileDialog::getSaveFileName(this,
                                                   tr("Save as"),
                                                   settings->lastPath(),
                                                   supportedFormats.join(";;"),
                                                   &filter);
   if (fileName.isEmpty()) return false;
-  if (MSK_DEFAULT_FORMAT == filter
+  if (MSK_FORMAT == filter
       && QFileInfo(fileName).suffix().isEmpty()
       && !QFileInfo(fileName + MSK_NATIVE_FORMAT).exists())
     fileName += MSK_NATIVE_FORMAT;

@@ -11,6 +11,6 @@
     <RunProgram>@TargetDir@/molsketch.exe</RunProgram>
     <StartMenuDir>Molsketch</StartMenuDir>
     <TargetDir>@ApplicationsDir@/Molsketch</TargetDir>
-    <ControlScript>installscript.qs</ControlScript>
+    <ControlScript>controllerscript.qs</ControlScript>
     <WizardDefaultHeight>400</WizardDefaultHeight>
 </Installer>

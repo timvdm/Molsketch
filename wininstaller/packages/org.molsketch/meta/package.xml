@@ -9,7 +9,7 @@
   </Licenses>
   <ForcedInstallation>true</ForcedInstallation>
   <ExpandedByDefault>true</ExpandedByDefault>
-  <Script>installscript.qs</Script>
+  <Script>molsketch-setup-actions.qs</Script>
   <UserInterfaces>
       <UserInterface>PostInstallActions.ui</UserInterface>
   </UserInterfaces>
