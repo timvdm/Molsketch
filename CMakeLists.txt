@@ -57,6 +57,7 @@ set(Qt5RequiredPackages
         Network
 )
 
+find_package(Qt5LinguistTools)
 foreach(package ${Qt5RequiredPackages})
         find_package(Qt5${package})
         INCLUDE_DIRECTORIES(${Qt5${package}_INCLUDE_DIRS})

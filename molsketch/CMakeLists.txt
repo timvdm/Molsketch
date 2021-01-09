@@ -15,7 +15,11 @@ file(GLOB_RECURSE molsketch_MOC_HDRS *.h)
 file(GLOB_RECURSE molsketch_RCS *.qrc)
 file(GLOB_RECURSE molsketch_UIS *.ui)
 
-qt5_add_resources(molsketch_SRCS ${molsketch_RCS})
+find_package(Qt5Widgets)
+
+include("../generateTranslations.cmake")
+addTranslationResources(molsketch_TS_resource "molsketch_translations")
+qt5_add_resources(molsketch_SRCS ${molsketch_RCS} ${molsketch_TS_resource})
 qt5_wrap_ui(molsketch_UIS_H ${molsketch_UIS})
 
 # Add a program icon for windows
