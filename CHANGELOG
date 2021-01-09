@@ -10,6 +10,9 @@
 <ul>
     <li>Copy and cut actions also copy SVG image</li>
     <li>Fixed compilation with Qt 5 versions before Qt 5.14</li>
+    <li>Fixed inclusion of translations for library part for qmake build</li>
+    <li>Fixed inclusion of all translations for cmake build</li>
+    <li>Windows: added installer</li>
     <li><em>Removed support for Qt 4; filenames changed!</em></li>
 </ul>
 
