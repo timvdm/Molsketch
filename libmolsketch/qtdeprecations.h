@@ -8,8 +8,8 @@
 namespace Molsketch {
 
 #if (QT_VERSION < QT_VERSION_CHECK(5, 14, 0))
-template<type T>
-inline QSet<T> toSet(const QList& list) { return QSet<T>::fromList(list); }
+template<class T>
+inline QSet<T> toSet(const QList<T>& list) { return QSet<T>::fromList(list); }
 inline QLineF::IntersectType intersectionType(const QLineF& first, const QLineF& second, QPointF *intersectionPoint) {
   return first.intersect(second, intersectionPoint);
 }
