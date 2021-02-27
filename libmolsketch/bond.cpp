@@ -651,8 +651,9 @@ namespace Molsketch {
     QStringList atomIndexes = attributes.value("atomRefs2").toString().split(" ") ;
     if (atomIndexes.size() != 2) return ;
 
-    setAtoms(molecule()->atom(atomIndexes.first()),
-             molecule()->atom(atomIndexes.last())) ;
+    if (auto mol = molecule())
+      setAtoms(mol->atom(atomIndexes.first()),
+               mol->atom(atomIndexes.last())) ;
     m_bondType = (BondType) (attributes.value("type").toString().toInt());
     if (attributes.hasAttribute("order"))
       m_bondType = (BondType) (10 *attributes.value("order").toInt());

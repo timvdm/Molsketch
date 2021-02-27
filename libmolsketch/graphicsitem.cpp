@@ -351,6 +351,18 @@ namespace Molsketch {
     return retVal;
   }
 
+#ifdef QT_DEBUG
+  QDebug operator <<(QDebug debug, const graphicsItem &item){
+    return debug << "Item:" << &item
+                 << "Type:" << item.xmlName()
+                 << "Parent:" << (void*) item.parentItem()
+                 << "Pos:"  << item.pos()
+                 << "Scene Pos:" << item.scenePos()
+                 << "Bounds:" << item.boundingRect()
+                    ;
+  }
+#endif
+
   void graphicsItem::setCoordinate(const int &index, const QPointF &p)
   {
     QPolygonF oldCoords(coordinates());

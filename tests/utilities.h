@@ -131,11 +131,20 @@ QXmlStreamAttributes getAttributesOfParentElement(QXmlStreamReader& reader, cons
 void clickMenuEntry(const QStringList& names, QMainWindow* mainWindow);
 
 template<typename T, typename U>
-T* findByType(QList<U*> items) {
+T* findFirstByType(const QList<U*>& items) {
   for (auto item : items)
     if (T* result = dynamic_cast<T*>(item))
       return result;
   return nullptr;
+}
+
+template<typename T, typename U>
+QList<T*> findByType(const QList<U*>& items) {
+  QList<T*> result;
+  for (auto item : items)
+    if (T* t = dynamic_cast<T*>(item))
+      result += t;
+  return result;
 }
 
 void leftMouseClick(QWidget* w, QPoint p = QPoint());

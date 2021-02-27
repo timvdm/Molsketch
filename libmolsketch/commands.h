@@ -224,10 +224,9 @@ namespace Molsketch {
       static void addItemToScene(QGraphicsItem* item, MolScene* scene, const QString &text = "");
       static void removeItemFromScene(QGraphicsItem* item, const QString &text = "");
     private:
-      MolScene* m_scene;
+      MolScene *m_scene;
       bool owning;
-
-      // Command interface
+      QGraphicsItem *parent;
     protected:
       MolScene *getScene() const override;
     };

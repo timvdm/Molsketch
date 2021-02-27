@@ -70,6 +70,9 @@
 #include "settingsfacade.h"
 #include "settingsitem.h"
 #include "scenepropertieswidget.h"
+#ifdef QT_DEBUG
+#include "graphicsitem.h"
+#endif
 
 #ifdef QT_STATIC_BUILD
 inline void initToolBarIcons() { Q_INIT_RESOURCE(toolicons); }
@@ -213,54 +216,98 @@ namespace Molsketch {
         if (selectedItems().isEmpty()) return;
         copy();
         d->stack->beginMacro(tr("cutting items"));
-        foreach (QGraphicsItem* item, selectedItems())
-          ItemAction::removeItemFromScene(item);
+        foreach (QGraphicsItem* selectedItem, selectedItems())
+          ItemAction::removeItemFromScene(selectedItem);
+
+        for (auto item : items()) {
+          auto molecule = dynamic_cast<Molecule*>(item);
+          if (!molecule || !molecule->canSplit()) continue;
+          auto subMolecules = molecule->split();
+          auto parent = molecule->parentItem();
+          for (auto subMolecule : subMolecules) {
+            ItemAction::addItemToScene(subMolecule, this);
+            if (parent) (new Commands::SetParentItem(subMolecule, parent))->execute();
+          }
+          ItemAction::removeItemFromScene(molecule);
+        }
         d->stack->endMacro();
   }
 
   void MolScene::copy() {
     if (selectedItems().isEmpty()) return;
-    QRectF selectionRect;
+    QMimeData *mimeData = new QMimeData;
+
+    QMap<Molecule*, QSet<Atom*>> partiallySelectedMolecules;
     QList<const graphicsItem*> items;
     for (auto item : selectedItems()) {
-      selectionRect |= item->boundingRect();
-      items << dynamic_cast<graphicsItem*>(item);
+      if (auto atom = dynamic_cast<Atom*>(item)) {
+        partiallySelectedMolecules[atom->molecule()] += atom;
+      } else if (auto bond = dynamic_cast<Bond*>(item)) {
+        (partiallySelectedMolecules[bond->molecule()] += bond->beginAtom()) += bond->endAtom();
+      } else items << dynamic_cast<graphicsItem*>(item);
     }
+    QList<Molecule*> temporaryMolecules;
+    for (auto partiallySelectedMolecule : partiallySelectedMolecules.keys())
+      temporaryMolecules << Molecule(partiallySelectedMolecule,
+                                     partiallySelectedMolecules[partiallySelectedMolecule])
+                            .split();
+    for (auto molecule : temporaryMolecules) items << molecule;
+    mimeData->setData(moleculeMimeType, graphicsItem::serialize(items));
+    for (auto molecule : temporaryMolecules) delete molecule;
 
-    // Clear selection
+    // add image
+    QRectF selectionArea;
+    for (auto item : selectedItems()) selectionArea |= item->boundingRect();
     QList<QGraphicsItem*> selectedList(selectedItems());
     clearSelection();
-    QMimeData *mimeData = new QMimeData;
-    mimeData->setData(moleculeMimeType, graphicsItem::serialize(items));
-    mimeData->setImageData(renderImage(selectionRect));
+    mimeData->setImageData(renderImage(selectionArea));
+
+    // add SVG
     mimeData->setData("image/svg+xml", toSvg());
+
     QApplication::clipboard()->setMimeData(mimeData);
 
+    // restore selection
     foreach(QGraphicsItem* item, selectedList) item->setSelected(true);
   }
 
   void MolScene::paste() {
     const QMimeData *mimeData = QApplication::clipboard()->mimeData();
     if (!mimeData->hasFormat(moleculeMimeType)) return;
+    QList<QGraphicsItem*> itemsToAdd;
+    for (auto newItem : graphicsItem::deserialize(mimeData->data(moleculeMimeType))) {
+      if (auto atom = dynamic_cast<Atom*>(newItem)) {
+        newItem = new Molecule(QSet<Atom*>{atom}, {});
+      }
+      if (dynamic_cast<Bond*>(newItem)) continue;
+      itemsToAdd << newItem;
+    }
+    if (itemsToAdd.empty()) {
+      qWarning() << "No qualifying items to insert!";
+      return;
+    }
     d->stack->beginMacro(tr("Paste"));
-    for (auto newItem : graphicsItem::deserialize(mimeData->data(moleculeMimeType)))
-      ItemAction::addItemToScene(newItem, this);
+    for(auto itemToInsert : itemsToAdd) ItemAction::addItemToScene(itemToInsert, this);
     d->stack->endMacro();
   }
 
 #ifdef QT_DEBUG
   void MolScene::debugScene()
   {
-    QtMessageHandler originalMessageHander = qInstallMessageHandler(0);
     qDebug() << "================= Scene debug =================";
     foreach(QGraphicsItem *item, items())
     {
-      qDebug() << "Item:" << item
-               << "Type:" << item->type()
-               << "Pos:"  << item->pos()
-               << "Scene Pos:" << item->scenePos()
-               << "Bounds:" << item->boundingRect()
-               << "Children:" << item->childItems() ;
+      if (auto graphicsIt = dynamic_cast<graphicsItem*>(item)) {
+        qDebug() << *graphicsIt;
+      } else {
+        qDebug() << "Item:" << item
+                 << "Type:" << item->type()
+                 << "Parent:" << (void*) item->parentItem()
+                 << "Pos:"  << item->pos()
+                 << "Scene Pos:" << item->scenePos()
+                 << "Bounds:" << item->boundingRect()
+                    ;
+      }
     }
     qDebug() << "============== Undo stack debug ===============";
     qDebug() << "position:" << stack()->index();
@@ -268,9 +315,9 @@ namespace Molsketch {
     {
       const QUndoCommand* command = stack()->command(i);
       qDebug() << i << command << command->id() << command->text();
+      // TODO expand macros, print more info on items that are operated on
     }
     qDebug() << "===============================================";
-    qInstallMessageHandler(originalMessageHander);
   }
 #endif
 

@@ -128,6 +128,10 @@ namespace Molsketch {
     // TODO automatically return item children from graphicsitem as xmlitem
   };
 
+#ifdef QT_DEBUG
+  QDebug operator <<(QDebug debug, const graphicsItem &item);
+#endif
+
 } // namespace
 
 #endif // GRAPHICSITEM_H
