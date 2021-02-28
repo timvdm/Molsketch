@@ -443,6 +443,12 @@ namespace Molsketch {
     }
     if (auto item = dynamic_cast<QGraphicsItem*>(object))
       addItem(item) ;
+    // Handle legacy error: there may be lone atoms
+    if (Atom::xmlClassName() == childName) {
+      auto atom = new Atom;
+      addItem(new Molecule(QSet<Atom*>{atom}, {}));
+      object = atom;
+    }
     return object ;
   }
 
