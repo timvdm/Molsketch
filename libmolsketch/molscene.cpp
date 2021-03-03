@@ -86,6 +86,8 @@ namespace Molsketch {
 
   const QString MolScene::mouseWheelForCyclingTools = "mouse-wheel-cycle-tools";
 
+  using namespace Commands;
+
   struct MolScene::privateData
   {
     QGraphicsRectItem *selectionRectangle;
@@ -172,9 +174,25 @@ namespace Molsketch {
         hoverItem->update();
       }
     }
-  };
 
-  using namespace Commands;
+    void cleanScene(const std::function<void (QGraphicsItem* item, QGraphicsItem* parent)> &addMoleculeParts,
+                    const std::function<void (QGraphicsItem* item)> &cleanItem) {
+      for (auto item : scene->items()) {
+        auto molecule = dynamic_cast<Molecule*>(item);
+        if (!molecule || !molecule->canSplit()) continue;
+        auto subMolecules = molecule->split();
+        auto parent = molecule->parentItem();
+        for (auto subMolecule : subMolecules) addMoleculeParts(subMolecule, parent);
+        cleanItem(molecule);
+      }
+
+      for (auto item : scene->items()) {
+        auto molecule = dynamic_cast<Molecule*>(item);
+        if (!molecule || !molecule->atoms().isEmpty()) continue;
+        cleanItem(molecule);
+      }
+    }
+  };
 
   MolScene::MolScene(QObject* parent)
     : MolScene(nullptr, parent)
@@ -213,24 +231,19 @@ namespace Molsketch {
   }
 
   void MolScene::cut() {
-        if (selectedItems().isEmpty()) return;
-        copy();
-        d->stack->beginMacro(tr("cutting items"));
-        foreach (QGraphicsItem* selectedItem, selectedItems())
-          ItemAction::removeItemFromScene(selectedItem);
+    if (selectedItems().isEmpty()) return;
+    copy();
 
-        for (auto item : items()) {
-          auto molecule = dynamic_cast<Molecule*>(item);
-          if (!molecule || !molecule->canSplit()) continue;
-          auto subMolecules = molecule->split();
-          auto parent = molecule->parentItem();
-          for (auto subMolecule : subMolecules) {
-            ItemAction::addItemToScene(subMolecule, this);
-            if (parent) (new Commands::SetParentItem(subMolecule, parent))->execute();
-          }
-          ItemAction::removeItemFromScene(molecule);
-        }
-        d->stack->endMacro();
+    d->stack->beginMacro(tr("cutting items"));
+    foreach (QGraphicsItem* selectedItem, selectedItems())
+      ItemAction::removeItemFromScene(selectedItem);
+
+    d->cleanScene([&](QGraphicsItem *item, QGraphicsItem *parent) {
+      ItemAction::addItemToScene(item, this);
+      if (parent) (new Commands::SetParentItem(item, parent))->execute();
+    }, [] (QGraphicsItem * item) { ItemAction::removeItemFromScene(item); });
+
+    d->stack->endMacro();
   }
 
   void MolScene::copy() {
@@ -286,8 +299,13 @@ namespace Molsketch {
       qWarning() << "No qualifying items to insert!";
       return;
     }
+
     d->stack->beginMacro(tr("Paste"));
     for(auto itemToInsert : itemsToAdd) ItemAction::addItemToScene(itemToInsert, this);
+    d->cleanScene([&](QGraphicsItem *item, QGraphicsItem *parent) {
+      ItemAction::addItemToScene(item, this);
+      if (parent) (new Commands::SetParentItem(item, parent))->execute();
+    }, [] (QGraphicsItem * item) { ItemAction::removeItemFromScene(item); });
     d->stack->endMacro();
   }
 
@@ -479,6 +497,11 @@ namespace Molsketch {
     foreach (const QByteArray& name, dynamicPropertyNames()) // TODO handle int, double, bool appropriately
       attributes.append(name, property(name).toString());
     return attributes;
+  }
+
+  void MolScene::afterReadFinalization() {
+    d->cleanScene([&](QGraphicsItem *item, QGraphicsItem *parent) { addItem(item); item->setParentItem(parent); },
+    [&](QGraphicsItem *item) { delete item; });
   }
 
   Molecule* MolScene::moleculeAt(const QPointF &pos) {

@@ -90,6 +90,9 @@ const QString ALTERNATIVE_MOLECULE_XML("<?xml version=\"1.0\" encoding=\"UTF-8\"
                                        "><bond atomRefs2=\"a1 a2\" type=\"10\" colorR=\"0\" colorG=\"0\" colorB=\"0\" scalingParameter=\"1\" zLevel=\"2\" coordinates=\"0,0;5,5\"/>"
                                        "</bondArray>"
                                        "</molecule>\n");
+const QString EMPTY_MOLECULE("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                            "<molecule name=\"\">"
+                            "</molecule>");
 
 using XmlAssert::assertThat;
 
@@ -316,8 +319,16 @@ public:
     TS_ASSERT_EQUALS(molecule->parentItem(), frame);
   }
 
-  void testCuttingAtomFromMolecule_leavesBrokenBonds() {
+  void testCuttingAtomFromMolecule_cleansMoleculeFromScene() {
+    auto atom = new Atom(ATOM_COORDS, "A");
+    auto molecule = new Molecule(QSet<Atom*>{atom}, {});
+    scene->addItem(molecule);
+    atom->setSelected(true);
 
+    scene->cut();
+
+    TS_ASSERT_EQUALS(scene->items().size(), 0);
+    TS_ASSERT_EQUALS(scene->stack()->count(), 1);
   }
 
   void testPasting() {
@@ -360,6 +371,12 @@ public:
     QApplication::clipboard()->setMimeData(mimeData);
     scene->paste();
     QS_ASSERT_EQUALS(scene->items().size(), 4);
+  }
+
+  void testPastingEmptyMolecule_getsCleanedAway() {
+    pasteFromClipboard(EMPTY_MOLECULE);
+    TS_ASSERT(scene->items().empty());
+    TS_ASSERT_EQUALS(scene->stack()->count(), 1);
   }
 
   // TODO check what happens if atom and molecule are selected

@@ -22,6 +22,8 @@
 #include <molecule.h>
 #include <molscene.h>
 
+#include "listassertion.h"
+
 using namespace Molsketch;
 
 const QString &SCENE_WITH_LONE_ATOM(
@@ -29,28 +31,86 @@ const QString &SCENE_WITH_LONE_ATOM(
     "<atom"
     " id=\"a1\""
     " elementType=\"A\""
-    " userCharge=\"0\""
-    " disableHydrogens=\"0\""
-    " hydrogens=\"-1\""
-    " shapeType=\"0\""
-    " hydrogenAlignment=\"0\""
-    " colorR=\"0\""
-    " colorG=\"0\""
-    " colorB=\"0\""
-    " scalingParameter=\"1\""
-    " zLevel=\"3\""
-    " coordinates=\"-87,-158.76\""
     "/>"
     "</molscene>");
 
+const QString &SCENE_WITH_BOND_WITH_MISSING_INDEX(
+    "<molscene>"
+    " <molecule>"
+    "  <atomArray>"
+    "   <atom id=\"a1\" elementType=\"A\"/>"
+    "   <atom id=\"a2\" elementType=\"B\"/>"
+    "  </atomArray>"
+    "  <bondArray>"
+    "   <bond atomRefs=\"a1 \"/>"
+    "  </bondArray>"
+    " </molecule>"
+    "</molscene>");
+
+const QString &SCENE_WITH_BOND_WITHOUT_INDEXES(
+    "<molscene>"
+    " <molecule>"
+    "  <atomArray>"
+    "   <atom id=\"a1\" elementType=\"A\"/>"
+    "   <atom id=\"a2\" elementType=\"B\"/>"
+    "  </atomArray>"
+    "  <bondArray>"
+    "   <bond atomRefs=\" \"/>"
+    "  </bondArray>"
+    " </molecule>"
+    "</molscene>");
+
+const QString &SCENE_WITH_BOND_WITH_INVALID_INDEX(
+    "<molscene>"
+    " <molecule>"
+    "  <atomArray>"
+    "   <atom id=\"a1\" elementType=\"A\"/>"
+    "   <atom id=\"a2\" elementType=\"B\"/>"
+    "  </atomArray>"
+    "  <bondArray>"
+    "   <bond atomRefs=\"a1 b3\"/>"
+    "  </bondArray>"
+    " </molecule>"
+    "</molscene>");
+
 class FileInputOutputTest : public CxxTest::TestSuite {
-public:
-  void testReadingSceneWithAtomWithoutMolecule_wrapsMoleculeAroundThatAtom() {
-    MolScene scene;
-    QXmlStreamReader xml(SCENE_WITH_LONE_ATOM);
+  MolScene *scene;
+
+  void readScene(const QString &input) {
+    QXmlStreamReader xml(input);
     xml.readNext();
-    xml >> scene;
-    TS_ASSERT_EQUALS(scene.items().size(), 2);
-    QS_ASSERT_ON_POINTER(Atom, scene.items().first(), molecule(), dynamic_cast<Molecule*>(scene.items().last()));
+    xml >> *scene;
+  }
+public:
+  void setUp() override {
+    scene = new MolScene;
+  }
+
+  void tearDown() override {
+    delete scene;
+  }
+
+  void testReadingSceneWithAtomWithoutMolecule_wrapsMoleculeAroundThatAtom() {
+    readScene(SCENE_WITH_LONE_ATOM);
+    TS_ASSERT_EQUALS(scene->items().size(), 2);
+    QS_ASSERT_ON_POINTER(Atom, scene->items().first(), molecule(), dynamic_cast<Molecule*>(scene->items().last()));
+  }
+
+  void testReadingBondWithMissingIndex_bondGetsDropped() {
+    readScene(SCENE_WITH_BOND_WITH_MISSING_INDEX);
+    assertThat(scene->items()).selectingType<Bond*>().isEmpty();
+    assertThat(scene->items()).selectingType<Molecule*>().hasSize(2);
+  }
+
+  void testReadingBondWithoutIndexes_bondGetsDropped() {
+    readScene(SCENE_WITH_BOND_WITHOUT_INDEXES);
+    assertThat(scene->items()).selectingType<Bond*>().isEmpty();
+    assertThat(scene->items()).selectingType<Molecule*>().hasSize(2);
+  }
+
+  void testReadingBondWithInvalidIndex_bondGetsDropped() {
+    readScene(SCENE_WITH_BOND_WITH_INVALID_INDEX);
+    assertThat(scene->items()).selectingType<Bond*>().isEmpty();
+    assertThat(scene->items()).selectingType<Molecule*>().hasSize(2);
   }
 };

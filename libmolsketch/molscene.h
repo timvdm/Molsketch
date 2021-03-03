@@ -171,6 +171,7 @@ namespace Molsketch {
       QList<const XmlObjectInterface *> children() const override;
       void readAttributes(const QXmlStreamAttributes &attributes) override;
       QXmlStreamAttributes xmlAttributes() const override;
+      void afterReadFinalization() override;
 
   private:
 
