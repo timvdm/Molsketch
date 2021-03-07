@@ -1,12 +1,37 @@
 Short instructions for building the source with CMake:
+0. Prepare
 - Unpack the source and change to the source dir
 - mkdir build
 - cd build
+
+1. Using cmake:
 - cmake ..
+(occasionally, you may have to use
+cmake -G "MinGW Makefiles" ..
+instead)
 - make
-
-If you want to install the binary:
+1.1 Install the binary (if desired)
 - make install
-
-If you want to make a package:
+1.2 Make a package (if desired)
 - make package
+
+2. Using qmake:
+2.1 QMake
+You may change the installation path by setting the PREFIX variable:
+- qmake PREFIX=<Your install dir> ..
+Or you may omit this:
+- qmake ..
+For Qt5, it may be necessary to use "qmake-qt5" instead of "qmake", depending on your platform.
+2.2 Make
+Then run
+- make
+The binary will be in the bin/ subdirectory, the library part in the lib/ subdirectory.
+2.3 Installing
+- make install
+Files will be copied into "bin", "doc", "include", and "lib" directories, relative to PREFIX.
+
+3. Notes on OpenBabel (esp. Windows)
+If you have difficulties making qmake or cmake find openbabel, you might want to set the variables OB_LIBRARY_DIRS and OB_INCLUDE_DIRS:
+cmake -DOB_LIBRARY_DIRS=<path of openbabel.dll/libopenbabel.so> -DOB_INCLUDE_DIRS=<directory containing babelconfig.h> <path to Molsketch sources>
+or
+qmake OB_LIBRARY_DIRS=<openbabel.dll/libopenbabel.so directory> OB_INCLUDE_DIRS=<directory containing babelconfig.h> <path to Molsketch sources>

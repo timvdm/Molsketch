@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Molsketch::FontChooser</class>
+ <widget class="QWidget" name="Molsketch::FontChooser">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>276</width>
+    <height>82</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Font</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="1" column="1">
+    <widget class="QCheckBox" name="bold">
+     <property name="text">
+      <string>Bold</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="2">
+    <widget class="QCheckBox" name="italic">
+     <property name="text">
+      <string>Italic</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QSpinBox" name="size">
+     <property name="minimum">
+      <number>1</number>
+     </property>
+     <property name="value">
+      <number>10</number>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0" colspan="3">
+    <widget class="QFontComboBox" name="fontName"/>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>fontName</sender>
+   <signal>currentFontChanged(QFont)</signal>
+   <receiver>Molsketch::FontChooser</receiver>
+   <slot>fontSelectionChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>150</x>
+     <y>15</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>197</x>
+     <y>35</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>bold</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>Molsketch::FontChooser</receiver>
+   <slot>fontSelectionChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>42</x>
+     <y>48</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>71</x>
+     <y>62</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>italic</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>Molsketch::FontChooser</receiver>
+   <slot>fontSelectionChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>133</x>
+     <y>43</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>229</x>
+     <y>54</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>size</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>Molsketch::FontChooser</receiver>
+   <slot>fontSelectionChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>225</x>
+     <y>10</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>252</x>
+     <y>1</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>fontSelectionChanged()</slot>
+ </slots>
+</ui>

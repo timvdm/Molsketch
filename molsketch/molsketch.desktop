@@ -1,0 +1,16 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Molsketch
+Exec=molsketch
+Icon=molsketch
+DocPath=molsketch/index.html
+MimeType=application/x-molsketch;application/x-molsketch-molecule;
+Terminal=false
+Categories=Science;
+GenericName=2D molecular structures editor
+Comment=Editor for 2D molecular structures
+GenericName[nl]=Molecuulstructuur bewerker
+Comment[nl]=Programma om molecuulstructuren mee te tekenen
+GenericName[de]=Moleküleditor
+Comment[de]=Editor für 2D-Molekülstrukturen

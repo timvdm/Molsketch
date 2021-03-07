@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/molsketch.svg</file>
+        <file alias="version">../version</file>
+        <file alias="versionnick">../versionnick</file>
+        <file alias="CHANGELOG">../CHANGELOG</file>
+        <file>images/openbabel.png</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<mime-info xmlns='http://www.freedesktop.org/standards/shared-mime-info'>
+  <mime-type type="application/x-molsketch">
+    <comment>Molsketch 2D chemical drawing</comment>
+    <magic priority="50">
+      <match type="string" offset="38:40" value="&lt;div&gt;"/>
+      <match type="string" offset="38:40" value="&lt;molscene&gt;"/>
+    </magic>
+    <glob pattern="*.msk"/>
+    <glob pattern="*.MSK"/>
+  </mime-type>
+  <mime-type type="application/x-molsketch-molecule">
+    <comment>Molsketch molecule drawing</comment>
+    <magic priority="50">
+      <match type="string" offset="38:40" value="&lt;molecule"/>
+    </magic>
+    <glob pattern="*.msm"/>
+    <glob pattern="*.MSM"/>
+  </mime-type>
+</mime-info>

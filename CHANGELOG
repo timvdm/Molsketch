@@ -1,64 +1,184 @@
-Helium alpha 2
------------------------------------------------------------------------------
-Features:
-- the implicit hydrogens are now drawn on the right side of the parent atom
-  (thanks to Tim Vandermeersch)
-- the reusabled classes are now in a seperate (static) library
+<body>
+<b> You are always welcome to report bugs, suggest improvements, etc.
+    <ul>
+        <li>on SourceForge: <a href="http://molsketch.sourceforge.net">http://molsketch.sourceforge.net</a></li>
+        <li>on YouTube: <a href="https://www.youtube.com/channel/UCIYnNzSnI9AHpB_c48BR7fQ">https://www.youtube.com/channel/UCIYnNzSnI9AHpB_c48BR7fQ</a></li>
+    </ul>
+</b>
 
-Bug fixes:
-- fixed & improved library code (thanks to Tim Vandermeersch)
-- move regression fixed
-- save implicit hydrogens
-- 
+<h2>0.7.1 Oxygen-16</h2>
+<ul>
+    <li>Copy and cut actions also copy SVG image</li>
+    <li>Fixed compilation with Qt 5 versions before Qt 5.14</li>
+    <li>Fixed inclusion of translations for library part for qmake build</li>
+    <li>Fixed inclusion of all translations for cmake build</li>
+    <li>Windows: added installer</li>
+    <li><em>Removed support for Qt 4; filenames changed!</em></li>
+</ul>
+
+<h1>0.7.0 Oxygen</h1>
+<ul>
+    <li>New localizations: Greek, German, and Chinese</li>
+    <li>Direction of attached hydrogen atoms can be set explicitly by user</li>
+    <li>Atom shape can also be a circle instead of a rectangle</li>
+    <li>Bitmap export with adjustable resolution</li>
+    <li>Support OpenBabel 3</li>
+    <li>Fixes for sum formula and molecule tooltip</li>
+    <li>Fix clipping of bonds</li>
+    <li>Fixed OpenBabel support</li>
+</ul>
+
+<h1>0.6.0 Nitrogen</h1>
+<ul>
+    <li>Levels on which items are drawn are accessible; bonds are indicated to cover other bonds if on higher level</li>
+    <li>Broken  bond indicator with same color as rest of bond</li>
+    <li>Show sum formula of molecule during hover and after selection</li>
+    <li>Closable wiki query</li>
+    <li>Improved performance for drag-and-drop insertion of molecules</li>
+    <li>Associated *.msm files with Molsketch</li>
+    <li>Fixed crashes after undo/redo (changed linkage between molecule, bonds, atoms)</li>
+    <li>Fixed global preferences (accidentally had no effect)</li>
+    <li>Fixed number of hydrogens and charge in saving/loading molecules</li>
+</ul>
+
+<h2>0.5.2 Boron-11</h2>
+<ul>
+    <li>(Drawing) properties of scene</li>
+    <li>Reworked selecting of items/hovering over items</li>
+    <li>Some remodeling of brackets</li>
+</ul>
+
+<h2>0.5.1 Boron-10</h2>
+<ul>
+    <li>Newman radius of atom to draw Newman-type projections</li>
+    <li>New tools for aligning, spacing, and cleaning up molecules</li>
+    <li>Better encapsulate calls to OpenBabel to avoid crashes</li>
+    <li>Several fixes to qmake/cmake installation of files (including MIME types)</li>
+</ul>
+
+<h1>0.5.0 Boron</h1>
+<ul>
+    <li>change log displayed on startup</li>
+    <li>lone pairs and radical electrons</li>
+    <li>selection by type (not yet really useful as properties are usually edited only for single items)</li>
+    <li>querying Wikidata for chemical structures (requires OpenBabel and InChI support)</li>
+    <li>new packaging of Windows libraries (mainly OpenBabel)</li>
+</ul>
+
+<h2>0.4.1 Beryllium-7</h2>
+<ul>
+    <li>text tool</li>
+    <li>fixed cmake</li>
+    <li>fixed legacy bond import</li>
+</ul>
 
 
-
-Helium alpha 1
------------------------------------------------------------------------------
-Features:
-- added option to add/remove single implicit hydrogens
-- added 2D rotating
-- rudimentary support for 3D rotation
-- improved periodic table
-- improved settings dialog
-- save position of dock widgets
-- remember last accessed path
-- support for i18n
-- added a panel to the toolbox to directly change the draw options
-- support for changing the font of the atom symbols
-- support for changing the bond width
-- added an autosave feature
-- there is now an initial version of a KPart of the molsKetch drawing
-  widget available
-
-Bug fixes:
-- fixed crash when trying to remove nonexisting custom molecule
-- file extension are now added on saving
-- fixed bug on loading/saving CML files
+<h1>0.4.0 Beryllium</h1>
+<ul>
+    <li>test project externalized</li>
+    <li>android not quite supported for now</li>
+    <li>windows dynamic not built regularly</li>
+    <li>Qt4 support to be phased out</li>
+    <li>typo in settings fixed (might be reverted)</li>
+    <li>library as folder, molecules with names</li>
+    <li>frames</li>
+    <li>arrows reworked</li>
+    <ul>
+        <li>several options</li>
+        <li>select tip</li>
+        <li>equilibrium arrows</li>
+        <li>mechanism arroow</li>
+    </ul>
+</ul>
 
 
-Deuterium
------------------------------------------------------------------------------
-Features:
-- added support for OpenBabel under Windows
-- switched to cmake as build system
-- you can now use left click to delete items in th document
-- loaded/imported files are now splitted in seperate molecules
-- made hinting less intrusive
-- made charge changes undoable
-- made scrolling on the document zoom to the cursor position (thanks to
-  Vladimir Zima for the suggestion)
-- made the element selector look like a periodic table (thanks to Carsten
-  Niehaus for the suggestion)
-- updated the element data
-- added bug report menu entry
-- updated some of the shortcuts
-- clean up of the code and added apidox (thanks to Carsten Niehaus)
+<h1>0.3.0 Lithium</h1>
+<p>Renovation:</p>
+<ul>
+    <li>Reworked "tools" into "actions", more dynamic addressing via QObject</li>
+    <li>Qt5 support</li>
+    <li>qmake support</li>
+    <li>all actions undo-compatible</li>
+    <li>Use Qt SVG</li>
+</ul>
 
-Bug fixes:
-- fixed some crashes on closing/opening a new document
-- lots of other fixes
+<p>Features:</p>
+<ul>
+    <li>Added context menu</li>
+    <li>individual line/arrow width (relative to global width)</li>
+    <li>draw on grid</li>
+    <li>rotation in discrete steps</li>
+    <li>MSK file format</li>
+    <li>more arrow types</li>
+    <li>Android support</li>
+    <li>OpenBabel via Plugin</li>
+</ul>
 
-Hydrogen
------------------------------------------------------------------------------
-- initial release
+<h2>0.1.x Helium alpha 2</h2>
+<p>Features:</p>
+<ul>
+    <li>the implicit hydrogens are now drawn on the right side of the parent atom
+    (thanks to Tim Vandermeersch)</li>
+    <li>the reusabled classes are now in a seperate (static) library</li>
+</ul>
+
+<p>Bug fixes:</p>
+<ul>
+    <li>fixed &amp; improved library code (thanks to Tim Vandermeersch)</li>
+    <li>move regression fixed</li>
+    <li>save implicit hydrogens</li>
+</ul>
+
+<h2>0.1.x Helium alpha 1</h2>
+<p>Features:</p>
+<ul>
+    <li>added option to add/remove single implicit hydrogens</li>
+    <li>added 2D rotating</li>
+    <li>rudimentary support for 3D rotation</li>
+    <li>improved periodic table</li>
+    <li>improved settings dialog</li>
+    <li>save position of dock widgets</li>
+    <li>remember last accessed path</li>
+    <li>support for i18n</li>
+    <li>added a panel to the toolbox to directly change the draw options</li>
+    <li>support for changing the font of the atom symbols</li>
+    <li>support for changing the bond width</li>
+    <li>added an autosave feature</li>
+    <li>there is now an initial version of a KPart of the molsKetch drawing widget available</li>
+</ul>
+
+<p>Bug fixes:</p>
+<ul>
+    <li>fixed crash when trying to remove nonexisting custom molecule</li>
+    <li>file extension are now added on saving</li>
+    <li>fixed bug on loading/saving CML files</li>
+</ul>
+
+<h2>0.1.1 Deuterium</h2>
+<p>Features:</p>
+<ul>
+    <li>added support for OpenBabel under Windows</li>
+    <li>switched to cmake as build system</li>
+    <li>you can now use left click to delete items in the document</li>
+    <li>loaded/imported files are now splitted in seperate molecules</li>
+    <li>made hinting less intrusive</li>
+    <li>made charge changes undoable</li>
+    <li>made scrolling on the document zoom to the cursor position (thanks to Vladimir Zima for the suggestion)</li>
+    <li>made the element selector look like a periodic table (thanks to Carsten Niehaus for the suggestion)</li>
+    <li>updated the element data</li>
+    <li>added bug report menu entry</li>
+    <li>updated some of the shortcuts</li>
+    <li>clean up of the code and added apidox (thanks to Carsten Niehaus)</li>
+</ul>
+
+<p>Bug fixes:</p>
+<ul>
+    <li>fixed some crashes on closing/opening a new document</li>
+    <li>lots of other fixes</li>
+</ul>
+
+<h1>0.1.0 Hydrogen</h1>
+<ul>
+    <li>initial release</li>
+</ul>
+</body>

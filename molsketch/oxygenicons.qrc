@@ -1,0 +1,32 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file alias="application-exit.svg">oxygen-icons/application-exit.svg</file>
+        <file alias="document-export.svg">oxygen-icons/document-export.svg</file>
+        <file alias="document-import.svg">oxygen-icons/document-import.svg</file>
+        <file alias="document-new.svg">oxygen-icons/document-new.svg</file>
+        <file alias="document-open.svg">oxygen-icons/document-open.svg</file>
+        <file alias="document-print.svg">oxygen-icons/document-print.svg</file>
+        <file alias="document-save-as.svg">oxygen-icons/document-save-as.svg</file>
+        <file alias="document-save.svg">oxygen-icons/document-save.svg</file>
+        <file alias="draw-freehand.svg">oxygen-icons/draw-freehand.svg</file>
+        <file alias="edit-copy.svg">oxygen-icons/edit-copy.svg</file>
+        <file alias="edit-cut.svg">oxygen-icons/edit-cut.svg</file>
+        <file alias="edit-paste.svg">oxygen-icons/edit-paste.svg</file>
+        <file alias="edit-redo.svg">oxygen-icons/edit-redo.svg</file>
+        <file alias="edit-select-all.svg">oxygen-icons/edit-select-all.svg</file>
+        <file alias="edit-undo.svg">oxygen-icons/edit-undo.svg</file>
+        <file alias="help-about.svg">oxygen-icons/help-about.svg</file>
+        <file alias="help-contents.svg">oxygen-icons/help-contents.svg</file>
+        <file alias="preferences-system.svg">oxygen-icons/preferences-system.svg</file>
+        <file alias="zoom-fit-best.svg">oxygen-icons/zoom-fit-best.svg</file>
+        <file alias="zoom-in.svg">oxygen-icons/zoom-in.svg</file>
+        <file alias="zoom-original.svg">oxygen-icons/zoom-original.svg</file>
+        <file alias="zoom-out.svg">oxygen-icons/zoom-out.svg</file>
+        <file alias="list-add.svg">oxygen-icons/list-add.svg</file>
+        <file alias="list-remove.svg">oxygen-icons/list-remove.svg</file>
+        <file alias="view-refresh.svg">oxygen-icons/view-refresh.svg</file>
+        <file alias="system-search.svg">oxygen-icons/system-search.svg</file>
+        <file alias="process-stop.svg">oxygen-icons/process-stop.svg</file>
+        <file alias="insert-text.svg">oxygen-icons/insert-text.svg</file>
+    </qresource>
+</RCC>
