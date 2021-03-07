@@ -12,6 +12,7 @@
     <li>Fixed compilation with Qt 5 versions before Qt 5.14</li>
     <li>Fixed inclusion of translations for library part for qmake build</li>
     <li>Fixed inclusion of all translations for cmake build</li>
+    <li>Fixed crashes/errors during copy/cut/paste and when opening files</li>
     <li>Windows: added installer</li>
     <li><em>Removed support for Qt 4; filenames changed!</em></li>
 </ul>
