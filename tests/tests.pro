@@ -1,4 +1,5 @@
-isEmpty(CXXTEST_PATH) : error("Pass CXXTEST_PATH on command line")
+isEmpty(CXXTEST_INCLUDE_PATH) : error("Pass CXXTEST_INCLUDE_PATH on command line")
+isEmpty(CXXTEST_BIN_PATH) : error("Pass CXXTEST_BIN_PATH on command line")
 include(../obabeliface/findOpenBabel.pri)
 include(../settings.pri)
 
@@ -13,7 +14,7 @@ RESOURCES += $$files($$PWD/../*.qrc, true)
 CONFIG += c++14
 QT += widgets printsupport svg testlib network xmlpatterns
 
-INCLUDEPATH += $$CXXTEST_PATH \
+INCLUDEPATH += $$CXXTEST_INCLUDE_PATH \
     /usr/include/boost/stacktrace \
     ../libmolsketch \
     ../molsketch \
@@ -24,7 +25,7 @@ TEMPLATE = app
 TARGET = msktests
 
 cxxtest.output = ${QMAKE_FILE_BASE}.cpp
-cxxtest.commands = $$CXXTEST_PATH/bin/cxxtestgen --xunit-printer --part ${QMAKE_FILE_NAME} -o ${QMAKE_FILE_OUT}
+cxxtest.commands = $$CXXTEST_BIN_PATH/bin/cxxtestgen --xunit-printer --part ${QMAKE_FILE_NAME} -o ${QMAKE_FILE_OUT}
 cxxtest.depency_type = TYPE_C
 cxxtest.input = TESTS
 cxxtest.variable_out = SOURCES
@@ -38,7 +39,7 @@ POST_TARGETDEPS += $$changelogSyntax.target
 
 CXXRUNNER_TEMPLATE = $$PWD/runnerTemplate.tpl
 cxxrunner.output = cxxrunner.cpp
-cxxrunner.commands = $$CXXTEST_PATH/bin/cxxtestgen --have-eh --xunit-printer --root -o ${QMAKE_FILE_OUT} --template ${QMAKE_FILE_NAME}
+cxxrunner.commands = $$CXXTEST_BIN_PATH/bin/cxxtestgen --have-eh --xunit-printer --root -o ${QMAKE_FILE_OUT} --template ${QMAKE_FILE_NAME}
 cxxrunner.dependency_type = TYPE_C
 cxxrunner.input = CXXRUNNER_TEMPLATE
 cxxrunner.variable_out = SOURCES
