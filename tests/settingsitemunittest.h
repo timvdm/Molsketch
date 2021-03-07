@@ -56,6 +56,12 @@ const QString STRING_LIST_AS_STRING("AAAAAgAAABYAdABlAHMAdABTAHQAcgBpAG4AZwAxAAA
 const QStringList ALTERNATE_STRING_LIST{"alternate1", "Alternate2"};
 const QString ALTERNATE_STRING_LIST_AS_STRING("AAAAAgAAABQAYQBsAHQAZQByAG4AYQB0AGUAMQAAABQAQQBsAHQAZQByAG4AYQB0AGUAMg==");
 
+const QString STRING_KEY("TestStringKey");
+const QString STRING_VALUE{"testString"};
+const QString STRING_AS_STRING("testString");
+const QStringList ALTERNATE_STRING{"alternate"};
+const QString ALTERNATE_STRING_AS_STRING("alternate");
+
 
 template<typename T, typename SETTINGS_ITEM_TYPE, typename SIGNAL_COUNTER_TYPE>
 class SettingsItemTestCase : public CxxTest::TestSuite {
@@ -190,6 +196,17 @@ public:
 class StringListSettingsItemUnitTest : public SettingsItemTestCase<QStringList, StringListSettingsItem, StringListSignalCounter> {
 public:
   StringListSettingsItemUnitTest() : SettingsItemTestCase(STRING_LIST_KEY, STRING_LIST_VALUE, ALTERNATE_STRING_LIST, STRING_LIST_AS_STRING, ALTERNATE_STRING_LIST_AS_STRING) {}
+  void testReading() { readValue(); }
+  void testWritingXml() { assertWritingXml(); }
+  void testReadingXml() { assertWritingXml(); }
+  void testSettingValue() { performSettingCycle(alternate); }
+  void testSettingVariant() { performSettingCycle(alternateVariant); }
+  void testSettingString() { performSettingCycle(alternateAsString); }
+};
+
+class StringSettingsItemUnitTest : public SettingsItemTestCase<QString, StringSettingsItem, StringListSignalCounter> {
+public:
+  StringListSettingsItemUnitTest() : SettingsItemTestCase(STRING_KEY, STRING_VALUE, ALTERNATE_STRING, STRING_AS_STRING, ALTERNATE_STRING_AS_STRING) {}
   void testReading() { readValue(); }
   void testWritingXml() { assertWritingXml(); }
   void testReadingXml() { assertWritingXml(); }

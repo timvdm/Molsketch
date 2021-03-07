@@ -35,9 +35,11 @@ class WikiQueryWidget : public QDockWidget
     Q_OBJECT
 
 public:
-    explicit WikiQueryWidget(OBabelIfaceLoader *loader, QWidget *parent = 0);
+    explicit WikiQueryWidget(OBabelIfaceLoader *loader, const QString &queryUrl, QWidget *parent = 0);
     ~WikiQueryWidget();
 
+public slots:
+  void setQueryUrl(const QString &);
 private slots:
   void on_searchButton_clicked();
   void on_queryInput_textChanged(const QString &newText);
@@ -47,6 +49,7 @@ private:
     Ui::WikiQueryWidget *ui;
     QNetworkAccessManager *manager;
     OBabelIfaceLoader *obloader;
+    QString queryUrl;
     void startMoleculeQuery(const QString &queryString);
 };
 
