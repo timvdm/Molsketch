@@ -123,7 +123,9 @@ MainWindow::MainWindow(ApplicationSettings *appSetttings)
   connect(settings->libraries(), SIGNAL(updated(QStringList)), libraryDock, SLOT(rebuildLibraries(QStringList)));
   addDockWidget(Qt::LeftDockWidgetArea, libraryDock);
 
-  addDockWidget(Qt::LeftDockWidgetArea, new WikiQueryWidget(obabelLoader, this));
+  auto wikiQueryWidget = new WikiQueryWidget(obabelLoader, settings->wikiQueryUrl()->get(), this);
+  addDockWidget(Qt::LeftDockWidgetArea, wikiQueryWidget);
+  connect(settings->wikiQueryUrl(), &StringSettingsItem::updated, wikiQueryWidget, &WikiQueryWidget::setQueryUrl);
 
   auto propertiesDock = new Molsketch::PropertiesDock(m_molView);
   addDockWidget(Qt::LeftDockWidgetArea, propertiesDock);

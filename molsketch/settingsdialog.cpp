@@ -87,6 +87,7 @@ void SettingsDialog::setInitialValues()
 
   ui.libraryPath->setText(settings->obabelIfacePath());
   ui.obfPath->setText(settings->obabelFormatsPath());
+  ui.wikidataQueryUrl->setText(settings->wikiQueryUrl()->get());
   // TODO accceptance test
 }
 
@@ -116,6 +117,7 @@ void SettingsDialog::applyChanges()
 
   settings->setObabelIfacePath(ui.libraryPath->text());
   settings->setObabelFormatsPath(ui.obfPath->text());
+  settings->wikiQueryUrl()->set(ui.wikidataQueryUrl->text());
 
   settings->transferFrom(*sceneSettingsFacade);
 
