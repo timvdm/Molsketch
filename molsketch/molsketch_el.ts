@@ -1411,112 +1411,112 @@ p, li { white-space: pre-wrap; }
         <translation>Εμφάνιση γραμμής εργαλείων</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="184"/>
+        <location filename="mainwindow.cpp" line="180"/>
         <source>Open</source>
         <translation>Άνοιγμα</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="196"/>
+        <location filename="mainwindow.cpp" line="192"/>
         <source>Could not open file using OpenBabel.</source>
         <translation>Ήταν αδύνατον να ανοιχτεί το αρχείο με το OpenBabel.</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="213"/>
+        <location filename="mainwindow.cpp" line="209"/>
         <source>Molecule</source>
         <translation>Μόριο</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="213"/>
+        <location filename="mainwindow.cpp" line="209"/>
         <source>File is an individual molecule,
 if you want to save it, use the molecule properties!</source>
         <translation>Το αρχείο είναι μεμονωμένο μόριο,
 εάν θέλετε να το αποθηκεύσετε, χρησιμοποιήστε τις ιδιότητες του μορίου!</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="226"/>
+        <location filename="mainwindow.cpp" line="222"/>
         <source>Saving file failed!</source>
         <translation>Η αποθήκευση του αρχείου απέτυχε!</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="226"/>
+        <location filename="mainwindow.cpp" line="222"/>
         <source>Could not save file &apos;%1&apos;.</source>
         <translation>Ήταν αδύνατον να αποθηκευτεί το αρχείο &apos;%1&apos;.</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="230"/>
-        <location filename="mainwindow.cpp" line="263"/>
+        <location filename="mainwindow.cpp" line="226"/>
+        <location filename="mainwindow.cpp" line="259"/>
         <source>Save as 3D?</source>
         <translation>Αποθήκευση ως 3D;</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="230"/>
-        <location filename="mainwindow.cpp" line="263"/>
+        <location filename="mainwindow.cpp" line="226"/>
+        <location filename="mainwindow.cpp" line="259"/>
         <source>Save as three dimensional coordinates?</source>
         <translation>Αποθήκευση ως τρισδιάστατες συντεταγμένες;</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="232"/>
+        <location filename="mainwindow.cpp" line="228"/>
         <source>Could not save</source>
         <translation>Αδυναμία αποθήκευσης</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="232"/>
+        <location filename="mainwindow.cpp" line="228"/>
         <source>Could not save file &apos;%1&apos; using OpenBabel.</source>
         <translation>Ήταν αδύνατον να αποθηκευτεί το αρχείο &apos;%1&apos; χρησιμοποιώντας το OpenBabel.</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="254"/>
+        <location filename="mainwindow.cpp" line="250"/>
         <source>/untitled.backup.msk</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="260"/>
-        <location filename="mainwindow.cpp" line="269"/>
+        <location filename="mainwindow.cpp" line="256"/>
+        <location filename="mainwindow.cpp" line="265"/>
         <source>Document autosaved</source>
         <translation>Το έγγραφο αποθηκεύτηκε αυτόματα</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="260"/>
+        <location filename="mainwindow.cpp" line="256"/>
         <source>Autosave failed!</source>
         <translation>Η αυτόματη αποθήκευση απέτυχε!</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="265"/>
+        <location filename="mainwindow.cpp" line="261"/>
         <source>Autosave failed! OpenBabel unavailable.</source>
         <translation>Η αυτόματη αποθήκευση απέτυχε! Το OpenBabel δεν είναι διαθέσιμο.</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="278"/>
+        <location filename="mainwindow.cpp" line="274"/>
         <source>Save as</source>
         <translation>Αποθήκευση ως</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="299"/>
+        <location filename="mainwindow.cpp" line="295"/>
         <source>Import</source>
         <translation>Εισαγωγή</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="322"/>
+        <location filename="mainwindow.cpp" line="318"/>
         <source>Error importing file</source>
         <translation>Σφάλμα κατά την εισαγωγή του αρχείου</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="335"/>
+        <location filename="mainwindow.cpp" line="331"/>
         <source>Export</source>
         <translation>Εξαγωγή</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="360"/>
+        <location filename="mainwindow.cpp" line="356"/>
         <source>Error while exporting file</source>
         <translation>Σφάλμα κατά την εξαγωγή του αρχείου</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="409"/>
+        <location filename="mainwindow.cpp" line="401"/>
         <source>About</source>
         <translation>Σχετικά</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="410"/>
+        <location filename="mainwindow.cpp" line="402"/>
         <source>&lt;h3&gt;About Molsketch&lt;/h3&gt;
 &lt;h4&gt;Version: %1 -- %2&lt;/h4&gt;
 &lt;p&gt;Molsketch is a program for drawing molecular structures developed by Harm van Eersel at the &lt;a href=&quot;http://www.tue.nl&quot;&gt;Eindhoven University of Technology&lt;/a&gt;.&lt;/p&gt;
@@ -1566,303 +1566,303 @@ if you want to save it, use the molecule properties!</source>
 &lt;/table&gt;</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="439"/>
+        <location filename="mainwindow.cpp" line="431"/>
         <source>&amp;Help</source>
         <translation>&amp;Βοήθεια</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="441"/>
+        <location filename="mainwindow.cpp" line="433"/>
         <source>&amp;Help Contents...</source>
         <translation>&amp;Περιεχόμενα βοήθειας...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="441"/>
+        <location filename="mainwindow.cpp" line="433"/>
         <source>F1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="441"/>
+        <location filename="mainwindow.cpp" line="433"/>
         <source>Show the application&apos;s help contents</source>
         <translation>Εμφάνιση των περιεχομένων βοήθειας της εφαρμογής</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="442"/>
+        <location filename="mainwindow.cpp" line="434"/>
         <source>Submit &amp;Bug...</source>
         <translation>Αναφορά &amp;Σφάλματος...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="442"/>
+        <location filename="mainwindow.cpp" line="434"/>
         <source>Open the browser with the bug tracker</source>
         <translation>Άνοιγμα του περιηγητή με την παρακολούθηση σφαλμάτων</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="443"/>
+        <location filename="mainwindow.cpp" line="435"/>
         <source>YouTube channel...</source>
         <translation>Κανάλι στο YouTube...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="443"/>
+        <location filename="mainwindow.cpp" line="435"/>
         <source>Open the browser with the YouTube channel page</source>
         <translation>Άνοιγμα του περιηγητή με την σελίδα του καναλιού στο YouTube</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="444"/>
+        <location filename="mainwindow.cpp" line="436"/>
         <source>&amp;About...</source>
         <translation>&amp;Σχετικά...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="444"/>
+        <location filename="mainwindow.cpp" line="436"/>
         <source>Show the application&apos;s About box</source>
         <translation>Εμφάνιση του πλαισίου Σχετικά της εφαρμογής</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="445"/>
+        <location filename="mainwindow.cpp" line="437"/>
         <source>Show release notes...</source>
         <translation>Εμφάνιση σημειώσεων έκδοσης...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="445"/>
+        <location filename="mainwindow.cpp" line="437"/>
         <source>Show the entire release notes list for all versions of Molsketch</source>
         <translation>Εμφάνιση της πλήρους λίστας σημειώσεων έκδοσης για όλες τις εκδόσεις του Molsketch</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="448"/>
+        <location filename="mainwindow.cpp" line="440"/>
         <source>About &amp;Qt...</source>
         <translation>Σχετικά με το &amp;Qt...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="448"/>
+        <location filename="mainwindow.cpp" line="440"/>
         <source>Show the Qt library&apos;s About box</source>
         <translation>Εμφάνιση του πλαισίου Σχετικά της βιβλιοθήκης Qt</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="452"/>
+        <location filename="mainwindow.cpp" line="444"/>
         <source>Thirdparty licenses...</source>
         <translation>Άδειες χρήσης τρίτων...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="452"/>
+        <location filename="mainwindow.cpp" line="444"/>
         <source>Show licenses of included libraries</source>
         <translation>Εμφάνιση αδειών χρήσης συμπεριλαμβανομένων βιβλιοθηκών</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="460"/>
+        <location filename="mainwindow.cpp" line="452"/>
         <source>&amp;New</source>
         <translation>&amp;Νέο</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="460"/>
+        <location filename="mainwindow.cpp" line="452"/>
         <source>Ctrl+N</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="460"/>
+        <location filename="mainwindow.cpp" line="452"/>
         <source>Create a new file</source>
         <translation>Δημιουργία νέου αρχείου</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="461"/>
+        <location filename="mainwindow.cpp" line="453"/>
         <source>&amp;Open...</source>
         <translation>&amp;Άνοιγμα...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="461"/>
+        <location filename="mainwindow.cpp" line="453"/>
         <source>Ctrl+O</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="461"/>
+        <location filename="mainwindow.cpp" line="453"/>
         <source>Open an existing file</source>
         <translation>Άνοιγμα ενός υπάρχοντος αρχείου</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="462"/>
+        <location filename="mainwindow.cpp" line="454"/>
         <source>&amp;Save</source>
         <translation>&amp;Αποθήκευση</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="462"/>
+        <location filename="mainwindow.cpp" line="454"/>
         <source>Ctrl+S</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="462"/>
+        <location filename="mainwindow.cpp" line="454"/>
         <source>Save the document to disk</source>
         <translation>Αποθήκευση του εγγράφου στον δίσκο</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="463"/>
+        <location filename="mainwindow.cpp" line="455"/>
         <source>&amp;Import...</source>
         <translation>&amp;Εισαγωγή...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="463"/>
+        <location filename="mainwindow.cpp" line="455"/>
         <source>Ctrl+I</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="463"/>
+        <location filename="mainwindow.cpp" line="455"/>
         <source>Insert an existing molecule into the document</source>
         <translation>Εισαγωγή ενός υπάρχοντος μορίου στο έγγραφο</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="464"/>
+        <location filename="mainwindow.cpp" line="456"/>
         <source>&amp;Export...</source>
         <translation>&amp;Εξαγωγή...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="464"/>
+        <location filename="mainwindow.cpp" line="456"/>
         <source>Ctrl+E</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="464"/>
+        <location filename="mainwindow.cpp" line="456"/>
         <source>Export the current document as a picture</source>
         <translation>Εξαγωγή του τρέχοντος εγγράφου ως εικόνα</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="465"/>
+        <location filename="mainwindow.cpp" line="457"/>
         <source>&amp;Print...</source>
         <translation>&amp;Εκτύπωση...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="465"/>
+        <location filename="mainwindow.cpp" line="457"/>
         <source>Ctrl+P</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="465"/>
+        <location filename="mainwindow.cpp" line="457"/>
         <source>Print the current document</source>
         <translation>Εκτύπωση του τρέχοντος εγγράφου</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="467"/>
+        <location filename="mainwindow.cpp" line="459"/>
         <source>&amp;File</source>
         <translation>&amp;Αρχείο</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="469"/>
+        <location filename="mainwindow.cpp" line="461"/>
         <source>Save &amp;As...</source>
         <translation>Αποθήκευση &amp;ως…</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="469"/>
+        <location filename="mainwindow.cpp" line="461"/>
         <source>Ctrl+Shift+S</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="469"/>
+        <location filename="mainwindow.cpp" line="461"/>
         <source>Save the document under a new name</source>
         <translation>Αποθήκευση του εγγράφου με νέο όνομα</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="473"/>
+        <location filename="mainwindow.cpp" line="465"/>
         <source>Pre&amp;ferences...</source>
         <translatorcomment>I have no idea where the ampersand should be placed…</translatorcomment>
         <translation>Προ&amp;τιμήσεις...</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="473"/>
+        <location filename="mainwindow.cpp" line="465"/>
         <source>Ctrl+F</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="473"/>
+        <location filename="mainwindow.cpp" line="465"/>
         <source>Edit your preferences</source>
         <translation>Επεξεργασία των προτιμήσεών σας</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="476"/>
+        <location filename="mainwindow.cpp" line="468"/>
         <source>E&amp;xit</source>
         <translatorcomment>&quot;Ξ&quot; gets a lot of points in Scrabble, it will be hard to use it in another shortcut</translatorcomment>
         <translation>Έ&amp;ξοδος</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="476"/>
+        <location filename="mainwindow.cpp" line="468"/>
         <source>Ctrl+Q</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="476"/>
+        <location filename="mainwindow.cpp" line="468"/>
         <source>Exit the application</source>
         <translation>Έξοδος από την εφαρμογή</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="478"/>
+        <location filename="mainwindow.cpp" line="470"/>
         <source>File</source>
         <translation>Αρχείο</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="496"/>
+        <location filename="mainwindow.cpp" line="488"/>
         <source>OpenBabel</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="497"/>
+        <location filename="mainwindow.cpp" line="489"/>
         <source>Indicates if OpenBabel was found and could be loaded.
 If OpenBabel is not available, download the auxiliary library package from molsketch.sf.net</source>
         <translation>Υποδεικνύει εάν το OpenBabel βρέθηκε και μπόρεσε να φορτωθεί.
 Εάν το OpenBabel δεν είναι διαθέσιμο, κατεβάστε το βοηθητικό πακέτο βιβλιοθηκών από το molsketch.sf.net</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="499"/>
+        <location filename="mainwindow.cpp" line="491"/>
         <source>InChI</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="500"/>
+        <location filename="mainwindow.cpp" line="492"/>
         <source>Indicates if InChI format support is available.
 If InChI is unavailable, download the auxiliary OpenBabel formats package from molsketch.sf.net</source>
         <translation>Υποδεικνύει εάν η υποστήριξη για την μορφή δεδομένων InChI είναι διαθέσιμη.
 Εάν το InChI δεν είναι διαθέσιμο, κατεβάστε το βοηθητικό πακέτο μορφών από το molsketch.sf.net</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="503"/>
+        <location filename="mainwindow.cpp" line="495"/>
         <source>gen2d</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="504"/>
+        <location filename="mainwindow.cpp" line="496"/>
         <source>Indicates if &apos;gen2d&apos; of OpenBabel is available.
 Required for structure optimization.</source>
         <translation>Υποδεικνύει εάν το &apos;gen2d&apos; του OpenBabel είναι διαθέσιμο.
 Απαιτείται για την βελτιστοποίηση δομής.</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="525"/>
+        <location filename="mainwindow.cpp" line="517"/>
         <source>Icons</source>
         <translation>Εικονίδια</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="526"/>
+        <location filename="mainwindow.cpp" line="518"/>
         <source>Texts</source>
         <translatorcomment>While &quot;κείμενο&quot; is singular, it fits better than the plural form in this case</translatorcomment>
         <translation>Κείμενο</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="527"/>
+        <location filename="mainwindow.cpp" line="519"/>
         <source>Texts under icons</source>
         <translation>Κείμενο κάτω από τα εικονίδια</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="528"/>
+        <location filename="mainwindow.cpp" line="520"/>
         <source>Texts besides icons</source>
         <translation>Κείμενο δίπλα στα εικονίδια</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="529"/>
+        <location filename="mainwindow.cpp" line="521"/>
         <source>System default</source>
         <translation>Προεπιλογή συστήματος</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="600"/>
+        <location filename="mainwindow.cpp" line="577"/>
         <source>This document has been modified.
 Do you want to save your changes?</source>
         <translation>Αυτό το έγγραφο έχει τροποποιηθεί.
 Θέλετε να αποθηκεύσετε τις αλλαγές σας;</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="622"/>
+        <location filename="mainwindow.cpp" line="599"/>
         <source>%1[*] - %2</source>
         <translation></translation>
     </message>
@@ -2029,37 +2029,37 @@ Do you want to save your changes?</source>
         <translation>Εμφανίζει το πλέγμα και συγκρατεί τα στοιχεία σε αυτό κατά την σχεδίαση</translation>
     </message>
     <message>
-        <location filename="actioncontainer.cpp" line="164"/>
+        <location filename="actioncontainer.cpp" line="163"/>
         <source>&amp;Edit</source>
         <translation>&amp;Επεξεργασία</translation>
     </message>
     <message>
-        <location filename="actioncontainer.cpp" line="172"/>
+        <location filename="actioncontainer.cpp" line="171"/>
         <source>&amp;View</source>
         <translation>&amp;Προβολή</translation>
     </message>
     <message>
-        <location filename="actioncontainer.cpp" line="186"/>
+        <location filename="actioncontainer.cpp" line="185"/>
         <source>Edit</source>
         <translation>Επεξεργασία</translation>
     </message>
     <message>
-        <location filename="actioncontainer.cpp" line="191"/>
+        <location filename="actioncontainer.cpp" line="190"/>
         <source>Zoom</source>
         <translation>Ζουμ</translation>
     </message>
     <message>
-        <location filename="actioncontainer.cpp" line="200"/>
+        <location filename="actioncontainer.cpp" line="199"/>
         <source>Drawing</source>
         <translation>Σχεδίαση</translation>
     </message>
     <message>
-        <location filename="actioncontainer.cpp" line="213"/>
+        <location filename="actioncontainer.cpp" line="212"/>
         <source>Modify</source>
         <translation>Τροποποίηση</translation>
     </message>
     <message>
-        <location filename="actioncontainer.cpp" line="231"/>
+        <location filename="actioncontainer.cpp" line="230"/>
         <source>Align</source>
         <translation>Ευθυγράμμιση</translation>
     </message>
@@ -2195,8 +2195,10 @@ Do you want to save your changes?</source>
     </message>
     <message>
         <location filename="settingsdialog.ui" line="407"/>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Warning!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Setting an &amp;quot;obabeliface&amp;quot; library here that was not built&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;for this version of Molsketch may lead to crashes!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Προσοχή!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Ο ορισμός εδώ μιας βιβλιοθήκης &amp;quot;obabeliface&amp;quot; που δεν μεταγλωττίστηκε&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;για αυτήν την έκδοση του Molsketch μπορεί να οδηγήσει σε σφάλματα!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Warning!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Setting an &amp;quot;obabeliface&amp;quot; library here that was not built&lt;br/&gt;for this version of Molsketch may lead to crashes!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <oldsource>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Warning!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Setting an &amp;quot;obabeliface&amp;quot; library here that was not built&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;for this version of Molsketch may lead to crashes!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</oldsource>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Προσοχή!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Ο ορισμός εδώ μιας βιβλιοθήκης &amp;quot;obabeliface&amp;quot; που δεν μεταγλωττίστηκε&lt;br/&gt;
+για αυτήν την έκδοση του Molsketch μπορεί να οδηγήσει σε σφάλματα!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="settingsdialog.ui" line="417"/>
@@ -2215,21 +2217,29 @@ Do you want to save your changes?</source>
     </message>
     <message>
         <location filename="settingsdialog.ui" line="469"/>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Warning!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Selecting a folder of OpenBabel formats here that was not built&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;for the version of OpenBabel for which the &amp;quot;obabeliface&amp;quot; above was built&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;may lead to crashes or prevent formats from working!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Προσοχή!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Ο ορισμός εδώ ενός φακέλου μορφών OpenBabel που δεν μεταγλωττίστηκε&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;για την έκδοση του OpenBabel για την οποία δομήθηκε η παραπάνω &amp;quot;obabeliface&amp;quot;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;μπορεί να οδηγήσει σε σφάλματα και να εμποδίσει την λειτουργία των μορφών!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Warning!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Selecting a folder of OpenBabel formats here that was not built&lt;br/&gt;for the version of OpenBabel for which the &amp;quot;obabeliface&amp;quot; above was built&lt;br/&gt;may lead to crashes or prevent formats from working!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <oldsource>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Warning!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Selecting a folder of OpenBabel formats here that was not built&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;for the version of OpenBabel for which the &amp;quot;obabeliface&amp;quot; above was built&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;may lead to crashes or prevent formats from working!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</oldsource>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Προσοχή!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Ο ορισμός εδώ ενός φακέλου μορφών OpenBabel που δεν μεταγλωττίστηκε&lt;br/&gt;
+για την έκδοση του OpenBabel για την οποία δομήθηκε η παραπάνω &amp;quot;obabeliface&amp;quot;&lt;br/&gt;
+μπορεί να οδηγήσει σε σφάλματα και να εμποδίσει την λειτουργία των μορφών!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="settingsdialog.cpp" line="147"/>
+        <location filename="settingsdialog.ui" line="490"/>
+        <source>Wikidata Query URL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="settingsdialog.cpp" line="149"/>
         <source>Select library folder</source>
         <translation>Επιλογή φακέλου βιβλιοθήκης</translation>
     </message>
     <message>
-        <location filename="settingsdialog.cpp" line="160"/>
+        <location filename="settingsdialog.cpp" line="162"/>
         <source>OBF folder</source>
         <translation>Φάκελος OBF</translation>
     </message>
     <message>
-        <location filename="settingsdialog.cpp" line="165"/>
+        <location filename="settingsdialog.cpp" line="167"/>
         <source>Path to obabelIface</source>
         <translation>Διαδρομή προς obabeliface</translation>
     </message>
