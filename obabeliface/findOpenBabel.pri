@@ -1,5 +1,5 @@
 defineTest(findOpenBabel) {
-        message("Trying to find OpenBabel-2.0")
+        message("Trying to find OpenBabel")
         possibleOBIncDirs = \
                 $${OB_INCLUDE_DIRS} \
                 C:/openbabel/include \
