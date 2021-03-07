@@ -59,7 +59,7 @@ const QString ALTERNATE_STRING_LIST_AS_STRING("AAAAAgAAABQAYQBsAHQAZQByAG4AYQB0A
 const QString STRING_KEY("TestStringKey");
 const QString STRING_VALUE{"testString"};
 const QString STRING_AS_STRING("testString");
-const QStringList ALTERNATE_STRING{"alternate"};
+const QString ALTERNATE_STRING{"alternate"};
 const QString ALTERNATE_STRING_AS_STRING("alternate");
 
 
@@ -204,9 +204,9 @@ public:
   void testSettingString() { performSettingCycle(alternateAsString); }
 };
 
-class StringSettingsItemUnitTest : public SettingsItemTestCase<QString, StringSettingsItem, StringListSignalCounter> {
+class StringSettingsItemUnitTest : public SettingsItemTestCase<QString, StringSettingsItem, StringSignalCounter> {
 public:
-  StringListSettingsItemUnitTest() : SettingsItemTestCase(STRING_KEY, STRING_VALUE, ALTERNATE_STRING, STRING_AS_STRING, ALTERNATE_STRING_AS_STRING) {}
+  StringSettingsItemUnitTest() : SettingsItemTestCase(STRING_KEY, STRING_VALUE, ALTERNATE_STRING, STRING_AS_STRING, ALTERNATE_STRING_AS_STRING) {}
   void testReading() { readValue(); }
   void testWritingXml() { assertWritingXml(); }
   void testReadingXml() { assertWritingXml(); }
