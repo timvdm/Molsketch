@@ -19,3 +19,6 @@ GPATH
 *.exe
 *.obf
 *.dll
+*.7z
+*.sha1
+Updates.xml
