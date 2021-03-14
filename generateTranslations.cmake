@@ -4,7 +4,7 @@ function(addTranslationResources _resource_file resourceFileName)
 
   file(GLOB_RECURSE translationFiles *.ts)
   set_source_files_properties(${translationFiles} PROPERTIES OUTPUT_LOCATION ${qmDir})
-  qt5_create_translation(qmFileList ${translationFiles})
+  qt_add_translation(qmFileList ${translationFiles})
 
   set(qmResourcesFile "${qmDir}/${resourceFileName}.qrc")
   file(WRITE ${qmResourcesFile} "<!DOCTYPE RCC><RCC version=\"1.0\">\n  <qresource prefix=\"i18n\">\n")
