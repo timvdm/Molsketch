@@ -283,7 +283,7 @@ diameter</source>
 <context>
     <name>Molsketch::LibraryView</name>
     <message>
-        <location filename="libraryview.cpp" line="37"/>
+        <location filename="libraryview.cpp" line="36"/>
         <source>No molecules to show</source>
         <translation>Δεν υπάρχουν μόρια προς προβολή</translation>
     </message>
@@ -299,17 +299,17 @@ diameter</source>
 <context>
     <name>Molsketch::MolScene</name>
     <message>
-        <location filename="molscene.cpp" line="221"/>
+        <location filename="molscene.cpp" line="237"/>
         <source>cutting items</source>
         <translation>αποκοπή στοιχείων</translation>
     </message>
     <message>
-        <location filename="molscene.cpp" line="250"/>
+        <location filename="molscene.cpp" line="303"/>
         <source>Paste</source>
         <translation>Επικόλληση</translation>
     </message>
     <message>
-        <location filename="molscene.cpp" line="302"/>
+        <location filename="molscene.cpp" line="362"/>
         <source>MolsKetch Drawing</source>
         <translation>Σχέδιο MolsKetch</translation>
     </message>
@@ -318,27 +318,27 @@ diameter</source>
         <translation type="vanished">προσθήκη μορίου</translation>
     </message>
     <message>
-        <location filename="molscene.cpp" line="367"/>
+        <location filename="molscene.cpp" line="427"/>
         <source>Mouse wheel configuration</source>
         <translation>Ρύθμιση τροχού ποντικιού</translation>
     </message>
     <message>
-        <location filename="molscene.cpp" line="368"/>
+        <location filename="molscene.cpp" line="428"/>
         <source>Mouse wheel use has not been configured.Should the wheel be used to zoom, or to cycle tool settings?</source>
         <translation>Η χρήση του τροχού του ποντικιού δεν έχει ρυθμιστεί. Να χρησιμοποιείται ο τροχός για ζουμ, ή για κυκλική εναλλαγή των παραμέτρων εργαλείων;</translation>
     </message>
     <message>
-        <location filename="molscene.cpp" line="371"/>
+        <location filename="molscene.cpp" line="431"/>
         <source>Use to zoom</source>
         <translation>Χρήση για ζουμ</translation>
     </message>
     <message>
-        <location filename="molscene.cpp" line="372"/>
+        <location filename="molscene.cpp" line="432"/>
         <source>Use to cycle tool options</source>
         <translation>Χρήση για κυκλική εναλλαγή των παραμέτρων εργαλείων</translation>
     </message>
     <message>
-        <location filename="molscene.cpp" line="611"/>
+        <location filename="molscene.cpp" line="682"/>
         <source>insert molecule</source>
         <translation>εισαγωγή μορίου</translation>
     </message>
@@ -663,12 +663,12 @@ diameter</source>
 <context>
     <name>Molsketch::TextItem</name>
     <message>
-        <location filename="textitem.cpp" line="87"/>
+        <location filename="textitem.cpp" line="86"/>
         <source>Move text item</source>
         <translation>Μετακίνηση στοιχείου κειμένου</translation>
     </message>
     <message>
-        <location filename="textitem.cpp" line="111"/>
+        <location filename="textitem.cpp" line="110"/>
         <source>Edit text</source>
         <translation>Επεξεργασία κειμένου</translation>
     </message>
@@ -818,48 +818,48 @@ diameter</source>
 <context>
     <name>Molsketch::drawAction</name>
     <message>
-        <location filename="actions/drawaction.cpp" line="119"/>
+        <location filename="actions/drawaction.cpp" line="115"/>
         <source>change element</source>
         <translation>αλλαγή στοιχείου</translation>
     </message>
     <message>
-        <location filename="actions/drawaction.cpp" line="122"/>
-        <location filename="actions/drawaction.cpp" line="174"/>
+        <location filename="actions/drawaction.cpp" line="118"/>
+        <location filename="actions/drawaction.cpp" line="170"/>
         <source>add atom</source>
         <translation>προσθήκη ατόμου</translation>
     </message>
     <message>
-        <location filename="actions/drawaction.cpp" line="127"/>
+        <location filename="actions/drawaction.cpp" line="123"/>
         <source>draw bond</source>
         <translation>σχεδίαση δεσμού</translation>
     </message>
     <message>
-        <location filename="actions/drawaction.cpp" line="144"/>
+        <location filename="actions/drawaction.cpp" line="140"/>
         <source>change bond type</source>
         <translation>αλλαγή είδους δεσμού</translation>
     </message>
     <message>
-        <location filename="actions/drawaction.cpp" line="146"/>
+        <location filename="actions/drawaction.cpp" line="142"/>
         <source>flip bond</source>
         <translation>αναστροφή δεσμού</translation>
     </message>
     <message>
-        <location filename="actions/drawaction.cpp" line="164"/>
+        <location filename="actions/drawaction.cpp" line="160"/>
         <source>add molecule</source>
         <translation>προσθήκη μορίου</translation>
     </message>
     <message>
-        <location filename="actions/drawaction.cpp" line="169"/>
+        <location filename="actions/drawaction.cpp" line="165"/>
         <source>Add atom</source>
         <translation>Προσθήκη ατόμου</translation>
     </message>
     <message>
-        <location filename="actions/drawaction.cpp" line="221"/>
+        <location filename="actions/drawaction.cpp" line="217"/>
         <source>Draw mode</source>
         <translation>Κατάσταση σχεδίασης</translation>
     </message>
     <message>
-        <location filename="actions/drawaction.cpp" line="224"/>
+        <location filename="actions/drawaction.cpp" line="220"/>
         <source>Draw</source>
         <translation>Σχεδίαση</translation>
     </message>
@@ -975,12 +975,12 @@ diameter</source>
 <context>
     <name>Molsketch::ringAction</name>
     <message>
-        <location filename="actions/ringaction.cpp" line="147"/>
+        <location filename="actions/ringaction.cpp" line="143"/>
         <source>Ring</source>
         <translation>Δακτύλιος</translation>
     </message>
     <message>
-        <location filename="actions/ringaction.cpp" line="278"/>
+        <location filename="actions/ringaction.cpp" line="274"/>
         <source>Add ring</source>
         <translation>Προσθήκη δακτυλίου</translation>
     </message>
@@ -988,12 +988,12 @@ diameter</source>
 <context>
     <name>Molsketch::rotateAction</name>
     <message>
-        <location filename="actions/rotateaction.cpp" line="118"/>
+        <location filename="actions/rotateaction.cpp" line="114"/>
         <source>Rotate</source>
         <translation>Περιστροφή</translation>
     </message>
     <message>
-        <location filename="actions/rotateaction.cpp" line="130"/>
+        <location filename="actions/rotateaction.cpp" line="126"/>
         <source>°
 Hold Shift to use fixed angles.</source>
         <translation>°
@@ -1003,7 +1003,7 @@ Hold Shift to use fixed angles.</source>
 <context>
     <name>Molsketch::translateAction</name>
     <message>
-        <location filename="actions/rotateaction.cpp" line="142"/>
+        <location filename="actions/rotateaction.cpp" line="138"/>
         <source>Move</source>
         <translation>Μετκίνηση</translation>
     </message>
@@ -1016,7 +1016,7 @@ Hold Shift to use fixed angles.</source>
         <translation>Άνοιγμα μορίου</translation>
     </message>
     <message>
-        <location filename="graphicsitem.cpp" line="58"/>
+        <location filename="graphicsitem.cpp" line="54"/>
         <source>Move</source>
         <translation>Μετακίνηση</translation>
     </message>

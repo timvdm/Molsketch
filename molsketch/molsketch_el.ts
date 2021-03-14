@@ -2,6 +2,14 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="el_GR">
 <context>
+    <name>ConfigurationUpdates</name>
+    <message>
+        <location filename="configurationupdates.cpp" line="52"/>
+        <source>OpenBabel Library Path</source>
+        <translation>Διδαδρομή Βιβλιοθήκης OpenBabel</translation>
+    </message>
+</context>
+<context>
     <name>LibraryToolBox</name>
     <message>
         <location filename="librarytoolbox.cpp" line="40"/>
@@ -1876,6 +1884,19 @@ Do you want to save your changes?</source>
     </message>
 </context>
 <context>
+    <name>PathInput</name>
+    <message>
+        <location filename="pathinput.ui" line="14"/>
+        <source>Form</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="pathinput.ui" line="38"/>
+        <source>...</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>QObject</name>
     <message>
         <location filename="actioncontainer.cpp" line="65"/>
@@ -2082,7 +2103,7 @@ Do you want to save your changes?</source>
         <translation>Μπορείτε να ανοίξετε αυτόν τον διάλογο από το &quot;Βοήθεια &gt; Εμφάνιση πληροφοριών έκδοσης...&quot;</translation>
     </message>
     <message>
-        <location filename="releasenotesdialog.ui" line="32"/>
+        <location filename="releasenotesdialog.ui" line="35"/>
         <source>qrc:/CHANGELOG</source>
         <translation></translation>
     </message>

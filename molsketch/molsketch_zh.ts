@@ -2,6 +2,14 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="zh_CN">
 <context>
+    <name>ConfigurationUpdates</name>
+    <message>
+        <location filename="configurationupdates.cpp" line="52"/>
+        <source>OpenBabel Library Path</source>
+        <translation>OpenBabel图书馆路径</translation>
+    </message>
+</context>
+<context>
     <name>LibraryToolBox</name>
     <message>
         <location filename="librarytoolbox.cpp" line="40"/>
@@ -1878,6 +1886,19 @@ Do you want to save your changes?</source>
     </message>
 </context>
 <context>
+    <name>PathInput</name>
+    <message>
+        <location filename="pathinput.ui" line="14"/>
+        <source>Form</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="pathinput.ui" line="38"/>
+        <source>...</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>QObject</name>
     <message>
         <location filename="actioncontainer.cpp" line="65"/>
@@ -2083,7 +2104,7 @@ Do you want to save your changes?</source>
         <translation>您可以随时使用&quot;帮助&gt;显示发行说明&quot;打开此对话框。</translation>
     </message>
     <message>
-        <location filename="releasenotesdialog.ui" line="32"/>
+        <location filename="releasenotesdialog.ui" line="35"/>
         <source>qrc:/CHANGELOG</source>
         <translation></translation>
     </message>

@@ -34,8 +34,10 @@ ConfigurationUpdates::ConfigurationUpdates(QWidget *parent)
   auto layout = new QFormLayout(this);
   setLayout(layout);
   auto appSettings = new ApplicationSettings(Molsketch::SettingsFacade::persistedSettings(new QSettings), this);
+  auto originalObabelIfacePath = QFileInfo(appSettings->obabelIfacePath());
 
-  if (appSettings->latestReleaseNotesVersionShown() < ProgramVersion(0,7,2)) {
+  if (appSettings->latestReleaseNotesVersionShown() < ProgramVersion(0,7,2)
+      && originalObabelIfacePath.fileName().contains(QT_SUFFIX)) {
     auto obabelIfacePathWidget = PathInput::fileInput(
 #ifdef Q_OS_WINDOWS
           "*.dll (*.dll)"
@@ -46,7 +48,6 @@ ConfigurationUpdates::ConfigurationUpdates(QWidget *parent)
 #endif
           , this);
     connect(obabelIfacePathWidget, &PathInput::pathStringChanged, appSettings, &ApplicationSettings::setObabelIfacePath);
-    auto originalObabelIfacePath = QFileInfo(appSettings->obabelIfacePath());
     auto newObabelIfacePath = QFileInfo(originalObabelIfacePath.dir(), originalObabelIfacePath.fileName().remove(QT_SUFFIX)).filePath();
     auto label = tr("OpenBabel Library Path");
     obabelIfacePathWidget->setLabel(label);

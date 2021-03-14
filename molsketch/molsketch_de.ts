@@ -2,6 +2,14 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="de_DE">
 <context>
+    <name>ConfigurationUpdates</name>
+    <message>
+        <location filename="configurationupdates.cpp" line="52"/>
+        <source>OpenBabel Library Path</source>
+        <translation>Pfad zu OpenBabel</translation>
+    </message>
+</context>
+<context>
     <name>LibraryToolBox</name>
     <message>
         <location filename="librarytoolbox.cpp" line="40"/>
@@ -1888,6 +1896,19 @@ Wollen Sie die Änderungen speichern?</translation>
     </message>
 </context>
 <context>
+    <name>PathInput</name>
+    <message>
+        <location filename="pathinput.ui" line="14"/>
+        <source>Form</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="pathinput.ui" line="38"/>
+        <source>...</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>QObject</name>
     <message>
         <location filename="actioncontainer.cpp" line="65"/>
@@ -2093,7 +2114,7 @@ Wollen Sie die Änderungen speichern?</translation>
         <translation>Sie können immer zu diesem Dialog zurückkehren, indem sie &quot;Hilfe &gt; Versionshinweise...&quot; wählen</translation>
     </message>
     <message>
-        <location filename="releasenotesdialog.ui" line="32"/>
+        <location filename="releasenotesdialog.ui" line="35"/>
         <source>qrc:/CHANGELOG</source>
         <translation>qrc:/CHANGELOG_de</translation>
     </message>

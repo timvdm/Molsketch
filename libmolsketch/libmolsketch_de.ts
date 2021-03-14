@@ -285,7 +285,7 @@ diameter</source>
 <context>
     <name>Molsketch::LibraryView</name>
     <message>
-        <location filename="libraryview.cpp" line="37"/>
+        <location filename="libraryview.cpp" line="36"/>
         <source>No molecules to show</source>
         <translation>Keine Moleküle vorhanden</translation>
     </message>
@@ -301,17 +301,17 @@ diameter</source>
 <context>
     <name>Molsketch::MolScene</name>
     <message>
-        <location filename="molscene.cpp" line="221"/>
+        <location filename="molscene.cpp" line="237"/>
         <source>cutting items</source>
         <translation>Ausschneiden</translation>
     </message>
     <message>
-        <location filename="molscene.cpp" line="250"/>
+        <location filename="molscene.cpp" line="303"/>
         <source>Paste</source>
         <translation>Einfügen</translation>
     </message>
     <message>
-        <location filename="molscene.cpp" line="302"/>
+        <location filename="molscene.cpp" line="362"/>
         <source>MolsKetch Drawing</source>
         <translation>Molsketch-Zeichnung</translation>
     </message>
@@ -320,27 +320,27 @@ diameter</source>
         <translation type="vanished">Molekül hinzufügen</translation>
     </message>
     <message>
-        <location filename="molscene.cpp" line="367"/>
+        <location filename="molscene.cpp" line="427"/>
         <source>Mouse wheel configuration</source>
         <translation>Mausrad-Einstellung</translation>
     </message>
     <message>
-        <location filename="molscene.cpp" line="368"/>
+        <location filename="molscene.cpp" line="428"/>
         <source>Mouse wheel use has not been configured.Should the wheel be used to zoom, or to cycle tool settings?</source>
         <translation>Die Funktion des Mausrads ist noch nicht festgelegt worden.&lt;br/&gt;Soll es zum Zoomen oder zum Wechseln von Werkzeugen dienen?</translation>
     </message>
     <message>
-        <location filename="molscene.cpp" line="371"/>
+        <location filename="molscene.cpp" line="431"/>
         <source>Use to zoom</source>
         <translation>Zoomen</translation>
     </message>
     <message>
-        <location filename="molscene.cpp" line="372"/>
+        <location filename="molscene.cpp" line="432"/>
         <source>Use to cycle tool options</source>
         <translation>Werkzeugwechsel</translation>
     </message>
     <message>
-        <location filename="molscene.cpp" line="611"/>
+        <location filename="molscene.cpp" line="682"/>
         <source>insert molecule</source>
         <translation>Molekül einfügen</translation>
     </message>
@@ -665,12 +665,12 @@ diameter</source>
 <context>
     <name>Molsketch::TextItem</name>
     <message>
-        <location filename="textitem.cpp" line="87"/>
+        <location filename="textitem.cpp" line="86"/>
         <source>Move text item</source>
         <translation>Text verschieben</translation>
     </message>
     <message>
-        <location filename="textitem.cpp" line="111"/>
+        <location filename="textitem.cpp" line="110"/>
         <source>Edit text</source>
         <translation>Text bearbeiten</translation>
     </message>
@@ -819,48 +819,48 @@ diameter</source>
 <context>
     <name>Molsketch::drawAction</name>
     <message>
-        <location filename="actions/drawaction.cpp" line="119"/>
+        <location filename="actions/drawaction.cpp" line="115"/>
         <source>change element</source>
         <translation>Chemisches Element ändern</translation>
     </message>
     <message>
-        <location filename="actions/drawaction.cpp" line="122"/>
-        <location filename="actions/drawaction.cpp" line="174"/>
+        <location filename="actions/drawaction.cpp" line="118"/>
+        <location filename="actions/drawaction.cpp" line="170"/>
         <source>add atom</source>
         <translation>Atom hinzufügen</translation>
     </message>
     <message>
-        <location filename="actions/drawaction.cpp" line="127"/>
+        <location filename="actions/drawaction.cpp" line="123"/>
         <source>draw bond</source>
         <translation>Bindung zeichnen</translation>
     </message>
     <message>
-        <location filename="actions/drawaction.cpp" line="144"/>
+        <location filename="actions/drawaction.cpp" line="140"/>
         <source>change bond type</source>
         <translation>Bindungsart ändern</translation>
     </message>
     <message>
-        <location filename="actions/drawaction.cpp" line="146"/>
+        <location filename="actions/drawaction.cpp" line="142"/>
         <source>flip bond</source>
         <translation>Bindung umdrehen</translation>
     </message>
     <message>
-        <location filename="actions/drawaction.cpp" line="164"/>
+        <location filename="actions/drawaction.cpp" line="160"/>
         <source>add molecule</source>
         <translation>Molekül hinzufügen</translation>
     </message>
     <message>
-        <location filename="actions/drawaction.cpp" line="169"/>
+        <location filename="actions/drawaction.cpp" line="165"/>
         <source>Add atom</source>
         <translation>Atom hinzufügen</translation>
     </message>
     <message>
-        <location filename="actions/drawaction.cpp" line="221"/>
+        <location filename="actions/drawaction.cpp" line="217"/>
         <source>Draw mode</source>
         <translation>Zeichnen</translation>
     </message>
     <message>
-        <location filename="actions/drawaction.cpp" line="224"/>
+        <location filename="actions/drawaction.cpp" line="220"/>
         <source>Draw</source>
         <translation>Zeichnen</translation>
     </message>
@@ -976,12 +976,12 @@ diameter</source>
 <context>
     <name>Molsketch::ringAction</name>
     <message>
-        <location filename="actions/ringaction.cpp" line="147"/>
+        <location filename="actions/ringaction.cpp" line="143"/>
         <source>Ring</source>
         <translation>Ring</translation>
     </message>
     <message>
-        <location filename="actions/ringaction.cpp" line="278"/>
+        <location filename="actions/ringaction.cpp" line="274"/>
         <source>Add ring</source>
         <translation>Ring hinzufügen</translation>
     </message>
@@ -989,12 +989,12 @@ diameter</source>
 <context>
     <name>Molsketch::rotateAction</name>
     <message>
-        <location filename="actions/rotateaction.cpp" line="118"/>
+        <location filename="actions/rotateaction.cpp" line="114"/>
         <source>Rotate</source>
         <translation>Drehen</translation>
     </message>
     <message>
-        <location filename="actions/rotateaction.cpp" line="130"/>
+        <location filename="actions/rotateaction.cpp" line="126"/>
         <source>°
 Hold Shift to use fixed angles.</source>
         <translation>°
@@ -1004,7 +1004,7 @@ Shift gedrückt halten, um feste Winkel zu benutzen.</translation>
 <context>
     <name>Molsketch::translateAction</name>
     <message>
-        <location filename="actions/rotateaction.cpp" line="142"/>
+        <location filename="actions/rotateaction.cpp" line="138"/>
         <source>Move</source>
         <translation>Verschieben</translation>
     </message>
@@ -1021,7 +1021,7 @@ Shift gedrückt halten, um feste Winkel zu benutzen.</translation>
         <translation type="vanished">Verschieben</translation>
     </message>
     <message>
-        <location filename="graphicsitem.cpp" line="58"/>
+        <location filename="graphicsitem.cpp" line="54"/>
         <source>Move</source>
         <translation>Verschieben</translation>
     </message>
