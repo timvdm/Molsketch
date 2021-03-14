@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2017 by Hendrik Vennekate, Hendrik.Vennekate@posteo.de  *
+ *   Copyright (C) 2021 by Hendrik Vennekate, Hendrik.Vennekate@posteo.de  *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -16,16 +16,51 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
-#include "releasenotesdialog.h"
-#include "ui_releasenotesdialog.h"
+#ifndef PATHINPUT_H
+#define PATHINPUT_H
 
-ReleaseNotesDialog::ReleaseNotesDialog(QWidget *parent) :
-  QDialog(parent),
-  ui(new Ui::ReleaseNotesDialog)
+#include <QWidget>
+
+namespace Ui {
+  class PathInput;
+}
+
+class PathInput : public QWidget
 {
-  ui->setupUi(this);
-}
+  Q_OBJECT
+public:
+  explicit PathInput(QWidget *parent = nullptr);
+  ~PathInput();
+  QString value() const;
+  QString label() const;
+  static PathInput *fileInput(const QString &extension, QWidget *parent = nullptr);
+  static PathInput *folderInput(QWidget *parent = nullptr);
+protected:
+  virtual QString getValueFromDialog() const = 0;
+private:
+  Ui::PathInput *ui;
 
-ReleaseNotesDialog::~ReleaseNotesDialog() {
-  delete ui;
-}
+signals:
+  void pathStringChanged(const QString&);
+public slots:
+  void setValue(const QString &);
+  void setLabel(const QString &);
+private slots:
+  void on_dialogButton_clicked();
+};
+
+class FilePathInput : public PathInput {
+  QString extension;
+  QString getValueFromDialog() const override;
+public:
+  FilePathInput(const QString &extension, QWidget *parent);
+  void setExtensionFilter(const QString &extension);
+};
+
+class FolderPathInput : public PathInput {
+  QString getValueFromDialog() const override;
+public:
+  FolderPathInput(QWidget *parent);
+};
+
+#endif // PATHINPUT_H

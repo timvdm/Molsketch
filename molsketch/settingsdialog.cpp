@@ -164,6 +164,14 @@ void SettingsDialog::on_obfPathButton_clicked() {
 }
 
 void SettingsDialog::on_libraryPathButton_clicked() {
-  QString filename = QFileDialog::getOpenFileName(0, tr("Path to obabelIface"), ui.libraryPath->text(), "*.dll"); // TODO replace dll with appropriate extension
+  QString filename = QFileDialog::getOpenFileName(0, tr("Path to obabelIface"), ui.libraryPath->text(),
+#ifdef Q_OS_WINDOWS
+          "*.dll (*.dll)"
+#elseif Q_OS_UNIX
+          "*.so (*.so)"
+#else
+          ""
+#endif
+                                                  );
   if (!filename.isEmpty()) ui.libraryPath->setText(filename);
 }
