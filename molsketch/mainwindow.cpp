@@ -62,7 +62,7 @@
 #define GRAPHIC_DEFAULT_FORMAT "Portable Network Graphics (*.png)"
 #define OSRA_GRAPHIC_FILE_FORMATS "All supported types (*.*);;Images (*.png *.bmp *.jpg *.jpeg *.gif *.tif *.tiff);;Documents (*.pdf *.ps)"
 
-#ifdef _WIN32
+#ifdef Q_OS_WINDOWS
 #define OBABELOSSUFFIX ".dll"
 #else
 #define OBABELOSSUFFIX

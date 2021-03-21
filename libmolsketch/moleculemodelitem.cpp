@@ -23,7 +23,7 @@
 #include <QLibrary>
 #include <QDebug>
 
-#ifdef _WIN32
+#ifdef Q_OS_WINDOWS
 #define OBABELOSSUFFIX ".dll"
 #else
 #define OBABELOSSUFFIX
