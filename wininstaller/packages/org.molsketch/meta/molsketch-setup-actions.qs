@@ -15,6 +15,7 @@ Component.prototype.createOperations = function()
         var programPath = installer.value("TargetDir") + "\\molsketch.exe";
 
         var startMenuPage = gui.pageById(QInstaller.StartMenuSelection);
+        if (!startMenuPage) return;
         var createDesktopShortcut = gui.findChild(startMenuPage, "createDesktopShortcutCheckbox").checked;
         var associateMskFiles = gui.findChild(startMenuPage, "associateMskFilesCheckbox").checked;
         var associateMsmFiles = gui.findChild(startMenuPage, "associateMsmFilesCheckbox").checked;
