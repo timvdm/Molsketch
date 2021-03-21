@@ -2,8 +2,15 @@
 function Component()
 {
     console.log("Installing component page");
+    installer.addWizardPageItem(component, "CreateDesktopLink", QInstaller.ReadyForInstallation, 1);
+    if (!installer.isUpdater()) installer.addWizardPageItem(component, "AssociateFileSuffixes", QInstaller.ReadyForInstallation, 0);
+}
 
-    installer.addWizardPageItem(component, "PostInstallActions", QInstaller.StartMenuSelection);
+function isCheckboxPresentAndChecked (checkboxId) {
+    var page = gui.pageById(QInstaller.ReadyForInstallation);
+    if (!page) return false;
+    var checkbox = gui.findChild(page, checkboxId);
+    return checkbox && checkbox.checked;
 }
 
 Component.prototype.createOperations = function()
@@ -13,12 +20,11 @@ Component.prototype.createOperations = function()
     if (installer.value("os") === "win") {
         var iconId = 0;
         var programPath = installer.value("TargetDir") + "\\molsketch.exe";
+        var maintenancePath = installer.value("TargetDir") + "\\maintenancetool.exe";
 
-        var startMenuPage = gui.pageById(QInstaller.StartMenuSelection);
-        if (!startMenuPage) return;
-        var createDesktopShortcut = gui.findChild(startMenuPage, "createDesktopShortcutCheckbox").checked;
-        var associateMskFiles = gui.findChild(startMenuPage, "associateMskFilesCheckbox").checked;
-        var associateMsmFiles = gui.findChild(startMenuPage, "associateMsmFilesCheckbox").checked;
+        var createDesktopShortcut = isCheckboxPresentAndChecked("createDesktopShortcutCheckbox");
+        var associateMskFiles = isCheckboxPresentAndChecked("associateMskFilesCheckbox");
+        var associateMsmFiles = isCheckboxPresentAndChecked("associateMsmFilesCheckbox");
 
         console.log("Create desktop link: " + createDesktopShortcut +
                     " Associate MSK files: " + associateMskFiles +
@@ -46,9 +52,15 @@ Component.prototype.createOperations = function()
                                    "@DesktopDir@/Molsketch.lnk",
                                    "workingDirectory=@TargetDir@",
                                    "iconPath=@TargetDir@\\molsketch.ico");
+
         component.addOperation("CreateShortcut",
                                programPath,
                                "@StartMenuDir@/Molsketch.lnk",
+                               "workingDirectory=@TargetDir@",
+                               "iconPath=@TargetDir@\\molsketch.ico");
+        component.addOperation("CreateShortcut",
+                               maintenancePath,
+                               "@StartMenuDir@/Molsketch installer.lnk",
                                "workingDirectory=@TargetDir@",
                                "iconPath=@TargetDir@\\molsketch.ico");
     }

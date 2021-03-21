@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>PostInstallActions</class>
- <widget class="QWidget" name="PostInstallActions">
+ <class>CreateDesktopLink</class>
+ <widget class="QWidget" name="CreateDesktopLink">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -22,35 +22,6 @@
      <property name="checked">
       <bool>true</bool>
      </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="groupBox">
-     <property name="title">
-      <string>File Associations</string>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
-      <item>
-       <widget class="QCheckBox" name="associateMskFilesCheckbox">
-        <property name="text">
-         <string>*.msk (Molsketch drawing)</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="associateMsmFilesCheckbox">
-        <property name="text">
-         <string>*.msm (Molsketch molecule)</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-     </layout>
     </widget>
    </item>
    <item>

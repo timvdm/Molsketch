@@ -11,6 +11,7 @@
   <ExpandedByDefault>true</ExpandedByDefault>
   <Script>molsketch-setup-actions.qs</Script>
   <UserInterfaces>
-      <UserInterface>PostInstallActions.ui</UserInterface>
+      <UserInterface>AssociateFileSuffixes.ui</UserInterface>
+      <UserInterface>CreateDesktopLink.ui</UserInterface>
   </UserInterfaces>
 </Package>
