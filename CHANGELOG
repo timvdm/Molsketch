@@ -6,6 +6,12 @@
     </ul>
 </b>
 
+<h2>0.7.2 Oxygen-17</h2>
+<ul>
+    <li>Update location of OpenBabel adapter when updating Molsketch</li>
+    <li>Minor fixes in translations build (cmake)</li>
+</ul>
+
 <h2>0.7.1 Oxygen-16</h2>
 <ul>
     <li>Copy and cut actions also copy SVG image</li>
