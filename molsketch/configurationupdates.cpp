@@ -41,7 +41,7 @@ ConfigurationUpdates::ConfigurationUpdates(QWidget *parent)
     auto obabelIfacePathWidget = PathInput::fileInput(
 #ifdef Q_OS_WINDOWS
           "*.dll (*.dll)"
-#elseif Q_OS_UNIX
+#elif Q_OS_UNIX
           "*.so (*.so)"
 #else
           ""
