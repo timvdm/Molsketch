@@ -167,7 +167,7 @@ void SettingsDialog::on_libraryPathButton_clicked() {
   QString filename = QFileDialog::getOpenFileName(0, tr("Path to obabelIface"), ui.libraryPath->text(),
 #ifdef Q_OS_WINDOWS
           "*.dll (*.dll)"
-#elif Q_OS_UNIX
+#elif defined Q_OS_UNIX
           "*.so (*.so)"
 #else
           ""
