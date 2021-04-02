@@ -1,16 +1,24 @@
- 
-function Component()
-{
-    console.log("Installing component page");
-    installer.addWizardPageItem(component, "CreateDesktopLink", QInstaller.ReadyForInstallation, 1);
-    if (!installer.isUpdater()) installer.addWizardPageItem(component, "AssociateFileSuffixes", QInstaller.ReadyForInstallation, 0);
+function getWidget(widgetId) {
+    var page = gui.pageById(QInstaller.ReadyForInstallation);
+    if (!page) return null;
+    return gui.findChild(page, widgetId);
 }
 
 function isCheckboxPresentAndChecked (checkboxId) {
-    var page = gui.pageById(QInstaller.ReadyForInstallation);
-    if (!page) return false;
-    var checkbox = gui.findChild(page, checkboxId);
+    var checkbox = getWidget(checkboxId);
     return checkbox && checkbox.checked;
+}
+
+function Component()
+{
+    console.log("Installing component page");
+    installer.removeWizardPageItem(component, "CreateDesktopLink");
+    if (installer.isInstaller() || installer.isUpdater())
+        installer.addWizardPageItem(component, "CreateDesktopLink", QInstaller.ReadyForInstallation, 1);
+
+    installer.removeWizardPageItem(component, "AssociateFileSuffixes");
+    if (installer.isInstaller())
+        installer.addWizardPageItem(component, "AssociateFileSuffixes", QInstaller.ReadyForInstallation, 0);
 }
 
 Component.prototype.createOperations = function()
